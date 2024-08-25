@@ -12,6 +12,7 @@ class AtualizarUsuario(QDialog):
         super().__init__(parent)
         self.main_window = main_window
         self.setWindowTitle("Atualizar Usuário")
+        
 
         # Definir layout para a janela de diálogo
         layout = QVBoxLayout()

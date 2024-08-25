@@ -65,7 +65,6 @@ class DataBase:
                     Produto TEXT NOT NULL,
                     Quantidade INTEGER NOT NULL,
                     Valor_Real REAL NOT NULL,
-                    Valor_Unidade REAL NOT NULL,
                     Desconto REAL,
                     Data_Compra TEXT,
                     Código_Item TEXT,
@@ -78,22 +77,20 @@ class DataBase:
         except Exception as e:
             print("Erro ao criar tabela de produtos:", e)
 #*********************************************************************************************************************
-
-    def insert_product(self, produto, quantidade, valor_real, valor_unidade, desconto, data_compra, 
-                       codigo_item, cliente, descricao_produto, imagem=None):
+    def insert_product(self, produto, quantidade, valor_real, desconto, data_compra, 
+                    codigo_item, cliente, descricao_produto, imagem=None):
         try:
             cursor = self.connection.cursor()
 
+            # Substitua valores nulos por valores padrão
             if produto is None:
                 produto = "Não Cadastrado"
             if quantidade is None:
                 quantidade = "Não Cadastrado"
             if valor_real is None:
                 valor_real = "Não Cadastrado"
-            if valor_unidade is None:
-                valor_unidade = "Não Cadastrado"
             if desconto is None:
-                desconto = "Não Cadastrado"
+                desconto = "Sem desconto"
             if data_compra is None:
                 data_compra = "Não Cadastrado"
             if codigo_item is None:
@@ -105,17 +102,17 @@ class DataBase:
             if imagem is None:
                 imagem = "Não Cadastrado"
 
-
             cursor.execute("""
-                INSERT INTO products(Produto, Quantidade, Valor_Real, Valor_Unidade, Desconto, Data_Compra, Código_Item, 
-                           Cliente,Imagem) 
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?,?)
-            """, (produto, quantidade, valor_real, valor_unidade, desconto, data_compra, codigo_item, 
-                  cliente,descricao_produto, imagem))
+                INSERT INTO products(Produto, Quantidade, Valor_Real, Desconto, Data_Compra, Código_Item, 
+                        Cliente, Descrição_Produto, Imagem) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """, (produto, quantidade, valor_real, desconto, data_compra, codigo_item, 
+                cliente, descricao_produto, imagem))
             self.connection.commit()
             print("Produto inserido com sucesso!")
         except Exception as e:
             print("Erro ao inserir produto:", e)
+
 #*********************************************************************************************************************
     def insert_imagem_produto(self, produto_id, imagem):
         try:
@@ -247,7 +244,7 @@ class DataBase:
             print("Erro ao apagar usuário do banco de dados:", e)
 #*********************************************************************************************************************
     def atualizar_produto(self, produto_id, produto=None, quantidade=None, 
-                        valor_real=None, valor_unidade=None, desconto=None, 
+                        valor_real=None,desconto=None, 
                         data_compra=None, codigo_item=None, cliente=None, descricao_produto=None, produto_imagem=None):
         try:
             # Monta a query SQL dinamicamente com base nos parâmetros fornecidos
@@ -263,9 +260,6 @@ class DataBase:
             if valor_real is not None:
                 columns_to_update.append("Valor_Real = ?")
                 values_to_update.append(valor_real)
-            if valor_unidade is not None:
-                columns_to_update.append("Valor_Unidade = ?")
-                values_to_update.append(valor_unidade)
             if desconto is not None:
                 columns_to_update.append("Desconto = ?")
                 values_to_update.append(desconto)
@@ -326,7 +320,7 @@ class DataBase:
             print("Erro ao atualizar produto:", e)
 
 #*********************************************************************************************************************
-    def obter_caminho_imagem(self, produto_id):
+    def obter_caminho_imagem_produto(self, produto_id):
         try:
             cursor = self.connection.cursor()
             cursor.execute("SELECT Imagem FROM products WHERE id = ?", (produto_id,))

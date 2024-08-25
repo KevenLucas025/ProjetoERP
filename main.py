@@ -1,7 +1,7 @@
 #*********************************************************************************************************************
 import re
 from PySide6.QtCore import (Qt, QTimer, QDate, QBuffer, QByteArray, QIODevice, Signal,
-                            QCoreApplication, QUrl, QFile)
+                            QCoreApplication, QUrl, QFile,QEvent)
 from PySide6 import QtCore
 from PySide6.QtWidgets import (QApplication, QMainWindow, QWidget, 
                                QMessageBox, QPushButton, QHBoxLayout, QLineEdit, QDialog,
@@ -28,21 +28,29 @@ import sqlite3
 import os
 import datetime
 import base64
+import random
+import string
 
-class MainWindowNormal(QMainWindow, Ui_MainWindow):
+
+class MainWindow(QMainWindow, Ui_MainWindow):
     fechar_janela_login_signal = Signal(str)
     
     def __init__(self, user=None, login_window=None, tipo_usuario=None, connection=None):
-        super(MainWindowNormal, self).__init__()
+        super(MainWindow, self).__init__()
         self.setupUi(self)
+        self.setup_ui()
+        
         self.setWindowTitle("Sistema de Gerenciamento")
         print("Tipo de usuário recebido:", user)
         self.login_window = login_window
         self.connection = connection
         self.connection = sqlite3.connect('banco_de_dados.db')
 
+        self.produto_original = {}
+        self.produtos_pendentes = []
+ 
 
-
+        self.imagem_carregada_produto = None
     
         # Variáveis para armazenar o estado de edição e o ID do usuário selecionado
         self.is_editing = False
@@ -54,13 +62,13 @@ class MainWindowNormal(QMainWindow, Ui_MainWindow):
         layout_usuario.addWidget(self.label_imagem_cadastro)
         self.frame_imagem_cadastro.setLayout(layout_usuario)
 
-        # Crie o QLabel, para o frame_imagem_produto
-        self.label_imagem_produto = QLabel(self)
-
-        # Crie o layout para o frame_imagem_produto e adicione o QLabel
-        layout = QVBoxLayout()
-        layout.addWidget(self.label_imagem_produto)
-        self.frame_imagem_produto.setLayout(layout)
+        self.frame_imagem_produto.setLayout(QVBoxLayout())
+        self.label_imagem_produto = QLabel(self.frame_imagem_produto)
+        self.label_imagem_produto.setGeometry(0, 0, self.frame_imagem_produto.width(), self.frame_imagem_produto.height())
+        self.label_imagem_produto.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.label_imagem_produto.setScaledContents(False)
+        self.frame_imagem_produto.layout().addWidget(self.label_imagem_produto)  # Adicionar QLabel ao layout do frame
+        self.imagem_carregada_produto = False
 
 
         # Criação dos botões      
@@ -73,7 +81,7 @@ class MainWindowNormal(QMainWindow, Ui_MainWindow):
         self.btn_retroceder = QPushButton(self)
         self.btn_retroceder.setIcon(QIcon("imagens/seta esquerda 2.png"))  # Adicione o caminho do ícone de retroceder
         self.btn_retroceder.setGeometry(5, 5, 30, 30)
-        self.btn_retroceder.setToolTip("Retroceder")
+        self.btn_retroceder.setToolTip("Retroceder") # Adiciona uma dica de ferramenta
 
 
         # Criar o botão btn_opcoes
@@ -81,16 +89,6 @@ class MainWindowNormal(QMainWindow, Ui_MainWindow):
 
         # Criar o menu dentro do botão btn_opcoes
         self.menu_opcoes = QMenu(self.btn_opcoes)
-
-        #Muda a cor dos botões quando o modo escuro é aplicado
-        self.btn_avancar.setObjectName("btn_avancar")
-        self.btn_retroceder.setObjectName("btn_retroceder")
-        self.btn_opcoes.setObjectName("btn_opcoes")
-        
-        # Criar as ações do menu
-        self.action_sair = QAction("Sair do Sistema", self)
-        self.action_configuracoes = QAction("Configurações", self)
-        self.action_modo_escuro = QAction("Alterar Tema", self)
 
         # Definir o estilo do menu
         style_sheet = """
@@ -101,10 +99,17 @@ class MainWindowNormal(QMainWindow, Ui_MainWindow):
         """
         self.menu_opcoes.setStyleSheet(style_sheet)
 
+        # Criar as ações do menu
+        self.action_sair = QAction("Sair do Sistema", self)
+        self.action_configuracoes = QAction("Configurações", self)
+        self.action_modo_escuro = QAction("Alterar Tema", self)
+        self.action_contato = QAction("Contato", self)
+
         # Adicionar as ações ao menu
         self.menu_opcoes.addAction(self.action_sair)
         self.menu_opcoes.addAction(self.action_configuracoes)
         self.menu_opcoes.addAction(self.action_modo_escuro)
+        self.menu_opcoes.addAction(self.action_contato)
 
         # Associar o menu ao botão
         self.btn_opcoes.setMenu(self.menu_opcoes)
@@ -115,6 +120,9 @@ class MainWindowNormal(QMainWindow, Ui_MainWindow):
         # Conectar as ações do menu aos slots correspondentes
         self.action_sair.triggered.connect(self.desconectarUsuario)
         self.action_configuracoes.triggered.connect(self.combobox_caixa)
+        self.action_contato.triggered.connect(self.show_pg_contato)
+
+
         
         style_sheet = """
             QPushButton {
@@ -139,20 +147,18 @@ class MainWindowNormal(QMainWindow, Ui_MainWindow):
         self.fazer_login_automatico()
 
         user = tipo_usuario.lower() if tipo_usuario else ""
-
-        if user.lower() == "usuário" or user.lower() == "user":  
+        if user in ["usuário", "user"]:
             self.btn_cadastro_usuario.setVisible(False)
-
-        if user.lower() == "convidado" or user.lower() == "convidado":
+        elif user in ["convidado", "convidado"]:
             self.btn_cadastrar_produto.setVisible(False)
             self.btn_cadastro_usuario.setVisible(False)
 
         self.carregar_configuracoes()
 
-        # Criar instância de AtualizarProduto passando uma referência à MainWindow
+        # Criar instância de TabelaProdutos passando uma referência à MainWindow
         self.atualizar_produto_dialog = AtualizarProduto(self)
 
-        # Criar instância de TabelaProdutos passando uma referência à MainWindow
+        # Criar instância de AtualizarProduto passando uma referência à MainWindow e à tabela de produtos
         self.tabela_produtos_dialog = TabelaProdutos(self, self.dateEdit)
 
         # Criar instância da TabelaUsuario
@@ -174,8 +180,7 @@ class MainWindowNormal(QMainWindow, Ui_MainWindow):
 
         self.btn_editar_cadastro.clicked.connect(self.mostrar_tabela_usuarios)
         self.btn_carregar_imagem_2.clicked.connect(self.carregar_imagem_usuario)
-
-        
+ 
 
         # Lista de páginas na ordem desejada
         self.paginas = [self.home_pag, self.page_estoque, self.pg_cadastrar_produto, 
@@ -188,26 +193,25 @@ class MainWindowNormal(QMainWindow, Ui_MainWindow):
         self.paginas_sistemas.setCurrentWidget(self.paginas[self.pagina_atual_index])
 
         self.frame_valor_total_produtos = QLabel(self.frame_valor_total_produtos)
-        self.frame_valor_desconto = QLabel(self.frame_valor_desconto)
+        self.frame_valor_desconto = QLabel(self.frame_valor_com_desconto1)
         self.frame_quantidade = QLabel(self.frame_quantidade)
         self.frame_valor_do_desconto = QLabel(self.frame_valor_do_desconto)
+        
+        
 
         self.frame_valor_total_produtos.setStyleSheet("font-size: 20px; color: white; font-family: 'Arial'; font-weight: bold;")
         self.frame_valor_desconto.setStyleSheet("font-size: 20px; color: white; font-family: 'Arial'; font-weight: bold;")
         self.frame_quantidade.setStyleSheet("font-size: 20px; color: white; font-family: 'Arial'; font-weight: bold;")
         self.frame_valor_do_desconto.setStyleSheet("font-size: 20px; color: white; font-family: 'Arial'; font-weight: bold;")
 
-        self.produtos_pendentes = []
-
         validator = QDoubleValidator()
         validator.setNotation(QDoubleValidator.StandardNotation)  
         validator.setDecimals(2)
         validator.setTop(1000000000)  
         self.txt_valor_produto.setValidator(validator)
-        self.txt_unidade.setValidator(validator)
+
 
         self.txt_valor_produto.editingFinished.connect(self.formatar_moeda)
-        self.txt_unidade.editingFinished.connect(self.formatar_moeda)
 
         validador = QDoubleValidator()
         validador.setNotation(QDoubleValidator.StandardNotation)  
@@ -216,7 +220,7 @@ class MainWindowNormal(QMainWindow, Ui_MainWindow):
         self.txt_desconto.setValidator(validador)
         self.txt_desconto.editingFinished.connect(self.formatar_porcentagem)
 
-        self.btn_editar.clicked.connect(self.editar_produto)
+        self.btn_editar.clicked.connect(self.exibir_tabela_produtos)
         self.btn_atualizar_produto.clicked.connect(self.atualizar_produto)
         self.btn_carregar_imagem.clicked.connect(self.carregar_imagem_produto)
         self.btn_home.clicked.connect(lambda: self.paginas_sistemas.setCurrentWidget(self.home_pag))
@@ -224,12 +228,12 @@ class MainWindowNormal(QMainWindow, Ui_MainWindow):
         self.btn_clientes.clicked.connect(lambda: self.paginas_sistemas.setCurrentWidget(self.pg_cliente))
         self.btn_cadastro_usuario.clicked.connect(lambda: self.paginas_sistemas.setCurrentWidget(self.pg_cadastro_usuario))
         self.btn_configuracoes.clicked.connect(lambda: self.paginas_sistemas.setCurrentWidget(self.pg_configuracoes))
-        self.btn_contato.clicked.connect(lambda: self.paginas_sistemas.setCurrentWidget(self.pg_contato))
         self.btn_fazer_cadastro.clicked.connect(self.subscribe_user)
         self.btn_cadastrar_produto.clicked.connect(lambda: self.paginas_sistemas.setCurrentWidget(self.pg_cadastrar_produto))
-        self.btn_ver_item.clicked.connect(lambda: self.paginas_sistemas.setCurrentWidget(self.tb_base))
-
+        self.btn_ver_item.clicked.connect(lambda: self.paginas_sistemas.setCurrentWidget(self.page_estoque))
         
+
+        self.btn_remover_imagem.clicked.connect(self.retirar_imagem_produto)
         self.btn_limpar_campos.clicked.connect(self.apagar_campos)
         self.btn_adicionar_produto.clicked.connect(self.adicionar_produto)
         self.btn_confirmar.clicked.connect(self.confirmar_produtos)
@@ -243,24 +247,29 @@ class MainWindowNormal(QMainWindow, Ui_MainWindow):
                                                          self.pg_cadastro_usuario,self.frame_cadastro_usuario,
                                                          self.btn_opcoes,self.btn_avancar,self.btn_retroceder,self.btn_home,self.btn_verificar_estoque,
                                                          self.btn_cadastrar_produto, self.btn_cadastro_usuario, self.btn_clientes,self.btn_configuracoes,
-                                                         self.btn_contato,self.btn_abrir_planilha,self.btn_importar,self.btn_gerar_saida,
+                                                         self.btn_abrir_planilha,self.btn_importar,self.btn_gerar_saida,
                                                          self.line_excel,self.btn_estorno,self.btn_gerar_grafico,
                                                          self.label_cadastramento,self.btn_gerar_arquivo_excel,
                                                          self.line_estoque,self.label_cadastramento_produtos,self.frame_valor_total_produtos,self.frame_valor_do_desconto,
                                                          self.frame_valor_desconto,self.frame_quantidade)
-    
-    
 
+#*********************************************************************************************************************
+
+    # EXIBE A PÁGINA DE CONFIGURAÇÕES AO CLICAR NA OPÇÃO CONFIGURAÇÕES DENTRO DO MENU DO BOTÃO MAIS OPÇÕES
     def combobox_caixa(self):
         selected_action = self.sender()  # A ação que acionou o slot
         if selected_action == self.action_configuracoes:
             self.paginas_sistemas.setCurrentWidget(self.pg_configuracoes)
 
-
     def show_combobox(self):
         self.combobox.show()
+        
+    # EXIBE A PÁGINA DE CONTATO AO CLICAR NA OPÇÃO CONTATO DENTRO DO MENU DO BOTÃO MAIS OPÇÕES
+    def show_pg_contato(self):
+        selected_action = self.sender()
+        if selected_action == self.action_contato:
+            self.paginas_sistemas.setCurrentWidget(self.pg_contato)
 #*********************************************************************************************************************
-
     def atualizar_usuario_no_bd(self):
         if not self.is_editing or not self.selected_user_id:
             # Criar uma mensagem personalizada
@@ -521,26 +530,6 @@ class MainWindowNormal(QMainWindow, Ui_MainWindow):
 
                 else:
                     QMessageBox.warning(self, "Aviso", "Não foi possível carregar a imagem.")
-#*********************************************************************************************************************
-    def carregar_imagem_produto(self):
-    # Abre uma janela de diálogo para selecionar a imagem do produto
-        file_dialog = QFileDialog(self)
-        file_dialog.setNameFilter("Selecionar Imagem")
-        file_dialog.setNameFilter("Imagens (*.png *.jpg *.jpeg *.bmp *.gif)")
-        file_dialog.setFileMode(QFileDialog.ExistingFile)
-        file_dialog.setViewMode(QFileDialog.Detail)
-        
-        # Verifica se o usuário selecionou um arquivo
-        if file_dialog.exec():
-            # Obtém o caminho do arquivo selecionado
-            file_path = file_dialog.selectedFiles()[0]
-            # Carrega a nova imagem no QLabel
-            pixmap = QPixmap(file_path)
-            if not pixmap.isNull():
-                pixmap = pixmap.scaled(self.frame_imagem_produto.size(), Qt.KeepAspectRatio)
-                self.label_imagem_produto.setPixmap(pixmap)
-            else:
-                print("Erro ao carregar a imagem:", file_path)  # Mensagem de depuração 
 #*********************************************************************************************************************
     def avancar_pagina(self):
         # Armazenar a página atual no histórico de páginas
@@ -841,8 +830,7 @@ class MainWindowNormal(QMainWindow, Ui_MainWindow):
             # Exibir mensagem de erro se ocorrer algum problema durante a inserção
             error_message = f"Erro ao cadastrar usuário {user}: {str(e)}"
             QMessageBox.critical(None, "Erro", error_message)
-
-
+#*********************************************************************************************************************
     def get_image_as_bytes(self):
         # Verificar se há uma imagem carregada no QLabel
         if self.label_imagem_cadastro.pixmap():
@@ -857,34 +845,531 @@ class MainWindowNormal(QMainWindow, Ui_MainWindow):
             return bytes_array.toBase64().data()
 
         return None  # Retornar None se não houver imagem carregada
-#*********************************************************************************************************************
-        
-    def atualizar_valores_frames(self, valor_produto, quantidade, valor_com_desconto, valor_do_desconto):
-    # Exibir os resultados nos frames correspondentes
-        valor_produto_formatado = locale.currency(valor_produto / 100, grouping=True)
-        valor_com_desconto_formatado = locale.currency(valor_com_desconto / 100, grouping=True)
-        valor_do_desconto_formatado = locale.currency(valor_do_desconto / 100, grouping=True)
 
-        self.frame_valor_total_produtos.setText(valor_produto_formatado)
+
+    def setup_ui(self):
+        # Supondo que o frame_erro_produto já foi carregado a partir do .ui
+        self.frame_erro_produto.hide()  # Esconder o frame inicialmente
+
+        # Conectar o sinal focusIn ao método esconder_asterisco
+        self.txt_produto.installEventFilter(self)  # Instalar um filtro de eventos na QLineEdit
+
+
+    def exibir_asterisco(self):
+        if not hasattr(self, 'label_asterisco'):
+            self.label_asterisco = QLabel(self.frame_erro_produto)
+            asterisco_pixmap = QPixmap("imagens/Imagem1.png").scaled(12, 12, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+            self.label_asterisco.setPixmap(asterisco_pixmap)
+            self.label_asterisco.setAlignment(Qt.AlignCenter)
+
+        self.frame_erro_produto.show()
+        self.label_asterisco.show()
+
+    # Método para esconder o asterisco
+    def esconder_asterisco(self):
+        if hasattr(self, 'label_asterisco'):
+            self.label_asterisco.hide()
+
+    # Método para lidar com eventos de foco
+    def eventFilter(self, obj, event):
+        if obj == self.txt_produto and event.type() == QEvent.FocusIn:
+            self.esconder_asterisco()
+        return super().eventFilter(obj, event)
+    
+#*********************************************************************************************************************  
+    def atualizar_valores_frames(self, quantidade, valor_do_desconto, valor_com_desconto):
+        # Verificar se o valor com desconto é zero e definir a mensagem apropriada
+        valor_com_desconto_formatado = locale.currency(valor_com_desconto, grouping=True)
+        valor_do_desconto_formatado = "Sem desconto" if valor_do_desconto == 0 else locale.currency(valor_do_desconto, grouping=True)
+        valor_total_formatado = locale.currency(valor_com_desconto + valor_do_desconto, grouping=True)
+
+        # Atualizar os textos dos frames
         self.frame_valor_desconto.setText(valor_com_desconto_formatado)
-        self.frame_quantidade.setText("{:.0f}".format(quantidade))
         self.frame_valor_do_desconto.setText(valor_do_desconto_formatado)
+        self.frame_quantidade.setText("{:.0f}".format(quantidade))
+        self.frame_valor_total_produtos.setText(valor_total_formatado)
+
+        # Mostrar os frames
+        self.frame_valor_total_produtos.show()
+        self.frame_valor_do_desconto.show()
+        self.frame_valor_desconto.show()
+        self.frame_quantidade.show()
 
         # Configurar as geometrias dos frames
         altura = 101
-        largura = 335
+        largura_default = 335
 
-        # Ajuste a posição conforme necessário
+        # Ajustar a geometria do frame de desconto dependendo do valor
+        if valor_do_desconto == 0:
+            largura = 300  # Ajuste a largura para acomodar "Sem desconto"
+            self.frame_valor_do_desconto.setGeometry(100, 50, largura, altura)
+        else:
+            largura = largura_default
+            self.frame_valor_do_desconto.setGeometry(125, 45, largura, altura)
+
+        # Ajustar a posição e a largura dos outros frames
         self.frame_valor_total_produtos.setGeometry(125, 45, largura, altura)
         self.frame_valor_desconto.setGeometry(115, 45, largura, altura)
-        self.frame_quantidade.setGeometry(125, 50, largura, altura)  
-        self.frame_valor_do_desconto.setGeometry(125, 50, largura, altura)
+        self.frame_quantidade.setGeometry(135, 50, largura, altura)    
 
         # Atualizar os frames para exibir os novos valores
         self.frame_valor_total_produtos.adjustSize()
+        self.frame_valor_do_desconto.adjustSize()
         self.frame_valor_desconto.adjustSize()
         self.frame_quantidade.adjustSize()
-        self.frame_valor_do_desconto.adjustSize()
+
+#*********************************************************************************************************************
+    def inserir_produto_no_bd(self, produto_info):
+        try:
+            db = DataBase()
+            db.connecta()
+
+            # Formatando o valor_real com o símbolo "R$" e duas casas decimais
+            valor_real_formatado = f"R$ {produto_info['valor_produto']:.2f}"
+
+            # Formatando o desconto, tratando "Sem desconto" como string literal
+            desconto_formatado = produto_info['desconto'] if produto_info['desconto'] == 0 else f"{produto_info['desconto']:.2f}%"
+
+            # Carregar a imagem e convertê-la para bytes
+            imagem_bytes = None
+            if self.imagem_carregada_produto:
+                pixmap = self.label_imagem_produto.pixmap()
+                byte_array = QByteArray()
+                buffer = QBuffer(byte_array)
+                buffer.open(QIODevice.WriteOnly)
+                pixmap.save(buffer, "PNG")
+                imagem_bytes = byte_array.toBase64().data().decode()
+
+            # Inserindo os dados formatados no banco de dados, incluindo a imagem
+            db.insert_product(
+                produto_info["produto"],
+                produto_info["quantidade"],
+                valor_real_formatado,
+                desconto_formatado,
+                produto_info["data_compra"],
+                produto_info["codigo_item"],
+                produto_info["cliente"],
+                produto_info["descricao_produto"],
+                imagem_bytes  # Adicionando a imagem aqui
+            )
+            db.close_connection()
+        except Exception as e:
+            QMessageBox.critical(self, "Erro", f"Erro ao cadastrar produto: {str(e)}")
+#*********************************************************************************************************************
+    def subscribe_produto(self):
+        # Verificar se todos os campos estão preenchidos
+        if (not self.txt_produto.text() or 
+            not self.txt_quantidade.text() or 
+            not self.txt_valor_produto.text() or 
+            not self.dateEdit.text() or 
+            not self.txt_codigo_item.text() or 
+            not self.txt_cliente.text() or 
+            not self.txt_descricao_produto.text()): 
+            
+            msg = QMessageBox()
+            msg.setIcon(QMessageBox.Warning)
+            msg.setWindowTitle("Erro")
+            msg.setText("Todos os campos precisam ser preenchidos.")
+            msg.exec()
+            return None
+        
+        # Verificar se o nome do produto começa com um número ou caractere especial
+        if re.match(r'^[\d\W]', self.txt_produto.text()):
+            self.exibir_asterisco()  # Mostrar o asterisco ao lado da QLineEdit
+
+            msg = QMessageBox()
+            msg.setIcon(QMessageBox.Warning)
+            msg.setWindowTitle("Erro")
+            msg.setText("O nome do produto não pode começar com um número ou caractere especial.")
+            msg.exec()
+
+            return None
+        else:
+            if hasattr(self, 'label_asterisco'):
+                self.label_asterisco.hide()  # Esconder o asterisco se não houver erro
+
+        # Verificar se não estamos no modo de edição
+        if not self.is_editing:
+            codigo_item = self.gerar_codigo_aleatorio()
+            self.txt_codigo_item.setText(codigo_item)
+
+        # Obter os valores dos campos
+        valor_produto_str = self.txt_valor_produto.text().replace('R$', '').replace('.', '').replace(',', '.').strip()
+        valor_produto = float(valor_produto_str) if valor_produto_str else 0.0
+
+        quantidade_str = self.txt_quantidade.text().strip()
+        quantidade = int(quantidade_str) if quantidade_str else 0
+
+        desconto_str = self.txt_desconto.text().replace('%', '').strip().replace(',', '.')  # Removendo o símbolo de porcentagem
+        desconto = float(desconto_str) if desconto_str and desconto_str != 'Sem desconto' else 0.0
+
+        # Atualizar o valor do desconto na QLineEdit
+        self.txt_desconto.setText("Sem desconto" if desconto == 0 else f"{desconto}%")
+
+        # Calcular o valor total do produto antes do desconto
+        valor_total = quantidade * valor_produto
+        valor_desconto = valor_total * desconto
+        valor_com_desconto = valor_total - valor_desconto
+
+        # Adicionar os dados do produto aos produtos pendentes
+        produto_info = {
+            "produto": self.txt_produto.text(),
+            "quantidade": quantidade,
+            "valor_produto": valor_produto,
+            "desconto": desconto,
+            "data_compra": self.dateEdit.date().toString("dd/MM/yyyy"),
+            "codigo_item": self.txt_codigo_item.text(),
+            "cliente": self.txt_cliente.text(),
+            "descricao_produto": self.txt_descricao_produto.text()
+        }
+
+        # Inserir produto na lista de produtos pendentes
+        self.produtos_pendentes.append(produto_info)
+
+        # Inserir produto no banco de dados
+        self.inserir_produto_no_bd(produto_info)
+
+        return quantidade, valor_desconto, valor_com_desconto
+    
+    def verificar_alteracoes_produto(self, produto_original):
+        # Obtém os valores atuais dos campos de texto
+        try:
+            valor_produto = float(self.txt_valor_produto.text().replace('R$', '').replace('.', '').replace(',', '.').strip())
+        except ValueError:
+            valor_produto = 0.0  # Valor padrão ou tratamento para erro
+
+        try:
+            desconto_str = self.txt_desconto.text().replace('%', '').replace(',', '.').strip()
+            desconto = float(desconto_str) if desconto_str and desconto_str != 'Sem desconto' else 0.0
+        except ValueError:
+            desconto = 0.0  # Valor padrão ou tratamento para erro
+
+        produto_atual = {
+            "produto": self.txt_produto.text(),
+            "quantidade": int(self.txt_quantidade.text()) if self.txt_quantidade.text().isdigit() else 0,
+            "valor_produto": valor_produto,
+            "desconto": desconto,
+            "data_compra": self.dateEdit.date().toString("dd/MM/yyyy"),
+            "codigo_item": self.txt_codigo_item.text(),
+            "cliente": self.txt_cliente.text(),
+            "descricao_produto": self.txt_descricao_produto.text()
+        }
+
+        # Compara o estado atual com o original
+        return produto_atual != produto_original
+
+
+    def exibir_tabela_produtos(self):
+        dialog_atualizacao = AtualizarProduto(self)
+        dialog_atualizacao.exec()
+#*********************************************************************************************************************
+    def adicionar_produto(self):
+        produto_original = self.produto_selecionado if hasattr(self, 'produto_selecionado') else None
+        produto_info = self.subscribe_produto()
+
+        if produto_info is not None:
+            quantidade, valor_do_desconto, valor_com_desconto = produto_info
+
+            # Verificar se houve alteração
+            if produto_original and not self.verificar_alteracoes_produto(produto_original):
+                msg = QMessageBox()
+                msg.setIcon(QMessageBox.Information)
+                msg.setWindowTitle("Informação")
+                msg.setText("Nenhuma alteração foi feita no produto.")
+                msg.exec()
+                return
+            
+            self.atualizar_valores_frames(quantidade, valor_do_desconto, valor_com_desconto)
+
+            # Limpar produto selecionado após a adição
+            self.produto_selecionado = None
+#*********************************************************************************************************************
+    def confirmar_produtos(self):
+        # Verificar se há produtos pendentes para confirmar
+        if not self.produtos_pendentes:
+            msg = QMessageBox()
+            msg.setIcon(QMessageBox.Warning)
+            msg.setWindowTitle("Erro")  
+            msg.setText("Não há produtos preenchidos para confirmar.")
+            msg.exec()
+            return None
+        
+        
+
+        # Verificar se todos os campos obrigatórios estão preenchidos
+        if not self.campos_obrigatorios_preenchidos():
+            return
+
+        # Verificar se a imagem está carregada
+        if not self.imagem_carregada_produto:
+            # Perguntar ao usuário se ele deseja seguir sem uma imagem
+            msgBox = QMessageBox()
+            msgBox.setIcon(QMessageBox.Question)
+            msgBox.setText("O produto não contém imagem. Deseja confirmar mesmo assim?")
+            msgBox.setWindowTitle("Aviso")
+
+            # Adicionando os botões de forma apropriada
+            button_sim = msgBox.addButton("Sim", QMessageBox.YesRole)
+            button_nao = msgBox.addButton("Não", QMessageBox.NoRole)
+
+            resposta = msgBox.exec()
+
+            if msgBox.clickedButton() == button_nao:
+                return
+                
+        # Perguntar ao usuário se ele tem certeza de que deseja cadastrar o produto
+        confirmar_msg = QMessageBox()
+        confirmar_msg.setIcon(QMessageBox.Question)
+        confirmar_msg.setWindowTitle("Confirmação")
+        confirmar_msg.setText("Tem certeza de que deseja cadastrar o produto?")
+
+        button_sim = confirmar_msg.addButton("Sim", QMessageBox.YesRole)
+        button_nao = confirmar_msg.addButton("Não", QMessageBox.NoRole)
+        
+        resposta = confirmar_msg.exec()
+
+        if confirmar_msg.clickedButton() == button_nao:
+            return
+                
+        # Salvar os produtos pendentes no banco de dados
+        for produto in self.produtos_pendentes:
+            self.inserir_produto_no_bd(produto)
+
+        # Limpar a lista de produtos pendentes
+        self.produtos_pendentes.clear()
+
+        # Limpar os campos de entrada
+        self.limpar_campos()
+        
+        # Limpar a imagem
+        self.label_imagem_produto.clear()
+        self.imagem_carregada_produto = None
+
+        self.dateEdit.setDate(QDate.currentDate())  # Define a data atual
+        self.dateEdit.clear()
+
+        # Exibir mensagem de sucesso apenas se todos os campos estiverem preenchidos
+        self.mostrar_mensagem_sucesso()
+#*********************************************************************************************************************    
+    def gerar_codigo_aleatorio(self, length=12):
+        caracteres = string.ascii_uppercase + string.digits
+        codigo_aleatorio = ''.join(random.choice(caracteres) for _ in range(length))
+        return codigo_aleatorio
+#*********************************************************************************************************************
+    def selecionar_produto_tabela(self):
+        produto = self.obter_produto_selecionado()
+
+        if produto and produto.imagem_caminho:
+            pixmap = QPixmap(produto.imagem_caminho)
+            if not pixmap.isNull():
+                self.limpar_imagem_produto()  # Limpar imagem anterior
+                self.label_imagem_produto.setPixmap(pixmap)
+                self.label_imagem_produto.show()
+                self.imagem_carregada_produto = True
+            else:
+                self.limpar_imagem_produto()
+                self.imagem_carregada_produto = False
+        else:
+            self.limpar_imagem_produto()
+#*********************************************************************************************************************
+    def retirar_imagem_produto(self):
+        frame = self.frame_imagem_produto
+        if frame is not None:
+            for widget in frame.children():
+                if isinstance(widget, QLabel) and widget.pixmap() is not None and not widget.pixmap().isNull():
+                    widget.clear()  # Limpar o QLabel
+                    widget.setPixmap(QPixmap())  # Definir um pixmap vazio ou padrão
+                    widget.hide()  # Esconder o QLabel para garantir que não fique visível
+                    print("Imagem removida com sucesso")
+                    msg_box = QMessageBox(QMessageBox.Information, "Sucesso", "Imagem removida com sucesso")
+                    msg_box.exec()
+                    return
+        print("Não há imagem do produto para remover.")
+        msg_box = QMessageBox(QMessageBox.Warning, "Erro", "Não há imagem para remover")
+        msg_box.exec()
+#*********************************************************************************************************************
+    def carregar_imagem_produto(self):
+        options = QFileDialog.Options()
+        fileName, _ = QFileDialog.getOpenFileName(self, "Selecionar Imagem", "", "Imagens (*.png *.xpm *.jpg *.gif);;Todos os Arquivos (*)", options=options)
+        
+        if fileName:
+            pixmap = QPixmap(fileName)
+            if not pixmap.isNull():
+                self.limpar_imagem_produto()  # Limpar qualquer QLabel existente no frame
+
+                # Verificar se já existe um QLabel para a imagem
+                label_imagem = None
+                for widget in self.frame_imagem_produto.children():
+                    if isinstance(widget, QLabel):
+                        label_imagem = widget
+                        break
+
+                # Se não houver QLabel, criar um novo
+                if label_imagem is None:
+                    label_imagem = QLabel(self.frame_imagem_produto)
+                    label_imagem.setObjectName("label_imagem_produto")
+
+                # Definir tamanho do QLabel para ser o mesmo que o QFrame
+                frame_size = self.frame_imagem_produto.size()
+                label_imagem.setFixedSize(frame_size.width(), frame_size.height())
+
+                # Redimensionar o pixmap para se ajustar ao QLabel
+                pixmap = pixmap.scaled(label_imagem.width(), label_imagem.height(), Qt.KeepAspectRatio)
+
+                # Definir o pixmap no QLabel
+                label_imagem.setPixmap(pixmap)
+
+                # Ajustar o alinhamento da imagem no QLabel
+                label_imagem.setAlignment(Qt.AlignCenter)
+
+                # Mostrar o QLabel
+                label_imagem.show()
+                self.imagem_carregada_produto = True
+
+                # Salvar a imagem carregada para o atributo nova_imagem
+                self.nova_imagem = fileName
+            else:
+                QMessageBox.warning(self, "Aviso", "Não foi possível carregar a imagem.")
+        else:
+            QMessageBox.warning(self, "Aviso", "Nenhuma imagem foi selecionada.")
+#*********************************************************************************************************************
+    def limpar_imagem_produto(self):
+        for widget in self.frame_imagem_produto.children():
+            if isinstance(widget, QLabel):
+                widget.clear()
+                widget.setPixmap(QPixmap())
+                widget.hide()  # Esconder o QLabel para garantir que não fique visível
+        self.imagem_carregada_produto = False
+#*********************************************************************************************************************
+    def carregar_nova_imagem_produto(self, nova_imagem):
+        # Este método simula o carregamento de uma nova imagem no QLabel dentro do frame_imagem_produto
+        for widget in self.frame_imagem_produto.children():
+            if isinstance(widget, QLabel):
+                widget.setPixmap(QPixmap(nova_imagem))
+                widget.show()  # Mostrar o QLabel novamente após carregar a nova imagem
+                self.imagem_carregada_produto = True
+                return
+#*********************************************************************************************************************
+    def limpar_campos_após_atualizar(self):
+        self.txt_produto.clear()
+        self.txt_quantidade.clear()
+        self.txt_valor_produto.clear()
+        self.txt_desconto.clear()
+        self.txt_codigo_item.clear()
+        self.txt_cliente.clear()
+        self.txt_descricao_produto.clear()
+#*********************************************************************************************************************
+    def limpar_imagem_produto_após_atualizar(self):
+        frame = self.frame_imagem_produto
+        if frame is not None:
+            for widget in frame.children():
+                if isinstance(widget, QLabel):
+                    widget.deleteLater()
+
+            # Adiciona um QLabel vazio de volta ao frame
+            novo_label = QLabel(frame)
+            novo_label.setPixmap(QPixmap())
+            layout = frame.layout()
+            if layout is None:
+                layout = QVBoxLayout(frame)
+                frame.setLayout(layout)
+            layout.addWidget(novo_label)
+            self.label_imagem_produto = novo_label  # Atualiza a referência ao novo QLabel
+#*********************************************************************************************************************
+    def atualizar_produto(self):
+        # Verificar se algum produto foi selecionado na tabela
+        if not hasattr(self, 'produto_id') or not self.produto_id:
+            msgBox = QMessageBox()
+            msgBox.setIcon(QMessageBox.Critical)
+            msgBox.setText("Não há produto selecionado para seguir.")
+            msgBox.setWindowTitle("Aviso")
+            
+            # Adicionar botão "Detalhes"
+            detalhes_button = msgBox.addButton("Detalhes", QMessageBox.ActionRole)
+            msgBox.addButton(QMessageBox.Ok)
+            
+            clicked_button = msgBox.exec()
+            
+            if clicked_button == QMessageBox.Ok:
+                return
+            elif msgBox.clickedButton() == detalhes_button:
+                detalhesMsgBox = QMessageBox()
+                detalhesMsgBox.setIcon(QMessageBox.Information)
+                detalhesMsgBox.setText("Para usar essa opção deverá ser necessário editar um produto")
+                detalhesMsgBox.setWindowTitle("Detalhes")
+                
+                detalhesMsgBox.exec()
+                
+                return
+        else:
+            # Verificar se a imagem foi alterada
+            produto_imagem = None
+            if hasattr(self, 'nova_imagem') and self.nova_imagem:
+                pixmap = QPixmap(self.nova_imagem)
+                if not pixmap.isNull():
+                    byte_array = QByteArray()
+                    buffer = QBuffer(byte_array)
+                    buffer.open(QIODevice.WriteOnly)
+                    pixmap.save(buffer, "PNG")
+                    produto_imagem = byte_array.toBase64().data().decode()
+
+            # Obter os dados dos campos
+            produto_nome = self.txt_produto.text()
+            produto_quantidade = self.txt_quantidade.text()
+            produto_valor_real = self.txt_valor_produto.text()
+            produto_desconto = self.txt_desconto.text()
+            produto_data_compra = self.dateEdit.date().toString("dd/MM/yyyy")
+            produto_codigo_item = self.txt_codigo_item.text()
+            produto_cliente = self.txt_cliente.text()
+            produto_descricao = self.txt_descricao_produto.text()
+            produto_id = self.produto_id
+
+            # Conectar ao banco de dados
+            db = DataBase()
+            try:
+                db.connecta()
+                # Atualizar o produto no banco de dados
+                db.atualizar_produto(produto_id, produto_nome, produto_quantidade, produto_valor_real,
+                                    produto_desconto, produto_data_compra, 
+                                    produto_codigo_item, produto_cliente, produto_descricao, produto_imagem)
+                msgBox2 = QMessageBox(QMessageBox.Information, "Sucesso", "Produto atualizado com sucesso!")
+                msgBox2.exec()
+                self.limpar_imagem_produto_após_atualizar()
+                self.limpar_campos()
+            except Exception as e:
+                QMessageBox.critical(self, "Erro", f"Erro ao atualizar o produto: {str(e)}")
+            finally:
+                db.close_connection()
+
+#*******************************************************************************************************
+    def campos_obrigatorios_preenchidos(self):
+        # Verificar se todos os campos obrigatórios estão preenchidos
+        campos = [
+            self.txt_produto.text(),
+            self.txt_quantidade.text(),
+            self.txt_valor_produto.text(),
+            self.dateEdit.text(),
+            self.txt_codigo_item.text(),
+            self.txt_cliente.text(),
+            self.txt_descricao_produto.text()
+        ]
+        for campo in campos:
+            if not campo:
+                msg = QMessageBox()
+                msg.setIcon(QMessageBox.Warning)
+                msg.setWindowTitle("Erro")
+                msg.setText("Todos os campos precisam ser preenchidos.")
+                msg.exec()
+                return False
+        return True
+#*********************************************************************************************************************
+    def mostrar_mensagem_sucesso(self):
+        success_msg = QMessageBox()
+        success_msg.setIcon(QMessageBox.Information)
+        success_msg.setWindowTitle("Sucesso")
+        success_msg.setText("Produtos confirmados e cadastrados com sucesso.")
+        success_msg.setStyleSheet("color: black;")
+        success_msg.exec()
 #*********************************************************************************************************************
     def formatar_cep(self, text):
         if len(text) <= 9 and text.isdigit():
@@ -895,7 +1380,7 @@ class MainWindowNormal(QMainWindow, Ui_MainWindow):
                 self.txt_cep.setText(cep_formatado)
         elif len(text) > 9:
             self.txt_cep.setText(text[:-1])
-
+#*********************************************************************************************************************
 
     def formatar_cpf(self, text):
         # Remover caracteres não numéricos
@@ -912,7 +1397,7 @@ class MainWindowNormal(QMainWindow, Ui_MainWindow):
         else:
             # Se o CPF não tiver pelo menos 9 dígitos, manter o texto original
             self.txt_cpf.setText(text[:14])
-
+#*********************************************************************************************************************
     def formatar_rg(self, text):
         # Remover caracteres não numéricos
         numero_rg = ''.join(filter(str.isdigit, text))
@@ -925,7 +1410,7 @@ class MainWindowNormal(QMainWindow, Ui_MainWindow):
         else:
             # Se o RG não tiver pelo menos 9 dígitos, manter o texto original
             self.txt_rg.setText(text)
-
+#*********************************************************************************************************************
     def formatar_data_nascimento(self, text):
         # Remover todos os caracteres que não são dígitos
         numeros = ''.join(filter(str.isdigit, text))
@@ -948,7 +1433,7 @@ class MainWindowNormal(QMainWindow, Ui_MainWindow):
 
         # Atualizar o texto do campo de data de nascimento
         self.txt_data_nascimento.setText(data_formatada)
-
+#*********************************************************************************************************************
 
     def formatar_telefone(self, text):
         # Remover todos os caracteres que não são dígitos
@@ -970,198 +1455,10 @@ class MainWindowNormal(QMainWindow, Ui_MainWindow):
             else:
                 # Se o número não tiver mais de 7 dígitos, apenas atualizar o texto
                 self.txt_telefone.setText(numero_formatado + numero_limpo[2:])
-
-#*********************************************************************************************************************
-    def subscribe_produto(self):
-        if (not self.txt_produto.text() or 
-            not self.txt_quantidade.text() or 
-            not self.txt_valor_produto.text() or 
-            not self.txt_unidade.text() or 
-            not self.dateEdit.text() or 
-            not self.txt_codigo_item.text() or 
-            not self.txt_cliente.text() or 
-            not self.txt_descricao_produto.text()):
-            
-            msg = QMessageBox()
-            msg.setIcon(QMessageBox.Warning)
-            msg.setWindowTitle("Erro")
-            msg.setText("Todos os campos precisam ser preenchidos.")
-            msg.exec()
-            return None
-
-        # Obter os valores dos campos
-        valor_produto_str = self.txt_valor_produto.text().replace('R$', '').replace(',', '').strip()
-        valor_produto = float(valor_produto_str) if valor_produto_str else 0
-
-        quantidade_str = self.txt_quantidade.text().strip()
-        quantidade = int(quantidade_str) if quantidade_str else 0
-
-        desconto_str = self.txt_desconto.text().replace('%', '').strip()  # Removendo o símbolo de porcentagem
-        desconto = float(desconto_str) if desconto_str else 0
-
-        # Extrair o valor da unidade
-        unidade_str = self.txt_unidade.text().replace('R$', '').replace(',', '').strip()
-        unidade = float(unidade_str.split()[0]) if unidade_str else 0  # Extrair o valor numérico da unidade
-
-        print("Unidade:", self.txt_unidade.text())
-        print("Quantidade:", self.txt_quantidade.text())
-        print("Desconto:", self.txt_desconto.text())
-
-        # Calcular o valor total do produto antes do desconto
-        resultado_unidade_quantidade = unidade * quantidade
-        valor_desconto = resultado_unidade_quantidade * desconto 
-        valor_com_desconto = resultado_unidade_quantidade - valor_desconto 
-
-        # Imprimir o valor do desconto
-        resultado_formatado = locale.currency(resultado_unidade_quantidade / 100, grouping=True)
-        valor_desconto_formatado = locale.currency(valor_desconto / 100, grouping=True)
-        valor_com_desconto_formatado = locale.currency(valor_com_desconto / 100, grouping=True)
-        
-
-    # Exibir os resultados
-        print("Resultado da unidade X  quantidade:", resultado_formatado)
-        print("Valor do desconto:", valor_desconto_formatado)
-        print("Valor com desconto:", valor_com_desconto_formatado)
-
-        # Adicionar os dados do produto aos produtos pendentes
-        self.produtos_pendentes.append({
-            "produto": self.txt_produto.text(),
-            "quantidade": quantidade,
-            "valor_produto": valor_produto,
-            "unidade": self.txt_unidade.text(),
-            "desconto": desconto,
-            "data_compra": self.dateEdit.text(),
-            "codigo_item": self.txt_codigo_item.text(),
-            "cliente": self.txt_cliente.text(),
-            "descricao_produto": self.txt_descricao_produto.text()
-        })
-
-    # Retorna os valores do produto apenas se a validação for bem-sucedida
-        return valor_produto, quantidade, valor_com_desconto,valor_desconto
-#*********************************************************************************************************************
-    def adicionar_produto(self):
-        # Obtém os valores do produto a partir da função subscribe_produto
-        produto_info = self.subscribe_produto()
-        
-        if produto_info is not None:
-            valor_produto, quantidade, valor_com_desconto, valor_do_desconto = produto_info
-            # Atualiza os valores nos frames com os dados do produto
-            self.atualizar_valores_frames(valor_produto, quantidade, valor_com_desconto, valor_do_desconto)
-#*********************************************************************************************************************
-    def inserir_produto_no_bd(self, produto_info):
-        try:
-            db = DataBase()
-            db.connecta()
-
-            # Formatando o valor_real com o símbolo "R$" e duas casas decimais
-            valor_real_formatado = f"R$ {produto_info['valor_produto'] / 100:.2f}"
-
-            # Formatando o desconto com o símbolo de porcentagem "%" e duas casas decimais
-            desconto_formatado = f"{produto_info['desconto']:.2f}%"
-
-            # Carregar a imagem e convertê-la para bytes
-            imagem_bytes = None
-            if self.imagem_carregada:
-                pixmap = self.label_imagem.pixmap()
-                byte_array = QByteArray()
-                buffer = QBuffer(byte_array)
-                buffer.open(QIODevice.WriteOnly)
-                pixmap.save(buffer, "PNG")
-                imagem_bytes = byte_array.toBase64().data().decode()
-
-            # Inserindo os dados formatados no banco de dados, incluindo a imagem
-            db.insert_product(
-                produto_info["produto"],
-                produto_info["quantidade"],
-                valor_real_formatado,
-                produto_info["unidade"],
-                desconto_formatado,
-                produto_info["data_compra"],
-                produto_info["codigo_item"],
-                produto_info["cliente"],
-                produto_info["descricao_produto"],
-                imagem_bytes  # Adicionando a imagem aqui
-            )
-            db.close_connection()
-        except Exception as e:
-            QMessageBox.critical(self, "Erro", f"Erro ao cadastrar produto: {str(e)}")
-
+    
 #*******************************************************************************************************
     def conectar_botao_adicionar_produto(self):
         self.btn_adicionar_produto.clicked.connect(self.adicionar_produto)
-#***************************************************************************************************************
-    def confirmar_produtos(self):
-    # Verificar se há produtos pendentes para confirmar
-        if not self.produtos_pendentes:
-            QMessageBox.warning(self, "Aviso", "Não há produtos pendentes para confirmar.")
-            return
-
-        # Verificar se todos os campos obrigatórios estão preenchidos
-        if not self.campos_obrigatorios_preenchidos():
-            return
-
-        # Verificar se a imagem está carregada
-        if not self.imagem_carregada:
-            # Perguntar ao usuário se ele deseja seguir sem uma imagem
-            msgBox = QMessageBox()
-            msgBox.setIcon(QMessageBox.Question)
-            msgBox.setText("O produto não contém imagem. Deseja confirmar mesmo assim?")
-            msgBox.setWindowTitle("Aviso")
-            
-            # Definindo os botões em português
-            msgBox.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
-            msgBox.setButtonText(QMessageBox.Yes, "Sim")
-            msgBox.setButtonText(QMessageBox.No, "Não")
-
-            resposta = msgBox.exec()
-
-            if resposta == QMessageBox.No:
-                return
-
-        # Salvar os produtos pendentes no banco de dados
-        for produto in self.produtos_pendentes:
-            self.inserir_produto_no_bd(produto)
-
-        # Limpar a lista de produtos pendentes
-        self.produtos_pendentes.clear()
-
-        # Limpar os campos de entrada
-        self.limpar_campos()
-        
-        # Limpar a imagem
-        self.label_imagem.clear()
-
-        self.dateEdit.setDate(QDate.currentDate())  # Define a data atual
-        self.dateEdit.clear()
-
-        # Exibir mensagem de sucesso apenas se todos os campos estiverem preenchidos
-        self.mostrar_mensagem_sucesso()
-
-        self.limpar_frames()
-#***************************************************************************************************************
-    def limpar_frames(self):
-        self.frame_valor_total_produtos.clear()
-        self.frame_valor_desconto.clear()
-        self.frame_quantidade.clear()
-        self.frame_valor_do_desconto.clear() 
-
-#*********************************************************************************************************************
-    def editar_produto(self):
-    # Criar uma instância da janela de atualização de produto
-        dialog_atualizacao = AtualizarProduto(self)
-        
-        # Exibir a janela de atualização de produto
-        dialog_atualizacao.exec()
-
-#*********************************************************************************************************************
-    def selecionar_imagem(self, row):
-    # Obter o ID do produto selecionado
-        produto_id = self.tabela_produtos.item(row, 0).text()
-        self.produto_id = produto_id
-        
-        # Atualizar os campos e a imagem com base no produto selecionado
-        self.atualizar_campos()
-        self.atualizar_imagem()
 #*********************************************************************************************************************
     def selecionar_imagem_usuario(self, row):
     # Obter o ID do usuário selecionado
@@ -1171,79 +1468,7 @@ class MainWindowNormal(QMainWindow, Ui_MainWindow):
         # Atualizar os campos e a imagem com base no produto selecionado
         self.atualizar_campos()
         self.atualizar_imagem()
-#*********************************************************************************************************************
-    def atualizar_produto(self):
-    # Verificar se algum produto foi selecionado na tabela
-        if not self.produto_id:
-            msgBox = QMessageBox()
-            msgBox.setIcon(QMessageBox.Critical)
-            msgBox.setText("Não há produto selecionado para seguir.")
-            msgBox.setWindowTitle("Aviso")
-            
-            # Adicionar botão "Detalhes"
-            detalhes_button = msgBox.addButton("Detalhes", QMessageBox.ActionRole)
-            msgBox.addButton(QMessageBox.Ok)
-            
-            clicked_button = msgBox.exec()
-            
-            if clicked_button == QMessageBox.Ok:
-                return
-            elif msgBox.clickedButton() == detalhes_button:
-                # Criar uma caixa de mensagem de informação com o estilo personalizado
-                detalhesMsgBox = QMessageBox()
-                detalhesMsgBox.setIcon(QMessageBox.Information)
-                detalhesMsgBox.setText("É necessário primeiro inserir um produto, através do botão  EDITAR.")
-                detalhesMsgBox.setWindowTitle("Detalhes")
-                
-                detalhesMsgBox.exec()
-                
-                return
-        else:
-            self.atualizar_imagem()
-  
-            # Obter os dados dos campos
-            produto_nome = self.txt_produto.text()
-            produto_quantidade = self.txt_quantidade.text()
-            produto_valor_real = self.txt_valor_produto.text()
-            produto_unidade = self.txt_unidade.text()
-            produto_desconto = self.txt_desconto.text()
-            produto_data_compra = self.dateEdit.date().toString("dd/MM/yyyy")
-            produto_codigo_item = self.txt_codigo_item.text()
-            produto_cliente = self.txt_cliente.text()
-            produto_descricao = self.txt_descricao_produto.text()
-            produto_id = self.produto_id  # Obter o ID do produto definido pela TabelaProdutos
-            produto_imagem = self.produto_imagem
 
-            # Conectar ao banco de dados
-            db = DataBase()
-            try:
-                db.connecta()
-                # Atualizar o produto no banco de dados
-                db.atualizar_produto(produto_id, produto_nome, produto_quantidade, produto_valor_real,
-                                    produto_unidade, produto_desconto, produto_data_compra, 
-                                    produto_codigo_item, produto_cliente, produto_descricao,produto_imagem)
-                QMessageBox.information(self, "Sucesso", "Produto atualizado com sucesso!")
-            except Exception as e:
-                QMessageBox.critical(self, "Erro", f"Erro ao atualizar o produto: {str(e)}")
-            finally:
-                # Fechar a conexão com o banco de dados
-                db.close_connection()
-
-#*******************************************************************************************************
-    def atualizar_imagem(self):
-            caminho_imagem = self.obter_caminho_imagem(self.produto_id)
-            if caminho_imagem:
-                # Carregar a imagem e exibi-la em um QLabel
-                pixmap = QPixmap(caminho_imagem)
-                if not pixmap.isNull():
-                    # Redimensionar a imagem para se ajustar ao QLabel (se necessário)
-                    pixmap = pixmap.scaled(200, 200, Qt.KeepAspectRatio)
-                    
-                    self.label_imagem.setPixmap(pixmap)
-                else:
-                    QMessageBox.warning(self, "Aviso", "Não foi possível carregar a imagem.")
-            else:
-                QMessageBox.warning(self, "Aviso", "Não foi possível encontrar o caminho da imagem.")
 #*******************************************************************************************************
     def mostrar_erro_desconto(self):
         detalhes_msg_detalhes = QMessageBox()
@@ -1252,107 +1477,65 @@ class MainWindowNormal(QMainWindow, Ui_MainWindow):
         detalhes_msg_detalhes.setText("Os campos obrigatórios precisam estar preenchidos.")
         detalhes_msg_detalhes.exec()
 #*******************************************************************************************************
-    def campos_obrigatorios_preenchidos(self):
-        # Verifique aqui se todos os campos obrigatórios estão preenchidos
-        # Se estiverem preenchidos, retorne True, caso contrário, exiba uma mensagem de erro e retorne False
-        # Por exemplo:
-        if not all([self.txt_produto.text(), self.txt_quantidade.text(), self.txt_valor_produto.text(),
-                    self.txt_unidade.text(), self.dateEdit.text(), self.txt_codigo_item.text(),
-                    self.txt_cliente.text(), self.txt_descricao_produto.text()]):
-            QMessageBox.warning(self, "Aviso", "Todos os campos obrigatórios devem ser preenchidos.")
-            return False
-        return True
-#*******************************************************************************************************
-    def mostrar_mensagem_sucesso(self):
-        success_msg = QMessageBox()
-        success_msg.setIcon(QMessageBox.Information)
-        success_msg.setWindowTitle("Sucesso")
-        success_msg.setText("Produtos confirmados e cadastrados com sucesso.")
-        # Definindo o estilo para tornar o texto preto
-        success_msg.setStyleSheet("color: black;")
-        success_msg.exec()
-#*******************************************************************************************************
     def limpar_campos(self):
         self.txt_produto.clear()
         self.txt_quantidade.clear()
         self.txt_valor_produto.clear()
-        self.txt_unidade.clear()
         self.txt_desconto.clear()
         self.dateEdit.clear()
         self.txt_codigo_item.clear()
         self.txt_cliente.clear()
         self.txt_descricao_produto.clear()
+        
+        # Limpar o texto dos QLabel nos frames
+        self.frame_valor_total_produtos.setText("")
+        self.frame_valor_desconto.setText("")
+        self.frame_quantidade.setText("")
+        self.frame_valor_do_desconto.setText("")
+        
+        # Limpar o campo dateEdit e configurar para a data atual
+        self.dateEdit.setDate(QDate.currentDate())
 #*******************************************************************************************************
     def apagar_campos(self):
-    # Criar uma caixa de mensagem com o botão DETALHES
-        msgBox = QMessageBox()
-        msgBox.setIcon(QMessageBox.Critical)
-        msgBox.setText("Não há campos preenchidos para limpar.")
-        msgBox.setWindowTitle("Aviso")
-          
-        # Verificar se algum campo já está vazio
-        if not any([
+        # Verificar se algum campo já está preenchido
+        if any([
             self.txt_produto.text(),
             self.txt_quantidade.text(),
             self.txt_valor_produto.text(),
-            
-            self.txt_unidade.text(),
             self.txt_desconto.text(),
             self.txt_codigo_item.text(),
             self.txt_cliente.text(),
             self.txt_descricao_produto.text()
         ]):
-            # Adicionar o botão DETALHES
-            detalhes_button = msgBox.addButton("Detalhes", QMessageBox.ActionRole)
-            
-            # Adicionar os outros botões padrão (Ok)
-            msgBox.setStandardButtons(QMessageBox.Ok)
+            # Limpar todos os campos das QLineEdit
+            self.limpar_campos()
 
-            returnValue = msgBox.exec()
-            
-            if returnValue == QMessageBox.Ok:
-                return
-            elif msgBox.clickedButton() == detalhes_button:
-            # Criar uma caixa de mensagem de informação com o estilo personalizado
-                detalhesMsgBox = QMessageBox()
-                detalhesMsgBox.setIcon(QMessageBox.Information)
-                detalhesMsgBox.setText("É necessário atualizar um produto para seguir com essa ação.")
-                detalhesMsgBox.setWindowTitle("Detalhes")
-                
-                # Definir o estilo da QMessageBox
-                detalhesMsgBox.setStyleSheet("QMessageBox { background-color: white; } "
-                                            "QMessageBox QLabel { color: black; }")
-                
-                detalhesMsgBox.exec()
-        
-        # Limpar todos os campos das QLineEdit
-        self.txt_produto.clear()
-        self.txt_quantidade.clear()
-        self.txt_valor_produto.clear()
-        self.txt_unidade.clear()
-        self.txt_desconto.clear()
-        self.txt_codigo_item.clear()
-        self.txt_cliente.clear()
-        self.txt_descricao_produto.clear()
+            # Limpar a imagem
+            self.apagar_imagem_produto_btn_apagar_campos()
 
-        self.limpar_imagem()
+            # Mensagem de sucesso
+            successMsgBox = QMessageBox()
+            successMsgBox.setIcon(QMessageBox.Information)
+            successMsgBox.setText("Campos limpos com sucesso!")
+            successMsgBox.setWindowTitle("Sucesso")
+            successMsgBox.exec()
+        else:
+            # Mostrar mensagem de aviso se nenhum campo estiver preenchido
+            msgBox = QMessageBox()
+            msgBox.setIcon(QMessageBox.Warning)
+            msgBox.setText("Não há campos preenchidos para limpar.")
+            msgBox.setWindowTitle("Aviso")
+            msgBox.exec()
 
-        # Limpar o campo dateEdit e configurar para a data atual
-        self.dateEdit.setDate(QDate.currentDate())
-#***************************************************************************************************************
-    def limpar_imagem(self):
+#*******************************************************************************************************
+    def apagar_imagem_produto_btn_apagar_campos(self):
         # Verificar se o QFrame contém um QLabel para imagem
-        for widget in self.frame_imagem.children():
-            if isinstance(widget, QLabel):
-                widget.clear()  # Limpar o QLabel
-                widget.setPixmap(QPixmap())  # Definir um pixmap vazio ou padrão
+        if self.frame_imagem_produto is not None:
+            for widget in self.frame_imagem_produto.children():
+                if isinstance(widget, QLabel):
+                    widget.clear()  # Limpar o QLabel
+                    widget.setPixmap(QPixmap())  # Definir um pixmap vazio ou padrão
 
-        successMsgBox = QMessageBox()
-        successMsgBox.setIcon(QMessageBox.Information)
-        successMsgBox.setText("Campos limpos com sucesso!")
-        successMsgBox.setWindowTitle("Sucesso")
-
-        successMsgBox.exec()
 
 #*******************************************************************************************************
     def is_valid_email(self, email):
@@ -1370,13 +1553,31 @@ class MainWindowNormal(QMainWindow, Ui_MainWindow):
     def limpar_frame_cadastro_usuario(self): 
         # Remover imagem do QLabel
         self.frame_imagem_cadastro.clear()
-#**********************************************************************************************************************
+
+#*******************************************************************************************************
+    def atualizar_imagem(self):
+        if hasattr(self, 'produto_imagem') and self.produto_imagem:
+            caminho_imagem = self.produto_imagem
+            if caminho_imagem:
+                # Carregar a imagem e exibi-la em um QLabel
+                pixmap = QPixmap(caminho_imagem)
+                if not pixmap.isNull():
+                    # Redimensionar a imagem para se ajustar ao QLabel (se necessário)
+                    pixmap = pixmap.scaled(200, 200, Qt.KeepAspectRatio)
+                    self.label_imagem_produto.setPixmap(pixmap)
+                else:
+                    QMessageBox.warning(self, "Aviso", "Não foi possível carregar a imagem.")
+            else:
+                QMessageBox.warning(self, "Aviso", "Não foi possível encontrar o caminho da imagem.")
+        else:
+            QMessageBox.warning(self, "Aviso", "Nenhuma imagem definida para o produto.")
+
 
 # Função principal
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     login_window = Login(login_window=None)
-    main_window = MainWindowNormal(user=None, tipo_usuario=None, login_window=login_window)
+    main_window = MainWindow (user=None, tipo_usuario=None, login_window=login_window)
     login_window.show()
     sys.exit(app.exec())
 

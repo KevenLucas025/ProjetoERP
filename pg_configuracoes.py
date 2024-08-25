@@ -13,7 +13,7 @@ class Pagina_Configuracoes(QWidget):
                  main_window, paginas_sistemas, frame_botoes_navegacoes, label_8, centralwidget, 
                  frame_2, frame_page_estoque, frame_5, frame_cadastro_usuario,
                  pg_cadastro_usuario, btn_avancar, btn_retroceder, btn_opcoes, btn_home, btn_verificar_estoque,
-                 btn_cadastrar_produto, btn_cadastro_usuario, btn_clientes, btn_configuracoes, btn_contato,
+                 btn_cadastrar_produto, btn_cadastro_usuario, btn_clientes, btn_configuracoes,
                  btn_importar, btn_gerar_saida, btn_estorno, btn_abrir_planilha, line_excel, btn_gerar_grafico,
                  btn_gerar_arquivo_excel, line_estoque, label_cadastramento, label_cadastramento_produtos,frame_valor_total_produtos,
                  frame_valor_do_desconto, frame_valor_desconto,frame_quantidade,parent=None):
@@ -37,7 +37,6 @@ class Pagina_Configuracoes(QWidget):
         self.btn_cadastro_usuario = btn_cadastro_usuario
         self.btn_clientes = btn_clientes
         self.btn_configuracoes = btn_configuracoes
-        self.btn_contato = btn_contato
         self.btn_cadastrar_produto = btn_cadastrar_produto
         self.btn_abrir_planilha = btn_abrir_planilha
         self.btn_importar = btn_importar

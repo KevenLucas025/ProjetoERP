@@ -105,8 +105,7 @@ class TabelaUsuario(QDialog):
         self.btn_visualizar_imagem.clicked.connect(self.visualizar_imagem_usuario)
         self.btn_selecionar_todos.clicked.connect(self.selecionar_todos)
         self.btn_filtrar_usuario.clicked.connect(self.filtrar_usuario)
-#*******************************************************************************************************
-    
+#******************************************************************************************************* 
     def configure_frame_imagem_cadastro(self):
         # Criar o QLabel para exibir a imagem do usuário
         self.label_imagem_usuario = QLabel()
@@ -172,9 +171,6 @@ class TabelaUsuario(QDialog):
             # Fechar a conexão com o banco de dados
             self.db.close_connection()
 
-
-
-
 #*******************************************************************************************************
     def confirmar_apagar_usuario(self):
         # Verificar se uma linha está selecionada
@@ -225,8 +221,6 @@ class TabelaUsuario(QDialog):
                 db.close_connection()
         else:
             QMessageBox.warning(self, "Aviso", "Nenhuma célula selecionada ou célula vazia.")
-
-
 #*******************************************************************************************************
     def recuperar_imagem_do_banco(self, id_usuario):
         imagem_blob = None

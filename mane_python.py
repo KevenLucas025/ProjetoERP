@@ -176,28 +176,6 @@ class Ui_MainWindow(object):
 
         self.verticalLayout.addWidget(self.btn_configuracoes)
 
-        self.btn_contato = QPushButton(self.frame_botoes_navegacoes)
-        self.btn_contato.setObjectName(u"btn_contato")
-#if QT_CONFIG(tooltip)
-        self.btn_contato.setToolTip(u"Exibe as informa\u00e7\u00f5es de contato do desenvolvedor do sistema")
-#endif // QT_CONFIG(tooltip)
-        self.btn_contato.setToolTipDuration(-1)
-        self.btn_contato.setStyleSheet(u"QPushButton {\n"
-"    color: rgb(255, 255, 255);\n"
-"    border-radius: 3px;\n"
-"    font-size: 16px;\n"
-"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */\n"
-"    border: 3px solid transparent;\n"
-"}\n"
-"\n"
-"QPushButton:hover {\n"
-"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */\n"
-"    color: black;\n"
-"}\n"
-"")
-
-        self.verticalLayout.addWidget(self.btn_contato)
-
 
         self.gridLayout.addWidget(self.frame_botoes_navegacoes, 0, 0, 1, 1)
 
@@ -237,7 +215,7 @@ class Ui_MainWindow(object):
         self.label_imagem_sistema.setGeometry(QRect(570, 20, 351, 321))
         sizePolicy2.setHeightForWidth(self.label_imagem_sistema.sizePolicy().hasHeightForWidth())
         self.label_imagem_sistema.setSizePolicy(sizePolicy2)
-        self.label_imagem_sistema.setPixmap(QPixmap(u"../Downloads/sistema-de-gerenciamento-de-conteudo.png"))
+        self.label_imagem_sistema.setPixmap(QPixmap(u"Downloads/sistema-de-gerenciamento-de-conteudo.png"))
         self.label_imagem_sistema.setScaledContents(True)
         self.label_bem_vindo = QLabel(self.frame_5)
         self.label_bem_vindo.setObjectName(u"label_bem_vindo")
@@ -562,7 +540,7 @@ class Ui_MainWindow(object):
 "")
         self.label_produto = QLabel(self.frame_2)
         self.label_produto.setObjectName(u"label_produto")
-        self.label_produto.setGeometry(QRect(32, 271, 51, 16))
+        self.label_produto.setGeometry(QRect(40, 271, 51, 16))
         sizePolicy2.setHeightForWidth(self.label_produto.sizePolicy().hasHeightForWidth())
         self.label_produto.setSizePolicy(sizePolicy2)
         self.label_produto.setStyleSheet(u"QLabel {\n"
@@ -584,7 +562,7 @@ class Ui_MainWindow(object):
 "")
         self.label_valor_produto = QLabel(self.frame_2)
         self.label_valor_produto.setObjectName(u"label_valor_produto")
-        self.label_valor_produto.setGeometry(QRect(12, 406, 121, 20))
+        self.label_valor_produto.setGeometry(QRect(22, 406, 101, 20))
         sizePolicy2.setHeightForWidth(self.label_valor_produto.sizePolicy().hasHeightForWidth())
         self.label_valor_produto.setSizePolicy(sizePolicy2)
         self.label_valor_produto.setStyleSheet(u"QLabel {\n"
@@ -593,20 +571,9 @@ class Ui_MainWindow(object):
 "    vertical-align: middle; /* Centraliza o texto verticalmente */\n"
 "}\n"
 "")
-        self.label_valor_unidade = QLabel(self.frame_2)
-        self.label_valor_unidade.setObjectName(u"label_valor_unidade")
-        self.label_valor_unidade.setGeometry(QRect(20, 470, 101, 16))
-        sizePolicy2.setHeightForWidth(self.label_valor_unidade.sizePolicy().hasHeightForWidth())
-        self.label_valor_unidade.setSizePolicy(sizePolicy2)
-        self.label_valor_unidade.setStyleSheet(u"QLabel {\n"
-"    color: white;\n"
-"    text-align: center; /* Centraliza o texto horizontalmente */\n"
-"    vertical-align: middle; /* Centraliza o texto verticalmente */\n"
-"}\n"
-"")
         self.label_desconto = QLabel(self.frame_2)
         self.label_desconto.setObjectName(u"label_desconto")
-        self.label_desconto.setGeometry(QRect(32, 541, 61, 16))
+        self.label_desconto.setGeometry(QRect(35, 475, 61, 16))
         sizePolicy2.setHeightForWidth(self.label_desconto.sizePolicy().hasHeightForWidth())
         self.label_desconto.setSizePolicy(sizePolicy2)
         self.label_desconto.setStyleSheet(u"QLabel {\n"
@@ -617,7 +584,7 @@ class Ui_MainWindow(object):
 "")
         self.label_data_compra = QLabel(self.frame_2)
         self.label_data_compra.setObjectName(u"label_data_compra")
-        self.label_data_compra.setGeometry(QRect(18, 608, 91, 20))
+        self.label_data_compra.setGeometry(QRect(18, 536, 91, 20))
         sizePolicy2.setHeightForWidth(self.label_data_compra.sizePolicy().hasHeightForWidth())
         self.label_data_compra.setSizePolicy(sizePolicy2)
         self.label_data_compra.setStyleSheet(u"QLabel {\n"
@@ -628,7 +595,7 @@ class Ui_MainWindow(object):
 "")
         self.label_codigo_item = QLabel(self.frame_2)
         self.label_codigo_item.setObjectName(u"label_codigo_item")
-        self.label_codigo_item.setGeometry(QRect(14, 675, 91, 20))
+        self.label_codigo_item.setGeometry(QRect(19, 585, 91, 20))
         sizePolicy2.setHeightForWidth(self.label_codigo_item.sizePolicy().hasHeightForWidth())
         self.label_codigo_item.setSizePolicy(sizePolicy2)
         self.label_codigo_item.setStyleSheet(u"QLabel {\n"
@@ -639,7 +606,7 @@ class Ui_MainWindow(object):
 "")
         self.label_cliente_2 = QLabel(self.frame_2)
         self.label_cliente_2.setObjectName(u"label_cliente_2")
-        self.label_cliente_2.setGeometry(QRect(32, 741, 51, 16))
+        self.label_cliente_2.setGeometry(QRect(42, 643, 51, 16))
         sizePolicy2.setHeightForWidth(self.label_cliente_2.sizePolicy().hasHeightForWidth())
         self.label_cliente_2.setSizePolicy(sizePolicy2)
         self.label_cliente_2.setStyleSheet(u"QLabel {\n"
@@ -650,7 +617,7 @@ class Ui_MainWindow(object):
 "")
         self.label_descricao_produto = QLabel(self.frame_2)
         self.label_descricao_produto.setObjectName(u"label_descricao_produto")
-        self.label_descricao_produto.setGeometry(QRect(10, 810, 131, 20))
+        self.label_descricao_produto.setGeometry(QRect(10, 700, 131, 20))
         sizePolicy2.setHeightForWidth(self.label_descricao_produto.sizePolicy().hasHeightForWidth())
         self.label_descricao_produto.setSizePolicy(sizePolicy2)
         self.label_descricao_produto.setStyleSheet(u"QLabel {\n"
@@ -699,25 +666,9 @@ class Ui_MainWindow(object):
 "")
         self.txt_valor_produto.setCursorMoveStyle(Qt.LogicalMoveStyle)
         self.txt_valor_produto.setClearButtonEnabled(False)
-        self.txt_unidade = QLineEdit(self.frame_2)
-        self.txt_unidade.setObjectName(u"txt_unidade")
-        self.txt_unidade.setGeometry(QRect(140, 465, 171, 25))
-        sizePolicy2.setHeightForWidth(self.txt_unidade.sizePolicy().hasHeightForWidth())
-        self.txt_unidade.setSizePolicy(sizePolicy2)
-        self.txt_unidade.setStyleSheet(u"QLineEdit {\n"
-"    background-color: rgb(240, 240, 240); /* Cor de fundo cinza claro */\n"
-"    border: 2px solid rgb(50, 150, 250); /* Borda azul */\n"
-"    border-radius: 6px; /* Cantos arredondados */\n"
-"    padding: 3px; /* Espa\u00e7amento interno */\n"
-"}\n"
-"")
-        self.txt_unidade.setInputMethodHints(Qt.ImhPreferNumbers)
-        self.txt_unidade.setInputMask(u"")
-        self.txt_unidade.setDragEnabled(False)
-        self.txt_unidade.setReadOnly(False)
         self.txt_desconto = QLineEdit(self.frame_2)
         self.txt_desconto.setObjectName(u"txt_desconto")
-        self.txt_desconto.setGeometry(QRect(140, 537, 171, 25))
+        self.txt_desconto.setGeometry(QRect(140, 469, 171, 25))
         sizePolicy2.setHeightForWidth(self.txt_desconto.sizePolicy().hasHeightForWidth())
         self.txt_desconto.setSizePolicy(sizePolicy2)
         self.txt_desconto.setStyleSheet(u"QLineEdit {\n"
@@ -729,7 +680,7 @@ class Ui_MainWindow(object):
 "")
         self.txt_codigo_item = QLineEdit(self.frame_2)
         self.txt_codigo_item.setObjectName(u"txt_codigo_item")
-        self.txt_codigo_item.setGeometry(QRect(140, 675, 171, 25))
+        self.txt_codigo_item.setGeometry(QRect(140, 580, 171, 25))
         sizePolicy2.setHeightForWidth(self.txt_codigo_item.sizePolicy().hasHeightForWidth())
         self.txt_codigo_item.setSizePolicy(sizePolicy2)
         self.txt_codigo_item.setStyleSheet(u"QLineEdit {\n"
@@ -741,7 +692,7 @@ class Ui_MainWindow(object):
 "")
         self.txt_cliente = QLineEdit(self.frame_2)
         self.txt_cliente.setObjectName(u"txt_cliente")
-        self.txt_cliente.setGeometry(QRect(140, 735, 171, 25))
+        self.txt_cliente.setGeometry(QRect(140, 636, 171, 25))
         sizePolicy2.setHeightForWidth(self.txt_cliente.sizePolicy().hasHeightForWidth())
         self.txt_cliente.setSizePolicy(sizePolicy2)
         self.txt_cliente.setStyleSheet(u"QLineEdit {\n"
@@ -753,7 +704,7 @@ class Ui_MainWindow(object):
 "")
         self.txt_descricao_produto = QLineEdit(self.frame_2)
         self.txt_descricao_produto.setObjectName(u"txt_descricao_produto")
-        self.txt_descricao_produto.setGeometry(QRect(140, 810, 171, 25))
+        self.txt_descricao_produto.setGeometry(QRect(140, 699, 171, 25))
         sizePolicy2.setHeightForWidth(self.txt_descricao_produto.sizePolicy().hasHeightForWidth())
         self.txt_descricao_produto.setSizePolicy(sizePolicy2)
         self.txt_descricao_produto.setStyleSheet(u"QLineEdit {\n"
@@ -782,7 +733,7 @@ class Ui_MainWindow(object):
 "}\n"
 "")
         icon = QIcon()
-        icon.addFile(u"../Downloads/pngwing.com.png", QSize(), QIcon.Active, QIcon.On)
+        icon.addFile(u"Downloads/pngwing.com.png", QSize(), QIcon.Active, QIcon.On)
         self.btn_adicionar_produto.setIcon(icon)
         self.btn_atualizar_produto = QPushButton(self.frame_2)
         self.btn_atualizar_produto.setObjectName(u"btn_atualizar_produto")
@@ -803,7 +754,7 @@ class Ui_MainWindow(object):
 "}\n"
 "")
         icon1 = QIcon()
-        icon1.addFile(u"../Downloads/toppng.com-update-512x512.png", QSize(), QIcon.Active, QIcon.On)
+        icon1.addFile(u"Downloads/toppng.com-update-512x512.png", QSize(), QIcon.Active, QIcon.On)
         self.btn_atualizar_produto.setIcon(icon1)
         self.btn_limpar_campos = QPushButton(self.frame_2)
         self.btn_limpar_campos.setObjectName(u"btn_limpar_campos")
@@ -827,7 +778,7 @@ class Ui_MainWindow(object):
 "}\n"
 "")
         icon2 = QIcon()
-        icon2.addFile(u"../Downloads/1486564399-close_81512.png", QSize(), QIcon.Active, QIcon.On)
+        icon2.addFile(u"Downloads/1486564399-close_81512.png", QSize(), QIcon.Active, QIcon.On)
         self.btn_limpar_campos.setIcon(icon2)
         self.btn_confirmar = QPushButton(self.frame_2)
         self.btn_confirmar.setObjectName(u"btn_confirmar")
@@ -867,7 +818,7 @@ class Ui_MainWindow(object):
 "}\n"
 "")
         icon3 = QIcon()
-        icon3.addFile(u"../Downloads/pasta.png", QSize(), QIcon.Active, QIcon.On)
+        icon3.addFile(u"Downloads/pasta.png", QSize(), QIcon.Active, QIcon.On)
         self.btn_ver_item.setIcon(icon3)
         self.frame_valor_total_produtos = QFrame(self.frame_2)
         self.frame_valor_total_produtos.setObjectName(u"frame_valor_total_produtos")
@@ -880,7 +831,7 @@ class Ui_MainWindow(object):
         self.frame_valor_total_produtos.setFrameShadow(QFrame.Raised)
         self.label_valor_total_produtos = QLabel(self.frame_valor_total_produtos)
         self.label_valor_total_produtos.setObjectName(u"label_valor_total_produtos")
-        self.label_valor_total_produtos.setGeometry(QRect(62, 10, 201, 31))
+        self.label_valor_total_produtos.setGeometry(QRect(19, 10, 281, 31))
         sizePolicy2.setHeightForWidth(self.label_valor_total_produtos.sizePolicy().hasHeightForWidth())
         self.label_valor_total_produtos.setSizePolicy(sizePolicy2)
         self.label_valor_total_produtos.setStyleSheet(u"QLabel {\n"
@@ -891,7 +842,7 @@ class Ui_MainWindow(object):
 "")
         self.frame_quantidade = QFrame(self.frame_2)
         self.frame_quantidade.setObjectName(u"frame_quantidade")
-        self.frame_quantidade.setGeometry(QRect(724, 700, 321, 101))
+        self.frame_quantidade.setGeometry(QRect(724, 685, 321, 101))
         sizePolicy2.setHeightForWidth(self.frame_quantidade.sizePolicy().hasHeightForWidth())
         self.frame_quantidade.setSizePolicy(sizePolicy2)
         self.frame_quantidade.setStyleSheet(u"background-color: rgb(100, 200, 100); /* Verde claro */\n"
@@ -911,7 +862,7 @@ class Ui_MainWindow(object):
 "")
         self.dateEdit = QDateEdit(self.frame_2)
         self.dateEdit.setObjectName(u"dateEdit")
-        self.dateEdit.setGeometry(QRect(140, 605, 171, 25))
+        self.dateEdit.setGeometry(QRect(140, 528, 171, 25))
         sizePolicy2.setHeightForWidth(self.dateEdit.sizePolicy().hasHeightForWidth())
         self.dateEdit.setSizePolicy(sizePolicy2)
         self.dateEdit.setStyleSheet(u"QDateEdit {\n"
@@ -928,21 +879,21 @@ class Ui_MainWindow(object):
         self.dateEdit.setCalendarPopup(True)
         self.dateEdit.setCurrentSectionIndex(0)
         self.dateEdit.setTimeSpec(Qt.UTC)
-        self.frame_valor_desconto = QFrame(self.frame_2)
-        self.frame_valor_desconto.setObjectName(u"frame_valor_desconto")
-        self.frame_valor_desconto.setGeometry(QRect(724, 550, 321, 101))
-        sizePolicy2.setHeightForWidth(self.frame_valor_desconto.sizePolicy().hasHeightForWidth())
-        self.frame_valor_desconto.setSizePolicy(sizePolicy2)
-        self.frame_valor_desconto.setStyleSheet(u"background-color: rgb(100, 200, 100); /* Verde claro */\n"
+        self.frame_valor_com_desconto1 = QFrame(self.frame_2)
+        self.frame_valor_com_desconto1.setObjectName(u"frame_valor_com_desconto1")
+        self.frame_valor_com_desconto1.setGeometry(QRect(724, 543, 321, 101))
+        sizePolicy2.setHeightForWidth(self.frame_valor_com_desconto1.sizePolicy().hasHeightForWidth())
+        self.frame_valor_com_desconto1.setSizePolicy(sizePolicy2)
+        self.frame_valor_com_desconto1.setStyleSheet(u"background-color: rgb(100, 200, 100); /* Verde claro */\n"
 "")
-        self.frame_valor_desconto.setFrameShape(QFrame.StyledPanel)
-        self.frame_valor_desconto.setFrameShadow(QFrame.Raised)
-        self.label_valor_desconto = QLabel(self.frame_valor_desconto)
-        self.label_valor_desconto.setObjectName(u"label_valor_desconto")
-        self.label_valor_desconto.setGeometry(QRect(20, 10, 281, 32))
-        sizePolicy2.setHeightForWidth(self.label_valor_desconto.sizePolicy().hasHeightForWidth())
-        self.label_valor_desconto.setSizePolicy(sizePolicy2)
-        self.label_valor_desconto.setStyleSheet(u"QLabel {\n"
+        self.frame_valor_com_desconto1.setFrameShape(QFrame.StyledPanel)
+        self.frame_valor_com_desconto1.setFrameShadow(QFrame.Raised)
+        self.label_valor_com_desconto1 = QLabel(self.frame_valor_com_desconto1)
+        self.label_valor_com_desconto1.setObjectName(u"label_valor_com_desconto1")
+        self.label_valor_com_desconto1.setGeometry(QRect(20, 10, 281, 32))
+        sizePolicy2.setHeightForWidth(self.label_valor_com_desconto1.sizePolicy().hasHeightForWidth())
+        self.label_valor_com_desconto1.setSizePolicy(sizePolicy2)
+        self.label_valor_com_desconto1.setStyleSheet(u"QLabel {\n"
 "    color: white;\n"
 "    text-align: center; /* Centraliza o texto horizontalmente */\n"
 "    vertical-align: middle; /* Centraliza o texto verticalmente */\n"
@@ -1012,6 +963,33 @@ class Ui_MainWindow(object):
 "    color: black;\n"
 "}\n"
 "")
+        self.btn_remover_imagem = QPushButton(self.frame_2)
+        self.btn_remover_imagem.setObjectName(u"btn_remover_imagem")
+        self.btn_remover_imagem.setGeometry(QRect(390, 520, 161, 23))
+        sizePolicy2.setHeightForWidth(self.btn_remover_imagem.sizePolicy().hasHeightForWidth())
+        self.btn_remover_imagem.setSizePolicy(sizePolicy2)
+        self.btn_remover_imagem.setMouseTracking(False)
+        self.btn_remover_imagem.setAcceptDrops(False)
+        self.btn_remover_imagem.setAutoFillBackground(False)
+        self.btn_remover_imagem.setStyleSheet(u"QPushButton {\n"
+"    color: rgb(255, 255, 255);\n"
+"    border-radius: 3px;\n"
+"    font-size: 16px;\n"
+"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */\n"
+"    border: 3px solid transparent;\n"
+"}\n"
+"\n"
+"QPushButton:hover {\n"
+"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */\n"
+"    color: black;\n"
+"}\n"
+"")
+        self.btn_remover_imagem.setIcon(icon2)
+        self.frame_erro_produto = QFrame(self.frame_2)
+        self.frame_erro_produto.setObjectName(u"frame_erro_produto")
+        self.frame_erro_produto.setGeometry(QRect(320, 267, 21, 21))
+        self.frame_erro_produto.setFrameShape(QFrame.StyledPanel)
+        self.frame_erro_produto.setFrameShadow(QFrame.Raised)
         self.paginas_sistemas.addWidget(self.pg_cadastrar_produto)
         self.pg_cliente = QWidget()
         self.pg_cliente.setObjectName(u"pg_cliente")
@@ -1689,11 +1667,11 @@ class Ui_MainWindow(object):
         self.label_3.setGeometry(QRect(660, 480, 41, 31))
         sizePolicy2.setHeightForWidth(self.label_3.sizePolicy().hasHeightForWidth())
         self.label_3.setSizePolicy(sizePolicy2)
-        self.label_3.setPixmap(QPixmap(u"../Downloads/Whatsapp_37229.png"))
+        self.label_3.setPixmap(QPixmap(u"Downloads/Whatsapp_37229.png"))
         self.label_3.setScaledContents(True)
         self.label_4 = QLabel(self.frame_4)
         self.label_4.setObjectName(u"label_4")
-        self.label_4.setGeometry(QRect(710, 490, 151, 16))
+        self.label_4.setGeometry(QRect(710, 490, 151, 31))
         sizePolicy2.setHeightForWidth(self.label_4.sizePolicy().hasHeightForWidth())
         self.label_4.setSizePolicy(sizePolicy2)
         self.label_4.setStyleSheet(u"QLabel {\n"
@@ -1709,7 +1687,7 @@ class Ui_MainWindow(object):
         self.label_5.setGeometry(QRect(660, 530, 41, 31))
         sizePolicy2.setHeightForWidth(self.label_5.sizePolicy().hasHeightForWidth())
         self.label_5.setSizePolicy(sizePolicy2)
-        self.label_5.setPixmap(QPixmap(u"../Downloads/linkedin_icon-icons.com_65929.png"))
+        self.label_5.setPixmap(QPixmap(u"Downloads/linkedin_icon-icons.com_65929.png"))
         self.label_5.setScaledContents(True)
         self.label_6 = QLabel(self.frame_4)
         self.label_6.setObjectName(u"label_6")
@@ -1748,7 +1726,6 @@ class Ui_MainWindow(object):
         self.btn_cadastro_usuario.setText(QCoreApplication.translate("MainWindow", u"Cadastrar Usu\u00e1rio", None))
         self.btn_clientes.setText(QCoreApplication.translate("MainWindow", u"Clientes", None))
         self.btn_configuracoes.setText(QCoreApplication.translate("MainWindow", u"Configura\u00e7\u00f5es", None))
-        self.btn_contato.setText(QCoreApplication.translate("MainWindow", u"Contato", None))
         self.label.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p align=\"center\"><span style=\" font-size:36pt; font-weight:600; font-style:italic;\">Sistema de gerenciamento </span></p><p align=\"center\"><span style=\" font-size:36pt; font-weight:600; font-style:italic;\">do controle de estoque</span></p></body></html>", None))
         self.label_imagem_sistema.setText("")
         self.label_bem_vindo.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p align=\"center\"><span style=\" font-size:28pt; font-weight:600; font-style:italic; color:#ffffff;\">Bem vindo(a) ao</span></p></body></html>", None))
@@ -1780,11 +1757,13 @@ class Ui_MainWindow(object):
         self.btn_gerar_grafico.setText(QCoreApplication.translate("MainWindow", u"Gerar Gr\u00e1fico", None))
         self.btn_gerar_arquivo_excel.setText(QCoreApplication.translate("MainWindow", u"Gerar arquivo excel", None))
         self.tb_base.setTabText(self.tb_base.indexOf(self.tabela_estoque), QCoreApplication.translate("MainWindow", u"Estoque", None))
+#if QT_CONFIG(tooltip)
+        self.frame_2.setToolTip("")
+#endif // QT_CONFIG(tooltip)
         self.label_cadastramento_produtos.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p align=\"center\"><span style=\" font-size:18pt; font-weight:600; font-style:italic;\">Cadastramento de Produtos</span></p></body></html>", None))
         self.label_produto.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p><span style=\" font-weight:600;\">Produto</span></p></body></html>", None))
         self.label_quantidade.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p><span style=\" font-weight:600;\">Quantidade</span></p></body></html>", None))
-        self.label_valor_produto.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p><span style=\" font-weight:600;\">Valor real do produto</span></p></body></html>", None))
-        self.label_valor_unidade.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p><span style=\" font-weight:600;\">Valor da Unidade</span></p></body></html>", None))
+        self.label_valor_produto.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p><span style=\" font-weight:600;\">Valor  do produto</span></p></body></html>", None))
         self.label_desconto.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p><span style=\" font-weight:600;\">Desconto</span></p></body></html>", None))
         self.label_data_compra.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p><span style=\" font-weight:600;\">Data da Compra</span></p><p><br/></p></body></html>", None))
         self.label_codigo_item.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p><span style=\" font-weight:600;\">C\u00f3digo do Item</span></p></body></html>", None))
@@ -1795,27 +1774,48 @@ class Ui_MainWindow(object):
 #endif // QT_CONFIG(statustip)
         self.txt_valor_produto.setText("")
         self.txt_valor_produto.setPlaceholderText("")
-        self.txt_unidade.setText("")
-        self.txt_unidade.setPlaceholderText(QCoreApplication.translate("MainWindow", u"Opcional", None))
+        self.txt_desconto.setPlaceholderText(QCoreApplication.translate("MainWindow", u"Opcional", None))
         self.txt_codigo_item.setPlaceholderText(QCoreApplication.translate("MainWindow", u"Gerado automaticamente", None))
 #if QT_CONFIG(tooltip)
-        self.btn_adicionar_produto.setToolTip(QCoreApplication.translate("MainWindow", u"<html><head/><body><p align=\"center\"><img src=\":/icons/pngwing.com.png\"/></p></body></html>", None))
+        self.btn_adicionar_produto.setToolTip(QCoreApplication.translate("MainWindow", u"Realiza e exibe o c\u00e1lculo do produto", None))
 #endif // QT_CONFIG(tooltip)
         self.btn_adicionar_produto.setText(QCoreApplication.translate("MainWindow", u"ADICIONAR", None))
+#if QT_CONFIG(tooltip)
+        self.btn_atualizar_produto.setToolTip(QCoreApplication.translate("MainWindow", u"Atualiza o produto no banco de dados", None))
+#endif // QT_CONFIG(tooltip)
         self.btn_atualizar_produto.setText(QCoreApplication.translate("MainWindow", u"ATUALIZAR", None))
+#if QT_CONFIG(tooltip)
+        self.btn_limpar_campos.setToolTip(QCoreApplication.translate("MainWindow", u"Apaga as informa\u00e7\u00f5es preenchidas", None))
+#endif // QT_CONFIG(tooltip)
         self.btn_limpar_campos.setText(QCoreApplication.translate("MainWindow", u"APAGAR", None))
+#if QT_CONFIG(tooltip)
+        self.btn_confirmar.setToolTip(QCoreApplication.translate("MainWindow", u"Cadastra o produto", None))
+#endif // QT_CONFIG(tooltip)
         self.btn_confirmar.setText(QCoreApplication.translate("MainWindow", u"CONFIRMAR", None))
+#if QT_CONFIG(tooltip)
+        self.btn_ver_item.setToolTip(QCoreApplication.translate("MainWindow", u"Redireciona at\u00e9 o estoque dos produtos", None))
+#endif // QT_CONFIG(tooltip)
         self.btn_ver_item.setText(QCoreApplication.translate("MainWindow", u"VER ITEM", None))
-        self.label_valor_total_produtos.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p align=\"center\"><span style=\" font-size:12pt; font-weight:600;\">Valor total do produtos</span></p></body></html>", None))
+        self.label_valor_total_produtos.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p align=\"center\"><span style=\" font-size:11pt; font-weight:600;\">Valor total de produtos sem desconto</span></p></body></html>", None))
         self.label_quantidade_2.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p align=\"center\"><span style=\" font-size:12pt; font-weight:600;\">Quantidade total de produtos</span></p></body></html>", None))
-        self.label_valor_desconto.setText(QCoreApplication.translate("MainWindow", u"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+        self.label_valor_com_desconto1.setText(QCoreApplication.translate("MainWindow", u"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
 "</style></head><body style=\" font-family:'MS Shell Dlg 2'; font-size:8pt; font-weight:400; font-style:normal;\">\n"
 "<p align=\"center\" style=\" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:12pt; font-weight:600;\">Valor do produto com desconto</span></p></body></html>", None))
+#if QT_CONFIG(tooltip)
+        self.btn_carregar_imagem.setToolTip(QCoreApplication.translate("MainWindow", u"Carrega a imagem para cadastro do produto", None))
+#endif // QT_CONFIG(tooltip)
         self.btn_carregar_imagem.setText(QCoreApplication.translate("MainWindow", u"CARREGAR IMAGEM", None))
         self.label_valor_do_desconto.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p align=\"center\"><span style=\" font-size:12pt; font-weight:600;\">Valor do desconto</span></p></body></html>", None))
+#if QT_CONFIG(tooltip)
+        self.btn_editar.setToolTip(QCoreApplication.translate("MainWindow", u"Exibe a tabela de produtos para atualiza\u00e7\u00e3o", None))
+#endif // QT_CONFIG(tooltip)
         self.btn_editar.setText(QCoreApplication.translate("MainWindow", u"EDITAR ", None))
+#if QT_CONFIG(tooltip)
+        self.btn_remover_imagem.setToolTip(QCoreApplication.translate("MainWindow", u"Remove a imagem do produto selecionado", None))
+#endif // QT_CONFIG(tooltip)
+        self.btn_remover_imagem.setText(QCoreApplication.translate("MainWindow", u"REMOVER IMAGEM", None))
         self.label_7.setText(QCoreApplication.translate("MainWindow", u"CLIENTE", None))
         self.label_cadastramento.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p align=\"center\"><span style=\" font-size:16pt; font-weight:600; font-style:italic;\">CADASTRAMENTO DE USU\u00c1RIO</span></p></body></html>", None))
         self.label_nome.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p><span style=\" font-size:12pt; font-weight:600;\">Nome</span></p></body></html>", None))
@@ -1851,7 +1851,7 @@ class Ui_MainWindow(object):
         self.tool_tema.setText(QCoreApplication.translate("MainWindow", u" Tema do sistema", None))
         self.label_2.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p align=\"center\"><span style=\" font-size:18pt; font-weight:600; font-style:italic;\">Desenvolvido e publicado por:</span></p><p align=\"center\"><span style=\" font-size:18pt; font-weight:600; font-style:italic;\">Keven Lucas</span></p></body></html>", None))
         self.label_3.setText("")
-        self.label_4.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p align=\"center\"><span style=\" font-size:12pt; font-weight:600; font-style:italic;\">(19) 99134-8924</span></p></body></html>", None))
+        self.label_4.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p align=\"center\"><span style=\" font-size:12pt; font-weight:600; font-style:italic;\">(19) 98201-8869</span></p></body></html>", None))
         self.label_5.setText("")
         self.label_6.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p align=\"center\"><span style=\" font-size:12pt; font-weight:600; font-style:italic; text-decoration: underline;\">Clique aqui para visitar o site</span></p></body></html>", None))
     # retranslateUi

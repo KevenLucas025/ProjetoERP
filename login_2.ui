@@ -178,7 +178,7 @@ QPushButton:hover {
      <rect>
       <x>160</x>
       <y>190</y>
-      <width>91</width>
+      <width>81</width>
       <height>16</height>
      </rect>
     </property>
@@ -186,7 +186,35 @@ QPushButton:hover {
      <string notr="true">color: rgb(255, 255, 255);</string>
     </property>
     <property name="text">
-     <string>&lt;a href=&quot;trocar_senha&quot; style=&quot;color: white;&quot;&gt;Esqueci a senha&lt;/a&gt;</string>
+     <string notr="true">&lt;a href=&quot;trocar_senha&quot; style=&quot;color: white;&quot;&gt;Esqueci a senha&lt;/a&gt;</string>
+    </property>
+    <property name="textFormat">
+     <enum>Qt::AutoText</enum>
+    </property>
+    <property name="scaledContents">
+     <bool>false</bool>
+    </property>
+    <property name="wordWrap">
+     <bool>false</bool>
+    </property>
+    <property name="textInteractionFlags">
+     <set>Qt::LinksAccessibleByMouse</set>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_primeiro_acesso">
+    <property name="geometry">
+     <rect>
+      <x>160</x>
+      <y>130</y>
+      <width>81</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">color: rgb(255, 255, 255);</string>
+    </property>
+    <property name="text">
+     <string>Primeiro acesso?</string>
     </property>
    </widget>
   </widget>

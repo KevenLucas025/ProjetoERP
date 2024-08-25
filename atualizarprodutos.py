@@ -1,10 +1,6 @@
-from PySide6.QtWidgets import (
-    QApplication, QDialog, QPushButton,
-    QVBoxLayout, QTableWidget, QTableWidgetItem, QMessageBox, QCheckBox
-)
-from database import DataBase
-import sys 
+from PySide6.QtWidgets import (QDialog, QPushButton, QVBoxLayout, QMessageBox, QAbstractItemView)
 from tabelaprodutos import TabelaProdutos
+import sys
 
 class AtualizarProduto(QDialog):
     def __init__(self, main_window, parent=None):
@@ -12,10 +8,6 @@ class AtualizarProduto(QDialog):
         self.main_window = main_window
         self.setWindowTitle("Atualizar Produto")
 
-        # Passando date_edit de main_window para TabelaProdutos
-        dialog_tabela = TabelaProdutos(self.main_window, self.main_window.dateEdit)
-        
-  
         # Definir layout para a janela de diálogo
         layout = QVBoxLayout()
         
@@ -30,9 +22,10 @@ class AtualizarProduto(QDialog):
         self.resize(300, 100)
 
     def atualizar_tabela_produtos(self):
-        # Preencher a tabela de produtos com os dados do banco de dados
         dialog_tabela = TabelaProdutos(self.main_window, self.main_window.dateEdit)
-        dialog_tabela.preencher_tabela()
+        dialog_tabela.preencher_tabela_produtos()
         dialog_tabela.exec()
 
         self.close()
+
+       
