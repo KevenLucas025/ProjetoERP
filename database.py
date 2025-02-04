@@ -5,30 +5,31 @@ class DataBase:
     def __init__(self, name="banco_de_dados.db"):
         self.name = name
         self.connection = None
-#*********************************************************************************************************************   
+        self.connecta()  # Tente conectar ao banco ao instanciar
+#*********************************************************************************************************************
     def connecta(self):
         try:
-            self.connection = sqlite3.connect(self.name)
-            return self.connection
+            if not self.connection:  # Verifica se já existe uma conexão
+                self.connection = sqlite3.connect(self.name)
         except Exception as e:
-            print(f"Erro ao conectar ao banco de dados: {str(e)}")
-            return None
+            print(f"Erro ao conectar ao banco: {e}")
 
-#*********************************************************************************************************************   
+#*********************************************************************************************************************
     def close_connection(self):
         try:
-            if self.connection:  # Verificar se a conexão existe antes de fechar
+            if self.connection:  # Verifica se a conexão existe antes de fechar
                 self.connection.close()
+                self.connection = None
+                print("O banco de dados foi fechado com sucesso.")
         except Exception as e:
             print("Erro ao fechar conexão:", e)
-
 #*********************************************************************************************************************    
     def create_table_users(self):
         try:
             cursor = self.connection.cursor()
             cursor.execute("""
                 CREATE TABLE IF NOT EXISTS users(
-                    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
                     Nome TEXT NOT NULL,
                     Usuário TEXT UNIQUE NOT NULL,
                     Senha TEXT NOT NULL,
@@ -47,7 +48,8 @@ class DataBase:
                     Imagem BLOB,
                     "Última Troca de Senha" TEXT,
                     "Data da Senha Cadastrada" TEXT,
-                    "Data da Inclusão do Usuário" TEXT         
+                    "Data da Inclusão do Usuário" TEXT,
+                     Secret TEXT       
                     
                 )
             """)
@@ -58,6 +60,9 @@ class DataBase:
 #*********************************************************************************************************************
     def create_table_products(self):
         try:
+            if self.connection is None:
+                raise Exception("Conexão com o banco de dados não estabelecida.")
+            
             cursor = self.connection.cursor()
             cursor.execute("""
                 CREATE TABLE IF NOT EXISTS products(
@@ -70,49 +75,71 @@ class DataBase:
                     Código_Item TEXT,
                     Cliente TEXT,
                     Descrição_Produto TEXT,
-                    Imagem BLOB           
+                    Usuário,
+                    Imagem BLOB
                 )
             """)
+            self.connection.commit()  # Confirmar a transação
             print("Tabela de produtos criada com sucesso!")
         except Exception as e:
             print("Erro ao criar tabela de produtos:", e)
+
+    def create_table_products_saida(self):
+        try:
+            if self.connection is None:
+                raise Exception("Conexão com o banco de dados não estabelecida.")
+            cursor = self.connection.cursor()
+            cursor.execute("""
+                CREATE TABLE IF NOT EXISTS products_saida(
+                    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+                    Produto TEXT NOT NULL,
+                    Quantidade INTEGER NOT NULL,
+                    "Valor do Produto"  NOT NULL,
+                    Desconto,
+                    "Data de Saída" TEXT,
+                    "Data da Criação" TEXT,
+                    "Código do Produto" TEXT,
+                    Cliente TEXT,
+                    "Descrição do Produto",
+                    Usuário TEXT,
+                    Status TEXT,
+                    'Status da Saída' TEXT,
+                    Imagem BLOB
+                )
+            """)
+            self.connection.commit()  # Confirmar a transação
+            print("Tabela de produtos saída criada com sucesso!")
+        except Exception as e:
+            print("Erro ao criar tabela de produtos:", e)
+
 #*********************************************************************************************************************
     def insert_product(self, produto, quantidade, valor_real, desconto, data_compra, 
-                    codigo_item, cliente, descricao_produto, imagem=None):
+                    codigo_item, cliente, descricao_produto, usuario, imagem=None):
         try:
             cursor = self.connection.cursor()
 
             # Substitua valores nulos por valores padrão
-            if produto is None:
-                produto = "Não Cadastrado"
-            if quantidade is None:
-                quantidade = "Não Cadastrado"
-            if valor_real is None:
-                valor_real = "Não Cadastrado"
-            if desconto is None:
-                desconto = "Sem desconto"
-            if data_compra is None:
-                data_compra = "Não Cadastrado"
-            if codigo_item is None:
-                codigo_item = "Não Cadastrado"
-            if cliente is None:
-                cliente = "Não Cadastrado"
-            if descricao_produto is None:
-                descricao_produto = "Não Cadastrado"
-            if imagem is None:
-                imagem = "Não Cadastrado"
+            produto = produto if produto is not None else "Não Cadastrado"
+            quantidade = quantidade if quantidade is not None else 0
+            valor_real = valor_real if valor_real is not None else 0.0
+            desconto = desconto if desconto is not None else "Sem desconto"
+            data_compra = data_compra if data_compra is not None else "Não Cadastrado"
+            codigo_item = codigo_item if codigo_item is not None else "Não Cadastrado"
+            cliente = cliente if cliente is not None else "Não Cadastrado"
+            descricao_produto = descricao_produto if descricao_produto is not None else "Não Cadastrado"
+            usuario = usuario if usuario is not None else "Não Cadastrado"
+            imagem = imagem if imagem is not None else "Não Cadastrado"
 
             cursor.execute("""
-                INSERT INTO products(Produto, Quantidade, Valor_Real, Desconto, Data_Compra, Código_Item, 
-                        Cliente, Descrição_Produto, Imagem) 
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                INSERT INTO products (Produto, Quantidade, Valor_Real, Desconto, Data_Compra, Código_Item, 
+                        Cliente, Descrição_Produto, Imagem, Usuário) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """, (produto, quantidade, valor_real, desconto, data_compra, codigo_item, 
-                cliente, descricao_produto, imagem))
+                cliente, descricao_produto, imagem, usuario))
             self.connection.commit()
             print("Produto inserido com sucesso!")
         except Exception as e:
             print("Erro ao inserir produto:", e)
-
 #*********************************************************************************************************************
     def insert_imagem_produto(self, produto_id, imagem):
         try:
@@ -168,23 +195,14 @@ class DataBase:
 #*********************************************************************************************************************
     def check_user(self, usuario, senha):
         try:
-            print("Verificando usuário e senha no banco de dados...")
-            print("Usuário fornecido:", usuario)
-            print("Senha fornecida:", senha)
-            
-            query = "SELECT Acesso FROM users WHERE Usuário = ? AND Senha = ? COLLATE NOCASE"  # Comparação insensível a maiúsculas e minúsculas
-            cursor = self.connection.cursor()
+            query = "SELECT Senha FROM users WHERE Usuário = ? AND Senha = ? COLLATE NOCASE"
+            cursor = self.connection.cursor()  # Usar a conexão já existente
             cursor.execute(query, (usuario, senha))
             result = cursor.fetchone()
-            print("Resultado da consulta:", result)
-            if result:
-                print("Usuário autenticado com sucesso")
-                return result[0]  # Retorna o tipo de usuário
-            else:
-                return ""  # Retorna uma string vazia se as credenciais não corresponderem
+            return result[0] if result else None
         except Exception as e:
-            print("Erro ao verificar usuário:", e)
-            return ""
+            print(f"Erro ao verificar usuário: {e}")
+            return False
 #*********************************************************************************************************************
     def user_exists_usuario(self, usuario):
         try:
@@ -336,27 +354,31 @@ class DataBase:
             print("Erro ao obter caminho da imagem:", e)
             return None
 #*********************************************************************************************************************        
-    def user_exists(self, CPF, Usuário):
+    def user_exists(self, CPF, Usuario):
         try:
+            if not self.connection:  # Verifica se a conexão está ativa
+                self.connecta()
             cursor = self.connection.cursor()
             cursor.execute("SELECT 1 FROM users WHERE CPF = ?", (CPF,))
             cpf_result = cursor.fetchone()
             
-            cursor.execute("SELECT 1 FROM users WHERE Usuário = ?", (Usuário,))
+            cursor.execute("SELECT 1 FROM users WHERE Usuário = ?", (Usuario,))
             user_result = cursor.fetchone()
             
             if cpf_result:
-                return 'cpf'  # Retorna 'cpf' se o CPF já estiver cadastrado
+                return 'cpf'
             elif user_result:
-                return 'Usuário'  # Retorna 'user' se o nome de usuário já estiver cadastrado
+                return 'Usuário'
             else:
-                return None  # Retorna None se o usuário não existir
+                return None
         except Exception as e:
             print("Erro ao verificar se usuário existe:", e)
             return None
+
+            
 #*********************************************************************************************************************
     def insert_user(self, nome, usuario, senha, confirmar_senha, acesso, endereco, cep, cpf, numero, estado, email, 
-                    telefone, rg, data_nascimento, complemento, imagem=None):
+                telefone, rg, data_nascimento, complemento, usuario_logado, imagem=None):
         try:
             cursor = self.connection.cursor()
 
@@ -364,53 +386,38 @@ class DataBase:
             data_atual = datetime.now().strftime("%d/%m/%Y")
 
             # Substituir None ou valores vazios por "Não Cadastrado"
-            if nome is None:
-                nome = "Não Cadastrado"
-            if usuario is None:
-                usuario = "Não Cadastrado"
-            if senha is None:
-                senha = "Não Cadastrado"
-            if confirmar_senha is None:
-                confirmar_senha = "Não Cadastrado"
-            if acesso is None:
-                acesso = "Não Cadastrado"
-            if endereco is None:
-                endereco = "Não Cadastrado"
-            if cep is None:
-                cep = "Não Cadastrado"
-            if cpf is None:
-                cpf = "Não Cadastrado"
-            if numero is None:
-                numero = "Não Cadastrado"
-            if estado is None:
-                estado = "Não Cadastrado"
-            if email is None:
-                email = "Não Cadastrado"
-            if rg is None:
-                rg = "Não Cadastrado"
-            if complemento is None:
-                complemento = "Não Cadastrado"
-            if telefone is None:
-                telefone = "Não Cadastrado"       
-            if data_nascimento is None:
-                data_nascimento = "Não Cadastrado"
-            if imagem is None:
-                imagem = "Não Cadastrado"
-            
-            
+            nome = nome or "Não Cadastrado"
+            usuario = usuario or "Não Cadastrado"
+            senha = senha or "Não Cadastrado"
+            confirmar_senha = confirmar_senha or "Não Cadastrado"
+            acesso = acesso or "Não Cadastrado"
+            endereco = endereco or "Não Cadastrado"
+            cep = cep or "Não Cadastrado"
+            cpf = cpf or "Não Cadastrado"
+            numero = numero or "Não Cadastrado"
+            estado = estado or "Não Cadastrado"
+            email = email or "Não Cadastrado"
+            telefone = telefone or "Não Cadastrado"
+            rg = rg or "Não Cadastrado"
+            data_nascimento = data_nascimento or "Não Cadastrado"
+            complemento = complemento or "Não Cadastrado"
+            imagem = imagem or "Não Cadastrado"
+            usuario_logado = usuario_logado or "Não Cadastrado"  # Certifique-se de que o valor está definido
 
-            # Insira o novo usuário com a data atual de última troca de senha
             cursor.execute("""
                 INSERT INTO users(Nome, Usuário, Senha, "Confirmar Senha", Acesso, Endereço, CEP, CPF, Número, Estado, 
-                                  Email, Telefone, RG, Data_nascimento, Complemento,Imagem,"Última Troca de Senha",
-                           "Data da Senha Cadastrada","Data da Inclusão do Usuário") 
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?,?)
-            """, (nome, usuario, senha, confirmar_senha, acesso, endereco, cep, cpf, numero, estado, email, 
-                  telefone, rg, data_nascimento, "Não Cadastrado",imagem,"Não Cadastrado",data_atual,data_atual))
+                                Email, Telefone, RG, Data_nascimento, Complemento, Imagem, "Última Troca de Senha",
+                                "Data da Senha Cadastrada", "Data da Inclusão do Usuário", "Usuário Logado") 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """, (nome, usuario, senha, confirmar_senha, acesso, endereco, cep, cpf, numero, estado, email, telefone, 
+                rg, data_nascimento, complemento, imagem, "Não Cadastrado", data_atual, data_atual, usuario_logado))
+
+
             self.connection.commit()
             print("Usuário inserido com sucesso!")
         except Exception as e:
             print("Erro ao inserir usuário:", e)
+
 
 #*********************************************************************************************************************
     def obter_caminho_imagem_usuario(self):
@@ -513,16 +520,12 @@ class DataBase:
             self.connection.commit()
             return True
         return False
-
-
 #*********************************************************************************************************************
-
     def atualizar_data_ultima_troca(self, id_usuario):
         data_atual = datetime.now().strftime("%d/%m/%Y ")
         cursor = self.connection.cursor()
         cursor.execute("UPDATE users SET \"Última Troca de Senha\" = ? WHERE id = ?", (data_atual, id_usuario))
         self.connection.commit()
-
 #*********************************************************************************************************************
         
     def ultima_troca(self, usuario):
@@ -544,7 +547,6 @@ class DataBase:
         except Exception as e:
             print("Erro ao obter a data da última troca de senha:", e)
             return None
-
 #*********************************************************************************************************************
 
     def verificar_tempo_ultima_troca(self, id_usuario):
@@ -557,13 +559,95 @@ class DataBase:
             return dias_passados
         return None
 
-
-
 #*********************************************************************************************************************
+    def executar_query(self, query, params=None):
+        try:
+            cursor = self.connection.cursor()
+            if params:
+                cursor.execute(query, params)
+            else:
+                cursor.execute(query)
+            return cursor.fetchall()  # Retorna todos os resultados da consulta
+        except Exception as e:
+            print(f"Erro ao executar a consulta: {str(e)}")
+            return None
+
+    def obter_produtos_base(self):
+        cursor = self.connection.cursor()
+        cursor.execute("""
+            SELECT Produto, Quantidade, Valor_Real, Desconto, Data_Compra, Código_Item, Cliente, Descrição_Produto, Imagem, Status, 'Status da Saída' 
+            FROM products
+        """)
+        produtos = cursor.fetchall()
+        return produtos
+
+    def obter_produtos_saida(self):
+        cursor = self.connection.cursor()
+        cursor.execute("""
+            SELECT Produto, Quantidade, "Valor do Produto", Desconto, "Data de Saída", "Data da Criação", "Código do Produto", Cliente, "Descrição do Produto", Usuário, Imagem 
+            FROM products_saida
+        """)
+        produtos = cursor.fetchall()
+        return produtos
+
+    def remover_historico(self, valor_identificador, coluna_identificador="id"):
+        try:
+            cursor = self.connection.cursor()
+            query = f"DELETE FROM historico WHERE \"{coluna_identificador}\" = ?"
+            cursor.execute(query, (valor_identificador,))
+            self.connection.commit()
+            return True
+        except Exception as e:
+            print(f"Erro ao remover registro do histórico: {str(e)}")
+            return False
+        
+    def ensure_connection(self):
+        if not self.connection:
+            self.connecta()  # Método para estabelecer a conexão
+
+
+    def get_user_secret(self, usuario_ou_email):
+        try:
+            self.ensure_connection()  # Garante que a conexão está ativa
+            cursor = self.connection.cursor()
+            query = "SELECT Secret FROM users WHERE (Usuário = ? OR Email = ?)"
+            cursor.execute(query, (usuario_ou_email, usuario_ou_email))
+            result = cursor.fetchone()
+            if result:
+                return result[0]  # Retorna o segredo
+            else:
+                print("Segredo não encontrado para o usuário.")
+                return None
+        except Exception as e:
+            print("Erro ao buscar chave secreta:", e)
+            return None
+
+    def salvar_usuario_logado(self, usuario_logado):
+        try:
+            if not self.connection:
+                self.connecta()
+            query = "UPDATE users SET 'Usuário Logado' = ? WHERE id = 1"
+            cursor = self.connection.cursor()
+            cursor.execute(query, (usuario_logado,))
+            self.connection.commit()
+        except Exception as e:
+            print(f"Erro ao salvar usuário logado: {e}")
+        finally:
+            pass  # Não feche a conexão automaticamente aqui
+
+    def get_user_email(self, usuario):
+        self.connecta()
+        query = "SELECT Email FROM users WHERE Usuário = ?"
+        cursor = self.connection.cursor()
+        cursor.execute(query, (usuario,))
+        result = cursor.fetchone()
+        self.close_connection()
+        return result[0] if result else None
+        
 
 if __name__ == "__main__":
     db = DataBase()
     db.connecta()
-    db.create_table_users()
     db.close_connection()
+    
     

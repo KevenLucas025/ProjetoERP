@@ -14,8 +14,8 @@ class Pagina_Configuracoes(QWidget):
                  frame_2, frame_page_estoque, frame_5, frame_cadastro_usuario,
                  pg_cadastro_usuario, btn_avancar, btn_retroceder, btn_opcoes, btn_home, btn_verificar_estoque,
                  btn_cadastrar_produto, btn_cadastro_usuario, btn_clientes, btn_configuracoes,
-                 btn_importar, btn_gerar_saida, btn_estorno, btn_abrir_planilha, line_excel, btn_gerar_grafico,
-                 btn_gerar_arquivo_excel, line_estoque, label_cadastramento, label_cadastramento_produtos,frame_valor_total_produtos,
+                 btn_importar, btn_gerar_saida, btn_estorno, btn_abrir_planilha, line_excel,
+                 label_cadastramento, label_cadastramento_produtos,frame_valor_total_produtos,
                  frame_valor_do_desconto, frame_valor_desconto,frame_quantidade,parent=None):
         super().__init__(parent)
 
@@ -43,9 +43,6 @@ class Pagina_Configuracoes(QWidget):
         self.btn_gerar_saida = btn_gerar_saida
         self.btn_estorno = btn_estorno
         self.line_excel = line_excel
-        self.btn_gerar_grafico = btn_gerar_grafico
-        self.btn_gerar_arquivo_excel = btn_gerar_arquivo_excel
-        self.line_estoque = line_estoque
         self.label_cadastramento = label_cadastramento
         self.label_cadastramento_produtos = label_cadastramento_produtos
         self.frame_valor_total_produtos = frame_valor_total_produtos

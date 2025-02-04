@@ -11,39 +11,35 @@ class Configuracoes_Login:
         try:
             with open("config.json", "r") as f:
                 config = json.load(f)
-                self.usuario = config.get("usuario", None)
+                self.usuario = config.get("usuario", "")
                 self.mantem_conectado = config.get("mantem_conectado", False)
         except FileNotFoundError:
             pass
 
     def salvar(self, usuario, mantem_conectado):
-        self.usuario = usuario
-        self.mantem_conectado = mantem_conectado
         config = {
-            "usuario": self.usuario,
-            "mantem_conectado": self.mantem_conectado
+            "usuario": usuario,
+            "mantem_conectado": mantem_conectado
         }
         with open("config.json", "w") as f:
             json.dump(config, f)
-
-        self.main_window.carregar_configuracoes()
 
     def salvar_configuracoes(self, usuario, mantem_conectado):
         self.usuario = usuario
         self.mantem_conectado = mantem_conectado
-        config = {
-            "usuario": self.usuario,
-            "mantem_conectado": self.mantem_conectado
-        }
-        with open("config.json", "w") as f:
-            json.dump(config, f)
+        self.salvar(usuario, mantem_conectado)
 
     def sair(self):
-        # Implemente aqui a lógica para desconectar o usuário, limpar as configurações e fechar a aplicação
-        self.main_window.btn_login.setEnabled(True)  # Ativar o botão de login
+        # Lógica para desconectar o usuário e limpar as configurações
+        self.usuario = ""
+        self.mantem_conectado = False
+        self.salvar(self.usuario, self.mantem_conectado)
+
+        # Atualiza a interface do usuário se necessário
+        self.main_window.btn_login.setEnabled(True)
         self.main_window.lbl_status.setText("Desconectado")
-        self.main_window.txt_usuario.setText("")  # Limpar o campo de usuário
-        self.main_window.chk_mantenha_conectado.setChecked(False)  # Desmarcar a opção "mantenha-me conectado"
+        self.main_window.txt_usuario.setText("")
+        self.main_window.chk_mantenha_conectado.setChecked(False)
 
     def verificar_credenciais_salvas(self):
         return self.usuario and self.mantem_conectado
@@ -55,3 +51,7 @@ class Configuracoes_Login:
                 return config.get("senha", "")
         except FileNotFoundError:
             return ""
+
+    def obter_usuario_logado(self):
+        # Ajustado para pegar o usuário diretamente do JSON e não de um método get
+        return self.usuario if self.usuario else "Nenhum usuário logado"
