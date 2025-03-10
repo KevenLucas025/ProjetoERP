@@ -944,7 +944,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             detalhes_msg_detalhes.exec()
 #*********************************************************************************************************************
     def formatar_porcentagem(self):
-        valor = self.txt_desconto.text()
+        valor = self.txt_desconto_3.text()
         if valor:
             try:
                 valor_float = float(valor)
@@ -956,7 +956,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 return
             valor_porcentagem = valor_float / 100
             valor_formatado = "{:.2f}%".format(valor_porcentagem)
-            self.txt_desconto.setText(valor_formatado)
+            self.txt_desconto_3.setText(valor_formatado)
 #*********************************************************************************************************************
     def mostrar_erro_desconto(self):
         detalhes_msg = QMessageBox()
@@ -1297,21 +1297,21 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.txt_codigo_item.setText(codigo_item)
 
         # Obter os valores dos campos
-        valor_produto_str = self.txt_valor_produto.text().replace('R$', '').replace('.', '').replace(',', '.').strip()
+        valor_produto_str = self.txt_valor_produto_3.text().replace('R$', '').replace('.', '').replace(',', '.').strip()
         valor_produto = float(valor_produto_str) if valor_produto_str else 0.0
 
         quantidade_str = self.txt_quantidade.text().strip()
         quantidade = int(quantidade_str) if quantidade_str else 0
 
-        desconto_str = self.txt_desconto.text().replace('%', '').strip().replace(',', '.')  # Removendo o símbolo de porcentagem
+        desconto_str = self.txt_desconto_3.text().replace('%', '').strip().replace(',', '.')  # Removendo o símbolo de porcentagem
         desconto = float(desconto_str) if desconto_str and desconto_str != 'Sem desconto' else 0.0
 
         # Atualizar o valor do desconto na QLineEdit
-        self.txt_desconto.setText("Sem desconto" if desconto == 0 else f"{desconto}%")
+        self.txt_desconto_3.setText("Sem desconto" if desconto == 0 else f"{desconto}%")
 
         # Atualizar o valor do desconto na QLineEdit se não tiver desconto
         if desconto == 0:
-            self.txt_desconto.setText("Sem desconto")
+            self.txt_desconto_3.setText("Sem desconto")
             desconto = 0.0  # Definir desconto como zero para cálculo e banco de dados
 
         # Calcular o valor total do produto antes do desconto
@@ -1325,10 +1325,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             "quantidade": quantidade,
             "valor_produto": valor_produto,
             "desconto": desconto,
-            "data_compra": self.dateEdit.date().toString("dd/MM/yyyy"),
+            "data_compra": self.dateEdit_3.date().toString("dd/MM/yyyy"),
             "codigo_item": self.txt_codigo_item.text(),
-            "cliente": self.txt_cliente.text(),
-            "descricao_produto": self.txt_descricao_produto.text()
+            "cliente": self.txt_cliente_3.text(),
+            "descricao_produto": self.txt_descricao_produto_3.text()
         }
 
         # Adicionar produto na lista de produtos pendentes
@@ -1342,12 +1342,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def verificar_alteracoes_produto(self, produto_original):
         # Obtém os valores atuais dos campos de texto
         try:
-            valor_produto = float(self.txt_valor_produto.text().replace('R$', '').replace('.', '').replace(',', '.').strip())
+            valor_produto = float(self.txt_valor_produto_3.text().replace('R$', '').replace('.', '').replace(',', '.').strip())
         except ValueError:
             valor_produto = 0.0  # Valor padrão ou tratamento para erro
 
         try:
-            desconto_str = self.txt_desconto.text().replace('%', '').replace(',', '.').strip()
+            desconto_str = self.txt_desconto_3.text().replace('%', '').replace(',', '.').strip()
             desconto = float(desconto_str) if desconto_str and desconto_str != 'Sem desconto' else 0.0
         except ValueError:
             desconto = 0.0  # Valor padrão ou tratamento para erro
@@ -1357,10 +1357,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             "quantidade": int(self.txt_quantidade.text()) if self.txt_quantidade.text().isdigit() else 0,
             "valor_produto": valor_produto,
             "desconto": desconto,
-            "data_compra": self.dateEdit.date().toString("dd/MM/yyyy"),
+            "data_compra": self.dateEdit_3.date().toString("dd/MM/yyyy"),
             "codigo_item": self.txt_codigo_item.text(),
-            "cliente": self.txt_cliente.text(),
-            "descricao_produto": self.txt_descricao_produto.text()
+            "cliente": self.txt_cliente_3.text(),
+            "descricao_produto": self.txt_descricao_produto_3.text()
         }
 
         # Compara o estado atual com o original
@@ -1453,8 +1453,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.label_imagem_produto.clear()
         self.imagem_carregada_produto = None
 
-        self.dateEdit.setDate(QDate.currentDate())  # Define a data atual
-        self.dateEdit.clear()
+        self.dateEdit_3.setDate(QDate.currentDate())  # Define a data atual
+        self.dateEdit_3.clear()
 
         # Exibir mensagem de sucesso apenas se todos os campos estiverem preenchidos
         self.mostrar_mensagem_sucesso()
@@ -1481,7 +1481,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.limpar_imagem_produto()
 #*********************************************************************************************************************
     def retirar_imagem_produto(self):
-        frame = self.frame_imagem_produto
+        frame = self.frame_imagem_produto_3
         if frame is not None:
             for widget in frame.children():
                 if isinstance(widget, QLabel) and widget.pixmap() is not None and not widget.pixmap().isNull():
@@ -1507,18 +1507,18 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
                 # Verificar se já existe um QLabel para a imagem
                 label_imagem = None
-                for widget in self.frame_imagem_produto.children():
+                for widget in self.frame_imagem_produto_3.children():
                     if isinstance(widget, QLabel):
                         label_imagem = widget
                         break
 
                 # Se não houver QLabel, criar um novo
                 if label_imagem is None:
-                    label_imagem = QLabel(self.frame_imagem_produto)
+                    label_imagem = QLabel(self.frame_imagem_produto_3)
                     label_imagem.setObjectName("label_imagem_produto")
 
                 # Definir tamanho do QLabel para ser o mesmo que o QFrame
-                frame_size = self.frame_imagem_produto.size()
+                frame_size = self.frame_imagem_produto_3.size()
                 label_imagem.setFixedSize(frame_size.width(), frame_size.height())
 
                 # Redimensionar o pixmap para se ajustar ao QLabel
@@ -1542,7 +1542,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             QMessageBox.warning(self, "Aviso", "Nenhuma imagem foi selecionada.")
 #*********************************************************************************************************************
     def limpar_imagem_produto(self):
-        for widget in self.frame_imagem_produto.children():
+        for widget in self.frame_imagem_produto_3.children():
             if isinstance(widget, QLabel):
                 widget.clear()
                 widget.setPixmap(QPixmap())
@@ -1551,7 +1551,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 #*********************************************************************************************************************
     def carregar_nova_imagem_produto(self, nova_imagem):
         # Este método simula o carregamento de uma nova imagem no QLabel dentro do frame_imagem_produto
-        for widget in self.frame_imagem_produto.children():
+        for widget in self.frame_imagem_produto_3.children():
             if isinstance(widget, QLabel):
                 widget.setPixmap(QPixmap(nova_imagem))
                 widget.show()  # Mostrar o QLabel novamente após carregar a nova imagem
@@ -1561,14 +1561,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def limpar_campos_após_atualizar(self):
         self.txt_produto.clear()
         self.txt_quantidade.clear()
-        self.txt_valor_produto.clear()
-        self.txt_desconto.clear()
+        self.txt_valor_produto_3.clear()
+        self.txt_desconto_3.clear()
         self.txt_codigo_item.clear()
-        self.txt_cliente.clear()
-        self.txt_descricao_produto.clear()
+        self.txt_cliente_3.clear()
+        self.txt_descricao_produto_3.clear()
 #*********************************************************************************************************************
     def limpar_imagem_produto_após_atualizar(self):
-        frame = self.frame_imagem_produto
+        frame = self.frame_imagem_produto_3
         if frame is not None:
             for widget in frame.children():
                 if isinstance(widget, QLabel):
@@ -1625,11 +1625,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             produto_nome = self.txt_produto.text()
             produto_quantidade = self.txt_quantidade.text()
             produto_valor_real = self.txt_valor_produto.text()
-            produto_desconto = self.txt_desconto.text()
-            produto_data_compra = self.dateEdit.date().toString("dd/MM/yyyy")
+            produto_desconto = self.txt_desconto_3.text()
+            produto_data_compra = self.dateEdit_3.date().toString("dd/MM/yyyy")
             produto_codigo_item = self.txt_codigo_item.text()
-            produto_cliente = self.txt_cliente.text()
-            produto_descricao = self.txt_descricao_produto.text()
+            produto_cliente = self.txt_cliente_3.text()
+            produto_descricao = self.txt_descricao_produto_3.text()
             produto_id = self.produto_id
 
             # Conectar ao banco de dados
@@ -1673,11 +1673,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         campos = [
             self.txt_produto.text(),
             self.txt_quantidade.text(),
-            self.txt_valor_produto.text(),
-            self.dateEdit.text(),
+            self.txt_valor_produto_3.text(),
+            self.dateEdit_3.text(),
             self.txt_codigo_item.text(),
-            self.txt_cliente.text(),
-            self.txt_descricao_produto.text()
+            self.txt_cliente_3.text(),
+            self.txt_descricao_produto_3.text()
         ]
         for campo in campos:
             if not campo:
@@ -1806,12 +1806,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def limpar_campos(self):
         self.txt_produto.clear()
         self.txt_quantidade.clear()
-        self.txt_valor_produto.clear()
-        self.txt_desconto.clear()
-        self.dateEdit.clear()
+        self.txt_valor_produto_3.clear()
+        self.txt_desconto_3.clear()
+        self.dateEdit_3.clear()
         self.txt_codigo_item.clear()
-        self.txt_cliente.clear()
-        self.txt_descricao_produto.clear()
+        self.txt_cliente_3.clear()
+        self.txt_descricao_produto_3.clear()
         
         # Limpar o texto dos QLabel nos frames
         self.frame_valor_total_produtos.setText("")
@@ -1820,18 +1820,18 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.frame_valor_do_desconto.setText("")
         
         # Limpar o campo dateEdit e configurar para a data atual
-        self.dateEdit.setDate(QDate.currentDate())
+        self.dateEdit_3.setDate(QDate.currentDate())
 #*******************************************************************************************************
     def apagar_campos(self):
         # Verificar se algum campo já está preenchido
         if any([
             self.txt_produto.text(),
             self.txt_quantidade.text(),
-            self.txt_valor_produto.text(),
-            self.txt_desconto.text(),
+            self.txt_valor_produto_3.text(),
+            self.txt_desconto_3.text(),
             self.txt_codigo_item.text(),
-            self.txt_cliente.text(),
-            self.txt_descricao_produto.text()
+            self.txt_cliente_3.text(),
+            self.txt_descricao_produto_3.text()
         ]):
             # Limpar todos os campos das QLineEdit
             self.limpar_campos()
@@ -1856,8 +1856,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 #*******************************************************************************************************
     def apagar_imagem_produto_btn_apagar_campos(self):
         # Verificar se o QFrame contém um QLabel para imagem
-        if self.frame_imagem_produto is not None:
-            for widget in self.frame_imagem_produto.children():
+        if self.frame_imagem_produto_3 is not None:
+            for widget in self.frame_imagem_produto_3.children():
                 if isinstance(widget, QLabel):
                     widget.clear()  # Limpar o QLabel
                     widget.setPixmap(QPixmap())  # Definir um pixmap vazio ou padrão

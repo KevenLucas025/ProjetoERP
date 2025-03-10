@@ -279,15 +279,13 @@ class Ui_MainWindow(object):
         font.setBold(False)
         self.tb_base.setFont(font)
         self.tb_base.setFocusPolicy(Qt.NoFocus)
-        self.tb_base.setStyleSheet(u"QTabWidget{\n"
-"	border: 2px solid white;\n"
-"}")
+        self.tb_base.setStyleSheet(u"")
         self.tb_base.setLocale(QLocale(QLocale.Portuguese, QLocale.Brazil))
         self.tb_base.setTabShape(QTabWidget.Rounded)
         self.tb_base.setIconSize(QSize(0, 0))
         self.tb_base.setUsesScrollButtons(False)
         self.tb_base.setTabsClosable(False)
-        self.tb_base.setMovable(False)
+        self.tb_base.setMovable(True)
         self.tb_base.setTabBarAutoHide(True)
         self.tabela_base = QWidget()
         self.tabela_base.setObjectName(u"tabela_base")
@@ -646,77 +644,42 @@ class Ui_MainWindow(object):
         self.table_saida = QTableWidget(self.frame_tb_saida)
         if (self.table_saida.columnCount() < 10):
             self.table_saida.setColumnCount(10)
-        brush = QBrush(QColor(0, 0, 0, 255))
-        brush.setStyle(Qt.SolidPattern)
-        font2 = QFont()
-        font2.setBold(True)
         __qtablewidgetitem = QTableWidgetItem()
-        __qtablewidgetitem.setFont(font2);
-        __qtablewidgetitem.setBackground(QColor(255, 255, 255));
-        __qtablewidgetitem.setForeground(brush);
         self.table_saida.setHorizontalHeaderItem(0, __qtablewidgetitem)
         __qtablewidgetitem1 = QTableWidgetItem()
-        __qtablewidgetitem1.setFont(font2);
-        __qtablewidgetitem1.setBackground(QColor(255, 255, 255));
-        __qtablewidgetitem1.setForeground(brush);
         self.table_saida.setHorizontalHeaderItem(1, __qtablewidgetitem1)
         __qtablewidgetitem2 = QTableWidgetItem()
-        __qtablewidgetitem2.setFont(font2);
-        __qtablewidgetitem2.setBackground(QColor(255, 255, 255));
-        __qtablewidgetitem2.setForeground(brush);
         self.table_saida.setHorizontalHeaderItem(2, __qtablewidgetitem2)
         __qtablewidgetitem3 = QTableWidgetItem()
-        __qtablewidgetitem3.setFont(font2);
-        __qtablewidgetitem3.setBackground(QColor(255, 255, 255));
-        __qtablewidgetitem3.setForeground(brush);
         self.table_saida.setHorizontalHeaderItem(3, __qtablewidgetitem3)
         __qtablewidgetitem4 = QTableWidgetItem()
-        __qtablewidgetitem4.setFont(font2);
-        __qtablewidgetitem4.setBackground(QColor(255, 255, 255));
-        __qtablewidgetitem4.setForeground(brush);
         self.table_saida.setHorizontalHeaderItem(4, __qtablewidgetitem4)
         __qtablewidgetitem5 = QTableWidgetItem()
-        __qtablewidgetitem5.setFont(font2);
-        __qtablewidgetitem5.setBackground(QColor(255, 255, 255));
-        __qtablewidgetitem5.setForeground(brush);
         self.table_saida.setHorizontalHeaderItem(5, __qtablewidgetitem5)
         __qtablewidgetitem6 = QTableWidgetItem()
-        __qtablewidgetitem6.setFont(font2);
-        __qtablewidgetitem6.setBackground(QColor(255, 255, 255));
-        __qtablewidgetitem6.setForeground(brush);
         self.table_saida.setHorizontalHeaderItem(6, __qtablewidgetitem6)
         __qtablewidgetitem7 = QTableWidgetItem()
-        __qtablewidgetitem7.setFont(font2);
-        __qtablewidgetitem7.setBackground(QColor(255, 255, 255));
-        __qtablewidgetitem7.setForeground(brush);
         self.table_saida.setHorizontalHeaderItem(7, __qtablewidgetitem7)
         __qtablewidgetitem8 = QTableWidgetItem()
-        __qtablewidgetitem8.setFont(font2);
-        __qtablewidgetitem8.setBackground(QColor(255, 255, 255));
-        __qtablewidgetitem8.setForeground(brush);
         self.table_saida.setHorizontalHeaderItem(8, __qtablewidgetitem8)
         __qtablewidgetitem9 = QTableWidgetItem()
-        __qtablewidgetitem9.setFont(font2);
-        __qtablewidgetitem9.setBackground(QColor(255, 255, 255));
-        __qtablewidgetitem9.setForeground(brush);
         self.table_saida.setHorizontalHeaderItem(9, __qtablewidgetitem9)
         self.table_saida.setObjectName(u"table_saida")
         self.table_saida.setMinimumSize(QSize(0, 284))
-        self.table_saida.setMaximumSize(QSize(1300, 300))
+        self.table_saida.setMaximumSize(QSize(16777215, 16777215))
         self.table_saida.setContextMenuPolicy(Qt.NoContextMenu)
         self.table_saida.setLayoutDirection(Qt.LeftToRight)
-        self.table_saida.setStyleSheet(u"QTableWidget{\n"
-"	border: 2px solid white;\n"
-"}")
         self.table_saida.setLocale(QLocale(QLocale.Portuguese, QLocale.Brazil))
         self.table_saida.setFrameShape(QFrame.StyledPanel)
         self.table_saida.setFrameShadow(QFrame.Plain)
         self.table_saida.setSizeAdjustPolicy(QAbstractScrollArea.AdjustIgnored)
         self.table_saida.setAutoScroll(True)
+        self.table_saida.setEditTriggers(QAbstractItemView.NoEditTriggers)
         self.table_saida.setDragEnabled(False)
+        self.table_saida.setDragDropOverwriteMode(False)
         self.table_saida.setDragDropMode(QAbstractItemView.NoDragDrop)
         self.table_saida.setAlternatingRowColors(False)
-        self.table_saida.setSelectionMode(QAbstractItemView.ExtendedSelection)
+        self.table_saida.setSelectionMode(QAbstractItemView.NoSelection)
         self.table_saida.setSelectionBehavior(QAbstractItemView.SelectItems)
         self.table_saida.setTextElideMode(Qt.ElideRight)
         self.table_saida.setVerticalScrollMode(QAbstractItemView.ScrollPerItem)
@@ -827,6 +790,7 @@ class Ui_MainWindow(object):
 "    color: black; /* Cor do texto do placeholder */\n"
 "}\n"
 "")
+        self.line_excel.setFrame(True)
         self.line_excel.setAlignment(Qt.AlignCenter)
         self.line_excel.setReadOnly(False)
         self.line_excel.setPlaceholderText(u"Arquivo em excel aparecer\u00e1 aqui")
@@ -893,65 +857,38 @@ class Ui_MainWindow(object):
         if (self.table_base.columnCount() < 9):
             self.table_base.setColumnCount(9)
         __qtablewidgetitem10 = QTableWidgetItem()
-        __qtablewidgetitem10.setFont(font2);
-        __qtablewidgetitem10.setBackground(QColor(255, 255, 255));
-        __qtablewidgetitem10.setForeground(brush);
+        __qtablewidgetitem10.setFont(font);
         self.table_base.setHorizontalHeaderItem(0, __qtablewidgetitem10)
         __qtablewidgetitem11 = QTableWidgetItem()
-        __qtablewidgetitem11.setFont(font2);
-        __qtablewidgetitem11.setBackground(QColor(255, 255, 255));
-        __qtablewidgetitem11.setForeground(brush);
         self.table_base.setHorizontalHeaderItem(1, __qtablewidgetitem11)
         __qtablewidgetitem12 = QTableWidgetItem()
-        __qtablewidgetitem12.setFont(font2);
-        __qtablewidgetitem12.setBackground(QColor(255, 255, 255));
-        __qtablewidgetitem12.setForeground(brush);
         self.table_base.setHorizontalHeaderItem(2, __qtablewidgetitem12)
         __qtablewidgetitem13 = QTableWidgetItem()
-        __qtablewidgetitem13.setFont(font2);
-        __qtablewidgetitem13.setBackground(QColor(255, 255, 255));
-        __qtablewidgetitem13.setForeground(brush);
         self.table_base.setHorizontalHeaderItem(3, __qtablewidgetitem13)
         __qtablewidgetitem14 = QTableWidgetItem()
-        __qtablewidgetitem14.setFont(font2);
-        __qtablewidgetitem14.setBackground(QColor(255, 255, 255));
-        __qtablewidgetitem14.setForeground(brush);
         self.table_base.setHorizontalHeaderItem(4, __qtablewidgetitem14)
         __qtablewidgetitem15 = QTableWidgetItem()
-        __qtablewidgetitem15.setFont(font2);
-        __qtablewidgetitem15.setBackground(QColor(255, 255, 255));
-        __qtablewidgetitem15.setForeground(brush);
         self.table_base.setHorizontalHeaderItem(5, __qtablewidgetitem15)
         __qtablewidgetitem16 = QTableWidgetItem()
-        __qtablewidgetitem16.setFont(font2);
-        __qtablewidgetitem16.setBackground(QColor(255, 255, 255));
-        __qtablewidgetitem16.setForeground(brush);
         self.table_base.setHorizontalHeaderItem(6, __qtablewidgetitem16)
         __qtablewidgetitem17 = QTableWidgetItem()
-        __qtablewidgetitem17.setFont(font2);
-        __qtablewidgetitem17.setBackground(QColor(255, 255, 255));
-        __qtablewidgetitem17.setForeground(brush);
         self.table_base.setHorizontalHeaderItem(7, __qtablewidgetitem17)
         __qtablewidgetitem18 = QTableWidgetItem()
-        __qtablewidgetitem18.setFont(font2);
-        __qtablewidgetitem18.setBackground(QColor(255, 255, 255));
-        __qtablewidgetitem18.setForeground(brush);
         self.table_base.setHorizontalHeaderItem(8, __qtablewidgetitem18)
-        if (self.table_base.rowCount() < 8):
-            self.table_base.setRowCount(8)
         self.table_base.setObjectName(u"table_base")
-        self.table_base.setStyleSheet(u"QTableWidget{\n"
-"	border: 2px solid white;\n"
-"}")
+        self.table_base.setFont(font)
+        self.table_base.setMouseTracking(False)
+        self.table_base.setAutoFillBackground(True)
+        self.table_base.setStyleSheet(u"")
+        self.table_base.setInputMethodHints(Qt.ImhNone)
         self.table_base.setFrameShape(QFrame.StyledPanel)
         self.table_base.setFrameShadow(QFrame.Plain)
+        self.table_base.setDragDropOverwriteMode(False)
+        self.table_base.setSelectionMode(QAbstractItemView.NoSelection)
         self.table_base.setGridStyle(Qt.SolidLine)
-        self.table_base.setSortingEnabled(True)
         self.table_base.setWordWrap(True)
-        self.table_base.setCornerButtonEnabled(False)
-        self.table_base.setRowCount(8)
         self.table_base.horizontalHeader().setDefaultSectionSize(127)
-        self.table_base.horizontalHeader().setProperty(u"showSortIndicator", True)
+        self.table_base.horizontalHeader().setProperty(u"showSortIndicator", False)
 
         self.verticalLayout_3.addWidget(self.table_base)
 
@@ -3200,10 +3137,7 @@ class Ui_MainWindow(object):
         ___qtablewidgetitem17.setText(QCoreApplication.translate("MainWindow", u"Descri\u00e7\u00e3o do Produto", None));
         ___qtablewidgetitem18 = self.table_base.horizontalHeaderItem(8)
         ___qtablewidgetitem18.setText(QCoreApplication.translate("MainWindow", u"Usu\u00e1rio", None));
-#if QT_CONFIG(whatsthis)
-        self.table_base.setWhatsThis(QCoreApplication.translate("MainWindow", u"<html><head/><body><p><br/></p></body></html>", None))
-#endif // QT_CONFIG(whatsthis)
-        self.tb_base.setTabText(self.tb_base.indexOf(self.tabela_base), "")
+        self.tb_base.setTabText(self.tb_base.indexOf(self.tabela_base), QCoreApplication.translate("MainWindow", u"Base", None))
         self.label_em_desenvolvimento.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p align=\"center\"><span style=\" font-size:16pt; font-weight:600; font-style:italic;\">P\u00c1GINA EM DESENVOLVIMENTO</span></p></body></html>", None))
         self.label_quantidade_2.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p align=\"center\"><span style=\" font-size:12pt; font-weight:600;\">Quantidade total de produtos</span></p></body></html>", None))
 #if QT_CONFIG(tooltip)
