@@ -1,16 +1,13 @@
 #*********************************************************************************************************************
 import re
 from PySide6.QtCore import (Qt, QTimer, QDate, QBuffer, QByteArray, QIODevice, Signal,
-                            QCoreApplication, QUrl, QFile,QEvent)
+                            QEvent,QPropertyAnimation,QEasingCurve,QSize,QPoint)
 from PySide6 import QtCore
-from PySide6.QtWidgets import (QApplication, QMainWindow, QWidget, 
-                               QMessageBox, QPushButton, QHBoxLayout, QLineEdit, QDialog,
-                               QLabel, QSizePolicy, QInputDialog, QFileDialog, QVBoxLayout, QTableWidget, QToolBar,
-                               QScrollArea, QComboBox, QMenu, QToolButton, QGridLayout, QLayout,QTableWidgetItem)
-from PySide6.QtGui import (QDoubleValidator, QIcon, QPalette, QColor, QPixmap,QBrush,
+from PySide6.QtWidgets import (QApplication, QMainWindow, QMessageBox, QPushButton,
+                               QLabel, QFileDialog, QVBoxLayout, QTableWidget,
+                               QMenu,QTableWidgetItem)
+from PySide6.QtGui import (QDoubleValidator, QIcon, QColor, QPixmap,QBrush,
                            QAction,QMovie)
-from PySide6.QtWebEngineWidgets import QWebEngineView
-from PySide6.QtUiTools import QUiLoader
 from PySide6 import QtWidgets
 from login import Login
 from mane_python import Ui_MainWindow
@@ -54,22 +51,29 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # funções que precisam do banco de dados
         self.setup_ui()
         
-        
         self.setWindowTitle("Sistema de Gerenciamento")
         self.login_window = login_window
         self.connection = connection
 
         self.connection = sqlite3.connect('banco_de_dados.db')
 
+
+        
+        #Cria as tabelas no banco de dados sempre que executar o sistema em um novo ambiente
+        self.db.create_table_products()
+        self.db.create_table_products_saida()
+        self.db.create_table_users()
+        self.db.create_table_historico()
+
         # Carregar informações ao iniciar
-        self.carregar_informacoes()
+        self.carregar_informacoes_tabela()
 
         # Exibir notificação de status de conexão
         #self.exibir_notificacao()
 
         # Inicializar as configurações antes de chamar fazer_login_automatico
         self.config = Configuracoes_Login(self)
-
+        
 
         # Caminho para o arquivo GIF
         gif_path = os.path.abspath("imagens/oie_3193441C0mFhFhk.gif")  # Substitua pelo caminho correto do seu GIF
@@ -78,7 +82,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.movie = QMovie(gif_path)
 
         self.label_imagem_sistema.setMovie(self.movie)
-
+        
 
         # Iniciar a animação
         self.movie.start()
@@ -105,14 +109,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         # Atualizar o nome do usuário logado
         self.atualizar_usuario_logado(self.config.obter_usuario_logado())
-
         
-        self.frame_imagem_produto.setLayout(QVBoxLayout())
-        self.label_imagem_produto = QLabel(self.frame_imagem_produto)
-        self.label_imagem_produto.setGeometry(0, 0, self.frame_imagem_produto.width(), self.frame_imagem_produto.height())
+        
+        
+        self.frame_imagem_produto_3.setLayout(QVBoxLayout())
+        self.label_imagem_produto = QLabel(self.frame_imagem_produto_3)
+        self.label_imagem_produto.setGeometry(0, 0, self.frame_imagem_produto_3.width(), self.frame_imagem_produto_3.height())
         self.label_imagem_produto.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.label_imagem_produto.setScaledContents(False)
-        self.frame_imagem_produto.layout().addWidget(self.label_imagem_produto)  # Adicionar QLabel ao layout do frame
+        self.frame_imagem_produto_3.layout().addWidget(self.label_imagem_produto)  # Adicionar QLabel ao layout do frame
         self.imagem_carregada_produto = False
 
 
@@ -128,7 +133,19 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.btn_retroceder.setGeometry(5, 5, 30, 30) 
         self.btn_retroceder.setToolTip("Retroceder") # Adiciona uma dica de ferramenta
 
+        '''self.btn_opcoes_navegacao = QPushButton(self)
+        self.btn_opcoes_navegacao.setIcon(QIcon("imagens/54206.png"))
+        self.btn_opcoes_navegacao.setIconSize(QSize(30,30))
+        self.btn_opcoes_navegacao.setGeometry(10,10,150,80)
+        self.btn_opcoes_navegacao.setCursor(Qt.PointingHandCursor)
+        estilo_botao_opcoes_navegacao = """
+            QPushButton {
+                border: none;
+                background: transparent;
+            }
 
+        """
+        self.btn_opcoes_navegacao.setStyleSheet(estilo_botao_opcoes_navegacao)'''
         # Criar o botão btn_opcoes
         self.btn_opcoes = QPushButton("Mais opções", self)
 
@@ -178,8 +195,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.action_cadastro_usuario_massa.triggered.connect(self.show_pg_cadastro_usuario_massa)
         self.action_reiniciar.triggered.connect(self.reiniciar_sistema)
         self.action_historico.triggered.connect(self.show_pg_historico)
-
-
         
         style_sheet = """
             QPushButton {
@@ -198,7 +213,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         
         self.fechar_janela_login_signal.connect(self.fechar_janela_login)  
 
-        
 
         self.fazer_login_automatico()
 
@@ -215,14 +229,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.estoque_produtos = EstoqueProduto(self,self.btn_gerar_pdf,self.btn_gerar_estorno,
                                                self.btn_gerar_saida,self.btn_limpar_tabelas,self.btn_salvar_tables,
                                                self.btn_atualizar_saida,self.btn_atualizar_estoque,self.btn_historico,
-                                               self.btn_incluir_no_sistema,self.btn_abrir_planilha,self.btn_incluir_no_sistema)
-        
+                                               self.btn_incluir_no_sistema,self.btn_abrir_planilha,self.btn_incluir_no_sistema) 
 
         # Criar instância de TabelaProdutos passando uma referência à MainWindow
         self.atualizar_produto_dialog = AtualizarProduto(self)
 
         # Criar instância de AtualizarProduto passando uma referência à MainWindow e à tabela de produtos
-        self.tabela_produtos_dialog = TabelaProdutos(self, self.dateEdit)
+        self.tabela_produtos_dialog = TabelaProdutos(self, self.dateEdit_3)
 
         # Criar instância da TabelaUsuario
         self.tabela_usuario_dialogo = TabelaUsuario(self)
@@ -233,7 +246,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.criar_botoes_avancar_voltar()
 
-        self.dateEdit.setDate(QDate.currentDate())
+        self.dateEdit_3.setDate(QDate.currentDate())
 
         self.txt_cep.textChanged.connect(self.formatar_cep)
         self.txt_cpf.textChanged.connect(self.formatar_cpf)
@@ -242,12 +255,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.txt_telefone.textChanged.connect(self.formatar_telefone)
 
         self.btn_editar_cadastro.clicked.connect(self.mostrar_tabela_usuarios)
-        self.btn_carregar_imagem_2.clicked.connect(self.carregar_imagem_usuario)
+        self.btn_carregar_imagem_4.clicked.connect(self.carregar_imagem_usuario)
  
 
         # Lista de páginas na ordem desejada
-        self.paginas = [self.home_pag, self.page_estoque, self.pg_cadastrar_produto, 
-                        self.pg_cadastro_usuario, self.pg_cliente, self.pg_configuracoes, 
+        self.paginas = [self.home_pag, self.pag_estoque, self.pg_cadastrar_produto, 
+                        self.pg_cadastrar_usuario, self.pg_clientes, self.pg_configuracoes, 
                         self.pg_contato]
         self.pagina_atual_index = 0  # Índice da página atual na lista
         self.historico_paginas = []  # Lista para armazenar o histórico de páginas
@@ -271,24 +284,24 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         validator.setNotation(QDoubleValidator.StandardNotation)  
         validator.setDecimals(2)
         validator.setTop(1000000000)  
-        self.txt_valor_produto.setValidator(validator)
+        self.txt_valor_produto_3.setValidator(validator)
 
 
-        self.txt_valor_produto.editingFinished.connect(self.formatar_moeda)
+        self.txt_valor_produto_3.editingFinished.connect(self.formatar_moeda)
 
         validador = QDoubleValidator()
         validador.setNotation(QDoubleValidator.StandardNotation)  
         validador.setRange(0.00, 100.00)  
         validador.setDecimals(2)
-        self.txt_desconto.setValidator(validador)
-        self.txt_desconto.editingFinished.connect(self.formatar_porcentagem)
+        self.txt_desconto_3.setValidator(validador)
+        self.txt_desconto_3.editingFinished.connect(self.formatar_porcentagem)
 
         
 
 
         self.btn_home.clicked.connect(lambda: self.paginas_sistemas.setCurrentWidget(self.home_pag))
-        self.btn_clientes.clicked.connect(lambda: self.paginas_sistemas.setCurrentWidget(self.pg_cliente))
-        self.btn_cadastro_usuario.clicked.connect(lambda: self.paginas_sistemas.setCurrentWidget(self.pg_cadastro_usuario))
+        self.btn_clientes.clicked.connect(lambda: self.paginas_sistemas.setCurrentWidget(self.pg_clientes))
+        self.btn_cadastrar_usuarios.clicked.connect(lambda: self.paginas_sistemas.setCurrentWidget(self.pg_cadastrar_usuario))
         self.btn_configuracoes.clicked.connect(lambda: self.paginas_sistemas.setCurrentWidget(self.pg_configuracoes))      
         self.btn_cadastrar_produto.clicked.connect(lambda: self.paginas_sistemas.setCurrentWidget(self.pg_cadastrar_produto))
         self.btn_ver_item.clicked.connect(lambda: self.paginas_sistemas.setCurrentWidget(self.page_estoque))
@@ -308,20 +321,77 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.btn_editar.clicked.connect(self.exibir_tabela_produtos)
         self.btn_atualizar_produto.clicked.connect(self.atualizar_produto)
         self.btn_carregar_imagem.clicked.connect(self.carregar_imagem_produto)
-        
+        #self.btn_opcoes_navegacao.clicked.connect(self.abrir_menu_opcoes)
 
+        
+        
         self.pagina_configuracoes = Pagina_Configuracoes(self.tool_tema,self.tool_atalhos,
                                                          self.tool_atualizacoes,self.tool_hora,self.tool_fonte,
-                                                         self.frame_pg_configuracoes,self.frame_pg_configuracoes1,self,self,
-                                                         self.frame_botoes_navegacoes,self.label_8,self.centralwidget,
-                                                         self.frame_page_estoque,self.frame_2,self.paginas_sistemas,
-                                                         self.pg_cadastro_usuario,self.frame_cadastro_usuario,
+                                                         self.frame_botoes_configuracoes,self.frame_pg_configuracoes,self,self,
+                                                         self.frame_botoes_navegacoes,self.label_configuracoes,self.centralwidget,
+                                                         self.frame_pag_estoque,self.frame_2,self.paginas_sistemas,
+                                                         self.pg_cadastrar_usuario,self.frame_pag_cadastrar_usuario,
                                                          self.btn_opcoes,self.btn_avancar,self.btn_retroceder,self.btn_home,self.btn_verificar_estoque,
-                                                         self.btn_cadastrar_produto, self.btn_cadastro_usuario, self.btn_clientes,self.btn_configuracoes,
+                                                         self.btn_cadastrar_produto, self.btn_cadastrar_usuarios, self.btn_clientes,self.btn_configuracoes,
                                                          self.btn_abrir_planilha,self.btn_importar,self.btn_gerar_saida,
                                                          self.line_excel,self.btn_gerar_estorno,
                                                          self.label_cadastramento,self.label_cadastramento_produtos,self.frame_valor_total_produtos,self.frame_valor_do_desconto,
                                                          self.frame_valor_desconto,self.frame_quantidade)
+             
+    '''def abrir_menu_opcoes(self):
+        # Verifica se já armazenamos a posição original da página
+        if not hasattr(self, "posicao_original_paginas"):
+            self.posicao_original_paginas = self.paginas_sistemas.pos().x()
+
+        largura_atual = self.frame_botoes_navegacoes.width()  # Obtém a largura atual
+        nova_largura = 200 if largura_atual == 9 else 9  # Expande ou recolhe o menu
+
+        # Posição do botão
+        posicao_botao_x = self.btn_opcoes_navegacao.x()
+        
+        # Definir deslocamento das páginas
+        deslocamento_x = 60  # Ajuste conforme necessário
+
+        # Determinar nova posição das páginas
+        if nova_largura == 9:  # Se o menu for recolhido, mover para a esquerda
+            nova_posicao_paginas_x = self.posicao_original_paginas - deslocamento_x
+        else:  # Se o menu for expandido, voltar para a posição original
+            nova_posicao_paginas_x = self.posicao_original_paginas
+
+        # Duração da animação
+        duracao_animacao = 400  
+
+        # Animação do frame de navegação (expande/recolhe)
+        self.animacao_frame = QPropertyAnimation(self.frame_botoes_navegacoes, b"maximumWidth")
+        self.animacao_frame.setDuration(duracao_animacao)
+        self.animacao_frame.setStartValue(largura_atual)
+        self.animacao_frame.setEndValue(nova_largura)
+        self.animacao_frame.setEasingCurve(QEasingCurve.InOutQuart)
+
+        # Animação das páginas
+        self.animacao_paginas = QPropertyAnimation(self.paginas_sistemas, b"pos")
+        self.animacao_paginas.setDuration(duracao_animacao)
+        self.animacao_paginas.setStartValue(self.paginas_sistemas.pos())
+        self.animacao_paginas.setEndValue(QPoint(nova_posicao_paginas_x, self.paginas_sistemas.y()))
+        self.animacao_paginas.setEasingCurve(QEasingCurve.InOutQuart)
+
+        # Inicia as animações
+        self.animacao_frame.start()
+        self.animacao_paginas.start()'''
+
+
+
+    '''def boas_vindas(self):
+        msg = QMessageBox()
+        msg.setIcon(QMessageBox.Information)
+        msg.setWindowTitle("Boas Vindas")
+        msg.setText(f"{self.config.obter_usuario_logado()}, seja bem-vindo(a) ao sistema de gerenciamento.\n"
+                    "É um prazer tê-lo(a) conosco em nosso sistema.\n"
+                    "Esperamos que as informações aqui contidas sejam de grande ajuda.\n"
+                    "Pedimos que sempre que possível, você possa avaliar e sugerir melhorias.")
+        msg.setStandardButtons(QMessageBox.Ok)
+        msg.exec()'''
+    
 
     def atualizar_usuario_logado(self, user):
         if user:
@@ -366,7 +436,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         return item
     
 
-    def carregar_informacoes(self):
+    def carregar_informacoes_tabela(self):
         # Limpa as tabelas antes de carregar novas informações
         self.table_base.setRowCount(0)
         self.table_saida.setRowCount(0)
@@ -398,7 +468,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def mostrar_page_estoque(self):
         # Navegar para a página de estoque
-        self.paginas_sistemas.setCurrentWidget(self.page_estoque)
+        self.paginas_sistemas.setCurrentWidget(self.pag_estoque)
         
         # Atualizar a tabela na página de estoque
         self.estoque_produtos.tabela_estoque()
@@ -1053,10 +1123,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.campos_obrigatorios = {
             'produto': self.txt_produto,
             'quantidade': self.txt_quantidade,
-            'valor_produto': self.txt_valor_produto,
-            'data_compra': self.dateEdit,
-            'cliente': self.txt_cliente,
-            'descricao': self.txt_descricao_produto
+            'valor_produto': self.txt_valor_produto_3,
+            'data_compra': self.dateEdit_3,
+            'cliente': self.txt_cliente_3,
+            'descricao': self.txt_descricao_produto_3
         }
 
         self.frames_erro = {
@@ -1832,6 +1902,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         pass
 
 
+
+
+
+
+
+
 # Função principal
 if __name__ == '__main__':
     app = QApplication(sys.argv)
@@ -1843,3 +1919,6 @@ if __name__ == '__main__':
 
 
     
+
+
+

@@ -1,6 +1,9 @@
 import msal
 from msal import ConfidentialClientApplication,PublicClientApplication
-from PySide6.QtWidgets import QWidget, QMessageBox, QInputDialog, QDialog, QVBoxLayout, QLabel, QPushButton,QMainWindow
+from PySide6.QtWidgets import (
+    QWidget, QMessageBox, QInputDialog, QDialog, 
+    QVBoxLayout, QLabel, QPushButton,QMainWindow,QLabel,QLineEdit,QComboBox,
+    QFileDialog,QHBoxLayout)
 from ui_login_3 import Ui_Mainwindow_Login
 from database import DataBase
 import sys
@@ -16,6 +19,8 @@ import ssl
 import requests
 import os
 import webbrowser
+import sqlite3
+
 
 class Login(QMainWindow, Ui_Mainwindow_Login):  # Altere QWidget para QMainWindow
     def __init__(self, login_window=None):
@@ -28,25 +33,26 @@ class Login(QMainWindow, Ui_Mainwindow_Login):  # Altere QWidget para QMainWindo
         
         self.users = DataBase()  # Defina self.users aqui
 
-        
-        
-
-        
-        # Desabilitar a verificação SSL
-        '''ssl._create_default_https_context = ssl._create_unverified_context
-        requests.packages.urllib3.disable_warnings(requests.packages.urllib3.exceptions.InsecureRequestWarning)'''
-        
         self.setWindowTitle("Login do Sistema")
         self.btn_login.clicked.connect(self.checkLogin)
+        
+          # Conexão do link "Primeiro Acesso"
+        self.label_primeiro_acesso.linkActivated.connect(self.abrir_janela_primeiro_acesso)
         
         if self.config.mantem_conectado:
             self.txt_usuario.setText(self.config.usuario)
             self.btn_manter_conectado.setChecked(True)
 
-
         self.login_window = login_window
 
         self.label_trocar_senha.linkActivated.connect(self.exibir_janela_trocar_senha)
+        
+    
+        
+    def abrir_janela_primeiro_acesso(self):
+        # Criar e abrir a janela de cadastro
+        cadastro_dialog = PrimeiroAcesso(self)
+        cadastro_dialog.show()
 
     def exibir_janela_trocar_senha(self):
         from config_senha import TrocarSenha 
@@ -55,14 +61,25 @@ class Login(QMainWindow, Ui_Mainwindow_Login):  # Altere QWidget para QMainWindo
 
     def keyPressEvent(self, event):
         if event.key() == Qt.Key_Enter or event.key() == Qt.Key_Return:
+            # Desativa o botão para evitar múltiplos cliques ou pressionamentos rápidos
+            if not self.btn_login.isEnabled():
+                return
+            # Desativa o botão de login para evitar múltiplos cliques rápidos
+            self.btn_login.setEnabled(False)
+            
+            # Chama o método de login
             self.checkLogin()
+            
+            # Reativa o botão depois de 2 segundo (ou o tempo necessário)
+            QTimer.singleShot(2000, lambda: self.btn_login.setEnabled(True))
+            
             return
         else:
             super().keyPressEvent(event)
 
+
     def checkLogin(self):
         if hasattr(self, "autenticando") and self.autenticando:
-            print("Autenticação já em andamento. Aguardando...")
             return
         
         self.autenticacao = True
@@ -78,28 +95,18 @@ class Login(QMainWindow, Ui_Mainwindow_Login):  # Altere QWidget para QMainWindo
             manter_conectado = self.btn_manter_conectado.isChecked()
             self.config.salvar_configuracoes(usuario_ou_email, manter_conectado)
         else:
-            self.mostrarMensagem("Erro", "Login ou senha incorretos", QMessageBox.Warning)
+            self.mostrarMensagem(f"Erro", f"Login ou senha incorretos.\nTentativa {self.tentativas + 1} de 3", QMessageBox.Warning)
             self.users.close_connection()
             self.tentativas += 1
             if self.tentativas >= 3:
-                self.mostrarMensagem("Erro", "Número máximo de tentativas excedido.", QMessageBox.Critical)
+                self.mostrarMensagem("Erro", "Número máximo de tentativas excedido.\n O sistema será encerrado, se o erro persistir entre em contato com seu administrador", QMessageBox.Critical)
+                #self.abrir_janela_primeiro_acesso()
                 sys.exit()
             return
 
-        # Chamar autenticação via Azure AD com notificação push
+        # Autenticação concluída, sem Azure agora
         self.btn_login.setEnabled(False)  # Desativa o botão para evitar cliques duplos
-        access_token = self.autenticar_com_azure()
-        self.btn_login.setEnabled(True)   # Reativa o botão após a autenticação
-        self.autenticacao = False
-
-
-        if not access_token:
-            self.mostrarMensagem("Erro", "Falha ao autenticar via Azure AD.", QMessageBox.Warning)
-            self.tentativas += 1
-            if self.tentativas >= 3:
-                self.mostrarMensagem("Erro", "Número máximo de tentativas excedido.", QMessageBox.Critical)
-                sys.exit()
-            return
+        self.btn_login.setEnabled(True)   # Reativa o botão após o processo
 
         # Se autenticado com sucesso, abre a tela principal
         print("Login bem-sucedido!")
@@ -108,8 +115,7 @@ class Login(QMainWindow, Ui_Mainwindow_Login):  # Altere QWidget para QMainWindo
         self.w.show()
         self.close()
         self.tentativas = 0
-
-
+        #QTimer.singleShot(2000,self.w.boas_vindas)
 
 
     def verificar_codigo_totp(self, secret, codigo):
@@ -244,41 +250,6 @@ class Login(QMainWindow, Ui_Mainwindow_Login):  # Altere QWidget para QMainWindo
         self.txt_usuario.setText(self.config.usuario)
         self.btn_manter_conectado.setChecked(self.config.mantem_conectado)
         
-            
-
-    def autenticar_com_azure(self):
-        CLIENT_ID = "a762a92a-1751-4c32-88db-43d5645cbb19"
-        TENANT_ID = "2923a0b2-b49d-488a-a010-519f426261e5"
-        SCOPES = ["https://graph.microsoft.com/User.Read"]
-
-        app = PublicClientApplication(
-            CLIENT_ID,
-            authority=f"https://login.microsoftonline.com/{TENANT_ID}",
-        )
-
-        # REMOVER QUALQUER SESSÃO ARMAZENADA NO MSAL
-        accounts = app.get_accounts()
-        for account in accounts:
-            print(f"Removendo sessão armazenada para {account['username']}")
-            app.remove_account(account)
-
-        try:
-            # FORÇAR SEMPRE A AUTENTICAÇÃO INTERATIVA
-            token_result = app.acquire_token_interactive(scopes=SCOPES, prompt="login",login_hint="keven.lucas00_hotmail.com#EXT#@KevenLucas.onmicrosoft.com")
-
-            if "access_token" in token_result:
-                print("Autenticação bem-sucedida!")
-                return token_result["access_token"]
-            else:
-                print("Erro ao autenticar:", token_result.get("error_description"))
-                return None
-
-        except Exception as e:
-            print("Erro durante a autenticação:", e)
-            return None
-
-
-
 
     def mostrarMensagem(self, titulo, mensagem, icone):
         msg = QMessageBox()
@@ -287,12 +258,141 @@ class Login(QMainWindow, Ui_Mainwindow_Login):  # Altere QWidget para QMainWindo
         msg.setText(mensagem)
         msg.exec()
 
+class PrimeiroAcesso(QMainWindow):  
+    def __init__(self, parent=None):
+        super(PrimeiroAcesso, self).__init__(parent)
+        self.setWindowTitle("Primeiro Acesso")
+        
+        self.setMinimumWidth(400)
+        self.setMinimumHeight(400)
+        
+        self.central_widget = QWidget()
+        self.setCentralWidget(self.central_widget)
+        
+        self.layout = QVBoxLayout(self.central_widget)
+        
+         # Nome
+        hbox_nome = QHBoxLayout()
+        self.label_nome = QLabel("Nome: ")
+        self.txt_nome = QLineEdit()
+        hbox_nome.addWidget(self.label_nome)
+        hbox_nome.addWidget(self.txt_nome)
+        self.layout.addLayout(hbox_nome)
+
+        # Usuário
+        hbox_usuario = QHBoxLayout()
+        self.label_usuario = QLabel("Usuário: ")
+        self.txt_usuario = QLineEdit()
+        hbox_usuario.addWidget(self.label_usuario)
+        hbox_usuario.addWidget(self.txt_usuario)
+        self.layout.addLayout(hbox_usuario)
+
+        # Senha
+        hbox_senha = QHBoxLayout()
+        self.label_senha = QLabel("Senha: ")
+        self.txt_senha = QLineEdit()
+        self.txt_senha.setEchoMode(QLineEdit.Password)  # Ocultar senha
+        hbox_senha.addWidget(self.label_senha)
+        hbox_senha.addWidget(self.txt_senha)
+        self.layout.addLayout(hbox_senha)
 
 
+         # Confirmar Senha
+        hbox_confirmar_senha = QHBoxLayout()
+        self.label_confirmar_senha = QLabel("Confirmar senha: ")
+        self.txt_confirmar_senha = QLineEdit()
+        hbox_confirmar_senha.addWidget(self.label_confirmar_senha)
+        hbox_confirmar_senha.addWidget(self.txt_confirmar_senha)
+        self.layout.addLayout(hbox_confirmar_senha)
+        
+        # ComboBox de Acesso
+        hbox_acesso = QHBoxLayout()
+        self.label_acesso = QLabel("Tipo de acesso: ")
+        hbox_acesso.addWidget(self.label_acesso)
+        self.combobox_acesso = QComboBox()
+        self.combobox_acesso.addItem("Convidado")
+        self.combobox_acesso.addItem("Administrador")
+        self.combobox_acesso.addItem("Usuário")
+        hbox_acesso.addWidget(self.combobox_acesso)
+        self.layout.addLayout(hbox_acesso)
 
-        
-        
 
+        self.btn_cadastrar = QPushButton("Realizar cadastro")
+        self.btn_cadastrar.clicked.connect(self.inserir_usuario_no_banco_de_dados)
+        self.layout.addWidget(self.btn_cadastrar)
+
+        # Exibir a mensagem assim que a janela de primeiro acesso for exibida
+        self.mostrar_mensagem(
+            "Informação",
+            "O usuário será cadastrado com  informações temporárias\n"
+            "assim que logado no sistema, ir em Cadastrar Usuário e incluir/alterar todas as informações necessárias. ",
+            QMessageBox.Information
+        )
         
+    def inserir_usuario_no_banco_de_dados(self):   
+        # Realizar as verificações de campos
+        nome = self.txt_nome.text()
+        usuario = self.txt_usuario.text()
+        senha = self.txt_senha.text()
+        confirmar_senha = self.txt_confirmar_senha.text()
+        acesso = self.combobox_acesso.currentText()
+
+        # Verificar se os campos obrigatórios estão preenchidos
+        if not (nome and usuario and senha and confirmar_senha):
+            self.mostrar_mensagem("Erro", "Por favor, preencha todos os campos.", QMessageBox.Warning)
+            return
+
+        # Verificar se as senhas coincidem
+        if senha != confirmar_senha:
+            self.mostrar_mensagem("Erro", "As senhas não coincidem.", QMessageBox.Warning)
+            return
+
+        if self.combobox_acesso.currentText() == "Administrador":
+            self.mostrar_mensagem(
+                "Erro",
+                "Para primeiro acesso o usuário pode ser cadastrado como Convidado ou Usuário comum.\n" 
+                "O tipo de acesso para usuário administrador só pode ser realizado por outro administrador.\n"
+                "Por favor, entre em contato com seu administrador para revogar seu privilégio.\n"
+                "Se o erro persistir, entre em contato com o desenvolvedor do sistema.",
+                QMessageBox.Warning
+            )
+            return
+
+        # Conectar ao banco de dados e inserir os dados
+        try:
+            conn = sqlite3.connect("banco_de_dados.db")
+            cursor = conn.cursor()
+
+            # Verificar se o usuário já existe
+            cursor.execute("SELECT * FROM users WHERE id = ?", (usuario,))
+            existing_user = cursor.fetchone()
+            if existing_user:
+                self.mostrar_mensagem("Erro", "Usuário já existe!", QMessageBox.Warning)
+                conn.close()
+                return
+
+            # Inserir o novo usuário no banco de dados
+            cursor.execute("INSERT INTO users (Nome, Usuário, Senha, 'Confirmar Senha', Acesso) VALUES (?, ?, ?, ?, ?)", 
+                        (nome, usuario, senha, confirmar_senha, acesso))
+            conn.commit()
+            conn.close()
+
+            # Mensagem de sucesso
+            self.mostrar_mensagem("Sucesso", "Usuário cadastrado com sucesso!", QMessageBox.Information)
+            self.close()  # Fecha a janela de cadastro
+
+        except sqlite3.Error as e:
+            print(f"Erro ao salvar o usuário: {e}")
+
+
+    def mostrar_mensagem(self, titulo, mensagem, icone):
+        msg = QMessageBox()
+        msg.setIcon(icone)
+        msg.setWindowTitle(titulo)
+        msg.setText(mensagem)
+        msg.exec_()
+   
         
-        
+    def esconder_label_acesso(self):
+        pass
+    

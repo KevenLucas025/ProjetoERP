@@ -112,6 +112,9 @@ class DataBase:
         except Exception as e:
             print("Erro ao criar tabela de produtos:", e)
 
+    def create_table_historico(self):
+        pass
+
 #*********************************************************************************************************************
     def insert_product(self, produto, quantidade, valor_real, desconto, data_compra, 
                     codigo_item, cliente, descricao_produto, usuario, imagem=None):

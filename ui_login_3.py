@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'login_3.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.6.2
+## Created by: Qt User Interface Compiler version 6.8.2
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -61,7 +61,7 @@ class Ui_Mainwindow_Login(object):
         self.label_primeiro_acesso.setSizeIncrement(QSize(0, 0))
         self.label_primeiro_acesso.setBaseSize(QSize(0, 0))
         self.label_primeiro_acesso.setStyleSheet(u"color: rgb(255, 255, 255);")
-        self.label_primeiro_acesso.setTextFormat(Qt.PlainText)
+        self.label_primeiro_acesso.setTextFormat(Qt.AutoText)
         self.label_primeiro_acesso.setScaledContents(False)
         self.label_primeiro_acesso.setMargin(17)
         self.label_primeiro_acesso.setIndent(-1)
@@ -109,7 +109,7 @@ class Ui_Mainwindow_Login(object):
         self.btn_login.setMinimumSize(QSize(90, 28))
         self.btn_login.setMaximumSize(QSize(90, 38))
         self.btn_login.setBaseSize(QSize(0, 0))
-        self.btn_login.setCursor(QCursor(Qt.PointingHandCursor))
+        self.btn_login.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.btn_login.setStyleSheet(u"QPushButton {\n"
 "    color: rgb(255, 255, 255);\n"
 "    border-radius: 3px;\n"
@@ -131,7 +131,7 @@ class Ui_Mainwindow_Login(object):
         self.txt_senha.setSizePolicy(sizePolicy1)
         self.txt_senha.setMinimumSize(QSize(0, 0))
         self.txt_senha.setMaximumSize(QSize(166675, 166675))
-        self.txt_senha.setCursor(QCursor(Qt.IBeamCursor))
+        self.txt_senha.setCursor(QCursor(Qt.CursorShape.IBeamCursor))
         self.txt_senha.setStyleSheet(u"QLineEdit {\n"
 "    border: 2px solid #0078d4;  /* Cor da borda */\n"
 "    border-radius: 5px;          /* Bordas arredondadas */\n"
@@ -155,7 +155,7 @@ class Ui_Mainwindow_Login(object):
         self.txt_usuario.setSizePolicy(sizePolicy1)
         self.txt_usuario.setMinimumSize(QSize(0, 0))
         self.txt_usuario.setMaximumSize(QSize(164578, 1646578))
-        self.txt_usuario.setCursor(QCursor(Qt.IBeamCursor))
+        self.txt_usuario.setCursor(QCursor(Qt.CursorShape.IBeamCursor))
         self.txt_usuario.setStyleSheet(u"QLineEdit {\n"
 "    border: 2px solid #0078d4;  /* Cor da borda */\n"
 "    border-radius: 5px;          /* Bordas arredondadas */\n"
@@ -189,7 +189,7 @@ class Ui_Mainwindow_Login(object):
         sizePolicy1.setHeightForWidth(self.label_foto_sistema.sizePolicy().hasHeightForWidth())
         self.label_foto_sistema.setSizePolicy(sizePolicy1)
         self.label_foto_sistema.setMaximumSize(QSize(250, 300))
-        self.label_foto_sistema.setPixmap(QPixmap(u"imagens/74472.png"))
+        self.label_foto_sistema.setPixmap(QPixmap(u"../../../Downloads/74472.png"))
         self.label_foto_sistema.setScaledContents(True)
 
         self.layout_login_tela.addWidget(self.frame, 1, 0, 1, 1)
@@ -206,7 +206,7 @@ class Ui_Mainwindow_Login(object):
 
     def retranslateUi(self, Mainwindow_Login):
         Mainwindow_Login.setWindowTitle(QCoreApplication.translate("Mainwindow_Login", u"MainWindow", None))
-        self.label_primeiro_acesso.setText(QCoreApplication.translate("Mainwindow_Login", u"Primeiro acesso?", None))
+        self.label_primeiro_acesso.setText(QCoreApplication.translate("Mainwindow_Login", u"<html><head/><body><p><a href=\"#\"><span style=\" text-decoration: underline; color:#ffffff;\">Primeiro acesso?</span></a></p></body></html>", None))
         self.btn_manter_conectado.setText(QCoreApplication.translate("Mainwindow_Login", u"Mantenha-me conectado", None))
 #if QT_CONFIG(shortcut)
         self.btn_manter_conectado.setShortcut("")

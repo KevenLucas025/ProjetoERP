@@ -22,7 +22,7 @@ class AtualizarProduto(QDialog):
         self.resize(300, 100)
 
     def atualizar_tabela_produtos(self):
-        dialog_tabela = TabelaProdutos(self.main_window, self.main_window.dateEdit)
+        dialog_tabela = TabelaProdutos(self.main_window, self.main_window.dateEdit_3)
         dialog_tabela.preencher_tabela_produtos()
         dialog_tabela.exec()
 
