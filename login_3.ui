@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="sizePolicy">
-   <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+   <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
     <horstretch>0</horstretch>
     <verstretch>0</verstretch>
    </sizepolicy>
@@ -25,7 +25,7 @@
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout_3">
     <item row="0" column="0">
-     <layout class="QGridLayout" name="layout_login_tela" rowstretch="0,0,0,0,0,0,0,0,0,0,0" columnstretch="0">
+     <layout class="QGridLayout" name="layout_login_tela" rowstretch="0,0,0,0,0,0,0,0,0,0,0" columnstretch="0,0,0">
       <property name="sizeConstraint">
        <enum>QLayout::SetDefaultConstraint</enum>
       </property>
@@ -47,7 +47,72 @@
       <property name="verticalSpacing">
        <number>6</number>
       </property>
-      <item row="10" column="0">
+      <item row="1" column="1">
+       <widget class="QFrame" name="frame">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>205</width>
+          <height>190</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>250</width>
+          <height>250</height>
+         </size>
+        </property>
+        <property name="sizeIncrement">
+         <size>
+          <width>0</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="frameShape">
+         <enum>QFrame::NoFrame</enum>
+        </property>
+        <property name="frameShadow">
+         <enum>QFrame::Raised</enum>
+        </property>
+        <widget class="QLabel" name="label_foto_sistema">
+         <property name="geometry">
+          <rect>
+           <x>0</x>
+           <y>10</y>
+           <width>221</width>
+           <height>221</height>
+          </rect>
+         </property>
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>250</width>
+           <height>300</height>
+          </size>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+         <property name="pixmap">
+          <pixmap>Projeto ERP/imagens/74472.png</pixmap>
+         </property>
+         <property name="scaledContents">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </widget>
+      </item>
+      <item row="10" column="1">
        <widget class="QFrame" name="frame_login_botao">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
@@ -76,8 +141,8 @@
         <widget class="QLabel" name="label_primeiro_acesso">
          <property name="geometry">
           <rect>
-           <x>92</x>
-           <y>105</y>
+           <x>40</x>
+           <y>100</y>
            <width>141</width>
            <height>51</height>
           </rect>
@@ -116,7 +181,8 @@
           <string notr="true">color: rgb(255, 255, 255);</string>
          </property>
          <property name="text">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;a href=&quot;#&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#ffffff;&quot;&gt;Primeiro acesso?&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          <string>&lt;a href=&quot;primeiro_acesso&quot; style=&quot;color: white;&quot;&gt;Primeiro acesso&lt;/a&gt;
+</string>
          </property>
          <property name="textFormat">
           <enum>Qt::AutoText</enum>
@@ -137,8 +203,8 @@
          </property>
          <property name="geometry">
           <rect>
-           <x>79</x>
-           <y>167</y>
+           <x>25</x>
+           <y>150</y>
            <width>158</width>
            <height>24</height>
           </rect>
@@ -192,8 +258,8 @@
         <widget class="QLabel" name="label_trocar_senha">
          <property name="geometry">
           <rect>
-           <x>92</x>
-           <y>200</y>
+           <x>40</x>
+           <y>170</y>
            <width>130</width>
            <height>49</height>
           </rect>
@@ -232,7 +298,7 @@
           <string notr="true">color: rgb(255, 255, 255);</string>
          </property>
          <property name="text">
-          <string notr="true">&lt;a href=&quot;trocar_senha&quot; style=&quot;color: white;&quot;&gt;Esqueci a senha&lt;/a&gt;</string>
+          <string>&lt;a href=&quot;trocar_senha&quot; style=&quot;color: white;&quot;&gt;Esqueci a senha&lt;/a&gt;</string>
          </property>
          <property name="textFormat">
           <enum>Qt::AutoText</enum>
@@ -256,7 +322,7 @@
         <widget class="QPushButton" name="btn_login">
          <property name="geometry">
           <rect>
-           <x>101</x>
+           <x>50</x>
            <y>250</y>
            <width>90</width>
            <height>38</height>
@@ -314,8 +380,8 @@ QPushButton:hover {
         <widget class="QLineEdit" name="txt_senha">
          <property name="geometry">
           <rect>
-           <x>80</x>
-           <y>70</y>
+           <x>30</x>
+           <y>60</y>
            <width>128</width>
            <height>32</height>
           </rect>
@@ -378,7 +444,7 @@ QLineEdit::placeholder {
         <widget class="QLineEdit" name="txt_usuario">
          <property name="geometry">
           <rect>
-           <x>80</x>
+           <x>30</x>
            <y>20</y>
            <width>128</width>
            <height>32</height>
@@ -439,69 +505,56 @@ QLineEdit::placeholder {
        </widget>
       </item>
       <item row="1" column="0">
-       <widget class="QFrame" name="frame">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
+       <spacer name="horizontalSpacer">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
         </property>
-        <property name="minimumSize">
+        <property name="sizeHint" stdset="0">
          <size>
-          <width>205</width>
-          <height>190</height>
+          <width>40</width>
+          <height>20</height>
          </size>
         </property>
-        <property name="maximumSize">
+       </spacer>
+      </item>
+      <item row="1" column="2">
+       <spacer name="horizontalSpacer_2">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
          <size>
-          <width>250</width>
-          <height>250</height>
+          <width>40</width>
+          <height>20</height>
          </size>
         </property>
-        <property name="sizeIncrement">
+       </spacer>
+      </item>
+      <item row="10" column="0">
+       <spacer name="horizontalSpacer_3">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
          <size>
-          <width>0</width>
-          <height>0</height>
+          <width>40</width>
+          <height>20</height>
          </size>
         </property>
-        <property name="frameShape">
-         <enum>QFrame::NoFrame</enum>
+       </spacer>
+      </item>
+      <item row="10" column="2">
+       <spacer name="horizontalSpacer_4">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
         </property>
-        <property name="frameShadow">
-         <enum>QFrame::Raised</enum>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
         </property>
-        <widget class="QLabel" name="label_foto_sistema">
-         <property name="geometry">
-          <rect>
-           <x>28</x>
-           <y>10</y>
-           <width>221</width>
-           <height>221</height>
-          </rect>
-         </property>
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>250</width>
-           <height>300</height>
-          </size>
-         </property>
-         <property name="text">
-          <string/>
-         </property>
-         <property name="pixmap">
-          <pixmap>../../../Downloads/74472.png</pixmap>
-         </property>
-         <property name="scaledContents">
-          <bool>true</bool>
-         </property>
-        </widget>
-       </widget>
+       </spacer>
       </item>
      </layout>
     </item>

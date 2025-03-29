@@ -52,9 +52,6 @@ class EstoqueProduto(QWidget):
         self.btn_historico.clicked.connect(self.exibir_historico)    
         self.btn_incluir_no_sistema.clicked.connect(self.incluir_sistema)
         self.btn_abrir_planilha.clicked.connect(self.abrir_planilha)
- 
-
-    
 
 
     # Função auxiliar para criar um QTableWidgetItem com texto centralizado
@@ -101,7 +98,7 @@ class EstoqueProduto(QWidget):
         self.table_base.setHorizontalHeaderLabels(coluna_estoque)
 
         # Limpando o QTableWidget antes de popular com novos dados
-        self.table_base.clearContents()
+        #self.table_base.clearContents()
         self.table_base.setRowCount(0)  # Certifique-se de que as linhas estão limpas
 
         # Iterando sobre os dados do DataFrame e adicionando-os ao QTableWidget

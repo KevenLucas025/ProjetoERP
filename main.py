@@ -5,7 +5,7 @@ from PySide6.QtCore import (Qt, QTimer, QDate, QBuffer, QByteArray, QIODevice, S
 from PySide6 import QtCore
 from PySide6.QtWidgets import (QApplication, QMainWindow, QMessageBox, QPushButton,
                                QLabel, QFileDialog, QVBoxLayout, QTableWidget,
-                               QMenu,QTableWidgetItem)
+                               QMenu,QTableWidgetItem,QDialog)
 from PySide6.QtGui import (QDoubleValidator, QIcon, QColor, QPixmap,QBrush,
                            QAction,QMovie)
 from PySide6 import QtWidgets
@@ -22,6 +22,7 @@ from tabelausuario import TabelaUsuario
 from atualizarusuario import AtualizarUsuario
 from pg_configuracoes import Pagina_Configuracoes
 from estoqueprodutos import EstoqueProduto
+from clientes import Clientes
 import json
 import sqlite3
 import os
@@ -38,52 +39,45 @@ from  plyer import notification
 
 class MainWindow(QMainWindow, Ui_MainWindow):
     fechar_janela_login_signal = Signal(str)
-    
     def __init__(self, user=None, login_window=None, tipo_usuario=None, connection=None):
         super(MainWindow, self).__init__()
         self.setupUi(self)
+        self.setWindowTitle("Sistema de Gerenciamento")
+        self.historico_pausado = False
 
         # Inicialize o banco de dados antes de qualquer operação que dependa dele
         self.db = DataBase('banco_de_dados.db')
-
-        self.historico_pausado = False
-
-        # funções que precisam do banco de dados
-        self.setup_ui()
-        
-        self.setWindowTitle("Sistema de Gerenciamento")
+        self.connection = sqlite3.connect('banco_de_dados.db')
         self.login_window = login_window
         self.connection = connection
-
-        self.connection = sqlite3.connect('banco_de_dados.db')
-
-
-        
         #Cria as tabelas no banco de dados sempre que executar o sistema em um novo ambiente
         self.db.create_table_products()
         self.db.create_table_products_saida()
         self.db.create_table_users()
         self.db.create_table_historico()
 
+        
+
+        # funções que precisam do banco de dados
+        self.erros_frames()
+        
+
         # Carregar informações ao iniciar
         self.carregar_informacoes_tabela()
 
         # Exibir notificação de status de conexão
-        #self.exibir_notificacao()
+        #self.exibir_notificacao(self)
 
         # Inicializar as configurações antes de chamar fazer_login_automatico
         self.config = Configuracoes_Login(self)
         
 
         # Caminho para o arquivo GIF
-        gif_path = os.path.abspath("imagens/oie_3193441C0mFhFhk.gif")  # Substitua pelo caminho correto do seu GIF
+        gif_path = os.path.abspath("imagens/oie_3193441C0mFhFhk.gif") 
 
         # Configurar o QMovie com o GIF
         self.movie = QMovie(gif_path)
-
         self.label_imagem_sistema.setMovie(self.movie)
-        
-
         # Iniciar a animação
         self.movie.start()
 
@@ -96,6 +90,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.is_editing = False
         self.selected_user_id = None
 
+        self.pagina_clientes = Clientes(self.line_clientes)
+
         # Crie o layout para o frame_imagem_cadastro e adicione o QLabel
         self.label_imagem_cadastro = QLabel(self)
         layout_usuario = QVBoxLayout()  # Definindo layout_usuario aqui
@@ -105,12 +101,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.label_exibir_usuario = QLabel(self)
         layout_exibir_usuario = QVBoxLayout()
         layout_exibir_usuario.addWidget(self.label_exibir_usuario)
-        self.label_exibir_usuario.setGeometry(1330,5,600,30)
+        self.label_exibir_usuario.setGeometry(1265,5,600,30)
 
         # Atualizar o nome do usuário logado
         self.atualizar_usuario_logado(self.config.obter_usuario_logado())
-        
-        
         
         self.frame_imagem_produto_3.setLayout(QVBoxLayout())
         self.label_imagem_produto = QLabel(self.frame_imagem_produto_3)
@@ -133,7 +127,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.btn_retroceder.setGeometry(5, 5, 30, 30) 
         self.btn_retroceder.setToolTip("Retroceder") # Adiciona uma dica de ferramenta
 
-        '''self.btn_opcoes_navegacao = QPushButton(self)
+        self.btn_opcoes_navegacao = QPushButton(self)
         self.btn_opcoes_navegacao.setIcon(QIcon("imagens/54206.png"))
         self.btn_opcoes_navegacao.setIconSize(QSize(30,30))
         self.btn_opcoes_navegacao.setGeometry(10,10,150,80)
@@ -145,7 +139,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             }
 
         """
-        self.btn_opcoes_navegacao.setStyleSheet(estilo_botao_opcoes_navegacao)'''
+        self.btn_opcoes_navegacao.setStyleSheet(estilo_botao_opcoes_navegacao)
         # Criar o botão btn_opcoes
         self.btn_opcoes = QPushButton("Mais opções", self)
 
@@ -153,13 +147,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.menu_opcoes = QMenu(self.btn_opcoes)
 
         # Definir o estilo do menu
-        style_sheet = """
+        estilo_botao_menu = """
             QMenu {
                 background-color: white;
                 color: black;
             }   
         """
-        self.menu_opcoes.setStyleSheet(style_sheet)
+        self.menu_opcoes.setStyleSheet(estilo_botao_menu)
 
         # Criar as ações do menu
         self.action_sair = QAction("Sair do Sistema", self)
@@ -170,6 +164,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.action_cadastro_usuario_massa = QAction("Cadastrar Usuários em Massa",self)
         self.action_reiniciar = QAction("Reiniciar Sistema")
         self.action_historico = QAction("Histórico")
+        self.action_informacoes_sistema = QAction("Informações do sistema")
 
         # Adicionar as ações ao menu
         self.menu_opcoes.addAction(self.action_sair)
@@ -180,6 +175,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.menu_opcoes.addAction(self.action_cadastro_usuario_massa)
         self.menu_opcoes.addAction(self.action_reiniciar)
         self.menu_opcoes.addAction(self.action_historico)
+        self.menu_opcoes.addAction(self.action_informacoes_sistema)
 
         # Associar o menu ao botão
         self.btn_opcoes.setMenu(self.menu_opcoes)
@@ -195,8 +191,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.action_cadastro_usuario_massa.triggered.connect(self.show_pg_cadastro_usuario_massa)
         self.action_reiniciar.triggered.connect(self.reiniciar_sistema)
         self.action_historico.triggered.connect(self.show_pg_historico)
+        self.action_informacoes_sistema.triggered.connect(self.show_mensagem_sistema)
         
-        style_sheet = """
+        estilo_botao_mais_opcoes = """
             QPushButton {
                 color: rgb(255, 255, 255);
                 border-radius: 3px;
@@ -209,7 +206,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 color: black;
             }
         """
-        self.btn_opcoes.setStyleSheet(style_sheet)
+        self.btn_opcoes.setStyleSheet(estilo_botao_mais_opcoes)
         
         self.fechar_janela_login_signal.connect(self.fechar_janela_login)  
 
@@ -223,6 +220,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         elif user in ["convidado", "convidado"]:
             self.btn_cadastrar_produto.setVisible(False)
             self.btn_cadastro_usuario.setVisible(False)
+            self.btn_clientes.setVisible(False)
+            
 
         self.carregar_configuracoes()
 
@@ -239,8 +238,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         # Criar instância da TabelaUsuario
         self.tabela_usuario_dialogo = TabelaUsuario(self)
-
-        self.tabela_produtos = QTableWidget(self)
         
         self.produto_id = None
 
@@ -321,7 +318,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.btn_editar.clicked.connect(self.exibir_tabela_produtos)
         self.btn_atualizar_produto.clicked.connect(self.atualizar_produto)
         self.btn_carregar_imagem.clicked.connect(self.carregar_imagem_produto)
-        #self.btn_opcoes_navegacao.clicked.connect(self.abrir_menu_opcoes)
+        self.btn_opcoes_navegacao.clicked.connect(self.abrir_menu_opcoes)
 
         
         
@@ -338,7 +335,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                                                          self.label_cadastramento,self.label_cadastramento_produtos,self.frame_valor_total_produtos,self.frame_valor_do_desconto,
                                                          self.frame_valor_desconto,self.frame_quantidade)
              
-    '''def abrir_menu_opcoes(self):
+    def abrir_menu_opcoes(self):
         # Verifica se já armazenamos a posição original da página
         if not hasattr(self, "posicao_original_paginas"):
             self.posicao_original_paginas = self.paginas_sistemas.pos().x()
@@ -377,7 +374,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         # Inicia as animações
         self.animacao_frame.start()
-        self.animacao_paginas.start()'''
+        self.animacao_paginas.start()
 
 
 
@@ -464,6 +461,22 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         msg.setWindowTitle("ERRO")
         msg.setText("Essa função ainda não está disponível!")
         msg.exec()
+
+    def show_mensagem_sistema(self):
+        msg = QMessageBox()
+        msg.setIcon(QMessageBox.Information)
+        msg.setWindowTitle("Informação")
+        msg.setText("Versão do Sistema: 1.0.1\n"
+                    "Desenvolvedor: Keven Lucas\n"
+                    "Sistema liberado para uso privado e público\n"
+                    "Sua versão é gratuita\n"
+                    "Todos os direitos reservados\n"
+                    "Para quaisquer uso não autorizado de código fonte e/ou tentativa de usa-ló sem autorização prévia do desenvolvedor"
+                    " o mesmo estará sujeito a penalização por crime de origem cibernética. O sistema detecta  uso de pessoas não autorizado"
+                    " ocasionando no bloqueio temporário e conforme insistência permanente do acesso. Em versão disto, saliento que o uso do sistema"
+                    " seja feito de forma responsável. ")
+                    
+        msg.exec()
         
 
     def mostrar_page_estoque(self):
@@ -507,7 +520,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         selected_action = self.sender()  # A ação que acionou o slot
         if selected_action == self.action_historico:
             # Navegar para a página de estoque
-            self.paginas_sistemas.setCurrentWidget(self.page_estoque)
+            self.paginas_sistemas.setCurrentWidget(self.pag_estoque)
 
             # Salvar o estilo original do botão
             original_style = self.btn_historico.styleSheet()
@@ -754,7 +767,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.btn_retroceder.clicked.connect(self.retroceder_pagina)
 
         # Definir o estilo para os botões
-        style = """
+        estilo_botao_avancar_retroceder = """
         QPushButton {
             color: rgb(255, 255, 255);
             border-radius: 3px;
@@ -767,8 +780,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             color: black;
         }
         """
-        self.btn_avancar.setStyleSheet(style)
-        self.btn_retroceder.setStyleSheet(style)
+        self.btn_avancar.setStyleSheet(estilo_botao_avancar_retroceder)
+        self.btn_retroceder.setStyleSheet(estilo_botao_avancar_retroceder)
 #*********************************************************************************************************************
     def exibir_botao_mostrar_usuarios(self):
         self.tabela_usuario_dialogo.btn_mostrar_usuarios.setVisible(True)
@@ -890,8 +903,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 print("Login automático bem sucedido!")
                 self.fechar_janela_login_signal.emit(tipo_usuario)
                 self.show()  # Mostra a janela principal atual  
-
-
 #*********************************************************************************************************************
     def fechar_janela_login_delay(self):
         if self.login_window.isVisible():
@@ -1118,7 +1129,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         return None  # Retornar None se não houver imagem carregada
 #*********************************************************************************************************************
 
-    def setup_ui(self):
+    def erros_frames(self):
         # Definir os campos obrigatórios e seus respectivos frames de erro
         self.campos_obrigatorios = {
             'produto': self.txt_produto,
@@ -1861,8 +1872,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 if isinstance(widget, QLabel):
                     widget.clear()  # Limpar o QLabel
                     widget.setPixmap(QPixmap())  # Definir um pixmap vazio ou padrão
-
-
 #*******************************************************************************************************
     def is_valid_email(self, email):
         email = email.strip()
@@ -1904,10 +1913,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
 
 
-
-
-
-
 # Função principal
 if __name__ == '__main__':
     app = QApplication(sys.argv)
@@ -1919,6 +1924,3 @@ if __name__ == '__main__':
 
 
     
-
-
-

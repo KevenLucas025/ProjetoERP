@@ -491,12 +491,27 @@ class TabelaProdutos(QDialog):
         produto_cliente = self.table_widget.item(self.table_widget.currentRow(), coluna_cliente).text()
         produto_descricao = self.table_widget.item(self.table_widget.currentRow(), coluna_descricao).text()
 
+        
+        # Tratar a conversão do desconto para evitar erro
+        desconto_str = produto_desconto.replace('%', '').replace(',', '.').strip()
+
+        # Se o desconto for "Sem desconto" ou vazio, define como 0.0 para cálculo
+        if not desconto_str or not desconto_str.replace('.','').isdigit() or desconto_str.lower() == "sem desconto":
+            desconto = 0.0
+            desconto_exibicao = "Sem desconto"
+        else:
+            desconto = float(desconto_str)
+            desconto_exibicao = f"{desconto}%"
+
+        # Atualizar os campos visuais
+        self.main_window.txt_desconto_3.setText(desconto_exibicao)
+
         # Armazenar o estado original do produto selecionado
         self.main_window.produto_selecionado = {
             "produto": produto_nome,
             "quantidade": int(produto_quantidade),
             "valor_produto": float(produto_valor_real.replace('R$', '').replace('.', '').replace(',', '.').strip()),
-            "desconto": float(produto_desconto.replace('%', '').replace(',', '.').strip()),  # Corrigido para tratar como porcentagem
+            "desconto": desconto,  # Tratado como número para cálculos
             "data_compra": produto_dateEdit,
             "codigo_item": produto_codigo_item,
             "cliente": produto_cliente,
@@ -505,12 +520,11 @@ class TabelaProdutos(QDialog):
 
         self.main_window.txt_produto.setText(produto_nome)
         self.main_window.txt_quantidade.setText(produto_quantidade)
-        self.main_window.txt_valor_produto.setText(produto_valor_real)
-        self.main_window.txt_desconto.setText(produto_desconto)
+        self.main_window.txt_valor_produto_3.setText(produto_valor_real)
         self.date_edit.setDate(QDate.fromString(produto_dateEdit, "dd/MM/yyyy"))
         self.main_window.txt_codigo_item.setText(produto_codigo_item)
-        self.main_window.txt_cliente.setText(produto_cliente)
-        self.main_window.txt_descricao_produto.setText(produto_descricao)
+        self.main_window.txt_cliente_3.setText(produto_cliente)
+        self.main_window.txt_descricao_produto_3.setText(produto_descricao)
 
         self.main_window.is_editing = True
         self.codigo_item_original = produto_codigo_item
@@ -525,19 +539,24 @@ class TabelaProdutos(QDialog):
             quantidade_str = produto_quantidade.strip()
             produto_quantidade = int(quantidade_str) if quantidade_str else 0
 
-            # Converter desconto para float e tratá-lo como porcentagem
-            desconto_str = produto_desconto.replace('%', '').replace(',', '.').strip()
-            
-            # Aqui, fazemos a conversão correta para percentual
-            produto_desconto = float(desconto_str)  if desconto_str else 0
+            print(f"DEBUG - desconto_str antes da conversão: {desconto_str}")  # Adicionado para depuração
+
+            # Garantir que não convertemos "Sem desconto" para float novamente
+            if desconto_exibicao == "Sem desconto":
+                produto_desconto = 0.0
+            else:
+                produto_desconto = float(desconto_str)
 
             # Calcular valores
             valor_total = (produto_valor_real * produto_quantidade) / 100
-            valor_desconto = valor_total * produto_desconto
+            valor_desconto = valor_total * desconto
             valor_com_desconto = valor_total - valor_desconto
 
             # Atualizar os frames com os valores corretos
-            self.atualizar_valores_frames(valor_total, valor_com_desconto, valor_desconto, produto_quantidade)
+            if desconto_exibicao == "Sem desconto":
+                self.atualizar_valores_frames(valor_total, valor_com_desconto, "Sem desconto", produto_quantidade)
+            else:
+                self.atualizar_valores_frames(valor_total,valor_com_desconto,valor_desconto,produto_quantidade)
 
             # Registrar a edição no histórico
             descricao_edicao = f"Produto {produto_nome} foi editado. Novos valores: quantidade {produto_quantidade}, valor {produto_valor_real}, desconto {produto_desconto}%."
@@ -555,8 +574,8 @@ class TabelaProdutos(QDialog):
                         print("Pixmap carregado com sucesso.")
                         print("Pixmap carregado pelo botão EDITAR: ", pixmap)
 
-                    self.label_imagem = QLabel(self.main_window.frame_imagem_produto)
-                    frame_size = self.main_window.frame_imagem_produto.size()
+                    self.label_imagem = QLabel(self.main_window.frame_imagem_produto_3)
+                    frame_size = self.main_window.frame_imagem_produto_3.size()
                     self.label_imagem.setFixedSize(frame_size.width(), frame_size.height())
                     pixmap = pixmap.scaled(self.label_imagem.width(), self.label_imagem.height(), Qt.KeepAspectRatio)
                     self.label_imagem.setPixmap(pixmap)
@@ -568,27 +587,33 @@ class TabelaProdutos(QDialog):
                     print(f"Erro ao processar imagem: {str(e)}")
             else:
                 print("Imagem não encontrada no banco de dados.")
-                if self.main_window.frame_imagem_produto.layout():
-                    old_layout = self.main_window.frame_imagem_produto.layout()
+                if self.main_window.frame_imagem_produto_3.layout():
+                    old_layout = self.main_window.frame_imagem_produto_3.layout()
                     while old_layout.count():
                         item = old_layout.takeAt(0)
                         widget = item.widget()
                         if widget:
                             widget.deleteLater()
-                self.main_window.frame_imagem_produto.setLayout(None)
+                self.main_window.frame_imagem_produto_3.setLayout(None)
 
             self.accept()
 
         except ValueError as e:
-            QMessageBox.warning(self, "Erro", f"Erro ao converter valores: {str(e)}")
-
+            print(f"Erro ao converter valores: {str(e)}")
 
 #*******************************************************************************************************
     def atualizar_valores_frames(self, valor_total, valor_com_desconto, valor_do_desconto, quantidade):
         # Verificar e formatar os valores corretamente
         valor_total_formatado = locale.currency(valor_total, grouping=True)
-        valor_com_desconto_formatado = locale.currency(valor_com_desconto, grouping=True)
-        valor_do_desconto_formatado = locale.currency(valor_do_desconto, grouping=True)
+        
+        # Se o valor do desconto for 0, significa que não há desconto, então "Sem desconto" é exibido
+        valor_com_desconto_formatado = "Sem desconto" if valor_do_desconto == 0 else locale.currency(valor_com_desconto, grouping=True)
+
+        # Evitar erro de tipo ao formatar "Sem desconto"
+        if isinstance(valor_do_desconto, (int, float)):
+            valor_do_desconto_formatado = locale.currency(valor_do_desconto, grouping=True)
+        else:
+            valor_do_desconto_formatado = "Sem desconto"
 
         # Definir os textos nos frames    
         self.main_window.frame_valor_do_desconto.setText(valor_do_desconto_formatado)
@@ -598,12 +623,23 @@ class TabelaProdutos(QDialog):
 
         # Ajustar as geometrias, se necessário
         altura = 101
-        largura = 335
+        largura_padrao = 335
 
-        # Posicionar os frames
+        # Ajustar a posição e tamanho apenas quando o desconto for zero (Sem desconto)
+        if valor_do_desconto == 0:  # Verificando se o valor do desconto é zero (sem desconto)
+            largura = 300  # Ajuste a largura para acomodar "Sem desconto"
+            self.main_window.frame_valor_do_desconto.setGeometry(100,50,largura,altura) # Posição da label quando não há desconto
+        else:
+            largura = largura_padrao  # Tamanho padrão do frame quando há desconto
+            self.main_window.frame_valor_do_desconto.setGeometry(90, 45, largura, altura)
+
+        # Posicionar o frame de valor total
         self.main_window.frame_valor_total_produtos.setGeometry(125, 45, largura, altura)
-        self.main_window.frame_valor_do_desconto.setGeometry(125, 45, largura, altura)
+
+        # Posicionar o frame de valor com desconto
         self.main_window.frame_valor_desconto.setGeometry(115, 45, largura, altura)
+
+        # Posicionar o frame de quantidade
         self.main_window.frame_quantidade.setGeometry(135, 50, largura, altura)
 
         # Atualizar os frames para exibir os novos valores
@@ -1033,27 +1069,27 @@ class TabelaProdutos(QDialog):
 #*******************************************************************************************************
     def get_label_imagem(self):
         label_imagem = None
-        for widget in self.main_window.frame_imagem_produto.children():
+        for widget in self.main_window.frame_imagem_produto_3.children():
             if isinstance(widget, QLabel):
                 label_imagem = widget
                 break
 
         # Se não houver QLabel, criar um novo
         if label_imagem is None:
-            label_imagem = QLabel(self.main_window.frame_imagem_produto)
+            label_imagem = QLabel(self.main_window.frame_imagem_produto_3)
             label_imagem.setObjectName("label_imagem_produto")
 
             # Adicionar o QLabel ao layout do frame, se houver
-            layout = self.main_window.frame_imagem_produto.layout()
+            layout = self.main_window.frame_imagem_produto_3.layout()
             if layout is None:
-                layout = QVBoxLayout(self.main_window.frame_imagem_produto)
-                self.main_window.frame_imagem_produto.setLayout(layout)
+                layout = QVBoxLayout(self.main_window.frame_imagem_produto_3)
+                self.main_window.frame_imagem_produto_3.setLayout(layout)
 
             layout.addWidget(label_imagem)
      
 
             # Definir tamanho do QLabel para ser o mesmo que o QFrame
-            frame_size = self.main_window.frame_imagem_produto.size()
+            frame_size = self.main_window.frame_imagem_produto_3.size()
             label_imagem.resize(frame_size.size())
 
 

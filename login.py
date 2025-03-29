@@ -22,13 +22,12 @@ import webbrowser
 import sqlite3
 
 
-class Login(QMainWindow, Ui_Mainwindow_Login):  # Altere QWidget para QMainWindow
+class Login(QMainWindow, Ui_Mainwindow_Login):  
     def __init__(self, login_window=None):
-        super(Login, self).__init__()  # Mantenha a chamada ao super() com QMainWindow
+        super(Login, self).__init__() 
         self.tentativas = 0
         self.config = Configuracoes_Login(self)
-        self.config.carregar()
-        login_sucesso = Signal()
+        self.config.carregar()   
         self.setupUi(self)
         
         self.users = DataBase()  # Defina self.users aqui
@@ -36,7 +35,7 @@ class Login(QMainWindow, Ui_Mainwindow_Login):  # Altere QWidget para QMainWindo
         self.setWindowTitle("Login do Sistema")
         self.btn_login.clicked.connect(self.checkLogin)
         
-          # Conexão do link "Primeiro Acesso"
+        # Conexão do link "Primeiro Acesso"
         self.label_primeiro_acesso.linkActivated.connect(self.abrir_janela_primeiro_acesso)
         
         if self.config.mantem_conectado:
@@ -46,8 +45,8 @@ class Login(QMainWindow, Ui_Mainwindow_Login):  # Altere QWidget para QMainWindo
         self.login_window = login_window
 
         self.label_trocar_senha.linkActivated.connect(self.exibir_janela_trocar_senha)
-        
-    
+
+
         
     def abrir_janela_primeiro_acesso(self):
         # Criar e abrir a janela de cadastro
@@ -94,6 +93,9 @@ class Login(QMainWindow, Ui_Mainwindow_Login):  # Altere QWidget para QMainWindo
         if tipo_usuario:
             manter_conectado = self.btn_manter_conectado.isChecked()
             self.config.salvar_configuracoes(usuario_ou_email, manter_conectado)
+
+            self.close()
+
         else:
             self.mostrarMensagem(f"Erro", f"Login ou senha incorretos.\nTentativa {self.tentativas + 1} de 3", QMessageBox.Warning)
             self.users.close_connection()
@@ -104,8 +106,7 @@ class Login(QMainWindow, Ui_Mainwindow_Login):  # Altere QWidget para QMainWindo
                 sys.exit()
             return
 
-        # Autenticação concluída, sem Azure agora
-        self.btn_login.setEnabled(False)  # Desativa o botão para evitar cliques duplos
+
         self.btn_login.setEnabled(True)   # Reativa o botão após o processo
 
         # Se autenticado com sucesso, abre a tela principal
@@ -113,7 +114,6 @@ class Login(QMainWindow, Ui_Mainwindow_Login):  # Altere QWidget para QMainWindo
         from main import MainWindow
         self.w = MainWindow(tipo_usuario.lower(), self)
         self.w.show()
-        self.close()
         self.tentativas = 0
         #QTimer.singleShot(2000,self.w.boas_vindas)
 
