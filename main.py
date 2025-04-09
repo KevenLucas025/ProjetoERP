@@ -22,6 +22,7 @@ from tabelausuario import TabelaUsuario
 from atualizarusuario import AtualizarUsuario
 from pg_configuracoes import Pagina_Configuracoes
 from estoqueprodutos import EstoqueProduto
+from historicousuario import Pagina_Usuarios
 from clientes import Clientes
 import json
 import sqlite3
@@ -224,6 +225,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             
 
         self.carregar_configuracoes()
+
+
+        self.pagina_usuarios = Pagina_Usuarios(self, self.btn_abrir_planilha_usuarios,self.btn_cadastrar_novo_usuario,
+                                               self.btn_gerar_pdf_usuarios,self.btn_historico_usuarios,self.btn_atualizar_ativos,
+                                               self.btn_atualizar_inativos,self.btn_limpar_tabelas_usuarios,self.btn_incluir_usuarios_sistema,
+                                               self.btn_salvar_tables_usuarios,self.btn_gerar_saida_usuarios)
 
         self.estoque_produtos = EstoqueProduto(self,self.btn_gerar_pdf,self.btn_gerar_estorno,
                                                self.btn_gerar_saida,self.btn_limpar_tabelas,self.btn_salvar_tables,
@@ -906,7 +913,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 #*********************************************************************************************************************
     def fechar_janela_login_delay(self):
         if self.login_window.isVisible():
-            print("Janela de login visível. Fechando...")
             self.login_window.close()
         else:
             print("Janela de login não está visível.")

@@ -1,4 +1,4 @@
-from PySide6.QtGui import QColor, QBrush,QGuiApplication,QRegularExpressionValidator
+from PySide6.QtGui import QColor, QBrush,QGuiApplication
 from PySide6.QtWidgets import (QWidget, QTableWidget, QTableWidgetItem, 
                                QMessageBox,QCheckBox,QVBoxLayout,QDialog,QPushButton,QMainWindow,QHBoxLayout,
                                QLineEdit,QLabel,QInputDialog,QGroupBox,QRadioButton,QFileDialog)

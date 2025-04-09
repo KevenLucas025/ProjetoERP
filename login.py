@@ -1,9 +1,8 @@
 import msal
-from msal import ConfidentialClientApplication,PublicClientApplication
 from PySide6.QtWidgets import (
-    QWidget, QMessageBox, QInputDialog, QDialog, 
+    QWidget, QMessageBox,QApplication, QDialog, 
     QVBoxLayout, QLabel, QPushButton,QMainWindow,QLabel,QLineEdit,QComboBox,
-    QFileDialog,QHBoxLayout)
+    QHBoxLayout)
 from ui_login_3 import Ui_Mainwindow_Login
 from database import DataBase
 import sys
@@ -20,6 +19,7 @@ import requests
 import os
 import webbrowser
 import sqlite3
+import time
 
 
 class Login(QMainWindow, Ui_Mainwindow_Login):  
@@ -92,9 +92,11 @@ class Login(QMainWindow, Ui_Mainwindow_Login):
 
         if tipo_usuario:
             manter_conectado = self.btn_manter_conectado.isChecked()
-            self.config.salvar_configuracoes(usuario_ou_email, manter_conectado)
+            self.config.salvar_configuracoes(usuario_ou_email,senha, manter_conectado)
+            print(f"Usuário salvo: {self.config.usuario}")  # ADICIONE ISSO
 
-            self.close()
+            self.config.carregar()
+            self.hide()
 
         else:
             self.mostrarMensagem(f"Erro", f"Login ou senha incorretos.\nTentativa {self.tentativas + 1} de 3", QMessageBox.Warning)
@@ -213,27 +215,14 @@ class Login(QMainWindow, Ui_Mainwindow_Login):
             self.mostrarMensagem("Erro", "Não foi possível autenticar automaticamente.", QMessageBox.Warning)
 
 
-    def mostrarMensagem(self, titulo, mensagem, icone):
-        msg = QMessageBox()
-        msg.setIcon(icone)
-        msg.setWindowTitle(titulo)
-        msg.setText(mensagem)
-        msg.exec()
-
-    def setLoginWindow(self, login_window):
-        self.login_window = login_window
-
-
     def closeEvent(self, event):
-        print("Fechando janela de login...")
-
         # Garantir que o banco de dados seja fechado corretamente
         if hasattr(self, 'users'):
             self.users.close_connection()
 
         # Apagar configurações do usuário ao sair
         self.config.usuario = None
-        self.config.salvar_configuracoes(None, False)  # Garantir que não está armazenando sessão
+        self.config.salvar_configuracoes(None,"", False)  # Garantir que não está armazenando sessão
 
     def limpar_campos(self):
         # Limpar os campos de login e senha
@@ -241,11 +230,13 @@ class Login(QMainWindow, Ui_Mainwindow_Login):
         self.txt_senha.clear()
 
     def usuario_logado(self):
-        return self.config.usuario if self.config.usuario else "Nenhum usuário logado"
+        print(f"Função usuario_logado(): {self.config.usuario}")  # ADICIONE ISSO
+        return self.config.usuario if self.config.usuario else None
 
     def carregar_configuracoes(self):
         # Carregar configurações do arquivo config.json
         self.config.carregar()
+        print(f"Usuário carregado: {self.config.usuario}")  # ADICIONE ISSO
         # Atualizar os campos de login com as configurações carregadas
         self.txt_usuario.setText(self.config.usuario)
         self.btn_manter_conectado.setChecked(self.config.mantem_conectado)
