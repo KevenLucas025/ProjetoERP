@@ -69,7 +69,7 @@ class TabelaUsuario(QDialog):
 
         self.btn_apagar_usuario.clicked.connect(self.fechar_janela_tabela)
 
-        self.btn_editar_usuario = QPushButton("Atualizar Usuários")
+        self.btn_editar_usuario = QPushButton("Atualizar Usuário")
         layout_tabela.addWidget(self.btn_editar_usuario)
 
         self.btn_editar_usuario.clicked.connect(self.fechar_janela_tabela)
@@ -90,6 +90,9 @@ class TabelaUsuario(QDialog):
 
         self.btn_visualizar_imagem = QPushButton("Visualizar Imagem")
         layout_tabela.addWidget(self.btn_visualizar_imagem)
+        
+        self.btn_atualizar_tabela = QPushButton("Atualizar Tabela")
+        layout_tabela.addWidget(self.btn_atualizar_tabela)
 
         # Adicionar a tabela ao layout
         layout_tabela.addWidget(self.table_widget)
@@ -106,15 +109,8 @@ class TabelaUsuario(QDialog):
         self.btn_selecionar_todos.clicked.connect(self.selecionar_todos)
         self.btn_filtrar_usuario.clicked.connect(self.filtrar_usuario)
 #******************************************************************************************************* 
-    def configure_frame_imagem_cadastro(self):
-        # Criar o QLabel para exibir a imagem do usuário
-        self.label_imagem_usuario = QLabel()
-        self.label_imagem_usuario.setScaledContents(True)  # Redimensiona a imagem para o tamanho do QLabel
+    
 
-        # Criar o layout para o frame_imagem_cadastro e adicionar o QLabel
-        layout_usuario = QVBoxLayout()
-        layout_usuario.addWidget(self.label_imagem_usuario)
-        self.frame_imagem_cadastro.setLayout(layout_usuario)
 #*******************************************************************************************************
     def preencher_tabela_usuario(self):
         # Limpar a tabela antes de preencher
@@ -168,8 +164,7 @@ class TabelaUsuario(QDialog):
         except Exception as e:
             QMessageBox.critical(self, "Erro", f"Erro ao acessar o banco de dados: {str(e)}")
         finally:
-            # Fechar a conexão com o banco de dados
-            self.db.close_connection()
+            pass
 
 #*******************************************************************************************************
     def confirmar_apagar_usuario(self):
@@ -217,16 +212,16 @@ class TabelaUsuario(QDialog):
             except Exception as e:
                 QMessageBox.critical(self, "Erro", f"Erro ao remover o usuário: {str(e)}")
             finally:
-                # Fechar a conexão com o banco de dados
-                db.close_connection()
+                pass
         else:
             QMessageBox.warning(self, "Aviso", "Nenhuma célula selecionada ou célula vazia.")
 #*******************************************************************************************************
     def recuperar_imagem_do_banco(self, id_usuario):
         imagem_blob = None
-        
         try:
             connection = self.db.connecta()
+            print("Conexão está ativa:", connection is not None)
+
             if connection:
                 cursor = connection.cursor()
                 cursor.execute("SELECT Imagem FROM users WHERE id = ?", (id_usuario,))
@@ -234,28 +229,15 @@ class TabelaUsuario(QDialog):
 
                 if result:
                     imagem_blob = result[0]
+                    if imagem_blob:
+                        imagem_bytes = base64.b64decode(imagem_blob)
+                        return imagem_bytes  # Agora está como binário de imagem mesmo
                 else:
-                    print(f"Imagem não encontrada para o usuário: {id_usuario}")
+                    print(f"Nenhum resultado retornado para ID: {id_usuario}")
                     return None
 
-        except Exception as e:
-            print(f"Erro ao recuperar imagem do banco de dados: {str(e)}")
-            return None
-
-        finally:
-            self.db.close_connection()
-
-        if imagem_blob:
-            try:
-                imagem_data = base64.b64decode(imagem_blob)
-                return imagem_data  # Retorna bytes decodificados
-                
-            except Exception as e:
-                print(f"Erro ao decodificar imagem: {str(e)}")
-                return None
-        else:
-            print("Imagem não encontrada para o usuário:", id_usuario)
-            return None
+        except ValueError or AttributeError:
+            pass
 #*******************************************************************************************************
     def editar_usuario(self):
         print("Função editar_usuario chamada")
@@ -324,8 +306,8 @@ class TabelaUsuario(QDialog):
             self.main_window.txt_rg.setText(usuario_rg)
             self.main_window.txt_cpf.setText(usuario_cpf)
             self.main_window.txt_cep.setText(usuario_cep)
-            self.main_window.txt_estado.setText(usuario_estado)
-            self.main_window.comboBox.setCurrentText(usuario_acesso)
+            self.main_window.perfil_estado.setCurrentText(usuario_estado)
+            self.main_window.perfil_usuarios.setCurrentText(usuario_acesso)
 
             # Atualizar o layout do frame_imagem_cadastro com o QLabel
             self.main_window.frame_imagem_cadastro.setVisible(True)  # Garante que o frame esteja visível
@@ -337,16 +319,7 @@ class TabelaUsuario(QDialog):
             self.usuario_selecionado = True  # Indica que um usuário foi selecionado
 
     def usuario_foi_selecionado(self):
-        return self.usuario_selecionado
-
-#*******************************************************************************************************
-    def adicionar_widgets(self, frame, debug_text):
-        layout = QVBoxLayout()  # Criar um layout vertical
-        label_imagem_usuario = QLabel(debug_text)
-        label_imagem_usuario.setAlignment(Qt.AlignCenter)
-        layout.addWidget(label_imagem_usuario)  # Adicionar o label ao layout
-        frame.setLayout(layout)  # Definir o layout ao frame
-#*******************************************************************************************************     
+        return self.usuario_selecionado     
 
 #*******************************************************************************************************
     def atualizar_tabela_usuario_filtrada(self, usuario):
@@ -360,7 +333,6 @@ class TabelaUsuario(QDialog):
             for col, data in enumerate(produto):
                 item = QTableWidgetItem(str(data))
                 self.table_widget.setItem(row_position, col, item)
-
 #*******************************************************************************************************
     def obter_usuario_por_nome(self, nome):
         query = "SELECT * FROM users WHERE Nome LIKE ?"
@@ -383,7 +355,7 @@ class TabelaUsuario(QDialog):
         finally:
             if cursor:
                 cursor.close()  # Fechamos o cursor apenas se ele não for None
-            db.close_connection()  # Fechamos a conexão usando a instância de DataBase
+            pass
 
 #*******************************************************************************************************
     def filtrar_usuario(self):
@@ -531,7 +503,7 @@ class TabelaUsuario(QDialog):
         finally:
             if cursor:
                 cursor.close()  # Fechamos o cursor apenas se ele não for None
-            db.close_connection()  # Fechamos a conexão usando a instância de DataBase
+            pass
 
 
 #*******************************************************************************************************

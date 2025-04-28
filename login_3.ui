@@ -496,7 +496,7 @@ QLineEdit::placeholder {
           <bool>false</bool>
          </property>
          <property name="placeholderText">
-          <string>Usuário ou e-mail</string>
+          <string>Usuário, e-mail ou CPF</string>
          </property>
          <property name="clearButtonEnabled">
           <bool>false</bool>

@@ -6,6 +6,7 @@ class Configuracoes_Login:
         self.usuario = None
         self.senha = None
         self.mantem_conectado = False
+        self.nao_mostrar_mensagem_boas_vindas = False
         self.carregar()
 
     def carregar(self):
@@ -15,17 +16,20 @@ class Configuracoes_Login:
                 self.usuario = config.get("usuario", "")
                 self.senha = config.get("senha","")
                 self.mantem_conectado = config.get("mantem_conectado", False)
+                self.nao_mostrar_mensagem_boas_vindas = config.get("nao_mostrar_mensagem_boas_vindas", False)
         except FileNotFoundError:
             print("Arquivo config.json não encontrado")
 
-    def salvar(self, usuario,senha, mantem_conectado):
+    def salvar(self, usuario, senha, mantem_conectado):
         config = {
-            "usuario": usuario,
-            "senha": senha,
-            "mantem_conectado": mantem_conectado
+            "usuario": usuario or "",
+            "senha": senha or "",
+            "mantem_conectado": mantem_conectado,
+            "nao_mostrar_mensagem_boas_vindas": self.nao_mostrar_mensagem_boas_vindas
         }
         with open("config.json", "w") as f:
             json.dump(config, f)
+
 
     def salvar_configuracoes(self, usuario, senha, mantem_conectado):
         """Atualiza as variáveis e salva no JSON."""
@@ -37,6 +41,7 @@ class Configuracoes_Login:
 
     def sair(self):
         # Lógica para desconectar o usuário e limpar as configurações
+        self.nao_mostrar_mensagem_boas_vindas = False
         self.salvar(None, None, False)
         self.usuario = ""
         self.senha = None

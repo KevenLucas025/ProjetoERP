@@ -3,11 +3,11 @@ import re
 from PySide6.QtCore import (Qt, QTimer, QDate, QBuffer, QByteArray, QIODevice, Signal,
                             QEvent,QPropertyAnimation,QEasingCurve,QSize,QPoint)
 from PySide6 import QtCore
-from PySide6.QtWidgets import (QApplication, QMainWindow, QMessageBox, QPushButton,
-                               QLabel, QFileDialog, QVBoxLayout, QTableWidget,
-                               QMenu,QTableWidgetItem,QDialog)
+from PySide6.QtWidgets import (QMainWindow, QMessageBox, QPushButton,
+                               QLabel, QFileDialog, QVBoxLayout,
+                               QMenu,QTableWidgetItem,QCheckBox,QApplication,QWidget,QHBoxLayout)
 from PySide6.QtGui import (QDoubleValidator, QIcon, QColor, QPixmap,QBrush,
-                           QAction,QMovie)
+                           QAction,QMovie,QImage)
 from PySide6 import QtWidgets
 from login import Login
 from mane_python import Ui_MainWindow
@@ -34,7 +34,7 @@ import random
 import string
 import socket
 from  plyer import notification
-
+import subprocess
 
 
 
@@ -48,14 +48,30 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         # Inicialize o banco de dados antes de qualquer operação que dependa dele
         self.db = DataBase('banco_de_dados.db')
-        self.connection = sqlite3.connect('banco_de_dados.db')
         self.login_window = login_window
-        self.connection = connection
+        # Se já vier uma conexão, usa ela. Caso contrário, cria uma nova
+        if connection is None:
+            self.connection = sqlite3.connect('banco_de_dados.db')
+        else:
+            self.connection = connection
+
+        self.login_window = login_window
         #Cria as tabelas no banco de dados sempre que executar o sistema em um novo ambiente
         self.db.create_table_products()
         self.db.create_table_products_saida()
         self.db.create_table_users()
         self.db.create_table_historico()
+
+        self.table_base.verticalHeader().setVisible(True)
+        self.table_saida.verticalHeader().setVisible(True)
+        self.table_ativos.verticalHeader().setVisible(True)
+        self.table_saida.horizontalHeader().setVisible(True)
+        self.table_inativos.verticalHeader().setVisible(True)
+        self.table_clientes.verticalHeader().setVisible(True)
+        self.table_base.setShowGrid(True)
+        self.table_saida.setShowGrid(True)
+
+
 
         
 
@@ -94,9 +110,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.pagina_clientes = Clientes(self.line_clientes)
 
         # Crie o layout para o frame_imagem_cadastro e adicione o QLabel
-        self.label_imagem_cadastro = QLabel(self)
+        self.label_imagem_usuario = QLabel(self)
         layout_usuario = QVBoxLayout()  # Definindo layout_usuario aqui
-        layout_usuario.addWidget(self.label_imagem_cadastro)
+        layout_usuario.addWidget(self.label_imagem_usuario)
         self.frame_imagem_cadastro.setLayout(layout_usuario)
 
         self.label_exibir_usuario = QLabel(self)
@@ -159,23 +175,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # Criar as ações do menu
         self.action_sair = QAction("Sair do Sistema", self)
         self.action_configuracoes = QAction("Configurações", self)
-        self.action_modo_escuro = QAction("Alterar Tema", self)
         self.action_contato = QAction("Contato", self)
-        self.action_cadastro_produto_massa = QAction("Cadastrar Produtos em Massa",self)
-        self.action_cadastro_usuario_massa = QAction("Cadastrar Usuários em Massa",self)
         self.action_reiniciar = QAction("Reiniciar Sistema")
-        self.action_historico = QAction("Histórico")
         self.action_informacoes_sistema = QAction("Informações do sistema")
 
         # Adicionar as ações ao menu
         self.menu_opcoes.addAction(self.action_sair)
         self.menu_opcoes.addAction(self.action_configuracoes)
-        self.menu_opcoes.addAction(self.action_modo_escuro)
         self.menu_opcoes.addAction(self.action_contato)
-        self.menu_opcoes.addAction(self.action_cadastro_produto_massa)
-        self.menu_opcoes.addAction(self.action_cadastro_usuario_massa)
         self.menu_opcoes.addAction(self.action_reiniciar)
-        self.menu_opcoes.addAction(self.action_historico)
         self.menu_opcoes.addAction(self.action_informacoes_sistema)
 
         # Associar o menu ao botão
@@ -188,10 +196,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.action_sair.triggered.connect(self.desconectarUsuario)
         self.action_configuracoes.triggered.connect(self.combobox_caixa)
         self.action_contato.triggered.connect(self.show_pg_contato)
-        self.action_cadastro_produto_massa.triggered.connect(self.show_pg_cadastro_produto_massa)
-        self.action_cadastro_usuario_massa.triggered.connect(self.show_pg_cadastro_usuario_massa)
         self.action_reiniciar.triggered.connect(self.reiniciar_sistema)
-        self.action_historico.triggered.connect(self.show_pg_historico)
         self.action_informacoes_sistema.triggered.connect(self.show_mensagem_sistema)
         
         estilo_botao_mais_opcoes = """
@@ -229,13 +234,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.pagina_usuarios = Pagina_Usuarios(self, self.btn_abrir_planilha_usuarios,self.btn_cadastrar_novo_usuario,
                                                self.btn_gerar_pdf_usuarios,self.btn_historico_usuarios,self.btn_atualizar_ativos,
-                                               self.btn_atualizar_inativos,self.btn_limpar_tabelas_usuarios,self.btn_incluir_usuarios_sistema,
-                                               self.btn_salvar_tables_usuarios,self.btn_gerar_saida_usuarios)
+                                               self.btn_atualizar_inativos,self.btn_limpar_tabelas_usuarios,
+                                               self.btn_gerar_saida_usuarios,self.btn_cadastrar_todos)
 
         self.estoque_produtos = EstoqueProduto(self,self.btn_gerar_pdf,self.btn_gerar_estorno,
-                                               self.btn_gerar_saida,self.btn_limpar_tabelas,self.btn_salvar_tables,
+                                               self.btn_gerar_saida,self.btn_importar,self.btn_limpar_tabelas,
                                                self.btn_atualizar_saida,self.btn_atualizar_estoque,self.btn_historico,
-                                               self.btn_incluir_no_sistema,self.btn_abrir_planilha,self.btn_incluir_no_sistema) 
+                                               self.btn_abrir_planilha,self.line_excel,self.progress_excel,
+                                               self.btn_incluir_produto_sistema,self.btn_confirmar_massa)
 
         # Criar instância de TabelaProdutos passando uma referência à MainWindow
         self.atualizar_produto_dialog = AtualizarProduto(self)
@@ -265,7 +271,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # Lista de páginas na ordem desejada
         self.paginas = [self.home_pag, self.pag_estoque, self.pg_cadastrar_produto, 
                         self.pg_cadastrar_usuario, self.pg_clientes, self.pg_configuracoes, 
-                        self.pg_contato]
+                        self.pg_contato,self.page_teste]
         self.pagina_atual_index = 0  # Índice da página atual na lista
         self.historico_paginas = []  # Lista para armazenar o histórico de páginas
 
@@ -300,17 +306,16 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.txt_desconto_3.setValidator(validador)
         self.txt_desconto_3.editingFinished.connect(self.formatar_porcentagem)
 
-        
-
 
         self.btn_home.clicked.connect(lambda: self.paginas_sistemas.setCurrentWidget(self.home_pag))
         self.btn_clientes.clicked.connect(lambda: self.paginas_sistemas.setCurrentWidget(self.pg_clientes))
         self.btn_cadastrar_usuarios.clicked.connect(lambda: self.paginas_sistemas.setCurrentWidget(self.pg_cadastrar_usuario))
         self.btn_configuracoes.clicked.connect(lambda: self.paginas_sistemas.setCurrentWidget(self.pg_configuracoes))      
         self.btn_cadastrar_produto.clicked.connect(lambda: self.paginas_sistemas.setCurrentWidget(self.pg_cadastrar_produto))
-        self.btn_ver_item.clicked.connect(lambda: self.paginas_sistemas.setCurrentWidget(self.page_estoque))
+        self.btn_ver_item.clicked.connect(lambda: self.paginas_sistemas.setCurrentWidget(self.pag_estoque))
         self.btn_novo_produto.clicked.connect(lambda: self.paginas_sistemas.setCurrentWidget(self.pg_cadastrar_produto))
         self.btn_verificar_usuarios.clicked.connect(lambda: self.paginas_sistemas.setCurrentWidget(self.page_verificar_usuarios))
+        self.btn_ver_usuario.clicked.connect(lambda: self.paginas_sistemas.setCurrentWidget(self.page_verificar_usuarios))
         
 
 
@@ -320,6 +325,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.btn_confirmar.clicked.connect(self.confirmar_produtos)
         self.btn_atualizar_cadastro.clicked.connect(self.atualizar_usuario_no_bd)
         self.btn_verificar_estoque.clicked.connect(self.mostrar_page_estoque)
+        self.btn_apagar_cadastro.clicked.connect(self.eliminar_campos_usuarios)
         
         self.btn_fazer_cadastro.clicked.connect(self.subscribe_user)
         self.btn_editar.clicked.connect(self.exibir_tabela_produtos)
@@ -330,7 +336,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         
         
         self.pagina_configuracoes = Pagina_Configuracoes(self.tool_tema,self.tool_atalhos,
-                                                         self.tool_atualizacoes,self.tool_hora,self.tool_fonte,
+                                                         self.tool_hora,self.tool_fonte,self.tool_atualizacoes,self.tool_notificacoes,
                                                          self.frame_botoes_configuracoes,self.frame_pg_configuracoes,self,self,
                                                          self.frame_botoes_navegacoes,self.label_configuracoes,self.centralwidget,
                                                          self.frame_pag_estoque,self.frame_2,self.paginas_sistemas,
@@ -385,7 +391,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
 
 
-    '''def boas_vindas(self):
+    def boas_vindas(self):
+        if self.config.nao_mostrar_mensagem_boas_vindas:
+            return
         msg = QMessageBox()
         msg.setIcon(QMessageBox.Information)
         msg.setWindowTitle("Boas Vindas")
@@ -394,8 +402,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                     "Esperamos que as informações aqui contidas sejam de grande ajuda.\n"
                     "Pedimos que sempre que possível, você possa avaliar e sugerir melhorias.")
         msg.setStandardButtons(QMessageBox.Ok)
-        msg.exec()'''
-    
+
+        checkbox_nao_mostrar_mensagem = QCheckBox("Não mostrar mensagem novamente")
+        msg.setCheckBox(checkbox_nao_mostrar_mensagem)
+        msg.exec()
+
+        if checkbox_nao_mostrar_mensagem.isChecked():
+            self.config.nao_mostrar_mensagem_boas_vindas = True
+            self.config.salvar_configuracoes(self.config.usuario, self.config.senha, self.config.mantem_conectado)
 
     def atualizar_usuario_logado(self, user):
         if user:
@@ -462,12 +476,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 self.table_saida.setItem(row_position, col, self.criar_item(str(data)))
      
     
-    def reiniciar_sistema(self):
-        msg = QMessageBox()
-        msg.setIcon(QMessageBox.Warning)
-        msg.setWindowTitle("ERRO")
-        msg.setText("Essa função ainda não está disponível!")
-        msg.exec()
+    
 
     def show_mensagem_sistema(self):
         msg = QMessageBox()
@@ -508,53 +517,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         selected_action = self.sender()
         if selected_action == self.action_contato:
             self.paginas_sistemas.setCurrentWidget(self.pg_contato)
-
-    def show_pg_cadastro_produto_massa(self):
-        msg = QMessageBox()
-        msg.setIcon(QMessageBox.Warning)
-        msg.setWindowTitle("ERRO")
-        msg.setText("Essa função ainda não está disponível!")
-        msg.exec()
-
-    def show_pg_cadastro_usuario_massa(self):
-        msg = QMessageBox()
-        msg.setIcon(QMessageBox.Warning)
-        msg.setWindowTitle("ERRO")
-        msg.setText("Essa função ainda não está disponível!")
-        msg.exec()
-
-    def show_pg_historico(self):
-        selected_action = self.sender()  # A ação que acionou o slot
-        if selected_action == self.action_historico:
-            # Navegar para a página de estoque
-            self.paginas_sistemas.setCurrentWidget(self.pag_estoque)
-
-            # Salvar o estilo original do botão
-            original_style = self.btn_historico.styleSheet()
-            destaque_style = """
-                QPushButton {
-                    border: 3px solid red; /* Borda vermelha */
-                }
-            """
-
-            # Alternar entre os estilos
-            def alternar_estilo():
-                current_style = self.btn_historico.styleSheet()
-                if current_style == destaque_style:
-                    self.btn_historico.setStyleSheet(original_style)
-                else:
-                    self.btn_historico.setStyleSheet(destaque_style)
-
-            # Criar o temporizador para piscar
-            self.timer_piscar = QTimer(self)
-            self.timer_piscar.timeout.connect(alternar_estilo)
-            self.timer_piscar.start(500)  # Pisca a cada 500ms (0.5 segundo)
-
-            # Parar o piscar após 5 segundos
-            QTimer.singleShot(5000, lambda: self.timer_piscar.stop())
-            QTimer.singleShot(5000, lambda: self.btn_historico.setStyleSheet(original_style))
 #*********************************************************************************************************************
     def atualizar_usuario_no_bd(self):
+         # Verificar se a conexão está ativa antes de proceder
+        if not self.db.verificar_conexao():  # Verifica se a conexão foi estabelecida
+            QMessageBox.critical(self, "Erro", "Conexão com o banco de dados não estabelecida!")
+            return
+        self.connection = self.db.connection 
+        
         if not self.is_editing or not self.selected_user_id:
             # Criar uma mensagem personalizada
             mensagem = QMessageBox(self)
@@ -596,7 +566,19 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             # Executar a mensagem
             mensagem.exec()
             return
+        try:        
+            # Verificar se o usuário existe no banco de dados antes de tentar atualizar
+            cursor = self.connection.cursor()
+            cursor.execute("SELECT COUNT(1) FROM users WHERE id = ?", (self.selected_user_id,))
+            user_exists = cursor.fetchone()[0]
 
+            if not user_exists:
+                QMessageBox.warning(self, "Aviso", "Usuário não encontrado!")
+                return
+        except Exception as e:
+            QMessageBox.critical(self, "Erro", f"Erro ao verificar usuário: {str(e)}")
+            return
+        
         # Obtendo os dados atualizados do usuário da interface
         usuario_nome = self.txt_nome.text() or "Não Cadastrado"
         usuario_usuario = self.txt_usuario.text() or "Não Cadastrado"
@@ -609,7 +591,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         usuario_rg = self.txt_rg.text() or "Não Cadastrado"
         usuario_cpf = self.txt_cpf.text() or "Não Cadastrado"
         usuario_cep = self.txt_cep.text() or "Não Cadastrado"
-        usuario_estado = self.txt_estado.text() or "Não Cadastrado"
+        usuario_estado = self.perfil_estado.currentText()
         usuario_senha = self.txt_senha.text() or "Não Cadastrado"
         usuario_confirmar_senha = self.txt_confirmar_senha.text() or "Não Cadastrado"
         usuario_imagem = None
@@ -644,7 +626,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         # Obtendo a imagem em base64
         usuario_imagem = None
-        pixmap = self.label_imagem_cadastro.pixmap()
+        pixmap = self.label_imagem_usuario.pixmap()
         if (pixmap and not pixmap.isNull()):
             byte_array = QByteArray()
             buffer = QBuffer(byte_array)
@@ -687,6 +669,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 cursor = self.connection.cursor()
                 cursor.execute(sql, valores)
             QMessageBox.information(self, "Sucesso", "Usuário atualizado com sucesso!")
+            self.limpar_campos_após_atualizar_usuario()
             # Resetar o estado de edição
             self.is_editing = False
             self.selected_user_id = None
@@ -727,10 +710,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 
                 # Se tiver uma imagem, carregar a imagem
                 if usuario[15]:
-                    imagem_bytes = QByteArray.fromBase64(usuario[15].encode('utf-8'))
-                    pixmap = QPixmap()
-                    pixmap.loadFromData(imagem_bytes, "PNG")
-                    self.label_imagem_cadastro.setPixmap(pixmap)
+                    self.exibir_imagem_em_label_usuario(usuario[15])
+
                 
                 self.is_editing = True
                 self.selected_user_id = user_id
@@ -810,7 +791,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                     # Redimensionar a imagem para o tamanho do QLabel
                     pixmap = pixmap.scaled(self.frame_imagem_cadastro.size(), Qt.KeepAspectRatio)
                     # Definir a imagem no QLabel
-                    self.label_imagem_cadastro.setPixmap(pixmap)
+                    self.label_imagem_usuario.setPixmap(pixmap)
 
                 else:
                     QMessageBox.warning(self, "Aviso", "Não foi possível carregar a imagem.")
@@ -904,7 +885,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             usuario = self.config.usuario
             senha = self.obter_senha_salva()
             
-            tipo_usuario = self.login_window.check_user(usuario, senha)
+            tipo_usuario = self.db.check_user(usuario, senha)
             
             if tipo_usuario:
                 print("Login automático bem sucedido!")
@@ -1029,7 +1010,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             return
 
         # Verificar se uma imagem foi carregada
-        if not self.label_imagem_cadastro.pixmap():
+        if not self.label_imagem_usuario.pixmap():
             msg = QMessageBox()
             msg.setIcon(QMessageBox.Warning)
             msg.setWindowTitle("Erro")
@@ -1053,7 +1034,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         rg = self.txt_rg.text()
         data_nascimento = self.txt_data_nascimento.text()
         complemento = self.txt_complemento.text()
-        imagem = self.get_image_as_bytes()
+        imagem = self.converter_imagem_usuario()
 
         # Conectar ao banco de dados e inserir o usuário
         db = DataBase()
@@ -1080,7 +1061,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             # Inserir o usuário no banco de dados
             db.insert_user(nome, user, senha, confirmar_senha, acesso, endereco, cep, cpf, numero, 
                         estado, email, telefone, rg, data_nascimento, complemento, usuario_logado, imagem)  
-            db.close_connection()
+            
 
             # Exibir mensagem de sucesso
             msg = QMessageBox()
@@ -1118,12 +1099,43 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             error_message = f"Erro ao cadastrar usuário {user}: {str(e)}"
             QMessageBox.critical(None, "Erro", error_message)
 
+    def eliminar_campos_usuarios(self):
+        # Limpar campos de texto
+        self.txt_nome.clear()
+        self.txt_usuario.clear()
+        self.txt_telefone.clear()
+        self.txt_endereco.clear()
+        self.txt_numero.clear()
+        self.txt_complemento.clear()
+        self.txt_email.clear()
+        self.txt_data_nascimento.clear()
+        self.txt_rg.clear()
+        self.txt_cpf.clear()
+        self.txt_cep.clear()
+        self.txt_senha.clear()
+        self.txt_confirmar_senha.clear()
+        self.label_imagem_usuario.clear()
+        
+        layout = self.frame_imagem_cadastro.layout()
+        if layout:
+            for i in reversed(range(layout.count())):
+                widget = layout.itemAt(i).widget()
+                if widget is not None:
+                    widget.deleteLater()
+
+        # Limpar campos de combo box
+        self.perfil_estado.setCurrentIndex(0)  # Se for um combo box, o índice padrão é 0 (ou o valor inicial)
+        self.perfil_usuarios.setCurrentIndex(0)
+
+        QMessageBox.information(self,"Sucesso","Todos os campos foram limpos com sucesso! ")
+
+        
 #*********************************************************************************************************************
-    def get_image_as_bytes(self):
+    def converter_imagem_usuario(self):
         # Verificar se há uma imagem carregada no QLabel
-        if self.label_imagem_cadastro.pixmap():
+        if self.label_imagem_usuario.pixmap():
             # Obter o pixmap da imagem
-            pixmap = self.label_imagem_cadastro.pixmap()
+            pixmap = self.label_imagem_usuario.pixmap()
             # Obter a imagem como uma sequência de bytes
             bytes_array = QByteArray()
             buffer = QBuffer(bytes_array)
@@ -1133,6 +1145,26 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             return bytes_array.toBase64().data()
 
         return None  # Retornar None se não houver imagem carregada
+#*********************************************************************************************************************    
+    def exibir_imagem_em_label_usuario(self, imagem_base64):
+        if imagem_base64:
+            try:
+                imagem_bytes = base64.b64decode(imagem_base64)
+                imagem = QImage.fromData(imagem_bytes)
+                pixmap = QPixmap.fromImage(imagem)
+                if not pixmap.isNull():
+                    self.label_imagem_usuario.setPixmap(pixmap.scaled(
+                        self.label_imagem_usuario.size(),
+                        Qt.KeepAspectRatio,
+                        Qt.SmoothTransformation
+                    ))
+                    print("Imagem definida no QLabel")
+                else:
+                    print("Pixmap está nulo. Imagem pode estar corrompida.")
+            except Exception as e:
+                print("Erro ao decodificar imagem:", e)
+        else:
+            print("Imagem base64 vazia ou inválida.")
 #*********************************************************************************************************************
 
     def erros_frames(self):
@@ -1267,14 +1299,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 usuario_logado,  # Passando o usuário logado
                 imagem_bytes  # Adicionando a imagem aqui
             )
-            db.close_connection()
         except Exception as e:
             QMessageBox.critical(self, "Erro", f"Erro ao cadastrar produto: {str(e)}")
         
         # Registrar no histórico após a inserção do produto
         descricao = f"Produto {produto_info['produto']} foi cadastrado com quantidade {produto_info['quantidade']} e valor {valor_real_formatado}."
         self.registrar_historico("Cadastro de Produto", descricao)
-            
+#*********************************************************************************************************************
     def get_usuario_logado(self):
         # Obtenha o usuário logado das configurações
         return self.config.obter_usuario_logado()
@@ -1664,7 +1695,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             except Exception as e:
                 QMessageBox.critical(self, "Erro", f"Erro ao atualizar o produto: {str(e)}")
             finally:
-                db.close_connection()
+               pass
 
     def registrar_historico(self, acao, descricao):
         # Verifica se o histórico está pausado
@@ -1682,8 +1713,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 VALUES (?, ?, ?, ?)
             """, (data_hora, usuario, acao, descricao))
             cn.commit()
-
-
 #*******************************************************************************************************
     def campos_obrigatorios_preenchidos(self):
         # Verificar se todos os campos obrigatórios estão preenchidos
@@ -1724,7 +1753,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         elif len(text) > 9:
             self.txt_cep.setText(text[:-1])
 #*********************************************************************************************************************
-
     def formatar_cpf(self, text):
         # Remover caracteres não numéricos
         numero_cpf = ''.join(filter(str.isdigit, text))
@@ -1798,7 +1826,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             else:
                 # Se o número não tiver mais de 7 dígitos, apenas atualizar o texto
                 self.txt_telefone.setText(numero_formatado + numero_limpo[2:])
-    
 #*******************************************************************************************************
     def conectar_botao_adicionar_produto(self):
         self.btn_adicionar_produto.clicked.connect(self.adicionar_produto)
@@ -1811,7 +1838,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # Atualizar os campos e a imagem com base no produto selecionado
         self.atualizar_campos()
         self.atualizar_imagem()
-
 #*******************************************************************************************************
     def mostrar_erro_desconto(self):
         detalhes_msg_detalhes = QMessageBox()
@@ -1869,7 +1895,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             msgBox.setText("Não há campos preenchidos para limpar.")
             msgBox.setWindowTitle("Aviso")
             msgBox.exec()
-
 #*******************************************************************************************************
     def apagar_imagem_produto_btn_apagar_campos(self):
         # Verificar se o QFrame contém um QLabel para imagem
@@ -1888,7 +1913,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         altura = 101
         largura = 335
         self.frame_valor_total_produtos.setGeometry(335, 101, largura, altura)
-
 #**********************************************************************************************************************
      # Método para limpar o frame após o cadastro do usuário
     def limpar_frame_cadastro_usuario(self): 
@@ -1912,18 +1936,44 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 QMessageBox.warning(self, "Aviso", "Não foi possível encontrar o caminho da imagem.")
         else:
             QMessageBox.warning(self, "Aviso", "Nenhuma imagem definida para o produto.")
+#**************************************************************************************************************            
+    def limpar_campos_após_atualizar_usuario(self):
+        self.txt_nome.clear()
+        self.txt_usuario.clear()
+        self.txt_telefone.clear()
+        self.txt_endereco.clear()
+        self.txt_numero.clear()
+        self.txt_complemento.clear()
+        self.txt_email.clear()
+        self.txt_data_nascimento.clear()
+        self.txt_rg.clear()
+        self.txt_cep.clear()
+        self.txt_cpf.clear()
+        self.txt_senha.clear()
+        self.txt_confirmar_senha.clear()
+        self.frame_imagem_cadastro.setText("")
 
     def cor_estado_produto(self):
         pass
 
-
-
+    def reiniciar_sistema(self):
+        python = sys.executable
+        script = os.path.abspath(sys.argv[0])
+        # Fecha o app atual
+        QApplication.quit()
+        # Reinicia com subprocess (mais robusto para caminhos com espaço)
+        subprocess.Popen([python, script] + sys.argv[1:])
+        sys.exit()
 
 # Função principal
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     login_window = Login(login_window=None)
     main_window = MainWindow (user=None, tipo_usuario=None, login_window=login_window)
+    
+    # Usa estilo nativo do Windows explicitamente
+    app.setStyle("WindowsVista")
+
     
     login_window.show()
     sys.exit(app.exec())

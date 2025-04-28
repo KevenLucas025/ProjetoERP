@@ -9,10 +9,35 @@ class DataBase:
 #*********************************************************************************************************************
     def connecta(self):
         try:
-            if not self.connection:  # Verifica se já existe uma conexão
-                self.connection = sqlite3.connect(self.name)
+            self.connection = sqlite3.connect("banco_de_dados.db")
+            return self.connection
         except Exception as e:
             print(f"Erro ao conectar ao banco: {e}")
+            return None
+#*********************************************************************************************************************
+    # Método para verificar se a conexão foi estabelecida com sucesso
+    def verificar_conexao(self):
+        if not self.connection:
+            print("A conexão não foi estabelecida.")
+            return False
+        return True
+ #*********************************************************************************************************************   
+    def executar_comando(self, query, params=None):
+        try:
+            if not self.connection:
+                self.connecta()
+
+            cursor = self.connection.cursor()
+            if params:
+                cursor.execute(query, params)
+            else:
+                cursor.execute(query)
+            self.connection.commit()
+            return cursor
+        except Exception as e:
+            print(f"Erro ao executar comando: {e}")
+            return None
+
 
 #*********************************************************************************************************************
     def close_connection(self):
@@ -26,6 +51,9 @@ class DataBase:
 #*********************************************************************************************************************    
     def create_table_users(self):
         try:
+            if self.tabela_existe("users"):
+                print("A tabela 'users' já está criada.")
+                return
             cursor = self.connection.cursor()
             cursor.execute("""
                 CREATE TABLE IF NOT EXISTS users(
@@ -62,7 +90,9 @@ class DataBase:
         try:
             if self.connection is None:
                 raise Exception("Conexão com o banco de dados não estabelecida.")
-            
+            if self.tabela_existe("products"):
+                print("A tabela 'produtos' já está criada.")
+                return
             cursor = self.connection.cursor()
             cursor.execute("""
                 CREATE TABLE IF NOT EXISTS products(
@@ -83,11 +113,14 @@ class DataBase:
             print("Tabela de produtos criada com sucesso!")
         except Exception as e:
             print("Erro ao criar tabela de produtos:", e)
-
+#*********************************************************************************************************************
     def create_table_products_saida(self):
         try:
             if self.connection is None:
                 raise Exception("Conexão com o banco de dados não estabelecida.")
+            if self.tabela_existe("products_saida"):
+                print("A tabela 'produtos saída' já está criada.")
+                return
             cursor = self.connection.cursor()
             cursor.execute("""
                 CREATE TABLE IF NOT EXISTS products_saida(
@@ -111,10 +144,25 @@ class DataBase:
             print("Tabela de produtos saída criada com sucesso!")
         except Exception as e:
             print("Erro ao criar tabela de produtos:", e)
-
+#*********************************************************************************************************************
     def create_table_historico(self):
-        pass
-
+        try:
+            if self.tabela_existe("historico"):
+                print("A tabela 'histórico' já está criada.")
+                return
+            cursor = self.connection.cursor()
+            cursor.execute("""
+                 CREATE TABLE IF NOT EXISTS historico(
+                    'Data e Hora' TEXT,
+                    Usuário TEXT,
+                    Ação TEXT,
+                    Descrição TEXT      
+                 )          
+            """)
+            self.connection.commit() # Confirmar a transação
+            print("Tabela de histórico criada com sucesso! ")
+        except Exception as e:
+            print("Erro ao criar tabela de usuário: ", e)
 #*********************************************************************************************************************
     def insert_product(self, produto, quantidade, valor_real, desconto, data_compra, 
                     codigo_item, cliente, descricao_produto, usuario, imagem=None):
@@ -198,7 +246,7 @@ class DataBase:
 #*********************************************************************************************************************
     def check_user(self, usuario, senha):
         try:
-            query = "SELECT Senha FROM users WHERE Usuário = ? AND Senha = ? COLLATE NOCASE"
+            query = "SELECT Usuário FROM users WHERE Usuário = ? AND Senha = ? COLLATE NOCASE"
             cursor = self.connection.cursor()  # Usar a conexão já existente
             cursor.execute(query, (usuario, senha))
             result = cursor.fetchone()
@@ -578,7 +626,7 @@ class DataBase:
     def obter_produtos_base(self):
         cursor = self.connection.cursor()
         cursor.execute("""
-            SELECT Produto, Quantidade, Valor_Real, Desconto, Data_Compra, Código_Item, Cliente, Descrição_Produto, Imagem, Status, 'Status da Saída' 
+            SELECT Produto, Quantidade, Valor_Real, Desconto, Data_Compra, Código_Item, Cliente, Descrição_Produto, Imagem, 'Status da Saída' 
             FROM products
         """)
         produtos = cursor.fetchall()
@@ -646,7 +694,45 @@ class DataBase:
         result = cursor.fetchone()
         self.close_connection()
         return result[0] if result else None
-        
+    
+    def tabela_existe(self, nome_tabela):
+        cursor = self.connection.cursor()
+        cursor.execute("""
+            SELECT name FROM sqlite_master WHERE type='table' AND name=?
+        """, (nome_tabela,))
+        return cursor.fetchone() is not None
+
+    def salvar_saida_produto(self, produto_info):
+        try:
+            codigo_produto = produto_info[6]
+            quantidade_nova = int(produto_info[1])
+
+            query_verificar = """
+            SELECT Quantidade FROM products_saida
+            WHERE "Código do Produto" = ? AND "Status da Saída" = 1
+            """
+            resultado = self.executar_query(query_verificar, (codigo_produto,))
+
+            if resultado:
+                quantidade_atual = int(resultado[0][0])
+                nova_quantidade = quantidade_atual + quantidade_nova
+
+                query_update = """
+                UPDATE products_saida
+                SET Quantidade = ?
+                WHERE "Código do Produto" = ? AND "Status da Saída" = 1
+                """
+                self.executar_comando(query_update, (nova_quantidade, codigo_produto))
+            else:
+                query_insert = """
+                INSERT INTO products_saida 
+                (Produto, Quantidade, "Valor do Produto", Desconto, "Data de Saída", "Data da Criação", "Código do Produto", Cliente, "Descrição do Produto", Usuário, Imagem, Status, "Status da Saída")
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                """
+                self.executar_comando(query_insert, produto_info)
+
+        except Exception as e:
+            print(f"Erro ao salvar saída: {e}")   
 
 if __name__ == "__main__":
     db = DataBase()

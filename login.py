@@ -1,8 +1,7 @@
-import msal
 from PySide6.QtWidgets import (
     QWidget, QMessageBox,QApplication, QDialog, 
     QVBoxLayout, QLabel, QPushButton,QMainWindow,QLabel,QLineEdit,QComboBox,
-    QHBoxLayout)
+    QHBoxLayout,QSizePolicy)
 from ui_login_3 import Ui_Mainwindow_Login
 from database import DataBase
 import sys
@@ -29,8 +28,9 @@ class Login(QMainWindow, Ui_Mainwindow_Login):
         self.config = Configuracoes_Login(self)
         self.config.carregar()   
         self.setupUi(self)
-        
+        self.login_window = login_window
         self.users = DataBase()  # Defina self.users aqui
+
 
         self.setWindowTitle("Login do Sistema")
         self.btn_login.clicked.connect(self.checkLogin)
@@ -42,10 +42,9 @@ class Login(QMainWindow, Ui_Mainwindow_Login):
             self.txt_usuario.setText(self.config.usuario)
             self.btn_manter_conectado.setChecked(True)
 
-        self.login_window = login_window
+        
 
         self.label_trocar_senha.linkActivated.connect(self.exibir_janela_trocar_senha)
-
 
         
     def abrir_janela_primeiro_acesso(self):
@@ -117,7 +116,7 @@ class Login(QMainWindow, Ui_Mainwindow_Login):
         self.w = MainWindow(tipo_usuario.lower(), self)
         self.w.show()
         self.tentativas = 0
-        #QTimer.singleShot(2000,self.w.boas_vindas)
+        QTimer.singleShot(2000,self.w.boas_vindas)
 
 
     def verificar_codigo_totp(self, secret, codigo):
@@ -191,28 +190,25 @@ class Login(QMainWindow, Ui_Mainwindow_Login):
 
     def fazerLoginAutomatico(self):
         if not self.config.mantem_conectado:
-            print("Login automático desativado.")
             return
-        
+
         usuario = self.config.usuario
-        if not usuario:
-            print("Nenhum usuário salvo para login automático.")
+        senha = self.config.senha  # Se você optar por continuar salvando a senha
+
+        if not (usuario and senha):
             return
 
-        print(f"Tentando login automático para {usuario}...")
-
-        # Autenticação via Azure AD (forçando autenticação interativa)
-        access_token = self.autenticar_com_azure()
-
-        if access_token:
-            print("Login automático bem sucedido!")
+        tipo_usuario = self.users.check_user(usuario, senha)
+        if tipo_usuario:
+            print("Login automático bem-sucedido!")
             from main import MainWindow
-            self.w = MainWindow("usuario", self)
+            self.w = MainWindow(tipo_usuario.lower(), self)
             self.w.show()
             self.close()
         else:
             print("Falha no login automático.")
             self.mostrarMensagem("Erro", "Não foi possível autenticar automaticamente.", QMessageBox.Warning)
+
 
 
     def closeEvent(self, event):

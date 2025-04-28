@@ -12,7 +12,7 @@ from datetime import datetime
 class Pagina_Usuarios(QWidget):
     def __init__(self,main_window,btn_abrir_planilha_usuarios,btn_cadastrar_novo_usuario,btn_gerar_pdf_usuario,
                   btn_historico_usuarios,btn_atualizar_ativos,btn_atualizar_inativos,btn_limpar_tabelas_usuarios,
-                  btn_incluir_usuarios_sistema,btn_salvar_tables_usuarios,btn_gerar_saida_usuarios,parent=None):
+                  btn_gerar_saida_usuarios,btn_cadastrar_todos,parent=None):
         super().__init__(parent)
 
         self.db = DataBase("banco_de_dados.db")
@@ -35,22 +35,20 @@ class Pagina_Usuarios(QWidget):
         self.btn_atualizar_ativos = btn_atualizar_ativos
         self.btn_atualizar_inativos = btn_atualizar_inativos
         self.btn_limpar_tabelas_usuarios = btn_limpar_tabelas_usuarios
-        self.btn_incluir_usuarios_sistema = btn_incluir_usuarios_sistema
-        self.btn_salvar_tables_usuarios = btn_salvar_tables_usuarios
         self.btn_gerar_saida_usuarios = btn_gerar_saida_usuarios
+        self.btn_cadastrar_todos = btn_cadastrar_todos
 
         self.tabela_ativos()
         
         #self.btn_gerar_pdf_usuario.clicked.connect(self.exibir_pdf_usuarios)
         #self.btn_gerar_estorno_usuarios.clicked.connect(self.criar_estorno_usuarios)
         self.btn_gerar_saida_usuarios.clicked.connect(self.confirmar_saida_usuarios)
-        #self.btn_limpar_tabelas_usuarios.clicked.connect(self.limpar_tabela_usuarios)
-        #self.btn_salvar_tables_usuarios.clicked.connect(self.salvar_tabelas_usuarios)
-        #self.btn_atualizar_ativos.clicked.connect(self.atualizar_ativos)
-        #self.btn_atualizar_inativos.clicked.connect(self.atualizar_inativos)
+        self.btn_limpar_tabelas_usuarios.clicked.connect(self.limpar_tabelas)
+        self.btn_atualizar_ativos.clicked.connect(self.atualizar_ativos)
+        self.btn_atualizar_inativos.clicked.connect(self.atualizar_inativos)
         #self.btn_historico_usuarios.clicked.connect(self.exibir_historico_usuarios)    
-        #self.btn_incluir_usuarios_sistema.clicked.connect(self.incluir_usuario_no_sistema)
         #self.btn_abrir_planilha_usuarios.clicked.connect(self.abrir_planilha_usuarios)
+        self.btn_cadastrar_todos.clicked.connect(self.cadastrar_em_massa)
 
     # Função auxiliar para criar um QTableWidgetItem com texto centralizado
     def formatar_texto(self, text):
@@ -181,3 +179,123 @@ class Pagina_Usuarios(QWidget):
 
         if resposta == QMessageBox.Yes:
             self.tabela_inativos(usuarios_selecionados)
+
+    def atualizar_ativos(self):
+        try:
+            # Limpar a tabela antes de atualizar
+            self.table_ativos_usuarios.setRowCount(0)  # Remove todas as linhas da tabela
+
+            # Consultar todos os usuarios
+            query = """
+            SELECT Nome,Usuário,Senha,"Confirmar Senha",Acesso,Endereço,CEP,CPF,Número,Estado,Email,RG,Complemento,
+            Telefone,Data_Nascimento,"Última Troca de Senha","Data da Senha Cadastrada","Data da Inclusão do Usuário",Secret,"Usuário Logado"
+            FROM users
+            """
+            usuarios = self.db.executar_query(query)
+
+            for linha_index, linha_data in enumerate(usuarios):
+                self.table_ativos_usuarios.insertRow(linha_index)
+                for col, value in enumerate(linha_data):
+                    item = self.formatar_texto(str(value))
+                    self.table_ativos_usuarios.setItem(linha_index, col, item)
+
+            # Exibir uma mensagem de sucesso
+            msg_box = QMessageBox()
+            msg_box.setIcon(QMessageBox.Information)
+            msg_box.setWindowTitle("Informação")
+            msg_box.setText("Tabela ativos atualizada com sucesso!")       
+            msg_box.exec()
+
+        except Exception as e:
+            print(f"Erro ao atualizar a tabela de ativos: {e}")
+
+            msg_box = QMessageBox()
+            msg_box.setIcon(QMessageBox.Information)
+            msg_box.setWindowTitle("Informação")
+            msg_box.setText("Tabela ativos atualizada com sucesso!")       
+            msg_box.exec()
+
+
+        except Exception as e:
+            print(f"Erro ao atualizar a tabela de ativos: {e}")
+
+
+    def atualizar_inativos(self):
+        try:
+            # Limpa a tabela antes de carregar os novos dados
+            self.table_inativos_usuarios.setRowCount(0)
+            
+            # Consulta os dados da tabela de saída no banco de dados (somente usuarios que já tiveram saída gerada)
+            query = """
+            SELECT Nome,Usuário,Senha,"Confirmar Senha",Acesso,Endereço,CEP,CPF,Número,Estado,Email,RG,Complemento,
+            Telefone,Data_Nascimento,"Última Troca de Senha","Data da Senha Cadastrada","Data da Inclusão do Usuário",Secret,"Usuário Logado"
+            FROM users
+            """
+            saidas = self.db.executar_query(query)  # Método que executa a consulta e retorna os resultados
+
+            # Preenche a tabela com os dados obtidos
+            if saidas:
+                for saida in saidas:
+                    row_position = self.table_inativos_usuarios.rowCount()
+                    self.table_inativos_usuarios.insertRow(row_position)
+                    for column, value in enumerate(saida):
+                        item = self.reaplicar_formatacao_tabela(str(value))
+                        self.table_inativos_usuarios.setItem(row_position, column, item)
+                        
+            msg_box = QMessageBox()
+            msg_box.setIcon(QMessageBox.Information)
+            msg_box.setWindowTitle("Informação")
+            msg_box.setText("Tabela inativos atualizada com sucesso!")       
+            msg_box.exec()
+
+        except Exception as e:
+            print(f"Erro ao atualizar a tabela de inativos: {e}")
+
+
+    def importar(self):
+        msg = QMessageBox()
+        msg.setIcon(QMessageBox.Warning)
+        msg.setWindowTitle("ERRO")
+        msg.setText("Ação ainda não está disponível!")
+        msg.exec()
+
+    def reaplicar_formatacao_tabela(self, tabela):
+        # Define o número de colunas
+        colunas = tabela.columnCount()
+        
+        # Para cada linha e coluna da tabela, aplique o estilo desejado
+        for row in range(tabela.rowCount()):
+            for col in range(colunas):
+                # Centraliza e define o texto branco para cada célula
+                item = self.criar_item('')
+                tabela.setItem(row, col, item)
+
+
+    def limpar_tabelas(self):
+        # Verifica se as tabelas estão vazias
+        if self.table_inativos_usuarios.rowCount() == 0 and self.table_ativos_usuarios.rowCount() == 0:
+            msg = QMessageBox()
+            msg.setIcon(QMessageBox.Warning)
+            msg.setWindowTitle("Aviso")
+            msg.setText("As tabelas já estão vazias.")
+            msg.exec()
+            return
+
+        # Limpa a tabela de ativos (table_ativos_usuarios)
+        self.table_ativos_usuarios.setRowCount(0)
+        self.reaplicar_formatacao_tabela(self.table_ativos_usuarios)
+
+        # Limpa a tabela de saída (table_inativos_usuarios)
+        self.table_inativos_usuarios.setRowCount(0)
+        self.reaplicar_formatacao_tabela(self.table_inativos_usuarios)
+
+        # Mensagem de confirmação após a limpeza
+        msg = QMessageBox()
+        msg.setIcon(QMessageBox.Information)
+        msg.setWindowTitle("Limpeza Concluída")
+        msg.setText("As tabelas foram limpas com sucesso.")
+        msg.exec()
+
+    
+    def cadastrar_em_massa(self):
+        pass

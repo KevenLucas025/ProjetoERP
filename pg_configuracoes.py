@@ -8,7 +8,7 @@ from login import Login
 import sys
 
 class Pagina_Configuracoes(QWidget):
-    def __init__(self, tool_tema, tool_atalhos, tool_atualizacoes, tool_hora, tool_fonte,
+    def __init__(self, tool_tema, tool_atalhos,tool_hora, tool_fonte,tool_atualizacoes,tool_notificacoes,
                  frame_pg_configuracoes, frame_pg_configuracoes1, 
                  main_window, paginas_sistemas, frame_botoes_navegacoes, label_8, centralwidget, 
                  frame_2, frame_page_estoque, frame_5, frame_cadastro_usuario,
@@ -65,6 +65,7 @@ class Pagina_Configuracoes(QWidget):
         self.tool_hora = tool_hora
         self.tool_fonte = tool_fonte
         self.tool_atualizacoes = tool_atualizacoes
+        self.tool_notificacoes = tool_notificacoes
 
         layout_principal = QVBoxLayout(self)
         self.setLayout(layout_principal)
@@ -95,6 +96,7 @@ class Pagina_Configuracoes(QWidget):
         self.tool_hora.clicked.connect(self.mostrar_menu_hora)
         self.tool_fonte.clicked.connect(self.mostrar_menu_fonte)
         self.tool_atualizacoes.clicked.connect(self.mostrar_menu_atualizacoes)
+        self.tool_notificacoes.clicked.connect(self.mostrar_menu_notificacoes)
 
     def mostrar_menu_tema(self):
         menu_tema = QMenu(self)
@@ -348,6 +350,22 @@ class Pagina_Configuracoes(QWidget):
 
         menu_atualizacoes.exec(self.tool_atualizacoes.mapToGlobal(self.tool_atualizacoes.rect().bottomLeft()))
 
+    def mostrar_menu_notificacoes(self):
+        menu_notificacoes = QMenu(self)
+        menu_notificacoes.setStyleSheet("""
+            QMenu{
+                background-color: white;
+                color: black;
+            }
+            QMenu::item:selected {
+                background-color: rgb(100, 180, 255);
+                color: white;
+            }      
+        """)
+        menu_notificacoes.addAction("Definir notificação de boas vinda")
+        
+        menu_notificacoes.exec(self.tool_notificacoes.mapToGlobal(self.tool_notificacoes.rect().bottomLeft()))
+
     def mousePressEvent_atualizacoes(self, event):
         if event.button() == Qt.LeftButton:
             self.mostrar_menu_atualizacoes()
@@ -367,6 +385,10 @@ class Pagina_Configuracoes(QWidget):
     def mousePressEvent_tema(self, event):
         if event.button() == Qt.LeftButton:
             self.mostrar_menu_tema()
+
+    def  mousePressEvent_notificacao(self, event):
+        if event.button() == Qt.LeftButton:
+            self.mostrar_menu_notificacoes()
 
 
 

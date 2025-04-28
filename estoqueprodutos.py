@@ -2,21 +2,24 @@ from PySide6.QtGui import QColor, QBrush,QGuiApplication
 from PySide6.QtWidgets import (QWidget, QTableWidget, QTableWidgetItem, 
                                QMessageBox,QCheckBox,QVBoxLayout,QDialog,QPushButton,QMainWindow,QHBoxLayout,
                                QLineEdit,QLabel,QInputDialog,QGroupBox,QRadioButton,QFileDialog)
-from PySide6.QtCore import Qt,QRegularExpression
+from PySide6.QtCore import Qt,QTimer
 import sqlite3
 import pandas as pd
 from datetime import datetime
 from database import DataBase
 import csv
 from reportlab.lib import colors
-from reportlab.lib.pagesizes import letter,landscape
+from reportlab.lib.pagesizes import letter,landscape,A4
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle
+from reportlab.pdfgen import canvas
+
 
 
 class EstoqueProduto(QWidget):
     def __init__(self, main_window, btn_gerar_pdf, btn_gerar_estorno, 
-                 btn_gerar_saida, btn_limpar_tabela, btn_salvar_tables, btn_atualizar_saida, btn_atualizar_estoque, btn_historico,
-                  btn_incluir_no_sistema,btn_abrir_planilha,parent=None):
+                 btn_gerar_saida,btn_importar, btn_limpar_tabela, 
+                 btn_atualizar_saida, btn_atualizar_estoque, btn_historico,
+                 btn_abrir_planilha, line_excel, progress_excel, btn_incluir_produto_sistema,btn_confirmar_massa,parent=None):
         super().__init__(parent)
 
         self.db = DataBase("banco_de_dados.db")
@@ -34,24 +37,28 @@ class EstoqueProduto(QWidget):
         self.btn_gerar_pdf = btn_gerar_pdf
         self.btn_gerar_estorno = btn_gerar_estorno
         self.btn_gerar_saida = btn_gerar_saida
+        self.btn_importar = btn_importar
         self.btn_limpar_tabela = btn_limpar_tabela
-        self.btn_salvar_tables = btn_salvar_tables
         self.btn_atualizar_saida = btn_atualizar_saida
         self.btn_atualizar_estoque = btn_atualizar_estoque
         self.btn_historico = btn_historico
-        self.btn_incluir_no_sistema = btn_incluir_no_sistema
         self.btn_abrir_planilha = btn_abrir_planilha
+        self.line_excel = line_excel
+        self.progress_excel = progress_excel
+        self.btn_incluir_produto_sistema = btn_incluir_produto_sistema
+        self.btn_confirmar_massa = btn_confirmar_massa
+
 
         self.btn_gerar_pdf.clicked.connect(self.exibir_pdf)
         self.btn_gerar_estorno.clicked.connect(self.criar_estorno)
         self.btn_gerar_saida.clicked.connect(self.confirmar_saida)
+        self.btn_importar.clicked.connect(self.importar_produto)
         self.btn_limpar_tabela.clicked.connect(self.limpar_tabela)
-        self.btn_salvar_tables.clicked.connect(self.salvar_tabelas)
         self.btn_atualizar_saida.clicked.connect(self.atualizar_saida)
         self.btn_atualizar_estoque.clicked.connect(self.atualizar_estoque)
         self.btn_historico.clicked.connect(self.exibir_historico)    
-        self.btn_incluir_no_sistema.clicked.connect(self.incluir_sistema)
         self.btn_abrir_planilha.clicked.connect(self.abrir_planilha)
+        self.btn_incluir_produto_sistema.clicked.connect(self.incluir_produto_no_sistema)
 
 
     # Função auxiliar para criar um QTableWidgetItem com texto centralizado
@@ -71,7 +78,6 @@ class EstoqueProduto(QWidget):
         FROM products
         """
         df = pd.read_sql_query(query, cn)
-        cn.close()
 
         # Verificando se há dados na consulta
         if df.empty:
@@ -83,22 +89,9 @@ class EstoqueProduto(QWidget):
         self.table_base.setRowCount(len(df))
         self.table_base.setColumnCount(num_columns)
         
-        # Definindo cabeçalhos das colunas na ordem desejada
-        coluna_estoque = [
-            "Produto", 
-            "Quantidade", 
-            "Valor do Produto", 
-            "Desconto", 
-            "Data da Compra", 
-            "Código do Produto", 
-            "Cliente", 
-            "Descrição do Produto",
-            "Usuário"  # Coluna Usuário na ordem correta
-        ]
-        self.table_base.setHorizontalHeaderLabels(coluna_estoque)
-
+        
         # Limpando o QTableWidget antes de popular com novos dados
-        #self.table_base.clearContents()
+        self.table_base.clearContents()
         self.table_base.setRowCount(0)  # Certifique-se de que as linhas estão limpas
 
         # Iterando sobre os dados do DataFrame e adicionando-os ao QTableWidget
@@ -111,15 +104,15 @@ class EstoqueProduto(QWidget):
                 self.table_base.setItem(row_index, col_index, item)
 
         # Ajustar o tamanho das colunas para se ajustar ao conteúdo
-        for col in range(num_columns):
-            self.table_base.resizeColumnToContents(col)
+        '''for col in range(num_columns):
+            self.table_base.resizeColumnToContents(col)'''
 
     def tabela_saida(self, produtos_selecionados):
         # Limpa a tabela de saída antes de preencher com novos dados
         self.main_window.table_saida.clearContents()
         self.main_window.table_saida.setRowCount(0)
 
-        # Define as colunas para a table_saida
+        '''# Define as colunas para a table_saida
         colunas_saida = [
             "Produto", 
             "Quantidade",
@@ -133,7 +126,7 @@ class EstoqueProduto(QWidget):
             "Usuário"
         ]
         self.main_window.table_saida.setColumnCount(len(colunas_saida))
-        self.main_window.table_saida.setHorizontalHeaderLabels(colunas_saida)
+        self.main_window.table_saida.setHorizontalHeaderLabels(colunas_saida)'''
 
         # Verifica se há produtos selecionados para a saída
         if not produtos_selecionados:
@@ -193,10 +186,6 @@ class EstoqueProduto(QWidget):
             if usuario_item:
                 self.main_window.table_saida.setItem(row_index, 9, self.criar_item(usuario_item.text()))
 
-        # Ajusta o tamanho das colunas para o conteúdo
-        for col in range(len(colunas_saida)):
-            self.main_window.table_saida.resizeColumnToContents(col)
-
         return True
 
 
@@ -235,61 +224,165 @@ class EstoqueProduto(QWidget):
             msg_box.exec()
 
     def gerar_saida(self, produtos_selecionados):
-        if not self.tabela_saida(produtos_selecionados):
-            return  # Não prossegue se não houver dados
-
         produtos_saida = []
+        historico_logs = []
+        atualizacoes_produtos = []
 
         for row in produtos_selecionados:
-            produto = self.main_window.table_base.item(row, 0).text() if self.main_window.table_base.item(row, 0) else ""
-            quantidade = self.main_window.table_base.item(row, 1).text() if self.main_window.table_base.item(row, 1) else ""
-            valor_produto = self.main_window.table_base.item(row, 2).text() if self.main_window.table_base.item(row, 2) else ""
-            desconto = self.main_window.table_base.item(row, 3).text() if self.main_window.table_base.item(row, 3) else ""
-            data_criacao = self.main_window.table_base.item(row, 4).text() if self.main_window.table_base.item(row, 4) else ""
-            codigo_produto = self.main_window.table_base.item(row, 5).text() if self.main_window.table_base.item(row, 5) else ""
-            cliente = self.main_window.table_base.item(row, 6).text() if self.main_window.table_base.item(row, 6) else ""
-            descricao = self.main_window.table_base.item(row, 7).text() if self.main_window.table_base.item(row, 7) else ""
-            usuario = self.main_window.table_base.item(row, 8).text() if self.main_window.table_base.item(row, 8) else ""
+            produto = self.main_window.table_base.item(row, 0).text() or ""
+            quantidade_str = self.main_window.table_base.item(row, 1).text() or "0"
+            quantidade = int(quantidade_str)
+            valor_produto = self.main_window.table_base.item(row, 2).text() or ""
+            desconto = self.main_window.table_base.item(row, 3).text() or ""
+            data_criacao = self.main_window.table_base.item(row, 4).text() or ""
+            codigo_produto = self.main_window.table_base.item(row, 5).text() or ""
+            cliente = self.main_window.table_base.item(row, 6).text() or ""
+            descricao = self.main_window.table_base.item(row, 7).text() or ""
+            usuario = self.main_window.table_base.item(row, 8).text() or ""
             imagem = self.recuperar_imagem_produto_bd_products(codigo_produto)
 
             status_item = self.main_window.table_base.item(row, 9)
             status = status_item.text() if status_item else "Inativo"
             status_saida = "1"
-
             data_saida = datetime.now().strftime("%d/%m/%Y %H:%M")
 
-            produtos_saida.append((produto, quantidade, valor_produto, desconto, data_saida, data_criacao, codigo_produto, cliente, descricao, usuario, imagem, status, status_saida))
+            if quantidade > 1:
+                quantidade_saida, ok = QInputDialog.getInt(
+                    self.main_window,
+                    "Saída de Produto",
+                    f"O produto '{produto}' tem {quantidade} unidades.\nQuantas deseja dar saída?",
+                    value=1,
+                    minValue=1,
+                    maxValue=quantidade
+                )
+                if not ok:
+                    continue
+            else:
+                quantidade_saida = 1
 
-        with sqlite3.connect("banco_de_dados.db") as cn:
-            cursor = cn.cursor()
+            nova_quantidade = quantidade - quantidade_saida
+            atualizacoes_produtos.append((nova_quantidade, codigo_produto))
 
-            cursor.executemany("""
-                INSERT INTO products_saida (Produto, Quantidade, 'Valor do Produto', Desconto, 'Data de Saída', 'Data da Criação', 'Código do Produto', Cliente, 'Descrição do Produto', Usuário, Imagem, Status, 'Status da Saída')
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-            """, produtos_saida)
+            if nova_quantidade > 0:
+                self.main_window.table_base.item(row, 1).setText(str(nova_quantidade))
+            else:
+                self.main_window.table_base.removeRow(row)
 
-            for produto in produtos_saida:
-                codigo_produto = produto[6]
-                cursor.execute("DELETE FROM products WHERE Código_Item = ?", (codigo_produto,))
+            # Verifica se já está na lista e soma
+            produto_existente = None
+            for i, p in enumerate(produtos_saida):
+                if p[6] == codigo_produto:
+                    produto_existente = i
+                    break
 
-            cn.commit()
+            if produto_existente is not None:
+                quantidade_existente = int(produtos_saida[produto_existente][1])
+                nova_quantidade_saida = quantidade_existente + quantidade_saida
+                produtos_saida[produto_existente] = (
+                    produto,
+                    str(nova_quantidade_saida),
+                    valor_produto,
+                    desconto,
+                    data_saida,
+                    data_criacao,
+                    codigo_produto,
+                    cliente,
+                    descricao,
+                    usuario,
+                    imagem,
+                    status,
+                    status_saida
+                )
+            else:
+                produtos_saida.append((
+                    produto,
+                    str(quantidade_saida),
+                    valor_produto,
+                    desconto,
+                    data_saida,
+                    data_criacao,
+                    codigo_produto,
+                    cliente,
+                    descricao,
+                    usuario,
+                    imagem,
+                    status,
+                    status_saida
+                ))
 
-        # Remove a linha da tabela `table_base` na interface
-        for row in sorted(produtos_selecionados, reverse=True):
-            self.main_window.table_base.removeRow(row)
+            historico_logs.append(f"Produto {produto} foi gerado saída de {quantidade_saida} unidade(s).")
 
-            # Registrar no histórico após a inserção do produto
-            descricao = f"Produto {produto[0]} foi gerado saída."
-            self.main_window.registrar_historico("Gerado Saída", descricao)
+        # <<<--- ATUALIZAÇÕES NO BANCO DE DADOS --->>>
+        try:
+            cursor = self.db.connection.cursor()
 
-        msg_box = QMessageBox()
-        msg_box.setIcon(QMessageBox.Information)
-        msg_box.setWindowTitle("Aviso")
-        msg_box.setText("Saída do produto gerada com sucesso!")
-        msg_box.exec()
+            for (nova_quantidade, codigo_produto) in atualizacoes_produtos:
+                if nova_quantidade > 0:
+                    cursor.execute("""
+                        UPDATE products
+                        SET Quantidade = ?, 'Status da Saída' = 1
+                        WHERE Código_Item = ?
+                    """, (nova_quantidade, codigo_produto))
+                else:
+                    cursor.execute("""
+                        UPDATE products
+                        SET 'Status da Saída' = 1
+                        WHERE Código_Item = ?
+                    """, (codigo_produto,))
+                    cursor.execute("""
+                        DELETE FROM products
+                        WHERE Código_Item = ?
+                    """, (codigo_produto,))
 
-        # Reindexar as linhas da `table_base` para manter ordem crescente
+            for produto_info in produtos_saida:
+                self.db.salvar_saida_produto(produto_info)
+
+            self.db.connection.commit()
+
+        except Exception as e:
+            print(f"Erro ao salvar saída: {e}")
+
+        for texto in historico_logs:
+            self.main_window.registrar_historico("Gerado Saída", texto)
+
+        if produtos_saida:
+            msg_box = QMessageBox()
+            msg_box.setIcon(QMessageBox.Information)
+            msg_box.setWindowTitle("Aviso")
+            msg_box.setText("Saída do(s) produto(s) gerada com sucesso!")
+            msg_box.exec()
+            self.tabela_saida_preencher(produtos_saida)
+
         self.reindex_table_base()
+
+
+
+    def tabela_saida_preencher(self, dados_saida):
+        for item in dados_saida:
+            codigo_produto_novo = item[6]  # 'Código do Produto'
+            quantidade_nova = int(item[1])
+
+            linha_existente = None
+            for row in range(self.main_window.table_saida.rowCount()):
+                codigo_existente = self.main_window.table_saida.item(row, 6)
+                if codigo_existente and codigo_existente.text() == codigo_produto_novo:
+                    linha_existente = row
+                    break
+
+            if linha_existente is not None:
+                # Produto já existe: somar as quantidades
+                quantidade_existente = int(self.main_window.table_saida.item(linha_existente, 1).text())
+                nova_quantidade = quantidade_existente + quantidade_nova
+                self.main_window.table_saida.item(linha_existente, 1).setText(str(nova_quantidade))
+            else:
+                # Produto não existe ainda: adicionar nova linha
+                row_position = self.main_window.table_saida.rowCount()
+                self.main_window.table_saida.insertRow(row_position)
+                for col, valor in enumerate(item):
+                    self.main_window.table_saida.setItem(row_position, col, self.criar_item(valor))
+
+
+
 
     def reindex_table_base(self):
         row_count = self.main_window.table_base.rowCount()
@@ -319,100 +412,143 @@ class EstoqueProduto(QWidget):
     def criar_estorno(self):
         selected_rows = self.main_window.table_base.selectionModel().selectedRows()
         produtos_selecionados = [row.row() for row in selected_rows]
-        # Obtém o número de linhas na table_saida
+        
         row_count = self.main_window.table_saida.rowCount()
 
-        # Exibe uma mensagem de erro se não houver dados
         if row_count == 0:
             msg_box = QMessageBox()
             msg_box.setIcon(QMessageBox.Warning)
             msg_box.setWindowTitle("ERRO")
             msg_box.setText("Não há nenhum dado disponível na tabela para gerar estorno!")
             msg_box.exec()
-            return  # Evitar continuar o estorno se não houver dados
+            return
 
-        # Se há dados, continue com o estorno
         for row in range(row_count):
-            self.main_window.table_base.insertRow(self.main_window.table_base.rowCount())
-            row_base = self.main_window.table_base.rowCount() - 1
-
-            # Produto (coluna 0)
             produto_item = self.main_window.table_saida.item(row, 0)
-            produto = produto_item.text() if produto_item else ""
-            self.main_window.table_base.setItem(row_base, 0, self.criar_item(produto))
-
-            # Quantidade (coluna 1)
             quantidade_item = self.main_window.table_saida.item(row, 1)
-            quantidade = quantidade_item.text() if quantidade_item else ""
-            self.main_window.table_base.setItem(row_base, 1, self.criar_item(quantidade))
-
-            # Valor Real (coluna 2)
             valor_real_item = self.main_window.table_saida.item(row, 2)
-            valor_real = valor_real_item.text() if valor_real_item else ""
-            self.main_window.table_base.setItem(row_base, 2, self.criar_item(valor_real))
-
-            # Desconto (coluna 3)
             desconto_item = self.main_window.table_saida.item(row, 3)
-            desconto = desconto_item.text() if desconto_item else ""
-            self.main_window.table_base.setItem(row_base, 3, self.criar_item(desconto))
-
-            # Data da Compra (coluna 4)
-            data_compra_item = self.main_window.table_saida.item(row, 5)  # Corrigido para pegar a data correta
-            data_compra = data_compra_item.text() if data_compra_item else ""
-            self.main_window.table_base.setItem(row_base, 4, self.criar_item(data_compra))
-
-            # Código do Produto (coluna 5)
+            data_compra_item = self.main_window.table_saida.item(row, 5)
             codigo_item = self.main_window.table_saida.item(row, 6)
-            codigo_produto = codigo_item.text() if codigo_item else ""
-            self.main_window.table_base.setItem(row_base, 5, self.criar_item(codigo_produto))
-
-            # Cliente (coluna 6)
             cliente_item = self.main_window.table_saida.item(row, 7)
-            cliente = cliente_item.text() if cliente_item else ""
-            self.main_window.table_base.setItem(row_base, 6, self.criar_item(cliente))
-
-            # Descrição do Produto (coluna 7)
             descricao_item = self.main_window.table_saida.item(row, 8)
+            usuario_item = self.main_window.table_saida.item(row, 9)
+
+            produto = produto_item.text() if produto_item else ""
+            quantidade = int(quantidade_item.text()) if quantidade_item else "0"
+            valor_real = valor_real_item.text() if valor_real_item else ""
+            desconto = desconto_item.text() if desconto_item else ""
+            data_compra = data_compra_item.text() if data_compra_item else ""
+            codigo_produto = codigo_item.text() if codigo_item else ""
+            cliente = cliente_item.text() if cliente_item else ""
             descricao = descricao_item.text() if descricao_item else ""
-            self.main_window.table_base.setItem(row_base, 7, self.criar_item(descricao))
+            usuario = usuario_item.text() if usuario_item else "Não cadastrado"
 
-            # Usuário (coluna 8)
-            # Ajusta o valor do usuário para o que fez o estorno (administrador, por exemplo)
-            usuario = "admin"  # Aqui você pode alterar para pegar o usuário logado, se houver
-            self.main_window.table_base.setItem(row_base, 8, self.criar_item(usuario))
 
-            # Imagem do produto (recuperar do banco de dados)
+            #  Verifica se a quantidade é válida
+            if int(quantidade) <= 0:
+                msg_box = QMessageBox()
+                msg_box.setIcon(QMessageBox.Warning)
+                msg_box.setWindowTitle("Estorno inválido")
+                msg_box.setText(f"O produto '{produto}' tem quantidade 0 e não pode ser estornado.")
+                msg_box.exec()
+                continue
+
+            if int(quantidade) > 1:
+                quantidade_estorno, ok = QInputDialog.getInt(
+                    self.main_window,
+                    "Quantidade de Estorno",
+                    f"O produto {produto} possui {quantidade} unidades. Quanto deseja estornar? ",
+                    minValue=1,
+                    maxValue=quantidade,
+                    value=1
+                )
+                if not ok:
+                    continue
+            else:
+                quantidade_estorno = 1
+
+            # Recupera imagem do banco
             imagem = self.recuperar_imagem_produto_bd_products_saida(codigo_produto)
 
-            # Status da Saída (coluna 9)
-            status_da_saida = "1"
-
-            # Inserir o produto de volta na tabela `products` com o status "Ativo"
+            # Atualiza ou insere no banco
             with sqlite3.connect("banco_de_dados.db") as cn:
                 cursor = cn.cursor()
 
-                # Inserir o produto de volta na tabela products
-                cursor.execute("""
-                    INSERT INTO products (Produto, Quantidade, Valor_Real, Desconto, Data_Compra, Código_Item, Cliente, Descrição_Produto, Imagem, Usuário, Status, 'Status da Saída')
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'Ativo', ?)
-                """, (produto, quantidade, valor_real, desconto, data_compra, codigo_produto, cliente, descricao, imagem, usuario, status_da_saida))
+                # Verifica se o produto já existe
+                cursor.execute("SELECT Quantidade FROM products WHERE Código_Item = ?", (codigo_produto,))
+                resultado = cursor.fetchone()
 
+                if resultado:
+                    # Atualiza a quantidade somando a estornada
+                    nova_quantidade = int(resultado[0]) + quantidade_estorno
+                    cursor.execute("""
+                        UPDATE products
+                        SET Quantidade = ?, Status = 'Ativo'
+                        WHERE Código_Item = ?
+                    """, (nova_quantidade, codigo_produto))
+                else:
+                    # Insere como novo produto
+                    cursor.execute("""
+                        INSERT INTO products 
+                        (Produto, Quantidade, Valor_Real, Desconto, Data_Compra, Código_Item, Cliente, Descrição_Produto, Imagem, Usuário, Status, 'Status da Saída')
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'Ativo', ?)
+                    """, (produto, str(quantidade_estorno), valor_real, desconto, data_compra, 
+                          codigo_produto, cliente, descricao, imagem, usuario, "1"))
                 cn.commit()
 
-                try:
+                if quantidade_estorno >= quantidade:
                     cursor.execute("""
                         DELETE FROM products_saida WHERE "Código do Produto" = ?
                     """, (codigo_produto,))
+
+                # Deleta da tabela de saída
+                else:
+                    nova_quantidade_saida = quantidade - quantidade_estorno
+                    cursor.execute("""
+                        UPDATE products_saida
+                        SET Quantidade = ?
+                        WHERE "Código do Produto" = ?
+                    """, (nova_quantidade_saida, codigo_produto))
                     cn.commit()
-                except sqlite3.Error as e:
-                    print(f"Erro ao excluir o produto: {e}")
-                    cn.rollback()
+                    
 
-                # Registrar no histórico após a inserção do produto
-                descricao = f"Produto {produto} foi estornado."
-                self.main_window.registrar_historico("Estorno do Produto", descricao)
+            # Verifica se o item já está na table_base visualmente
+            linha_existente = None
+            for linha in range(self.main_window.table_base.rowCount()):
+                codigo_existente = self.main_window.table_base.item(linha,5)
+                if codigo_existente and codigo_existente.text() == codigo_produto:
+                    linha_existente = linha
+                    break
+            if linha_existente is not None:
+                # Soma a quantidade diretamente na linha existente
+                item_quantidade = self.main_window.table_base.item(linha_existente,1)
+                quantidade_atual = int(item_quantidade.text()) if item_quantidade else 0
+                nova_quantidade_visual = quantidade_atual + int(quantidade)
+                self.main_window.table_base.setItem(linha_existente, 1,self.criar_item(str(nova_quantidade_visual)))
+            else:
+                # Recupera o nome do usuário da linha original da table_saida (coluna 9)
+                usuario_item = self.main_window.table_saida.item(row, 9)
+                usuario = usuario_item.text() if usuario_item else "Não cadastrado"
 
-        # Limpa a tabela de saída
+                # Atualiza a tabela base visualmente
+                row_base = self.main_window.table_base.rowCount()
+                self.main_window.table_base.insertRow(row_base)
+                self.main_window.table_base.setItem(row_base, 0, self.criar_item(produto))
+                self.main_window.table_base.setItem(row_base, 1, self.criar_item(str(quantidade_estorno)))
+                self.main_window.table_base.setItem(row_base, 2, self.criar_item(valor_real))
+                self.main_window.table_base.setItem(row_base, 3, self.criar_item(desconto))
+                self.main_window.table_base.setItem(row_base, 4, self.criar_item(data_compra))
+                self.main_window.table_base.setItem(row_base, 5, self.criar_item(codigo_produto))
+                self.main_window.table_base.setItem(row_base, 6, self.criar_item(cliente))
+                self.main_window.table_base.setItem(row_base, 7, self.criar_item(descricao))
+                self.main_window.table_base.setItem(row_base, 8, self.criar_item(usuario))
+
+            # Registrar histórico
+            historico_texto = f"Produto '{produto}' foi estornado."
+            self.main_window.registrar_historico("Estorno do Produto", historico_texto)
+
+        # Limpar a tabela de saída
         self.main_window.table_saida.clearContents()
         self.main_window.table_saida.setRowCount(0)
 
@@ -420,8 +556,9 @@ class EstoqueProduto(QWidget):
         msg_box = QMessageBox()
         msg_box.setIcon(QMessageBox.Information)
         msg_box.setWindowTitle("Sucesso")
-        msg_box.setText("Estorno realizado com sucesso")
+        msg_box.setText("Estorno realizado com sucesso.")
         msg_box.exec()
+
 
     # Função para recuperar a imagem do produto pelo código (recupera a imagem do banco de dados)
     def recuperar_imagem_produto_bd_products_saida(self, codigo_produto):
@@ -450,99 +587,6 @@ class EstoqueProduto(QWidget):
     def marcar_alteracao(self):
         # Método para marcar quando ocorre uma alteração
         self.alteracoes_salvas = False
-
-    def salvar_tabelas(self):
-        if self.alteracoes_salvas:
-                msg_box = QMessageBox()
-                msg_box.setIcon(QMessageBox.Information)
-                msg_box.setWindowTitle("Informação ")
-                msg_box.setText("Alterações já foram salvas ")
-                msg_box.exec()
-                return 
-        try:
-            # Criar conexão e cursor
-            conexao = sqlite3.connect('banco_de_dados.db')
-            cursor = conexao.cursor()
-
-            # Salvando as alterações na table_base (estoque)
-            for row in range(self.main_window.table_base.rowCount()):
-                if all(self.main_window.table_base.item(row, col) is not None for col in range(10)):  # Verificar se todos os itens da linha existem
-                    produto = self.main_window.table_base.item(row, 0).text() if self.main_window.table_base.item(row, 0) else ""
-                    quantidade = int(self.main_window.table_base.item(row, 1).text()) if self.main_window.table_base.item(row, 1) else 0
-                    valor_produto = self.limpar_valor(self.main_window.table_base.item(row, 2).text()) if self.main_window.table_base.item(row, 2) else 0.0
-                    desconto = self.main_window.table_base.item(row, 3).text() if self.main_window.table_base.item(row, 3) else ""
-                    data_compra = self.main_window.table_base.item(row, 4).text() if self.main_window.table_base.item(row, 4) else ""
-                    codigo_produto = self.main_window.table_base.item(row, 5).text() if self.main_window.table_base.item(row, 5) else ""
-                    cliente = self.main_window.table_base.item(row, 6).text() if self.main_window.table_base.item(row, 6) else ""
-                    descricao = self.main_window.table_base.item(row, 7).text() if self.main_window.table_base.item(row, 7) else ""
-                    usuario = self.main_window.table_base.item(row, 8).text() if self.main_window.table_base.item(row, 8) else ""
-                    status = self.main_window.table_base.item(row, 9).text() if self.main_window.table_base.item(row, 9) else ""
-                    status_da_saida = self.main_window.table_base.item(row, 10).text() if self.main_window.table_base.item(row, 10) else ""
-
-                    # Usar UPDATE para modificar dados existentes
-                    cursor.execute("""
-                        UPDATE products SET
-                            Produto = ?, 
-                            Quantidade = ?, 
-                            Valor_Real = ?,
-                            Desconto = ?,
-                            Data_Compra = ?,
-                            Código_Item = ?, 
-                            Cliente = ?, 
-                            Descrição_Produto = ?,
-                            Usuário = ?, 
-                            Status = ?,
-                            'Status da Saída' = ?
-                        WHERE Código_Item = ?
-                    """, (produto, quantidade, valor_produto, desconto, data_compra, codigo_produto, cliente, descricao, usuario, status, status_da_saida, codigo_produto))
-
-            # Salvando as alterações na table_saida (saída de produtos)
-            for row in range(self.main_window.table_saida.rowCount()):
-                if all(self.main_window.table_saida.item(row, col) is not None for col in range(12)):  # Verificar se todos os itens da linha existem
-                    produto = self.main_window.table_saida.item(row, 0).text() if self.main_window.table_saida.item(row, 0) else ""
-                    quantidade = int(self.main_window.table_saida.item(row, 1).text()) if self.main_window.table_saida.item(row, 1) else 0
-                    valor_produto = self.main_window.table_saida.item(row, 2).text() if self.main_window.table_saida.item(row, 2) else ""
-                    desconto = self.main_window.table_saida.item(row, 3).text() if self.main_window.table_saida.item(row, 3) else ""
-                    data_saida = self.main_window.table_saida.item(row, 4).text() if self.main_window.table_saida.item(row, 4) else ""
-                    data_criacao = self.main_window.table_saida.item(row, 5).text() if self.main_window.table_saida.item(row, 5) else ""
-                    codigo_produto = self.main_window.table_saida.item(row, 6).text() if self.main_window.table_saida.item(row, 6) else ""
-                    cliente = self.main_window.table_saida.item(row, 7).text() if self.main_window.table_saida.item(row, 7) else ""
-                    descricao_produto = self.main_window.table_saida.item(row, 8).text() if self.main_window.table_saida.item(row, 8) else ""
-                    usuario = self.main_window.table_saida.item(row, 9).text() if self.main_window.table_saida.item(row, 9) else ""
-                    imagem = self.main_window.table_saida.item(row, 10).text() if self.main_window.table_saida.item(row, 10) else ""
-                    status = self.main_window.table_saida.item(row, 11).text() if self.main_window.table_saida.item(row, 11) else ""
-                    status_da_saida = self.main_window.table_saida.item(row, 12).text() if self.main_window.table_saida.item(row, 12) else ""
-
-                    # Usar INSERT para novos registros ou UPDATE para registros existentes
-                    cursor.execute("""
-                        INSERT INTO products_saida (Produto, Quantidade, 'Valor do Produto', Desconto, 'Data de Saída', 'Data da Criação', 'Código do Produto', Cliente, 'Descrição do Produto', Usuário, Imagem, Status, 'Status da Saída')
-                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-                        ON CONFLICT(Código_do_Produto) DO UPDATE SET 
-                            Quantidade = excluded.Quantidade,
-                            'Data de Saída' = excluded.'Data de Saída',
-                            Cliente = excluded.Cliente,
-                            Descrição_Produto = excluded.Descrição_Produto,
-                            Usuário = excluded.Usuário
-                    """, (produto, quantidade, valor_produto, desconto, data_saida, data_criacao, codigo_produto, cliente, descricao_produto, usuario, imagem, status, status_da_saida))
-
-            # Confirmar as alterações no banco de dados
-            conexao.commit()
-            conexao.close()
-
-            # Marcar que as alterações foram salvas
-            self.alteracoes_salvas = True    
-
-            # Exibir uma mensagem de sucesso
-            msg_box = QMessageBox()
-            msg_box.setIcon(QMessageBox.Information)
-            msg_box.setWindowTitle("Sucesso ")
-            msg_box.setText("Alterações salvas com sucesso ")
-            msg_box.exec()
-            return
-
-        except Exception as e:
-            print(f"Erro ao salvar tabelas: {e}")
-            QMessageBox.critical(self.main_window, "Erro", f"Erro ao salvar tabelas: {e}")
 
 
     def atualizar_estoque(self):
@@ -601,15 +645,41 @@ class EstoqueProduto(QWidget):
             # Limpa a tabela antes de carregar os novos dados
             self.table_saida.setRowCount(0)
             
-            # Consulta os dados da tabela de saída no banco de dados (somente produtos que já tiveram saída gerada)
+            # Consulta os dados da tabela de saída no banco de dados (agrupando os produtos iguais)
             query = """
-            SELECT Produto, Quantidade, "Valor do Produto", Desconto, "Data de Saída", "Data da Criação", "Código do Produto", Cliente, "Descrição do Produto", Usuário, Imagem, Status, "Status da Saída"
+            SELECT 
+                Produto, 
+                SUM(Quantidade) as Quantidade, 
+                "Valor do Produto", 
+                Desconto, 
+                "Data de Saída", 
+                "Data da Criação", 
+                "Código do Produto", 
+                Cliente, 
+                "Descrição do Produto", 
+                Usuário, 
+                Imagem, 
+                Status, 
+                "Status da Saída"
             FROM products_saida
             WHERE "Status da Saída" = 1
+            GROUP BY 
+                Produto, 
+                "Valor do Produto", 
+                Desconto, 
+                "Data de Saída", 
+                "Data da Criação", 
+                "Código do Produto", 
+                Cliente, 
+                "Descrição do Produto", 
+                Usuário, 
+                Imagem, 
+                Status, 
+                "Status da Saída"
             """
+
             saidas = self.db.executar_query(query)  # Método que executa a consulta e retorna os resultados
 
-            # Preenche a tabela com os dados obtidos
             if saidas:
                 for saida in saidas:
                     row_position = self.table_saida.rowCount()
@@ -628,12 +698,6 @@ class EstoqueProduto(QWidget):
             print(f"Erro ao atualizar a tabela de saída: {e}")
 
 
-    def importar(self):
-        msg = QMessageBox()
-        msg.setIcon(QMessageBox.Warning)
-        msg.setWindowTitle("ERRO")
-        msg.setText("1ção ainda não está disponível!")
-        msg.exec()
 
 
     def limpar_tabela(self):
@@ -674,11 +738,66 @@ class EstoqueProduto(QWidget):
                 tabela.setItem(row, col, item)
 
     def exibir_pdf(self):
-        msg = QMessageBox()
-        msg.setIcon(QMessageBox.Warning)
-        msg.setWindowTitle("ERRO")
-        msg.setText("Essa função ainda não está disponível!")
-        msg.exec()
+        caminho, _ = QFileDialog.getSaveFileName(
+            None,
+            "Salvar PDF",
+            "relatorio.pdf",
+            "PDF files (*.pdf)"
+        )
+        if not caminho:
+            return
+        try:
+            c = canvas.Canvas(caminho, pagesize=A4)
+            width, height = A4
+
+            #Título
+            c.setFont("Helvetica-Bold", 16)
+            c.drawString(50, height - 50, "Relatório de Produtos")
+
+            # Cabeçalhos
+            c.setFont("Helvetica-Bold", 10)
+            headers = ["Produto", "Quantidade", "Valor", "Desconto", 
+                       "Data", "Código", "Cliente", "Descrição", "Usuário"]
+            y = height - 80
+            for i, header in enumerate(headers):
+                c.drawString(50 + i * 60, y, header)
+
+            # Dados da tabela
+            c.setFont("Helvetica", 9)
+            for row in range(self.main_window.table_base.rowCount()):
+                y -= 20
+                if y < 50:
+                    c.showPage()
+                    y = height - 50
+                    c.setFont("Helvetica-Bold", 10)
+                    for i, header in enumerate(headers):
+                        c.drawString(50 + i * 60, y, header)
+                    y -= 20
+                    c.setFont("Helvetica", 9)
+
+                for col in range(9):  # Assume 9 colunas
+                    item = self.main_window.table_base.item(row, col)
+                    texto = item.text() if item else ""
+                    texto = item.text() if item else ""
+                    c.drawString(50 + col * 60, y, str(texto)[:15])  # Garante que é string
+
+
+            c.save()
+
+            # Mensagem de sucesso
+            msg = QMessageBox()
+            msg.setIcon(QMessageBox.Information)
+            msg.setWindowTitle("PDF Gerado")
+            msg.setText("O PDF foi gerado com sucesso!")
+            msg.exec()
+
+        except Exception as e:
+            msg = QMessageBox()
+            msg.setIcon(QMessageBox.Critical)
+            msg.setWindowTitle("Erro")
+            msg.setText(f"Erro ao gerar PDF: {str(e)}")
+            msg.exec()
+
 
 
     def exibir_historico(self):
@@ -711,10 +830,10 @@ class EstoqueProduto(QWidget):
         botao_apagar = QPushButton("Apagar Histórico")
         botao_apagar.clicked.connect(self.apagar_historico)
 
-        botao_exportar_csv = QPushButton("Exportar CSV")
+        botao_exportar_csv = QPushButton("Exportar para CSV")
         botao_exportar_csv.clicked.connect(self.exportar_csv)
 
-        botao_exportar_excel = QPushButton("Exportar Excel")
+        botao_exportar_excel = QPushButton("Exportar para Excel")
         botao_exportar_excel.clicked.connect(self.exportar_excel)
 
         botao_exportar_pdf = QPushButton("Exportar PDF")
@@ -762,41 +881,21 @@ class EstoqueProduto(QWidget):
         # Preencher tabela pela primeira vez
         self.carregar_historico()
 
-
-    def selecionar_todos(self):
-        if not self.coluna_checkboxes_adicionada:
-            QMessageBox.warning(self, "Aviso", "Ative a opção 'Selecionar Individualmente' antes.")
-            self.checkbox_selecionar_todos.setChecked(False)
-            return
-
-        estado = self.checkbox_selecionar_todos.isChecked()
-        for checkbox in self.checkboxes:
-            if checkbox:
-                # Bloquear sinais para evitar loops
-                checkbox.blockSignals(True)
-                checkbox.setChecked(estado)
-                checkbox.blockSignals(False)
-
-    # Função para desmarcar todos os checkboxes
-    def desmarcar_checkboxes(self):
-        for checkbox in self.checkboxes:
-            if checkbox:
-                checkbox.setChecked(False)
-
     def carregar_historico(self):
         with sqlite3.connect('banco_de_dados.db') as cn:
             cursor = cn.cursor()
-            cursor.execute("SELECT * FROM historico ORDER BY 'Data e Hora' DESC")
+            cursor.execute('SELECT * FROM historico ORDER BY "Data e Hora" DESC')
             registros = cursor.fetchall()
 
         self.tabela_historico.clearContents()
         self.tabela_historico.setRowCount(len(registros))
 
-        for i, row in enumerate(registros):
-            self.tabela_historico.setItem(i, 0, QTableWidgetItem(row[1]))  # Data/Hora
-            self.tabela_historico.setItem(i, 1, QTableWidgetItem(row[2]))  # Usuário
-            self.tabela_historico.setItem(i, 2, QTableWidgetItem(row[3]))  # Ação
-            self.tabela_historico.setItem(i, 3, QTableWidgetItem(row[4]))  # Descrição
+        for i, (_, data, usuario, acao, descricao) in enumerate(registros):
+            self.tabela_historico.setItem(i, 0, QTableWidgetItem(data))
+            self.tabela_historico.setItem(i, 1, QTableWidgetItem(usuario))
+            self.tabela_historico.setItem(i, 2, QTableWidgetItem(acao))
+            self.tabela_historico.setItem(i, 3, QTableWidgetItem(descricao))
+
 
 
     def atualizar_historico(self):
@@ -937,11 +1036,6 @@ class EstoqueProduto(QWidget):
                 print(f"Erro ao buscar ID: {e}")
                 return None
 
-
-
-
-
-
     def confirmar_historico_apagado(self, mensagem):
         """
         Exibe uma caixa de diálogo para confirmar a exclusão.
@@ -959,12 +1053,33 @@ class EstoqueProduto(QWidget):
         resposta = msgbox.exec()
 
         return msgbox.clickedButton() == btn_sim
+    
+    # Função para desmarcar todos os checkboxes
+    def desmarcar_checkboxes(self):
+        for checkbox in self.checkboxes:
+            if checkbox:
+                checkbox.setChecked(False)
+    
+    def selecionar_todos(self):
+        if not self.coluna_checkboxes_adicionada:
+            QMessageBox.warning(self, "Aviso", "Ative a opção 'Selecionar Individualmente' antes.")
+            self.checkbox_selecionar_todos.setChecked(False)
+            return
+
+        estado = self.checkbox_selecionar_todos.isChecked()
+        for checkbox in self.checkboxes:
+            if checkbox:
+                # Bloquear sinais para evitar loops
+                checkbox.blockSignals(True)
+                checkbox.setChecked(estado)
+                checkbox.blockSignals(False)
 
 
-     # Função para adicionar checkboxes na tabela de histórico
+     # Função para adicionar checkboxes selecionar_individual na tabela de histórico
     def selecionar_individual(self):
         if self.tabela_historico.rowCount() == 0:
             QMessageBox.warning(self, "Aviso", "Nenhum histórico para selecionar.")
+            self.checkbox_selecionar_individual.setChecked(False)
             return
 
         if self.coluna_checkboxes_adicionada:
@@ -991,6 +1106,7 @@ class EstoqueProduto(QWidget):
 
         self.tabela_historico.setColumnWidth(0, 30)
         self.coluna_checkboxes_adicionada = True
+        return
 
     
     def atualizar_selecao_todos(self):
@@ -1008,9 +1124,13 @@ class EstoqueProduto(QWidget):
     def ordenar_historico(self):
         # Obter a coluna pela qual o usuário deseja ordenar
         coluna = self.obter_coluna_para_ordenar()  # Função fictícia para capturar escolha
+        if coluna is None:
+            return  # Cancela o processo todo
         
         # Determinar a direção de ordenação (ascendente ou descendente)
         direcao = self.obter_direcao_ordenacao()  # Função fictícia para capturar escolha
+        if direcao is None:
+            return  # Cancela o processo todo
         
         # Mapeamento de colunas para índices (ajustar conforme sua tabela)
         colunas_para_indices = {
@@ -1169,16 +1289,12 @@ class EstoqueProduto(QWidget):
         self.tabela_historico.setRowCount(len(registros))
 
         for i, row in enumerate(registros):
-            self.tabela_historico.setItem(i, 0, QTableWidgetItem(row[1]))  # Data/Hora
-            self.tabela_historico.setItem(i, 1, QTableWidgetItem(row[2]))  # Usuário
-            self.tabela_historico.setItem(i, 2, QTableWidgetItem(row[3]))  # Ação
-            self.tabela_historico.setItem(i, 3, QTableWidgetItem(row[4]))  # Descrição
+            self.tabela_historico.setItem(i, 0, QTableWidgetItem(row[0]))  # Data/Hora
+            self.tabela_historico.setItem(i, 1, QTableWidgetItem(row[1]))  # Usuário
+            self.tabela_historico.setItem(i, 2, QTableWidgetItem(row[2]))  # Ação
+            self.tabela_historico.setItem(i, 3, QTableWidgetItem(row[3]))  # Descrição
 
         QMessageBox.information(self, "Filtro Aplicado", f"{len(registros)} registro(s) encontrado(s)!")
-
-
-
-
 
     def exportar_csv(self):
         num_linhas = self.tabela_historico.rowCount()
@@ -1390,76 +1506,205 @@ class EstoqueProduto(QWidget):
         if not nome_arquivo:
             return  # Se o usuário cancelar a seleção do arquivo
 
+        
+        # Alterar o texto da line_excel para "Carregando arquivo Excel..."
+        self.line_excel.setText("Carregando arquivo Excel...")
+        self.nome_arquivo_excel = nome_arquivo  # Salva para usar depois
+
+        # Inicializar a barra de progresso
+        self.progress_excel.setValue(0)
+        self.progresso = 0
+        
+
+        # Começar o timer para simular carregamento visual
+        self.timer_excel = QTimer()
+        self.timer_excel.timeout.connect(self.atualizar_progress_excel)
+        self.timer_excel.start(20)
+
+    def atualizar_progress_excel(self):
+        if self.progresso < 100:
+            self.progresso += 1
+            self.progress_excel.setValue(self.progresso)
+        else:
+            self.timer_excel.stop()
+
+            try:
+                df = pd.read_excel(self.nome_arquivo_excel, engine="openpyxl", header=0)
+                df = df.fillna("Não informado")
+
+                colunas_table_base = ["Produto", "Quantidade", "Valor do Produto", "Desconto", "Data da Compra",
+                                    "Código do Item", "Cliente", "Descrição do Produto", "Usuário"]
+
+                if df.shape[1] != len(colunas_table_base):
+                    QMessageBox.warning(self, "Erro", "O número de colunas no arquivo Excel não corresponde ao número esperado.")
+                    self.line_excel.clear()
+                    # Zerando a barra de progresso
+                    self.progress_excel.setValue(0)
+                    self.progresso = 0  # Resetando a variável de progresso
+                    return
+
+                if df.shape[0] == 0:
+                    QMessageBox.warning(self, "Erro", "O arquivo Excel está vazio.")
+                    self.line_excel.clear()
+                    # Zerando a barra de progresso
+                    self.progress_excel.setValue(0)
+                    self.progresso = 0  # Resetando a variável de progresso
+                    return
+                
+
+                self.table_base.setRowCount(0)
+
+                df["Valor do Produto"] = pd.to_numeric(df.iloc[:, 2], errors="coerce").fillna(0)
+                df["Valor do Produto"] = df["Valor do Produto"].apply(
+                    lambda x: f"R$ {x:,.2f}".replace(",", "_").replace(".", ",").replace("_", ".")
+                )
+
+                df["Desconto"] = pd.to_numeric(df.iloc[:, 3], errors="coerce").fillna(0)
+                df["Desconto"] = df["Desconto"].apply(
+                    lambda x: f"{x:.2f}%" if x < 1 else f"{x * 100:.2f}%"
+                )
+
+                if "Data da Compra" in df.columns:
+                    df["Data da Compra"] = pd.to_datetime(df["Data da Compra"], errors="coerce").dt.strftime('%d/%m/%Y')
+                else:
+                    df["Data da Compra"] = ""
+
+                for row in df.itertuples(index=False):
+                    row_position = self.table_base.rowCount()
+                    self.table_base.insertRow(row_position)
+                    for column, value in enumerate(row):
+                        item = self.criar_item(str(value))
+                        self.table_base.setItem(row_position, column, item)
+
+                QMessageBox.information(self, "Sucesso", "Arquivo Excel importado com sucesso!")
+
+            except Exception as e:
+                QMessageBox.critical(self, "Erro", f"Erro ao importar o arquivo Excel: {e}")
+
+            # Quando o arquivo for carregado, atualizar o texto da line_excel com o caminho do arquivo
+            self.line_excel.setText(self.nome_arquivo_excel)
+
+            # Zerando a barra de progresso
+            self.progress_excel.setValue(0)
+            self.progresso = 0  # Resetando a variável de progresso
+
+
+
+
+    def importar_produto(self):
+        # Verificar se a tabela está vazia
+        if self.table_base.rowCount() == 0 and self.table_saida.rowCount() == 0:
+            QMessageBox.warning(self, "Aviso", "Nenhum dado encontrado para gerar arquivo Excel.")
+            return  # Se a tabela estiver vazia, encerra a função sem prosseguir
+        
+        nome_arquivo, _ = QFileDialog.getSaveFileName(
+            self,
+            "Salvar Arquivo Excel",
+            "relatório.xlsx",
+            "Arquivos Excel (*.xlsx)"
+
+        )
+
+        if not nome_arquivo:
+            return
+        
+        # Garantir que o arquivo tenha extensão .xlsx
+        if not nome_arquivo.endswith(".xlsx"):
+            nome_arquivo += ".xlsx"
+
         try:
-            # Usando pandas para ler o arquivo Excel
-            df = pd.read_excel(nome_arquivo, engine="openpyxl", header=0)
+            with pd.ExcelWriter(nome_arquivo, engine="openpyxl") as writer:
+                def tabela_para_dataframe(tabela):
+                    dados = []
+                    cabecalhos = [tabela.horizontalHeaderItem(col).text() for col in range(tabela.columnCount())]
+                    for linha in range(tabela.rowCount()):
+                        linha_dados = []
+                        for coluna in range(tabela.columnCount()):
+                            item = tabela.item(linha, coluna)
+                            linha_dados.append(item.text() if item else "")
+                        dados.append(linha_dados)
+                    return pd.DataFrame(dados, columns=cabecalhos)
+                
+                # Converter e salvar a tabela de estoque
+                if self.table_base.rowCount() > 0:
+                    df_saida = tabela_para_dataframe(self.table_base)
+                    df_saida.to_excel(writer, sheet_name="Estoque", index=False)
+                
+                # Converter e salvar a tabela de saída
+                if self.table_saida.rowCount() > 0:
+                    df_estoque = tabela_para_dataframe(self.table_saida)
+                    df_estoque.to_excel(writer, sheet_name="Saída", index=False)
+        
+            QMessageBox.information(self, "Sucesso", f"Arquivo Excel gerado com sucesso em:\n{nome_arquivo}")
+        
+        except Exception as e:
+            QMessageBox.critical(self, "Erro", f"Erro ao salvar arquivo Excel: {str(e)}")
 
-            # Definir os títulos das colunas da table_base manualmente, de acordo com a ordem desejada
-            colunas_table_base = ["Produto", "Quantidade", "Valor do Produto", "Desconto", "Data da Compra", 
-                                "Código do Item", "Cliente", "Descrição do Produto", "Usuário"]
 
-            # Limpar a tabela antes de adicionar os dados
-            self.table_base.setRowCount(0)
+    
+    def incluir_produto_no_sistema(self):
+        selected_rows = self.main_window.table_base.selectionModel().selectedRows()
 
-            # Verificar se o arquivo tem a quantidade certa de colunas
-            if df.shape[1] != len(colunas_table_base):
-                msg_box = QMessageBox()
-                msg_box.setIcon(QMessageBox.Icon.Warning)
-                msg_box.setWindowTitle("Erro na Estrutura do Arquivo")
-                msg_box.setText("O número de colunas no arquivo Excel não corresponde ao número esperado. Deseja continuar mesmo assim?")
-                msg_box.setStandardButtons(QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
+        if not hasattr(self, 'nome_arquivo_excel') or not self.nome_arquivo_excel:
+            QMessageBox.warning(self, "Aviso", "Você precisa carregar uma planilha antes de cadastrar os produtos no sistema.")
+            return
 
-                sim_button = msg_box.button(QMessageBox.StandardButton.Yes)
-                sim_button.setText("Sim")
-                nao_button = msg_box.button(QMessageBox.StandardButton.No)
-                nao_button.setText("Não")
+        if not selected_rows:
+            QMessageBox.critical(self, "Aviso", "Nenhum produto selecionado para gerar saída!")
+            return False
 
-                resposta = msg_box.exec()
+        try:
+            conn = sqlite3.connect("banco_de_dados.db")
+            cursor = conn.cursor()
 
-                if resposta == QMessageBox.StandardButton.No:
-                    return  # Se o usuário escolher não continuar, encerra a função
+            for model_index in selected_rows:
+                row_index = model_index.row()
+                row_data = []
+                for col in range(self.main_window.table_base.columnCount()):
+                    item = self.main_window.table_base.item(row_index, col)
+                    row_data.append(item.text() if item else "")
 
-                num_colunas_faltando = len(colunas_table_base) - df.shape[1]
-                if num_colunas_faltando > 0:
-                    df = pd.concat([df, pd.DataFrame([[""] * num_colunas_faltando] * df.shape[0])], axis=1)
+                # Desempacotar os dados corretamente
+                produto = row_data[0]
+                quantidade = row_data[1]
+                valor_real = row_data[2]
+                desconto = row_data[3]
+                data_compra = row_data[4]
+                codigo_item = row_data[5]
+                cliente = row_data[6]
+                descricao = row_data[7]
+                usuario = row_data[8]
 
-            # Garantir que o valor do produto esteja em tipo float para cálculos
-            df["Valor do Produto"] = pd.to_numeric(df.iloc[:, 2], errors="coerce").fillna(0)
-            df["Valor do Produto"] = df["Valor do Produto"].apply(
-                lambda x: f"R$ {x:,.2f}".replace(",", "_").replace(".", ",").replace("_", ".")
-            )
+                cursor.execute("""
+                    INSERT INTO products (Produto, Quantidade, Valor_Real, Desconto, Data_Compra, Código_Item, 
+                            Cliente, Descrição_Produto, Usuário) 
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                """, (produto, quantidade, valor_real, desconto, data_compra, codigo_item, 
+                    cliente, descricao, usuario))
 
-            # Corrigir a coluna "Desconto" para ser uma fração em vez de porcentagem
-            df["Desconto"] = pd.to_numeric(df.iloc[:, 3], errors="coerce").fillna(0)
-            df["Desconto"] = df["Desconto"].apply(
-                lambda x: f"{x:.2f}%" if x < 1 else f"{x * 100:.2f}%"
-            )   
+            conn.commit()
+            conn.close()
+            QMessageBox.information(self, "Sucesso", "Produto(s) incluído(s) com sucesso no sistema.")
 
-            # Criar a coluna "Data da Compra" com formatação sem a parte da hora
-            if "Data da Compra" in df.columns:
-                # Garantir que os valores da coluna de data estão no formato correto (sem a hora)
-                df["Data da Compra"] = pd.to_datetime(df["Data da Compra"], errors="coerce").dt.strftime('%d/%m/%Y')
-            else:
-                # Se a coluna "Data da Compra" não existir, criar uma coluna com dados vazios
-                df["Data da Compra"] = ""
+            # Registrar histórico
+            descricao = f"Produto '{produto}' foi incluído no sistema."
+            self.main_window.registrar_historico( "Inclusão de produto",descricao)
 
-            # Inserir os dados na table_base
-            for row in df.itertuples(index=False):
-                row_position = self.table_base.rowCount()
-                self.table_base.insertRow(row_position)
-
-                # Preencher cada célula da tabela com os dados do arquivo Excel, na ordem definida
-                for column, value in enumerate(row):
-                    item = self.criar_item(str(value))  # Usando o método que você já deve ter para criar os itens
-                    self.table_base.setItem(row_position, column, item)
-
-            QMessageBox.information(self, "Sucesso", "Arquivo Excel importado com sucesso!")
 
         except Exception as e:
-            QMessageBox.critical(self, "Erro", f"Erro ao importar o arquivo Excel: {e}")
+            QMessageBox.critical(self, "Erro", f"Erro ao incluir o produto no sistema:\n{e}")
 
 
 
 
-    def incluir_sistema(self):
-        pass
+
+
+
+
+
+
+
+
+
+
+

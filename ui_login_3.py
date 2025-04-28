@@ -228,6 +228,6 @@ class Ui_Mainwindow_Login(object):
         self.label_trocar_senha.setText(QCoreApplication.translate("Mainwindow_Login", u"<a href=\"trocar_senha\" style=\"color: white;\">Esqueci a senha</a>", None))
         self.btn_login.setText(QCoreApplication.translate("Mainwindow_Login", u"Login", None))
         self.txt_senha.setPlaceholderText(QCoreApplication.translate("Mainwindow_Login", u"Senha", None))
-        self.txt_usuario.setPlaceholderText(QCoreApplication.translate("Mainwindow_Login", u"Usu\u00e1rio ou e-mail", None))
+        self.txt_usuario.setPlaceholderText(QCoreApplication.translate("Mainwindow_Login", u"Usu\u00e1rio, e-mail ou CPF", None))
     # retranslateUi
 
