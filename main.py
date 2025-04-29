@@ -56,11 +56,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.connection = connection
 
         self.login_window = login_window
+        
         #Cria as tabelas no banco de dados sempre que executar o sistema em um novo ambiente
         self.db.create_table_products()
         self.db.create_table_products_saida()
         self.db.create_table_users()
         self.db.create_table_historico()
+        self.db.create_table_users_inativos()
 
         self.table_base.verticalHeader().setVisible(True)
         self.table_saida.verticalHeader().setVisible(True)

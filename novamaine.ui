@@ -1839,6 +1839,11 @@ QTableView QScrollBar:horizontal {
                <string>Segredo</string>
               </property>
              </column>
+             <column>
+              <property name="text">
+               <string>Usuário Logado</string>
+              </property>
+             </column>
             </widget>
            </item>
            <item row="3" column="1">
@@ -2217,6 +2222,11 @@ QTableView QScrollBar:horizontal {
              <column>
               <property name="text">
                <string>Segredo</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>Usuário Logado</string>
               </property>
              </column>
             </widget>

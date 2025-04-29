@@ -103,30 +103,11 @@ class EstoqueProduto(QWidget):
                 # Adicionando o item à QTableWidget
                 self.table_base.setItem(row_index, col_index, item)
 
-        # Ajustar o tamanho das colunas para se ajustar ao conteúdo
-        '''for col in range(num_columns):
-            self.table_base.resizeColumnToContents(col)'''
-
     def tabela_saida(self, produtos_selecionados):
         # Limpa a tabela de saída antes de preencher com novos dados
         self.main_window.table_saida.clearContents()
         self.main_window.table_saida.setRowCount(0)
 
-        '''# Define as colunas para a table_saida
-        colunas_saida = [
-            "Produto", 
-            "Quantidade",
-            "Valor do Produto",
-            "Desconto", 
-            "Data de Saída", 
-            "Data da Criação", 
-            "Código do Produto", 
-            "Cliente", 
-            "Descrição do Produto", 
-            "Usuário"
-        ]
-        self.main_window.table_saida.setColumnCount(len(colunas_saida))
-        self.main_window.table_saida.setHorizontalHeaderLabels(colunas_saida)'''
 
         # Verifica se há produtos selecionados para a saída
         if not produtos_selecionados:
@@ -880,6 +861,7 @@ class EstoqueProduto(QWidget):
 
         # Preencher tabela pela primeira vez
         self.carregar_historico()
+        self.tabela_historico.resizeColumnsToContents()
 
     def carregar_historico(self):
         with sqlite3.connect('banco_de_dados.db') as cn:

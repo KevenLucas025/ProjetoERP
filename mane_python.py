@@ -959,8 +959,8 @@ class Ui_MainWindow(object):
         self.gridLayout_21.addWidget(self.frame_5, 0, 8, 5, 1)
 
         self.table_ativos = QTableWidget(self.frame_page_verificar_usuarios)
-        if (self.table_ativos.columnCount() < 19):
-            self.table_ativos.setColumnCount(19)
+        if (self.table_ativos.columnCount() < 20):
+            self.table_ativos.setColumnCount(20)
         __qtablewidgetitem19 = QTableWidgetItem()
         self.table_ativos.setHorizontalHeaderItem(0, __qtablewidgetitem19)
         __qtablewidgetitem20 = QTableWidgetItem()
@@ -999,6 +999,8 @@ class Ui_MainWindow(object):
         self.table_ativos.setHorizontalHeaderItem(17, __qtablewidgetitem36)
         __qtablewidgetitem37 = QTableWidgetItem()
         self.table_ativos.setHorizontalHeaderItem(18, __qtablewidgetitem37)
+        __qtablewidgetitem38 = QTableWidgetItem()
+        self.table_ativos.setHorizontalHeaderItem(19, __qtablewidgetitem38)
         self.table_ativos.setObjectName(u"table_ativos")
         self.table_ativos.setMinimumSize(QSize(0, 0))
         self.table_ativos.setMaximumSize(QSize(16777215, 16777215))
@@ -1144,48 +1146,50 @@ class Ui_MainWindow(object):
         self.gridLayout_21.addWidget(self.frame_4, 3, 0, 1, 1)
 
         self.table_inativos = QTableWidget(self.frame_page_verificar_usuarios)
-        if (self.table_inativos.columnCount() < 20):
-            self.table_inativos.setColumnCount(20)
-        __qtablewidgetitem38 = QTableWidgetItem()
-        self.table_inativos.setHorizontalHeaderItem(0, __qtablewidgetitem38)
+        if (self.table_inativos.columnCount() < 21):
+            self.table_inativos.setColumnCount(21)
         __qtablewidgetitem39 = QTableWidgetItem()
-        self.table_inativos.setHorizontalHeaderItem(1, __qtablewidgetitem39)
+        self.table_inativos.setHorizontalHeaderItem(0, __qtablewidgetitem39)
         __qtablewidgetitem40 = QTableWidgetItem()
-        self.table_inativos.setHorizontalHeaderItem(2, __qtablewidgetitem40)
+        self.table_inativos.setHorizontalHeaderItem(1, __qtablewidgetitem40)
         __qtablewidgetitem41 = QTableWidgetItem()
-        self.table_inativos.setHorizontalHeaderItem(3, __qtablewidgetitem41)
+        self.table_inativos.setHorizontalHeaderItem(2, __qtablewidgetitem41)
         __qtablewidgetitem42 = QTableWidgetItem()
-        self.table_inativos.setHorizontalHeaderItem(4, __qtablewidgetitem42)
+        self.table_inativos.setHorizontalHeaderItem(3, __qtablewidgetitem42)
         __qtablewidgetitem43 = QTableWidgetItem()
-        self.table_inativos.setHorizontalHeaderItem(5, __qtablewidgetitem43)
+        self.table_inativos.setHorizontalHeaderItem(4, __qtablewidgetitem43)
         __qtablewidgetitem44 = QTableWidgetItem()
-        self.table_inativos.setHorizontalHeaderItem(6, __qtablewidgetitem44)
+        self.table_inativos.setHorizontalHeaderItem(5, __qtablewidgetitem44)
         __qtablewidgetitem45 = QTableWidgetItem()
-        self.table_inativos.setHorizontalHeaderItem(7, __qtablewidgetitem45)
+        self.table_inativos.setHorizontalHeaderItem(6, __qtablewidgetitem45)
         __qtablewidgetitem46 = QTableWidgetItem()
-        self.table_inativos.setHorizontalHeaderItem(8, __qtablewidgetitem46)
+        self.table_inativos.setHorizontalHeaderItem(7, __qtablewidgetitem46)
         __qtablewidgetitem47 = QTableWidgetItem()
-        self.table_inativos.setHorizontalHeaderItem(9, __qtablewidgetitem47)
+        self.table_inativos.setHorizontalHeaderItem(8, __qtablewidgetitem47)
         __qtablewidgetitem48 = QTableWidgetItem()
-        self.table_inativos.setHorizontalHeaderItem(10, __qtablewidgetitem48)
+        self.table_inativos.setHorizontalHeaderItem(9, __qtablewidgetitem48)
         __qtablewidgetitem49 = QTableWidgetItem()
-        self.table_inativos.setHorizontalHeaderItem(11, __qtablewidgetitem49)
+        self.table_inativos.setHorizontalHeaderItem(10, __qtablewidgetitem49)
         __qtablewidgetitem50 = QTableWidgetItem()
-        self.table_inativos.setHorizontalHeaderItem(12, __qtablewidgetitem50)
+        self.table_inativos.setHorizontalHeaderItem(11, __qtablewidgetitem50)
         __qtablewidgetitem51 = QTableWidgetItem()
-        self.table_inativos.setHorizontalHeaderItem(13, __qtablewidgetitem51)
+        self.table_inativos.setHorizontalHeaderItem(12, __qtablewidgetitem51)
         __qtablewidgetitem52 = QTableWidgetItem()
-        self.table_inativos.setHorizontalHeaderItem(14, __qtablewidgetitem52)
+        self.table_inativos.setHorizontalHeaderItem(13, __qtablewidgetitem52)
         __qtablewidgetitem53 = QTableWidgetItem()
-        self.table_inativos.setHorizontalHeaderItem(15, __qtablewidgetitem53)
+        self.table_inativos.setHorizontalHeaderItem(14, __qtablewidgetitem53)
         __qtablewidgetitem54 = QTableWidgetItem()
-        self.table_inativos.setHorizontalHeaderItem(16, __qtablewidgetitem54)
+        self.table_inativos.setHorizontalHeaderItem(15, __qtablewidgetitem54)
         __qtablewidgetitem55 = QTableWidgetItem()
-        self.table_inativos.setHorizontalHeaderItem(17, __qtablewidgetitem55)
+        self.table_inativos.setHorizontalHeaderItem(16, __qtablewidgetitem55)
         __qtablewidgetitem56 = QTableWidgetItem()
-        self.table_inativos.setHorizontalHeaderItem(18, __qtablewidgetitem56)
+        self.table_inativos.setHorizontalHeaderItem(17, __qtablewidgetitem56)
         __qtablewidgetitem57 = QTableWidgetItem()
-        self.table_inativos.setHorizontalHeaderItem(19, __qtablewidgetitem57)
+        self.table_inativos.setHorizontalHeaderItem(18, __qtablewidgetitem57)
+        __qtablewidgetitem58 = QTableWidgetItem()
+        self.table_inativos.setHorizontalHeaderItem(19, __qtablewidgetitem58)
+        __qtablewidgetitem59 = QTableWidgetItem()
+        self.table_inativos.setHorizontalHeaderItem(20, __qtablewidgetitem59)
         self.table_inativos.setObjectName(u"table_inativos")
         self.table_inativos.setStyleSheet(u"/* Estiliza apenas o QTableView com objectName \"table_ativos\" */\n"
 "QTableView{\n"
@@ -1260,6 +1264,9 @@ class Ui_MainWindow(object):
 "    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */\n"
 "    color: black;\n"
 "}")
+        icon = QIcon()
+        icon.addFile(u"imagens/pngwing.com.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        self.btn_adicionar_produto.setIcon(icon)
 
         self.verticalLayout_12.addWidget(self.btn_adicionar_produto)
 
@@ -1281,6 +1288,9 @@ class Ui_MainWindow(object):
 "    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */\n"
 "    color: black;\n"
 "}")
+        icon1 = QIcon()
+        icon1.addFile(u"imagens/editar.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        self.btn_editar.setIcon(icon1)
 
         self.verticalLayout_12.addWidget(self.btn_editar)
 
@@ -1302,6 +1312,9 @@ class Ui_MainWindow(object):
 "    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */\n"
 "    color: black;\n"
 "}")
+        icon2 = QIcon()
+        icon2.addFile(u"imagens/toppng.com-update-512x512.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        self.btn_atualizar_produto.setIcon(icon2)
 
         self.verticalLayout_12.addWidget(self.btn_atualizar_produto)
 
@@ -1323,85 +1336,16 @@ class Ui_MainWindow(object):
 "    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */\n"
 "    color: black;\n"
 "}")
+        icon3 = QIcon()
+        icon3.addFile(u"imagens/Delete-Button-PNG-Download-Image.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        self.btn_limpar_campos.setIcon(icon3)
+        self.btn_limpar_campos.setIconSize(QSize(16, 16))
+        self.btn_limpar_campos.setCheckable(False)
 
         self.verticalLayout_12.addWidget(self.btn_limpar_campos)
 
 
         self.gridLayout_11.addWidget(self.frame_botoes_a_e_a_a, 2, 1, 1, 1)
-
-        self.frame_confirmar_ver_produto = QFrame(self.frame_cadastrar_produto)
-        self.frame_confirmar_ver_produto.setObjectName(u"frame_confirmar_ver_produto")
-        sizePolicy.setHeightForWidth(self.frame_confirmar_ver_produto.sizePolicy().hasHeightForWidth())
-        self.frame_confirmar_ver_produto.setSizePolicy(sizePolicy)
-        self.frame_confirmar_ver_produto.setMaximumSize(QSize(170, 100))
-        self.frame_confirmar_ver_produto.setFrameShape(QFrame.NoFrame)
-        self.frame_confirmar_ver_produto.setFrameShadow(QFrame.Raised)
-        self.gridLayout_12 = QGridLayout(self.frame_confirmar_ver_produto)
-        self.gridLayout_12.setObjectName(u"gridLayout_12")
-        self.btn_confirmar = QPushButton(self.frame_confirmar_ver_produto)
-        self.btn_confirmar.setObjectName(u"btn_confirmar")
-        sizePolicy.setHeightForWidth(self.btn_confirmar.sizePolicy().hasHeightForWidth())
-        self.btn_confirmar.setSizePolicy(sizePolicy)
-        self.btn_confirmar.setMinimumSize(QSize(0, 0))
-        self.btn_confirmar.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
-        self.btn_confirmar.setStyleSheet(u"QPushButton {\n"
-"    color: rgb(255, 255, 255); /* Cor do texto (branco) */\n"
-"    border-radius: 10px;\n"
-"    font-size: 16px;\n"
-"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 200, 100), stop:1 rgb(150, 255, 150)); /* Gradiente de verde claro para verde mais claro */\n"
-"    border: 3px solid transparent;\n"
-"}\n"
-"\n"
-"QPushButton:hover {\n"
-"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(150, 255, 150), stop:1 rgb(200, 255, 200)); /* Gradiente de verde mais claro para verde ainda mais claro */\n"
-"    color: rgb(0, 0, 0); /* Cor do texto (preto) */\n"
-"}\n"
-"")
-
-        self.gridLayout_12.addWidget(self.btn_confirmar, 1, 0, 1, 1)
-
-        self.btn_ver_item = QPushButton(self.frame_confirmar_ver_produto)
-        self.btn_ver_item.setObjectName(u"btn_ver_item")
-        sizePolicy.setHeightForWidth(self.btn_ver_item.sizePolicy().hasHeightForWidth())
-        self.btn_ver_item.setSizePolicy(sizePolicy)
-        self.btn_ver_item.setMinimumSize(QSize(120, 0))
-        self.btn_ver_item.setMaximumSize(QSize(153, 16777215))
-        self.btn_ver_item.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
-        self.btn_ver_item.setStyleSheet(u"QPushButton {\n"
-"    color: rgb(255, 255, 255);\n"
-"    border-radius: 8px;\n"
-"    font-size: 16px;\n"
-"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */\n"
-"    border: 4px solid transparent;\n"
-"}\n"
-"\n"
-"QPushButton:hover {\n"
-"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */\n"
-"    color: black;\n"
-"}")
-
-        self.gridLayout_12.addWidget(self.btn_ver_item, 2, 0, 1, 1)
-
-        self.btn_confirmar_massa = QPushButton(self.frame_confirmar_ver_produto)
-        self.btn_confirmar_massa.setObjectName(u"btn_confirmar_massa")
-        self.btn_confirmar_massa.setStyleSheet(u"QPushButton {\n"
-"    color: rgb(255, 255, 255); /* Cor do texto (branco) */\n"
-"    border-radius: 10px;\n"
-"    font-size: 12px;\n"
-"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 200, 100), stop:1 rgb(150, 255, 150)); /* Gradiente de verde claro para verde mais claro */\n"
-"    border: 3px solid transparent;\n"
-"}\n"
-"\n"
-"QPushButton:hover {\n"
-"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(150, 255, 150), stop:1 rgb(200, 255, 200)); /* Gradiente de verde mais claro para verde ainda mais claro */\n"
-"    color: rgb(0, 0, 0); /* Cor do texto (preto) */\n"
-"}\n"
-"")
-
-        self.gridLayout_12.addWidget(self.btn_confirmar_massa, 0, 0, 1, 1)
-
-
-        self.gridLayout_11.addWidget(self.frame_confirmar_ver_produto, 4, 1, 1, 1)
 
         self.frame_2 = QFrame(self.frame_cadastrar_produto)
         self.frame_2.setObjectName(u"frame_2")
@@ -1854,7 +1798,7 @@ class Ui_MainWindow(object):
         self.frame_remover_e_carregar_imagem.setObjectName(u"frame_remover_e_carregar_imagem")
         sizePolicy.setHeightForWidth(self.frame_remover_e_carregar_imagem.sizePolicy().hasHeightForWidth())
         self.frame_remover_e_carregar_imagem.setSizePolicy(sizePolicy)
-        self.frame_remover_e_carregar_imagem.setMaximumSize(QSize(173, 84))
+        self.frame_remover_e_carregar_imagem.setMaximumSize(QSize(200, 84))
         self.frame_remover_e_carregar_imagem.setFrameShape(QFrame.NoFrame)
         self.frame_remover_e_carregar_imagem.setFrameShadow(QFrame.Raised)
         self.verticalLayout_13 = QVBoxLayout(self.frame_remover_e_carregar_imagem)
@@ -1863,7 +1807,7 @@ class Ui_MainWindow(object):
         self.btn_remover_imagem.setObjectName(u"btn_remover_imagem")
         sizePolicy.setHeightForWidth(self.btn_remover_imagem.sizePolicy().hasHeightForWidth())
         self.btn_remover_imagem.setSizePolicy(sizePolicy)
-        self.btn_remover_imagem.setMaximumSize(QSize(150, 23))
+        self.btn_remover_imagem.setMaximumSize(QSize(170, 23))
         self.btn_remover_imagem.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.btn_remover_imagem.setStyleSheet(u"QPushButton {\n"
 "    color: rgb(255, 255, 255);\n"
@@ -1877,6 +1821,9 @@ class Ui_MainWindow(object):
 "    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */\n"
 "    color: black;\n"
 "}")
+        icon4 = QIcon()
+        icon4.addFile(u"imagens/icons8-remover-imagem-16.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        self.btn_remover_imagem.setIcon(icon4)
 
         self.verticalLayout_13.addWidget(self.btn_remover_imagem)
 
@@ -1885,7 +1832,7 @@ class Ui_MainWindow(object):
         sizePolicy.setHeightForWidth(self.btn_carregar_imagem.sizePolicy().hasHeightForWidth())
         self.btn_carregar_imagem.setSizePolicy(sizePolicy)
         self.btn_carregar_imagem.setMinimumSize(QSize(153, 0))
-        self.btn_carregar_imagem.setMaximumSize(QSize(150, 23))
+        self.btn_carregar_imagem.setMaximumSize(QSize(180, 23))
         self.btn_carregar_imagem.setStyleSheet(u"QPushButton {\n"
 "    color: rgb(255, 255, 255);\n"
 "    border-radius: 8px;\n"
@@ -1898,6 +1845,9 @@ class Ui_MainWindow(object):
 "    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */\n"
 "    color: black;\n"
 "}")
+        icon5 = QIcon()
+        icon5.addFile(u"imagens/014upload2_99941.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        self.btn_carregar_imagem.setIcon(icon5)
 
         self.verticalLayout_13.addWidget(self.btn_carregar_imagem)
 
@@ -1995,6 +1945,91 @@ class Ui_MainWindow(object):
 
 
         self.gridLayout_11.addWidget(self.frame_6, 2, 2, 3, 1)
+
+        self.frame_confirmar_ver_produto = QFrame(self.frame_cadastrar_produto)
+        self.frame_confirmar_ver_produto.setObjectName(u"frame_confirmar_ver_produto")
+        sizePolicy.setHeightForWidth(self.frame_confirmar_ver_produto.sizePolicy().hasHeightForWidth())
+        self.frame_confirmar_ver_produto.setSizePolicy(sizePolicy)
+        self.frame_confirmar_ver_produto.setMaximumSize(QSize(200, 200))
+        self.frame_confirmar_ver_produto.setFrameShape(QFrame.NoFrame)
+        self.frame_confirmar_ver_produto.setFrameShadow(QFrame.Raised)
+        self.verticalLayout_20 = QVBoxLayout(self.frame_confirmar_ver_produto)
+        self.verticalLayout_20.setObjectName(u"verticalLayout_20")
+        self.btn_confirmar_massa = QPushButton(self.frame_confirmar_ver_produto)
+        self.btn_confirmar_massa.setObjectName(u"btn_confirmar_massa")
+        sizePolicy.setHeightForWidth(self.btn_confirmar_massa.sizePolicy().hasHeightForWidth())
+        self.btn_confirmar_massa.setSizePolicy(sizePolicy)
+        self.btn_confirmar_massa.setMaximumSize(QSize(177, 30))
+        self.btn_confirmar_massa.setStyleSheet(u"QPushButton {\n"
+"    color: rgb(255, 255, 255); /* Cor do texto (branco) */\n"
+"    border-radius: 10px;\n"
+"    font-size: 12px;\n"
+"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 200, 100), stop:1 rgb(150, 255, 150)); /* Gradiente de verde claro para verde mais claro */\n"
+"    border: 3px solid transparent;\n"
+"}\n"
+"\n"
+"QPushButton:hover {\n"
+"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(150, 255, 150), stop:1 rgb(200, 255, 200)); /* Gradiente de verde mais claro para verde ainda mais claro */\n"
+"    color: rgb(0, 0, 0); /* Cor do texto (preto) */\n"
+"}\n"
+"")
+        icon6 = QIcon()
+        icon6.addFile(u"imagens/confirmacao.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        self.btn_confirmar_massa.setIcon(icon6)
+
+        self.verticalLayout_20.addWidget(self.btn_confirmar_massa)
+
+        self.btn_confirmar = QPushButton(self.frame_confirmar_ver_produto)
+        self.btn_confirmar.setObjectName(u"btn_confirmar")
+        sizePolicy.setHeightForWidth(self.btn_confirmar.sizePolicy().hasHeightForWidth())
+        self.btn_confirmar.setSizePolicy(sizePolicy)
+        self.btn_confirmar.setMinimumSize(QSize(0, 0))
+        self.btn_confirmar.setMaximumSize(QSize(177, 30))
+        self.btn_confirmar.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
+        self.btn_confirmar.setStyleSheet(u"QPushButton {\n"
+"    color: rgb(255, 255, 255); /* Cor do texto (branco) */\n"
+"    border-radius: 10px;\n"
+"    font-size: 16px;\n"
+"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 200, 100), stop:1 rgb(150, 255, 150)); /* Gradiente de verde claro para verde mais claro */\n"
+"    border: 3px solid transparent;\n"
+"}\n"
+"\n"
+"QPushButton:hover {\n"
+"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(150, 255, 150), stop:1 rgb(200, 255, 200)); /* Gradiente de verde mais claro para verde ainda mais claro */\n"
+"    color: rgb(0, 0, 0); /* Cor do texto (preto) */\n"
+"}\n"
+"")
+        self.btn_confirmar.setIcon(icon6)
+
+        self.verticalLayout_20.addWidget(self.btn_confirmar)
+
+        self.btn_ver_item = QPushButton(self.frame_confirmar_ver_produto)
+        self.btn_ver_item.setObjectName(u"btn_ver_item")
+        sizePolicy.setHeightForWidth(self.btn_ver_item.sizePolicy().hasHeightForWidth())
+        self.btn_ver_item.setSizePolicy(sizePolicy)
+        self.btn_ver_item.setMinimumSize(QSize(0, 0))
+        self.btn_ver_item.setMaximumSize(QSize(177, 30))
+        self.btn_ver_item.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
+        self.btn_ver_item.setStyleSheet(u"QPushButton {\n"
+"    color: rgb(255, 255, 255);\n"
+"    border-radius: 8px;\n"
+"    font-size: 16px;\n"
+"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */\n"
+"    border: 4px solid transparent;\n"
+"}\n"
+"\n"
+"QPushButton:hover {\n"
+"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */\n"
+"    color: black;\n"
+"}")
+        icon7 = QIcon()
+        icon7.addFile(u"imagens/pasta.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        self.btn_ver_item.setIcon(icon7)
+
+        self.verticalLayout_20.addWidget(self.btn_ver_item)
+
+
+        self.gridLayout_11.addWidget(self.frame_confirmar_ver_produto, 4, 1, 1, 1)
 
 
         self.gridLayout_10.addWidget(self.frame_cadastrar_produto, 0, 0, 1, 1)
@@ -3045,30 +3080,30 @@ class Ui_MainWindow(object):
         self.table_clientes = QTableWidget(self.tab_clientes)
         if (self.table_clientes.columnCount() < 12):
             self.table_clientes.setColumnCount(12)
-        __qtablewidgetitem58 = QTableWidgetItem()
-        self.table_clientes.setHorizontalHeaderItem(0, __qtablewidgetitem58)
-        __qtablewidgetitem59 = QTableWidgetItem()
-        self.table_clientes.setHorizontalHeaderItem(1, __qtablewidgetitem59)
         __qtablewidgetitem60 = QTableWidgetItem()
-        self.table_clientes.setHorizontalHeaderItem(2, __qtablewidgetitem60)
+        self.table_clientes.setHorizontalHeaderItem(0, __qtablewidgetitem60)
         __qtablewidgetitem61 = QTableWidgetItem()
-        self.table_clientes.setHorizontalHeaderItem(3, __qtablewidgetitem61)
+        self.table_clientes.setHorizontalHeaderItem(1, __qtablewidgetitem61)
         __qtablewidgetitem62 = QTableWidgetItem()
-        self.table_clientes.setHorizontalHeaderItem(4, __qtablewidgetitem62)
+        self.table_clientes.setHorizontalHeaderItem(2, __qtablewidgetitem62)
         __qtablewidgetitem63 = QTableWidgetItem()
-        self.table_clientes.setHorizontalHeaderItem(5, __qtablewidgetitem63)
+        self.table_clientes.setHorizontalHeaderItem(3, __qtablewidgetitem63)
         __qtablewidgetitem64 = QTableWidgetItem()
-        self.table_clientes.setHorizontalHeaderItem(6, __qtablewidgetitem64)
+        self.table_clientes.setHorizontalHeaderItem(4, __qtablewidgetitem64)
         __qtablewidgetitem65 = QTableWidgetItem()
-        self.table_clientes.setHorizontalHeaderItem(7, __qtablewidgetitem65)
+        self.table_clientes.setHorizontalHeaderItem(5, __qtablewidgetitem65)
         __qtablewidgetitem66 = QTableWidgetItem()
-        self.table_clientes.setHorizontalHeaderItem(8, __qtablewidgetitem66)
+        self.table_clientes.setHorizontalHeaderItem(6, __qtablewidgetitem66)
         __qtablewidgetitem67 = QTableWidgetItem()
-        self.table_clientes.setHorizontalHeaderItem(9, __qtablewidgetitem67)
+        self.table_clientes.setHorizontalHeaderItem(7, __qtablewidgetitem67)
         __qtablewidgetitem68 = QTableWidgetItem()
-        self.table_clientes.setHorizontalHeaderItem(10, __qtablewidgetitem68)
+        self.table_clientes.setHorizontalHeaderItem(8, __qtablewidgetitem68)
         __qtablewidgetitem69 = QTableWidgetItem()
-        self.table_clientes.setHorizontalHeaderItem(11, __qtablewidgetitem69)
+        self.table_clientes.setHorizontalHeaderItem(9, __qtablewidgetitem69)
+        __qtablewidgetitem70 = QTableWidgetItem()
+        self.table_clientes.setHorizontalHeaderItem(10, __qtablewidgetitem70)
+        __qtablewidgetitem71 = QTableWidgetItem()
+        self.table_clientes.setHorizontalHeaderItem(11, __qtablewidgetitem71)
         self.table_clientes.setObjectName(u"table_clientes")
         self.table_clientes.setStyleSheet(u"/* Estiliza apenas o QTableView com objectName \"table_ativos\" */\n"
 "QTableView{\n"
@@ -3506,6 +3541,8 @@ class Ui_MainWindow(object):
         ___qtablewidgetitem36.setText(QCoreApplication.translate("MainWindow", u"Data da Inclus\u00e3o do Usu\u00e1rio", None));
         ___qtablewidgetitem37 = self.table_ativos.horizontalHeaderItem(18)
         ___qtablewidgetitem37.setText(QCoreApplication.translate("MainWindow", u"Segredo", None));
+        ___qtablewidgetitem38 = self.table_ativos.horizontalHeaderItem(19)
+        ___qtablewidgetitem38.setText(QCoreApplication.translate("MainWindow", u"Usu\u00e1rio Logado", None));
         self.btn_gerar_estorno_usuarios.setText(QCoreApplication.translate("MainWindow", u"Gerar Estorno", None))
         self.btn_importar_usuarios.setText(QCoreApplication.translate("MainWindow", u"Importar", None))
         self.btn_gerar_saida_usuarios.setText(QCoreApplication.translate("MainWindow", u"Gerar Sa\u00edda", None))
@@ -3513,53 +3550,52 @@ class Ui_MainWindow(object):
         self.label_inativos.setWhatsThis(QCoreApplication.translate("MainWindow", u"<html><head/><body><p><span style=\" font-size:18pt; font-weight:600; font-style:italic;\">ESTOQUE</span></p></body></html>", None))
 #endif // QT_CONFIG(whatsthis)
         self.label_inativos.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p><span style=\" font-size:18pt; font-weight:600; font-style:italic;\">INATIVOS</span><br/></p></body></html>", None))
-        ___qtablewidgetitem38 = self.table_inativos.horizontalHeaderItem(0)
-        ___qtablewidgetitem38.setText(QCoreApplication.translate("MainWindow", u"Nome", None));
-        ___qtablewidgetitem39 = self.table_inativos.horizontalHeaderItem(1)
-        ___qtablewidgetitem39.setText(QCoreApplication.translate("MainWindow", u"Usu\u00e1rio", None));
-        ___qtablewidgetitem40 = self.table_inativos.horizontalHeaderItem(2)
-        ___qtablewidgetitem40.setText(QCoreApplication.translate("MainWindow", u"Senha", None));
-        ___qtablewidgetitem41 = self.table_inativos.horizontalHeaderItem(3)
-        ___qtablewidgetitem41.setText(QCoreApplication.translate("MainWindow", u"Confirmar Senha", None));
-        ___qtablewidgetitem42 = self.table_inativos.horizontalHeaderItem(4)
-        ___qtablewidgetitem42.setText(QCoreApplication.translate("MainWindow", u"Acesso", None));
-        ___qtablewidgetitem43 = self.table_inativos.horizontalHeaderItem(5)
-        ___qtablewidgetitem43.setText(QCoreApplication.translate("MainWindow", u"Endere\u00e7o", None));
-        ___qtablewidgetitem44 = self.table_inativos.horizontalHeaderItem(6)
-        ___qtablewidgetitem44.setText(QCoreApplication.translate("MainWindow", u"CEP", None));
-        ___qtablewidgetitem45 = self.table_inativos.horizontalHeaderItem(7)
-        ___qtablewidgetitem45.setText(QCoreApplication.translate("MainWindow", u"CPF", None));
-        ___qtablewidgetitem46 = self.table_inativos.horizontalHeaderItem(8)
-        ___qtablewidgetitem46.setText(QCoreApplication.translate("MainWindow", u"N\u00famero", None));
-        ___qtablewidgetitem47 = self.table_inativos.horizontalHeaderItem(9)
-        ___qtablewidgetitem47.setText(QCoreApplication.translate("MainWindow", u"Estado", None));
-        ___qtablewidgetitem48 = self.table_inativos.horizontalHeaderItem(10)
-        ___qtablewidgetitem48.setText(QCoreApplication.translate("MainWindow", u"E-mail", None));
-        ___qtablewidgetitem49 = self.table_inativos.horizontalHeaderItem(11)
-        ___qtablewidgetitem49.setText(QCoreApplication.translate("MainWindow", u"Complemento", None));
-        ___qtablewidgetitem50 = self.table_inativos.horizontalHeaderItem(12)
-        ___qtablewidgetitem50.setText(QCoreApplication.translate("MainWindow", u"Telefone", None));
-        ___qtablewidgetitem51 = self.table_inativos.horizontalHeaderItem(13)
-        ___qtablewidgetitem51.setText(QCoreApplication.translate("MainWindow", u"Data de Nascimento", None));
-        ___qtablewidgetitem52 = self.table_inativos.horizontalHeaderItem(14)
-        ___qtablewidgetitem52.setText(QCoreApplication.translate("MainWindow", u"RG", None));
-        ___qtablewidgetitem53 = self.table_inativos.horizontalHeaderItem(15)
-        ___qtablewidgetitem53.setText(QCoreApplication.translate("MainWindow", u"\u00daltima Troca de Senha Cadastrada", None));
-        ___qtablewidgetitem54 = self.table_inativos.horizontalHeaderItem(16)
-        ___qtablewidgetitem54.setText(QCoreApplication.translate("MainWindow", u"Data da Senha Cadastrada", None));
-        ___qtablewidgetitem55 = self.table_inativos.horizontalHeaderItem(17)
-        ___qtablewidgetitem55.setText(QCoreApplication.translate("MainWindow", u"Data da Inclus\u00e3o do Usu\u00e1rio", None));
-        ___qtablewidgetitem56 = self.table_inativos.horizontalHeaderItem(18)
-        ___qtablewidgetitem56.setText(QCoreApplication.translate("MainWindow", u"Data da Inatividade do Usu\u00e1rio", None));
-        ___qtablewidgetitem57 = self.table_inativos.horizontalHeaderItem(19)
-        ___qtablewidgetitem57.setText(QCoreApplication.translate("MainWindow", u"Segredo", None));
+        ___qtablewidgetitem39 = self.table_inativos.horizontalHeaderItem(0)
+        ___qtablewidgetitem39.setText(QCoreApplication.translate("MainWindow", u"Nome", None));
+        ___qtablewidgetitem40 = self.table_inativos.horizontalHeaderItem(1)
+        ___qtablewidgetitem40.setText(QCoreApplication.translate("MainWindow", u"Usu\u00e1rio", None));
+        ___qtablewidgetitem41 = self.table_inativos.horizontalHeaderItem(2)
+        ___qtablewidgetitem41.setText(QCoreApplication.translate("MainWindow", u"Senha", None));
+        ___qtablewidgetitem42 = self.table_inativos.horizontalHeaderItem(3)
+        ___qtablewidgetitem42.setText(QCoreApplication.translate("MainWindow", u"Confirmar Senha", None));
+        ___qtablewidgetitem43 = self.table_inativos.horizontalHeaderItem(4)
+        ___qtablewidgetitem43.setText(QCoreApplication.translate("MainWindow", u"Acesso", None));
+        ___qtablewidgetitem44 = self.table_inativos.horizontalHeaderItem(5)
+        ___qtablewidgetitem44.setText(QCoreApplication.translate("MainWindow", u"Endere\u00e7o", None));
+        ___qtablewidgetitem45 = self.table_inativos.horizontalHeaderItem(6)
+        ___qtablewidgetitem45.setText(QCoreApplication.translate("MainWindow", u"CEP", None));
+        ___qtablewidgetitem46 = self.table_inativos.horizontalHeaderItem(7)
+        ___qtablewidgetitem46.setText(QCoreApplication.translate("MainWindow", u"CPF", None));
+        ___qtablewidgetitem47 = self.table_inativos.horizontalHeaderItem(8)
+        ___qtablewidgetitem47.setText(QCoreApplication.translate("MainWindow", u"N\u00famero", None));
+        ___qtablewidgetitem48 = self.table_inativos.horizontalHeaderItem(9)
+        ___qtablewidgetitem48.setText(QCoreApplication.translate("MainWindow", u"Estado", None));
+        ___qtablewidgetitem49 = self.table_inativos.horizontalHeaderItem(10)
+        ___qtablewidgetitem49.setText(QCoreApplication.translate("MainWindow", u"E-mail", None));
+        ___qtablewidgetitem50 = self.table_inativos.horizontalHeaderItem(11)
+        ___qtablewidgetitem50.setText(QCoreApplication.translate("MainWindow", u"Complemento", None));
+        ___qtablewidgetitem51 = self.table_inativos.horizontalHeaderItem(12)
+        ___qtablewidgetitem51.setText(QCoreApplication.translate("MainWindow", u"Telefone", None));
+        ___qtablewidgetitem52 = self.table_inativos.horizontalHeaderItem(13)
+        ___qtablewidgetitem52.setText(QCoreApplication.translate("MainWindow", u"Data de Nascimento", None));
+        ___qtablewidgetitem53 = self.table_inativos.horizontalHeaderItem(14)
+        ___qtablewidgetitem53.setText(QCoreApplication.translate("MainWindow", u"RG", None));
+        ___qtablewidgetitem54 = self.table_inativos.horizontalHeaderItem(15)
+        ___qtablewidgetitem54.setText(QCoreApplication.translate("MainWindow", u"\u00daltima Troca de Senha Cadastrada", None));
+        ___qtablewidgetitem55 = self.table_inativos.horizontalHeaderItem(16)
+        ___qtablewidgetitem55.setText(QCoreApplication.translate("MainWindow", u"Data da Senha Cadastrada", None));
+        ___qtablewidgetitem56 = self.table_inativos.horizontalHeaderItem(17)
+        ___qtablewidgetitem56.setText(QCoreApplication.translate("MainWindow", u"Data da Inclus\u00e3o do Usu\u00e1rio", None));
+        ___qtablewidgetitem57 = self.table_inativos.horizontalHeaderItem(18)
+        ___qtablewidgetitem57.setText(QCoreApplication.translate("MainWindow", u"Data da Inatividade do Usu\u00e1rio", None));
+        ___qtablewidgetitem58 = self.table_inativos.horizontalHeaderItem(19)
+        ___qtablewidgetitem58.setText(QCoreApplication.translate("MainWindow", u"Segredo", None));
+        ___qtablewidgetitem59 = self.table_inativos.horizontalHeaderItem(20)
+        ___qtablewidgetitem59.setText(QCoreApplication.translate("MainWindow", u"Usu\u00e1rio Logado", None));
         self.btn_adicionar_produto.setText(QCoreApplication.translate("MainWindow", u"ADICIONAR", None))
         self.btn_editar.setText(QCoreApplication.translate("MainWindow", u"EDITAR ", None))
         self.btn_atualizar_produto.setText(QCoreApplication.translate("MainWindow", u"ATUALIZAR", None))
         self.btn_limpar_campos.setText(QCoreApplication.translate("MainWindow", u"APAGAR", None))
-        self.btn_confirmar.setText(QCoreApplication.translate("MainWindow", u"CONFIRMAR", None))
-        self.btn_ver_item.setText(QCoreApplication.translate("MainWindow", u"VER PRODUTOS", None))
-        self.btn_confirmar_massa.setText(QCoreApplication.translate("MainWindow", u"CONFIRMAR  EM MASSA", None))
         self.label_produto.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p><span style=\" font-weight:600;\">Produto</span></p></body></html>", None))
         self.label_quantidade.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p><span style=\" font-weight:600;\">Quantidade</span></p></body></html>", None))
         self.label_valor_produto_3.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p><span style=\" font-weight:600;\">Valor do produto</span></p></body></html>", None))
@@ -3576,6 +3612,9 @@ class Ui_MainWindow(object):
         self.label_valor_do_desconto.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p><span style=\" font-size:12pt; font-weight:600;\">Valor do desconto</span></p></body></html>", None))
         self.label_valor_com_desconto.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p><span style=\" font-size:12pt; font-weight:600;\">Valor do produto com desconto</span></p></body></html>", None))
         self.label_quantidade_2.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p><span style=\" font-size:12pt; font-weight:600;\">Quantidade total de produtos</span></p></body></html>", None))
+        self.btn_confirmar_massa.setText(QCoreApplication.translate("MainWindow", u"CONFIRMAR  EM MASSA", None))
+        self.btn_confirmar.setText(QCoreApplication.translate("MainWindow", u"CONFIRMAR", None))
+        self.btn_ver_item.setText(QCoreApplication.translate("MainWindow", u"VER PRODUTOS", None))
         self.label_nome.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p><span style=\" font-weight:600;\">Nome</span></p></body></html>", None))
         self.label_usuario.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p><span style=\" font-weight:600;\">Usu\u00e1rio</span></p></body></html>", None))
         self.label_telefone.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p><span style=\" font-weight:600;\">Telefone</span></p></body></html>", None))
@@ -3643,30 +3682,30 @@ class Ui_MainWindow(object):
         self.btn_gerar_relatorio_clientes.setText(QCoreApplication.translate("MainWindow", u"Gerar Relat\u00f3rio", None))
         self.btn_marcar_como_clientes.setText(QCoreApplication.translate("MainWindow", u"Marcar como", None))
         self.btn_historico_clientes.setText(QCoreApplication.translate("MainWindow", u"Hist\u00f3rico", None))
-        ___qtablewidgetitem58 = self.table_clientes.horizontalHeaderItem(0)
-        ___qtablewidgetitem58.setText(QCoreApplication.translate("MainWindow", u"Nome do Cliente", None));
-        ___qtablewidgetitem59 = self.table_clientes.horizontalHeaderItem(1)
-        ___qtablewidgetitem59.setText(QCoreApplication.translate("MainWindow", u"Data da Inclus\u00e3o", None));
-        ___qtablewidgetitem60 = self.table_clientes.horizontalHeaderItem(2)
-        ___qtablewidgetitem60.setText(QCoreApplication.translate("MainWindow", u"CNPJ", None));
-        ___qtablewidgetitem61 = self.table_clientes.horizontalHeaderItem(3)
-        ___qtablewidgetitem61.setText(QCoreApplication.translate("MainWindow", u"CPF", None));
-        ___qtablewidgetitem62 = self.table_clientes.horizontalHeaderItem(4)
-        ___qtablewidgetitem62.setText(QCoreApplication.translate("MainWindow", u"Telefone", None));
-        ___qtablewidgetitem63 = self.table_clientes.horizontalHeaderItem(5)
-        ___qtablewidgetitem63.setText(QCoreApplication.translate("MainWindow", u"Endere\u00e7o", None));
-        ___qtablewidgetitem64 = self.table_clientes.horizontalHeaderItem(6)
-        ___qtablewidgetitem64.setText(QCoreApplication.translate("MainWindow", u"Status do Cliente", None));
-        ___qtablewidgetitem65 = self.table_clientes.horizontalHeaderItem(7)
-        ___qtablewidgetitem65.setText(QCoreApplication.translate("MainWindow", u"Categoria do Cliente", None));
-        ___qtablewidgetitem66 = self.table_clientes.horizontalHeaderItem(8)
-        ___qtablewidgetitem66.setText(QCoreApplication.translate("MainWindow", u"\u00daltima Atualiza\u00e7\u00e3o", None));
-        ___qtablewidgetitem67 = self.table_clientes.horizontalHeaderItem(9)
-        ___qtablewidgetitem67.setText(QCoreApplication.translate("MainWindow", u"Origem do Cliente", None));
-        ___qtablewidgetitem68 = self.table_clientes.horizontalHeaderItem(10)
-        ___qtablewidgetitem68.setText(QCoreApplication.translate("MainWindow", u"Valor Gasto Total", None));
-        ___qtablewidgetitem69 = self.table_clientes.horizontalHeaderItem(11)
-        ___qtablewidgetitem69.setText(QCoreApplication.translate("MainWindow", u"\u00daltima Compra", None));
+        ___qtablewidgetitem60 = self.table_clientes.horizontalHeaderItem(0)
+        ___qtablewidgetitem60.setText(QCoreApplication.translate("MainWindow", u"Nome do Cliente", None));
+        ___qtablewidgetitem61 = self.table_clientes.horizontalHeaderItem(1)
+        ___qtablewidgetitem61.setText(QCoreApplication.translate("MainWindow", u"Data da Inclus\u00e3o", None));
+        ___qtablewidgetitem62 = self.table_clientes.horizontalHeaderItem(2)
+        ___qtablewidgetitem62.setText(QCoreApplication.translate("MainWindow", u"CNPJ", None));
+        ___qtablewidgetitem63 = self.table_clientes.horizontalHeaderItem(3)
+        ___qtablewidgetitem63.setText(QCoreApplication.translate("MainWindow", u"CPF", None));
+        ___qtablewidgetitem64 = self.table_clientes.horizontalHeaderItem(4)
+        ___qtablewidgetitem64.setText(QCoreApplication.translate("MainWindow", u"Telefone", None));
+        ___qtablewidgetitem65 = self.table_clientes.horizontalHeaderItem(5)
+        ___qtablewidgetitem65.setText(QCoreApplication.translate("MainWindow", u"Endere\u00e7o", None));
+        ___qtablewidgetitem66 = self.table_clientes.horizontalHeaderItem(6)
+        ___qtablewidgetitem66.setText(QCoreApplication.translate("MainWindow", u"Status do Cliente", None));
+        ___qtablewidgetitem67 = self.table_clientes.horizontalHeaderItem(7)
+        ___qtablewidgetitem67.setText(QCoreApplication.translate("MainWindow", u"Categoria do Cliente", None));
+        ___qtablewidgetitem68 = self.table_clientes.horizontalHeaderItem(8)
+        ___qtablewidgetitem68.setText(QCoreApplication.translate("MainWindow", u"\u00daltima Atualiza\u00e7\u00e3o", None));
+        ___qtablewidgetitem69 = self.table_clientes.horizontalHeaderItem(9)
+        ___qtablewidgetitem69.setText(QCoreApplication.translate("MainWindow", u"Origem do Cliente", None));
+        ___qtablewidgetitem70 = self.table_clientes.horizontalHeaderItem(10)
+        ___qtablewidgetitem70.setText(QCoreApplication.translate("MainWindow", u"Valor Gasto Total", None));
+        ___qtablewidgetitem71 = self.table_clientes.horizontalHeaderItem(11)
+        ___qtablewidgetitem71.setText(QCoreApplication.translate("MainWindow", u"\u00daltima Compra", None));
         self.tab_clientes_todos.setTabText(self.tab_clientes_todos.indexOf(self.tab_clientes), QCoreApplication.translate("MainWindow", u"Base de Clientes", None))
         self.label_configuracoes.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p align=\"center\"><span style=\" font-size:14pt; font-weight:600; font-style:italic;\">CONFIGURA\u00c7\u00d5ES</span></p></body></html>", None))
         self.tool_tema.setText(QCoreApplication.translate("MainWindow", u"Tema do Sistema", None))

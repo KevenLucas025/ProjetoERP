@@ -63,27 +63,61 @@ class DataBase:
                     Senha TEXT NOT NULL,
                     "Confirmar Senha" TEXT NOT NULL,
                     Acesso TEXT NOT NULL,
-                    Endereço TEXT,
-                    CEP TEXT,
-                    CPF TEXT,
-                    Número TEXT,
-                    Estado TEXT,
-                    Email TEXT,
+                    Endereço TEXT NOT NULL,
+                    CEP TEXT NOT NULL,
+                    CPF TEXT NOT NULL,
+                    Número TEXT NOT NULL,
+                    Estado TEXT NOT NULL,
+                    Email TEXT NOT NULL,
                     Complemento TEXT,
-                    Telefone TEXT,
-                    Data_nascimento TEXT,
-                    RG TEXT,
-                    Imagem BLOB,
+                    Telefone TEXT NOT NULL,
+                    Data_nascimento TEXT NOT NULL,
+                    RG TEXT NOT NULL,
+                    Imagem BLOB NOT NULL,
                     "Última Troca de Senha" TEXT,
                     "Data da Senha Cadastrada" TEXT,
                     "Data da Inclusão do Usuário" TEXT,
-                     Secret TEXT       
-                    
+                    Secret TEXT
                 )
             """)
             print("Tabela de usuários criada com sucesso!")
         except Exception as e:
             print("Erro ao criar tabela de usuários:", e)
+#*********************************************************************************************************************
+    def create_table_users_inativos(self):
+         try:
+            if self.tabela_existe("users_inativos"):
+                print("A tabela 'users_inativos' já está criada.")
+                return
+            cursor = self.connection.cursor()
+            cursor.execute("""
+                CREATE TABLE IF NOT EXISTS users_inativos(
+                    Nome TEXT NOT NULL,
+                    Usuário TEXT UNIQUE NOT NULL,
+                    Senha TEXT NOT NULL,
+                    'Confirmar Senha' TEXT NOT NULL,
+                    Acesso TEXT NOT NULL,
+                    Endereço TEXT NOT NULL,
+                    CEP TEXT NOT NULL,
+                    CPF TEXT NOT NULL,
+                    Número TEXT NOT NULL,
+                    Estado TEXT NOT NULL,
+                    Email TEXT NOT NULL,
+                    Complemento TEXT,
+                    Telefone TEXT NOT NULL,
+                    Data_nascimento TEXT NOT NULL,
+                    RG TEXT NOT NULL,
+                    Imagem BLOB TEXT NOT NULL,
+                    'Última Troca de Senha' TEXT,
+                    'Data da Senha Cadastrada' TEXT,
+                    'Data da Inclusão do Usuário' TEXT,
+                    'Data da Inatividade do Usuário' TEXT,
+                    Secret TEXT                
+                )
+            """)
+            print("Tabela de usuário inativos criada com sucesso! ")
+         except Exception as e:
+             print("Erro ao criar a tabela users_inativos", e)
 
 #*********************************************************************************************************************
     def create_table_products(self):
