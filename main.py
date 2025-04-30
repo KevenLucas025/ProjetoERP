@@ -72,6 +72,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.table_clientes.verticalHeader().setVisible(True)
         self.table_base.setShowGrid(True)
         self.table_saida.setShowGrid(True)
+        self.table_ativos.setShowGrid(True)
+        self.table_inativos.setShowGrid(True)
 
 
 
@@ -82,7 +84,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         
 
         # Carregar informações ao iniciar
-        self.carregar_informacoes_tabela()
+        self.carregar_informacoes_tabelas()
 
         # Exibir notificação de status de conexão
         #self.exibir_notificacao(self)
@@ -456,10 +458,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         return item
     
 
-    def carregar_informacoes_tabela(self):
+    def carregar_informacoes_tabelas(self):
         # Limpa as tabelas antes de carregar novas informações
         self.table_base.setRowCount(0)
         self.table_saida.setRowCount(0)
+        self.table_ativos.setRowCount(0)
+        self.table_inativos.setRowCount(0)
 
         # Carregar dados da `table_base`
         produtos_base = self.db.obter_produtos_base()
@@ -476,6 +480,22 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.table_saida.insertRow(row_position)
             for col, data in enumerate(produto):
                 self.table_saida.setItem(row_position, col, self.criar_item(str(data)))
+
+        # Carregar dados da `table_ativos`   
+        usuarios_ativos = self.db.obter_usuarios_ativos()
+        for usuario in usuarios_ativos:
+            row_position = self.table_ativos.rowCount()
+            self.table_ativos.insertRow(row_position)
+            for col, data in enumerate(usuario):
+                self.table_ativos.setItem(row_position, col,self.criar_item(str(data)))
+
+        # Carregar dados da `table_inativos` 
+        usuarios_inativos = self.db.obter_usuarios_inativos()
+        for usuario in usuarios_inativos:
+            row_position = self.table_inativos.rowCount()
+            self.table_inativos.insertRow(row_position)
+            for col, data in enumerate(usuario):
+                self.table_inativos.setItem(row_position, col,self.criar_item(str(data)))
      
     
     

@@ -674,6 +674,28 @@ class DataBase:
         """)
         produtos = cursor.fetchall()
         return produtos
+    
+    def obter_usuarios_ativos(self):
+        cursor = self.connection.cursor()
+        cursor.execute("""
+            SELECT Nome,Usuário,Senha,"Confirmar Senha",Acesso,Endereço,CEP,CPF,Número,Estado,Email,RG,Complemento,
+                       Telefone,Data_Nascimento,"Última Troca de Senha","Data da Senha Cadastrada","Data da Inclusão do Usuário",
+                       Secret,"Usuário Logado"
+            FROM users
+        """)
+        usuarios = cursor.fetchall()
+        return usuarios
+    
+    def obter_usuarios_inativos(self):
+        cursor = self.connection.cursor()
+        cursor.execute("""
+            SELECT Nome,Usuário,Senha,"Confirmar Senha",Acesso,Endereço,CEP,CPF,Número,Estado,Email,RG,Complemento,
+                       Telefone,Data_nascimento,RG,"Última Troca de Senha","Data da Senha Cadastrada","Data da Inclusão do Usuário",
+                       "Data da Inatividade do Usuário",Secret,"Usuário Logado"
+            FROM users_inativos
+        """)
+        usuarios = cursor.fetchall()
+        return usuarios
 
     def remover_historico(self, valor_identificador, coluna_identificador="id"):
         try:

@@ -474,7 +474,8 @@ class Ui_MainWindow(object):
         self.table_base.setProperty(u"showDropIndicator", True)
         self.table_base.setDragDropOverwriteMode(True)
         self.table_base.setAlternatingRowColors(False)
-        self.table_base.setSelectionMode(QAbstractItemView.ExtendedSelection)
+        self.table_base.setSelectionMode(QAbstractItemView.MultiSelection)
+        self.table_base.setSelectionBehavior(QAbstractItemView.SelectRows)
         self.table_base.setShowGrid(True)
         self.table_base.setGridStyle(Qt.SolidLine)
         self.table_base.setCornerButtonEnabled(False)
@@ -708,6 +709,8 @@ class Ui_MainWindow(object):
 "")
         self.table_saida.setFrameShadow(QFrame.Sunken)
         self.table_saida.setEditTriggers(QAbstractItemView.NoEditTriggers)
+        self.table_saida.setSelectionMode(QAbstractItemView.MultiSelection)
+        self.table_saida.setSelectionBehavior(QAbstractItemView.SelectRows)
         self.table_saida.setCornerButtonEnabled(False)
         self.table_saida.horizontalHeader().setCascadingSectionResizes(False)
         self.table_saida.horizontalHeader().setDefaultSectionSize(112)
@@ -1023,6 +1026,8 @@ class Ui_MainWindow(object):
 "")
         self.table_ativos.setFrameShape(QFrame.NoFrame)
         self.table_ativos.setEditTriggers(QAbstractItemView.NoEditTriggers)
+        self.table_ativos.setSelectionMode(QAbstractItemView.MultiSelection)
+        self.table_ativos.setSelectionBehavior(QAbstractItemView.SelectRows)
         self.table_ativos.setSortingEnabled(False)
         self.table_ativos.setCornerButtonEnabled(False)
         self.table_ativos.horizontalHeader().setCascadingSectionResizes(False)
@@ -1211,6 +1216,8 @@ class Ui_MainWindow(object):
         self.table_inativos.setFrameShape(QFrame.NoFrame)
         self.table_inativos.setFrameShadow(QFrame.Sunken)
         self.table_inativos.setEditTriggers(QAbstractItemView.NoEditTriggers)
+        self.table_inativos.setSelectionMode(QAbstractItemView.MultiSelection)
+        self.table_inativos.setSelectionBehavior(QAbstractItemView.SelectRows)
         self.table_inativos.setCornerButtonEnabled(False)
         self.table_inativos.verticalHeader().setCascadingSectionResizes(False)
 
@@ -3526,13 +3533,13 @@ class Ui_MainWindow(object):
         ___qtablewidgetitem29 = self.table_ativos.horizontalHeaderItem(10)
         ___qtablewidgetitem29.setText(QCoreApplication.translate("MainWindow", u"E-mail", None));
         ___qtablewidgetitem30 = self.table_ativos.horizontalHeaderItem(11)
-        ___qtablewidgetitem30.setText(QCoreApplication.translate("MainWindow", u"Complemento", None));
+        ___qtablewidgetitem30.setText(QCoreApplication.translate("MainWindow", u"RG", None));
         ___qtablewidgetitem31 = self.table_ativos.horizontalHeaderItem(12)
-        ___qtablewidgetitem31.setText(QCoreApplication.translate("MainWindow", u"Telefone", None));
+        ___qtablewidgetitem31.setText(QCoreApplication.translate("MainWindow", u"Complemento", None));
         ___qtablewidgetitem32 = self.table_ativos.horizontalHeaderItem(13)
-        ___qtablewidgetitem32.setText(QCoreApplication.translate("MainWindow", u"Data de Nascimento", None));
+        ___qtablewidgetitem32.setText(QCoreApplication.translate("MainWindow", u"Telefone", None));
         ___qtablewidgetitem33 = self.table_ativos.horizontalHeaderItem(14)
-        ___qtablewidgetitem33.setText(QCoreApplication.translate("MainWindow", u"RG", None));
+        ___qtablewidgetitem33.setText(QCoreApplication.translate("MainWindow", u"Data de Nascimento", None));
         ___qtablewidgetitem34 = self.table_ativos.horizontalHeaderItem(15)
         ___qtablewidgetitem34.setText(QCoreApplication.translate("MainWindow", u"\u00daltima Troca de Senha", None));
         ___qtablewidgetitem35 = self.table_ativos.horizontalHeaderItem(16)
@@ -3573,15 +3580,15 @@ class Ui_MainWindow(object):
         ___qtablewidgetitem49 = self.table_inativos.horizontalHeaderItem(10)
         ___qtablewidgetitem49.setText(QCoreApplication.translate("MainWindow", u"E-mail", None));
         ___qtablewidgetitem50 = self.table_inativos.horizontalHeaderItem(11)
-        ___qtablewidgetitem50.setText(QCoreApplication.translate("MainWindow", u"Complemento", None));
+        ___qtablewidgetitem50.setText(QCoreApplication.translate("MainWindow", u"RG", None));
         ___qtablewidgetitem51 = self.table_inativos.horizontalHeaderItem(12)
-        ___qtablewidgetitem51.setText(QCoreApplication.translate("MainWindow", u"Telefone", None));
+        ___qtablewidgetitem51.setText(QCoreApplication.translate("MainWindow", u"Complemento", None));
         ___qtablewidgetitem52 = self.table_inativos.horizontalHeaderItem(13)
-        ___qtablewidgetitem52.setText(QCoreApplication.translate("MainWindow", u"Data de Nascimento", None));
+        ___qtablewidgetitem52.setText(QCoreApplication.translate("MainWindow", u"Telefone", None));
         ___qtablewidgetitem53 = self.table_inativos.horizontalHeaderItem(14)
-        ___qtablewidgetitem53.setText(QCoreApplication.translate("MainWindow", u"RG", None));
+        ___qtablewidgetitem53.setText(QCoreApplication.translate("MainWindow", u"Data de Nascimento", None));
         ___qtablewidgetitem54 = self.table_inativos.horizontalHeaderItem(15)
-        ___qtablewidgetitem54.setText(QCoreApplication.translate("MainWindow", u"\u00daltima Troca de Senha Cadastrada", None));
+        ___qtablewidgetitem54.setText(QCoreApplication.translate("MainWindow", u"\u00daltima Troca de Senha", None));
         ___qtablewidgetitem55 = self.table_inativos.horizontalHeaderItem(16)
         ___qtablewidgetitem55.setText(QCoreApplication.translate("MainWindow", u"Data da Senha Cadastrada", None));
         ___qtablewidgetitem56 = self.table_inativos.horizontalHeaderItem(17)

@@ -788,7 +788,10 @@ QTableView QScrollBar:horizontal {
                   <bool>false</bool>
                  </property>
                  <property name="selectionMode">
-                  <enum>QAbstractItemView::ExtendedSelection</enum>
+                  <enum>QAbstractItemView::MultiSelection</enum>
+                 </property>
+                 <property name="selectionBehavior">
+                  <enum>QAbstractItemView::SelectRows</enum>
                  </property>
                  <property name="showGrid">
                   <bool>true</bool>
@@ -1206,6 +1209,12 @@ QTableView QScrollBar:horizontal {
                  </property>
                  <property name="editTriggers">
                   <set>QAbstractItemView::NoEditTriggers</set>
+                 </property>
+                 <property name="selectionMode">
+                  <enum>QAbstractItemView::MultiSelection</enum>
+                 </property>
+                 <property name="selectionBehavior">
+                  <enum>QAbstractItemView::SelectRows</enum>
                  </property>
                  <property name="cornerButtonEnabled">
                   <bool>false</bool>
@@ -1720,6 +1729,12 @@ QTableView QScrollBar:horizontal {
              <property name="editTriggers">
               <set>QAbstractItemView::NoEditTriggers</set>
              </property>
+             <property name="selectionMode">
+              <enum>QAbstractItemView::MultiSelection</enum>
+             </property>
+             <property name="selectionBehavior">
+              <enum>QAbstractItemView::SelectRows</enum>
+             </property>
              <property name="sortingEnabled">
               <bool>false</bool>
              </property>
@@ -1801,6 +1816,11 @@ QTableView QScrollBar:horizontal {
              </column>
              <column>
               <property name="text">
+               <string>RG</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
                <string>Complemento</string>
               </property>
              </column>
@@ -1812,11 +1832,6 @@ QTableView QScrollBar:horizontal {
              <column>
               <property name="text">
                <string>Data de Nascimento</string>
-              </property>
-             </column>
-             <column>
-              <property name="text">
-               <string>RG</string>
               </property>
              </column>
              <column>
@@ -2118,6 +2133,12 @@ QTableView QScrollBar:horizontal {
              <property name="editTriggers">
               <set>QAbstractItemView::NoEditTriggers</set>
              </property>
+             <property name="selectionMode">
+              <enum>QAbstractItemView::MultiSelection</enum>
+             </property>
+             <property name="selectionBehavior">
+              <enum>QAbstractItemView::SelectRows</enum>
+             </property>
              <property name="cornerButtonEnabled">
               <bool>false</bool>
              </property>
@@ -2181,6 +2202,11 @@ QTableView QScrollBar:horizontal {
              </column>
              <column>
               <property name="text">
+               <string>RG</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
                <string>Complemento</string>
               </property>
              </column>
@@ -2196,12 +2222,7 @@ QTableView QScrollBar:horizontal {
              </column>
              <column>
               <property name="text">
-               <string>RG</string>
-              </property>
-             </column>
-             <column>
-              <property name="text">
-               <string>Última Troca de Senha Cadastrada</string>
+               <string>Última Troca de Senha</string>
               </property>
              </column>
              <column>
