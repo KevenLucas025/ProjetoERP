@@ -37,8 +37,6 @@ class DataBase:
         except Exception as e:
             print(f"Erro ao executar comando: {e}")
             return None
-
-
 #*********************************************************************************************************************
     def close_connection(self):
         try:
@@ -463,7 +461,7 @@ class DataBase:
             
 #*********************************************************************************************************************
     def insert_user(self, nome, usuario, senha, confirmar_senha, acesso, endereco, cep, cpf, numero, estado, email, 
-                telefone, rg, data_nascimento, complemento, usuario_logado, imagem=None):
+                telefone, rg, data_nascimento, complemento, segredo,usuario_logado, imagem=None):
         try:
             cursor = self.connection.cursor()
 
@@ -487,15 +485,17 @@ class DataBase:
             data_nascimento = data_nascimento or "Não Cadastrado"
             complemento = complemento or "Não Cadastrado"
             imagem = imagem or "Não Cadastrado"
+            segredo = segredo or "Não Cadastrado"
             usuario_logado = usuario_logado or "Não Cadastrado"  # Certifique-se de que o valor está definido
+            
 
             cursor.execute("""
                 INSERT INTO users(Nome, Usuário, Senha, "Confirmar Senha", Acesso, Endereço, CEP, CPF, Número, Estado, 
                                 Email, Telefone, RG, Data_nascimento, Complemento, Imagem, "Última Troca de Senha",
-                                "Data da Senha Cadastrada", "Data da Inclusão do Usuário", "Usuário Logado") 
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                                "Data da Senha Cadastrada", "Data da Inclusão do Usuário", Secret,"Usuário Logado") 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?)
             """, (nome, usuario, senha, confirmar_senha, acesso, endereco, cep, cpf, numero, estado, email, telefone, 
-                rg, data_nascimento, complemento, imagem, "Não Cadastrado", data_atual, data_atual, usuario_logado))
+                rg, data_nascimento, complemento, imagem, "Não Cadastrado", data_atual, data_atual,segredo, usuario_logado))
 
 
             self.connection.commit()

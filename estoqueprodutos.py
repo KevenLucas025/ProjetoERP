@@ -2,7 +2,7 @@ from PySide6.QtGui import QColor, QBrush,QGuiApplication
 from PySide6.QtWidgets import (QWidget, QTableWidget, QTableWidgetItem, 
                                QMessageBox,QCheckBox,QVBoxLayout,QDialog,QPushButton,QMainWindow,QHBoxLayout,
                                QLineEdit,QLabel,QInputDialog,QGroupBox,QRadioButton,QFileDialog)
-from PySide6.QtCore import Qt,QTimer
+from PySide6.QtCore import Qt,QTimer,QEvent
 import sqlite3
 import pandas as pd
 from datetime import datetime
@@ -59,6 +59,8 @@ class EstoqueProduto(QWidget):
         self.btn_historico.clicked.connect(self.exibir_historico)    
         self.btn_abrir_planilha.clicked.connect(self.abrir_planilha)
         self.btn_incluir_produto_sistema.clicked.connect(self.incluir_produto_no_sistema)
+        self.main_window.table_base.viewport().installEventFilter(self)
+        self.main_window.table_saida.viewport().installEventFilter(self)
 
 
     # Função auxiliar para criar um QTableWidgetItem com texto centralizado
@@ -1678,8 +1680,20 @@ class EstoqueProduto(QWidget):
 
 
 
+    # Limpa a coluna selecionada clicando em qualquer lugar da tabela
+    def eventFilter(self, source, event):
+        if event.type() == QEvent.MouseButtonPress:
+            if source == self.main_window.table_base.viewport():
+                index = self.main_window.table_base.indexAt(event.pos())
+                if not index.isValid():
+                    self.main_window.table_base.clearSelection()
 
+            elif source == self.main_window.table_saida.viewport():
+                index = self.main_window.table_saida.indexAt(event.pos())
+                if not index.isValid():
+                    self.main_window.table_saida.clearSelection()
 
+        return super().eventFilter(source, event)
 
 
 

@@ -5,7 +5,7 @@ from PySide6.QtCore import (Qt, QTimer, QDate, QBuffer, QByteArray, QIODevice, S
 from PySide6 import QtCore
 from PySide6.QtWidgets import (QMainWindow, QMessageBox, QPushButton,
                                QLabel, QFileDialog, QVBoxLayout,
-                               QMenu,QTableWidgetItem,QCheckBox,QApplication,QWidget,QHBoxLayout)
+                               QMenu,QTableWidgetItem,QCheckBox,QApplication,QToolButton,QHeaderView,QCompleter)
 from PySide6.QtGui import (QDoubleValidator, QIcon, QColor, QPixmap,QBrush,
                            QAction,QMovie,QImage)
 from PySide6 import QtWidgets
@@ -46,6 +46,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.setWindowTitle("Sistema de Gerenciamento")
         self.historico_pausado = False
 
+
+
         # Inicialize o banco de dados antes de qualquer operação que dependa dele
         self.db = DataBase('banco_de_dados.db')
         self.login_window = login_window
@@ -56,6 +58,32 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.connection = connection
 
         self.login_window = login_window
+
+        # Mapeia os campos com identificadores únicos
+        self.campos_com_autocomplete = {
+            "txt_nome": self.txt_nome,
+            "txt_cep": self.txt_cep,
+            "txt_cliente_3": self.txt_cliente_3,
+            "txt_codigo_item": self.txt_codigo_item,
+            "txt_complemento": self.txt_complemento,
+            "txt_confirmar_senha": self.txt_confirmar_senha,
+            "txt_senha": self.txt_senha,
+            "txt_data_nascimento": self.txt_data_nascimento,
+            "txt_cpf": self.txt_cpf,
+            "txt_descricao_produto_3": self.txt_descricao_produto_3,
+            "txt_endereco": self.txt_endereco,
+            "txt_numero": self.txt_numero,
+            "txt_produto": self.txt_produto,
+            "txt_valor_produto_3": self.txt_valor_produto_3,
+            "txt_telefone": self.txt_telefone,
+            "txt_email": self.txt_email,
+            "txt_rg": self.txt_rg,
+            "txt_quantidade": self.txt_quantidade,
+            "line_clientes": self.line_clientes,
+            "txt_usuario": self.txt_usuario
+        }
+
+        
         
         #Cria as tabelas no banco de dados sempre que executar o sistema em um novo ambiente
         self.db.create_table_products()
@@ -76,7 +104,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.table_inativos.setShowGrid(True)
 
 
-
+        
         
 
         # funções que precisam do banco de dados
@@ -91,6 +119,16 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         # Inicializar as configurações antes de chamar fazer_login_automatico
         self.config = Configuracoes_Login(self)
+
+        # Aplica completer individual a cada campo
+        for nome_campo, campo in self.campos_com_autocomplete.items():
+            historico = self.config.carregar_historico_autocompletar(nome_campo)
+            completer = QCompleter(historico)
+            completer.setCaseSensitivity(Qt.CaseInsensitive)
+            campo.setCompleter(completer)
+            campo.editingFinished.connect(lambda nc=nome_campo, c=campo: self.auto_completar(nc, c))
+
+            campo.mouseDoubleClickEvent = lambda event, nc=nome_campo, c=campo: self.completar_por_duplo_clique(event, nc, c)
         
 
         # Caminho para o arquivo GIF
@@ -119,13 +157,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         layout_usuario.addWidget(self.label_imagem_usuario)
         self.frame_imagem_cadastro.setLayout(layout_usuario)
 
-        self.label_exibir_usuario = QLabel(self)
+        '''self.label_exibir_usuario = QLabel(self)
         layout_exibir_usuario = QVBoxLayout()
         layout_exibir_usuario.addWidget(self.label_exibir_usuario)
-        self.label_exibir_usuario.setGeometry(1265,5,600,30)
+        self.label_exibir_usuario.setGeometry(1265,5,600,30)'''
 
         # Atualizar o nome do usuário logado
-        self.atualizar_usuario_logado(self.config.obter_usuario_logado())
+        #self.atualizar_usuario_logado(self.config.obter_usuario_logado())
         
         self.frame_imagem_produto_3.setLayout(QVBoxLayout())
         self.label_imagem_produto = QLabel(self.frame_imagem_produto_3)
@@ -161,20 +199,29 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         """
         self.btn_opcoes_navegacao.setStyleSheet(estilo_botao_opcoes_navegacao)
-        # Criar o botão btn_opcoes
-        self.btn_opcoes = QPushButton("Mais opções", self)
+
 
         # Criar o menu dentro do botão btn_opcoes
-        self.menu_opcoes = QMenu(self.btn_opcoes)
+        self.menu_opcoes = QMenu(self.btn_mais_opcoes)
+        
 
-        # Definir o estilo do menu
+       # Definir o estilo do menu
         estilo_botao_menu = """
             QMenu {
                 background-color: white;
                 color: black;
-            }   
+                border: 1px solid lightgray;
+            }
+            QMenu::item {
+                padding: 5px 20px;
+            }
+            QMenu::item:selected {
+                background-color: rgb(0, 120, 215); /* Azul Windows */
+                color: white;
+            }
         """
         self.menu_opcoes.setStyleSheet(estilo_botao_menu)
+
 
         # Criar as ações do menu
         self.action_sair = QAction("Sair do Sistema", self)
@@ -183,7 +230,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.action_reiniciar = QAction("Reiniciar Sistema")
         self.action_informacoes_sistema = QAction("Informações do sistema")
 
-        # Adicionar as ações ao menu
+        # Adicionar as ações ao menu (FUNDAMENTAL!)
         self.menu_opcoes.addAction(self.action_sair)
         self.menu_opcoes.addAction(self.action_configuracoes)
         self.menu_opcoes.addAction(self.action_contato)
@@ -191,10 +238,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.menu_opcoes.addAction(self.action_informacoes_sistema)
 
         # Associar o menu ao botão
-        self.btn_opcoes.setMenu(self.menu_opcoes)
+        self.btn_mais_opcoes.setMenu(self.menu_opcoes)
+        self.btn_mais_opcoes.setPopupMode(QToolButton.InstantPopup)
 
-        # Ajustar a geometria do botão
-        self.btn_opcoes.setGeometry(1550, 5, 120, 30)
+
 
         # Conectar as ações do menu aos slots correspondentes
         self.action_sair.triggered.connect(self.desconectarUsuario)
@@ -202,21 +249,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.action_contato.triggered.connect(self.show_pg_contato)
         self.action_reiniciar.triggered.connect(self.reiniciar_sistema)
         self.action_informacoes_sistema.triggered.connect(self.show_mensagem_sistema)
-        
-        estilo_botao_mais_opcoes = """
-            QPushButton {
-                color: rgb(255, 255, 255);
-                border-radius: 3px;
-                font-size: 16px;
-                background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255));
-                border: 3px solid transparent;
-            }
-            QPushButton:hover {
-                background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255));
-                color: black;
-            }
-        """
-        self.btn_opcoes.setStyleSheet(estilo_botao_mais_opcoes)
         
         self.fechar_janela_login_signal.connect(self.fechar_janela_login)  
 
@@ -235,6 +267,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.carregar_configuracoes()
 
+        
+
 
         self.pagina_usuarios = Pagina_Usuarios(self, self.btn_abrir_planilha_usuarios,self.btn_cadastrar_novo_usuario,
                                                self.btn_gerar_pdf_usuarios,self.btn_historico_usuarios,self.btn_atualizar_ativos,
@@ -246,6 +280,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                                                self.btn_atualizar_saida,self.btn_atualizar_estoque,self.btn_historico,
                                                self.btn_abrir_planilha,self.line_excel,self.progress_excel,
                                                self.btn_incluir_produto_sistema,self.btn_confirmar_massa)
+        
 
         # Criar instância de TabelaProdutos passando uma referência à MainWindow
         self.atualizar_produto_dialog = AtualizarProduto(self)
@@ -267,6 +302,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.txt_rg.textChanged.connect(self.formatar_rg)
         self.txt_data_nascimento.textChanged.connect(self.formatar_data_nascimento)
         self.txt_telefone.textChanged.connect(self.formatar_telefone)
+   
 
         self.btn_editar_cadastro.clicked.connect(self.mostrar_tabela_usuarios)
         self.btn_carregar_imagem_4.clicked.connect(self.carregar_imagem_usuario)
@@ -316,11 +352,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.btn_cadastrar_usuarios.clicked.connect(lambda: self.paginas_sistemas.setCurrentWidget(self.pg_cadastrar_usuario))
         self.btn_configuracoes.clicked.connect(lambda: self.paginas_sistemas.setCurrentWidget(self.pg_configuracoes))      
         self.btn_cadastrar_produto.clicked.connect(lambda: self.paginas_sistemas.setCurrentWidget(self.pg_cadastrar_produto))
-        self.btn_ver_item.clicked.connect(lambda: self.paginas_sistemas.setCurrentWidget(self.pag_estoque))
+        self.btn_ver_item.clicked.connect(lambda: self.paginas_sistemas.setCuclerrentWidget(self.pag_estoque))
         self.btn_novo_produto.clicked.connect(lambda: self.paginas_sistemas.setCurrentWidget(self.pg_cadastrar_produto))
         self.btn_verificar_usuarios.clicked.connect(lambda: self.paginas_sistemas.setCurrentWidget(self.page_verificar_usuarios))
         self.btn_ver_usuario.clicked.connect(lambda: self.paginas_sistemas.setCurrentWidget(self.page_verificar_usuarios))
-        
+        self.btn_cadastrar_novo_usuario.clicked.connect(lambda: self.paginas_sistemas.setCurrentWidget(self.pg_cadastrar_usuario))
 
 
         self.btn_remover_imagem.clicked.connect(self.retirar_imagem_produto)
@@ -345,13 +381,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                                                          self.frame_botoes_navegacoes,self.label_configuracoes,self.centralwidget,
                                                          self.frame_pag_estoque,self.frame_2,self.paginas_sistemas,
                                                          self.pg_cadastrar_usuario,self.frame_pag_cadastrar_usuario,
-                                                         self.btn_opcoes,self.btn_avancar,self.btn_retroceder,self.btn_home,self.btn_verificar_estoque,
+                                                         self.btn_mais_opcoes,self.btn_avancar,self.btn_retroceder,self.btn_home,self.btn_verificar_estoque,
                                                          self.btn_cadastrar_produto, self.btn_cadastrar_usuarios, self.btn_clientes,self.btn_configuracoes,
                                                          self.btn_abrir_planilha,self.btn_importar,self.btn_gerar_saida,
                                                          self.line_excel,self.btn_gerar_estorno,
                                                          self.label_cadastramento,self.label_cadastramento_produtos,self.frame_valor_total_produtos,self.frame_valor_do_desconto,
                                                          self.frame_valor_desconto,self.frame_quantidade)
-             
+
+
     def abrir_menu_opcoes(self):
         # Verifica se já armazenamos a posição original da página
         if not hasattr(self, "posicao_original_paginas"):
@@ -415,7 +452,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.config.nao_mostrar_mensagem_boas_vindas = True
             self.config.salvar_configuracoes(self.config.usuario, self.config.senha, self.config.mantem_conectado)
 
-    def atualizar_usuario_logado(self, user):
+    '''def atualizar_usuario_logado(self, user):
         if user:
             usuario_logado = f"Usuário logado: {user}"
         else:
@@ -423,7 +460,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.label_exibir_usuario.setText(usuario_logado)
         self.label_exibir_usuario.setStyleSheet("font-size: 15px; font-weight: bold; color: white;")
-        print(usuario_logado)
+        print(usuario_logado)'''
 
 
     '''def verificar_conexao(self):
@@ -473,6 +510,20 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             for col, data in enumerate(produto):
                 self.table_base.setItem(row_position, col, self.criar_item(str(data)))
 
+        # Ajusta colunas e linhas automaticamente após preencher
+        self.table_base.resizeColumnsToContents()
+        self.table_base.resizeRowsToContents()
+
+        # Ajuste refinado nas colunas da table_base
+        header = self.table_base.horizontalHeader()
+        for i in range(self.table_base.columnCount() - 1):
+            header.setSectionResizeMode(i, QHeaderView.ResizeToContents)
+
+        # Última coluna ("Usuário") com tamanho fixo
+        header.setSectionResizeMode(self.table_base.columnCount() - 1, QHeaderView.Interactive)
+        self.table_base.setColumnWidth(self.table_base.columnCount() - 1, 120)
+            
+
         # Carregar dados da `table_saida`
         produtos_saida = self.db.obter_produtos_saida()
         for produto in produtos_saida:
@@ -480,6 +531,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.table_saida.insertRow(row_position)
             for col, data in enumerate(produto):
                 self.table_saida.setItem(row_position, col, self.criar_item(str(data)))
+        
+        self.table_saida.resizeColumnsToContents()
+        self.table_saida.resizeRowsToContents()
 
         # Carregar dados da `table_ativos`   
         usuarios_ativos = self.db.obter_usuarios_ativos()
@@ -489,6 +543,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             for col, data in enumerate(usuario):
                 self.table_ativos.setItem(row_position, col,self.criar_item(str(data)))
 
+        self.table_ativos.resizeColumnsToContents()
+        self.table_ativos.resizeRowsToContents()
+
         # Carregar dados da `table_inativos` 
         usuarios_inativos = self.db.obter_usuarios_inativos()
         for usuario in usuarios_inativos:
@@ -496,6 +553,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.table_inativos.insertRow(row_position)
             for col, data in enumerate(usuario):
                 self.table_inativos.setItem(row_position, col,self.criar_item(str(data)))
+
+        self.table_inativos.resizeColumnsToContents()
+        self.table_inativos.resizeRowsToContents()
      
     
     
@@ -1928,7 +1988,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 #*******************************************************************************************************
     def is_valid_email(self, email):
         email = email.strip()
-        email_pattern = re.compile(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{3,}$')
+        email_pattern = re.compile(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$')
         return bool(email_pattern.match(email))
 # **********************************************************************************************************************
     def configurar_geometria_frames(self):
@@ -1986,6 +2046,40 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # Reinicia com subprocess (mais robusto para caminhos com espaço)
         subprocess.Popen([python, script] + sys.argv[1:])
         sys.exit()
+
+    def auto_completar(self, nome_campo, campo):
+        texto = campo.text().strip()
+        if texto:
+            self.config.adicionar_ao_historico(nome_campo, texto)
+
+            # Atualiza o modelo do QCompleter para refletir o novo histórico
+            historico = self.config.carregar_historico_autocompletar(nome_campo)
+            novo_completer = QCompleter(historico)
+            novo_completer.setCaseSensitivity(Qt.CaseInsensitive)
+            campo.setCompleter(novo_completer)
+
+    # Método para tratar o duplo clique e preencher o campo
+    def completar_por_duplo_clique(self, event, nome_campo, campo):
+        if event.type() == QEvent.MouseButtonDblClick:
+            # Recupera o completador e o modelo de dados
+            completer = campo.completer()
+            model = completer.model()
+
+            # Pegando o primeiro item de sugestão do modelo
+            if model.rowCount() > 0:
+                index = model.index(0, 0)  # Pega o primeiro item
+                texto_completo = model.data(index)  # Pega o texto do item
+                campo.setText(texto_completo)  # Preenche o campo com a sugestão
+
+                # Atualiza o histórico de autocompletar
+                self.config.adicionar_ao_historico(nome_campo, texto_completo)
+                return True
+        return False
+
+
+
+
+    
 
 # Função principal
 if __name__ == '__main__':
