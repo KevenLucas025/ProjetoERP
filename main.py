@@ -1117,6 +1117,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         data_nascimento = self.txt_data_nascimento.text()
         complemento = self.txt_complemento.text()
         imagem = self.converter_imagem_usuario()
+        
 
         # Conectar ao banco de dados e inserir o usuário
         db = DataBase()
@@ -1141,8 +1142,27 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 return
 
             # Inserir o usuário no banco de dados
-            db.insert_user(nome, user, senha, confirmar_senha, acesso, endereco, cep, cpf, numero, 
-                        estado, email, telefone, rg, data_nascimento, complemento, usuario_logado, imagem)  
+            db.insert_user(
+                nome=nome,
+                usuario=user,
+                senha=senha,
+                confirmar_senha=confirmar_senha,
+                acesso=acesso,
+                endereco=endereco,
+                cep=cep,
+                cpf=cpf,
+                numero=numero,
+                estado=estado,
+                email=email,
+                telefone=telefone,
+                rg=rg,
+                data_nascimento=data_nascimento,
+                complemento=complemento,
+                segredo=None,
+                usuario_logado=usuario_logado,
+                imagem=imagem
+            )
+
             
 
             # Exibir mensagem de sucesso

@@ -25,7 +25,6 @@ class EstoqueProduto(QWidget):
         self.db = DataBase("banco_de_dados.db")
         self.alteracoes_salvas = False
 
-        self.tabela_historico = QTableWidget()  # A tabela que você está usando
         self.checkboxes = []  # Lista para armazenar os checkboxes
         self.coluna_checkboxes_adicionada = False
         self.todos_selecionados = False
@@ -61,6 +60,10 @@ class EstoqueProduto(QWidget):
         self.btn_incluir_produto_sistema.clicked.connect(self.incluir_produto_no_sistema)
         self.main_window.table_base.viewport().installEventFilter(self)
         self.main_window.table_saida.viewport().installEventFilter(self)
+
+       
+
+
 
 
     # Função auxiliar para criar um QTableWidgetItem com texto centralizado
@@ -367,6 +370,7 @@ class EstoqueProduto(QWidget):
 
 
 
+
     def reindex_table_base(self):
         row_count = self.main_window.table_base.rowCount()
         for row in range(row_count):
@@ -584,21 +588,14 @@ class EstoqueProduto(QWidget):
             """
             produtos = self.db.executar_query(query)
 
-            # Consultar produtos com condições específicas
-            query_condicional = """
-            SELECT Produto, Quantidade, Valor_Real, Desconto, Data_Compra, Código_Item, Cliente, Descrição_Produto, Usuário 
-            FROM products
-            WHERE "Status da Saída" IS NULL OR "Status da Saída" = 0 OR "Status da Saída" = ''
-            """
-            produtos_condicional = self.db.executar_query(query_condicional)
-
-            if produtos_condicional:
-                for produto in produtos_condicional:
+            if produtos:
+                for produto in produtos:
                     row_position = self.table_base.rowCount()
                     self.table_base.insertRow(row_position)  # Insere uma nova linha na tabela
                     for column, value in enumerate(produto):
                         item = self.criar_item(str(value))  # Cria o item com os dados
                         self.table_base.setItem(row_position, column, item)  # Define o item na posição correspondente
+
             else:
                 print("Nenhum produto para adicionar.")
 
@@ -614,8 +611,8 @@ class EstoqueProduto(QWidget):
 
             msg_box = QMessageBox()
             msg_box.setIcon(QMessageBox.Information)
-            msg_box.setWindowTitle("Informação")
-            msg_box.setText("Tabela estoque atualizada com sucesso!")       
+            msg_box.setWindowTitle("Erro")
+            msg_box.setText("Erro ao atualizar a tabela de estoque")       
             msg_box.exec()
 
 
@@ -813,12 +810,16 @@ class EstoqueProduto(QWidget):
         botao_apagar = QPushButton("Apagar Histórico")
         botao_apagar.clicked.connect(self.apagar_historico)
 
+        # Botão Exportar CSV
         botao_exportar_csv = QPushButton("Exportar para CSV")
         botao_exportar_csv.clicked.connect(self.exportar_csv)
 
+        
+        # Botão Exportar Excel
         botao_exportar_excel = QPushButton("Exportar para Excel")
         botao_exportar_excel.clicked.connect(self.exportar_excel)
 
+        # Botão PDF
         botao_exportar_pdf = QPushButton("Exportar PDF")
         botao_exportar_pdf.clicked.connect(self.exportar_pdf)
 

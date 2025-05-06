@@ -161,10 +161,38 @@ class TabelaUsuario(QDialog):
                     item = QTableWidgetItem(str(data))
                     self.table_widget.setItem(row_position, col, item)
 
+            # Verificar se a tabela está vazia
+            if self.table_widget.rowCount() == 0:
+                self.exibir_mensagem_sem_usuarios()
+            else:
+                self.ocultar_mensagem_sem_usuarios()
+
         except Exception as e:
             QMessageBox.critical(self, "Erro", f"Erro ao acessar o banco de dados: {str(e)}")
         finally:
             pass
+
+    def exibir_mensagem_sem_usuarios(self):
+        # Verificar se a QLabel já existe
+        if not hasattr(self, 'label_sem_usuario'):
+            self.label_sem_usuario = QLabel("Usuários cadastrados serão exibidos aqui...")
+            self.label_sem_usuario.setAlignment(Qt.AlignCenter)
+            self.label_sem_usuario.setStyleSheet("font-size: 16px; color: black;")
+            
+            # Verificar se o widget tem um layout
+            if not self.table_widget.layout():
+                self.main_layout = QVBoxLayout(self.table_widget)
+                self.table_widget.setLayout(self.main_layout)
+            else:
+                self.main_layout = self.table_widget.layout()
+
+            self.main_layout.addWidget(self.label_sem_usuario)
+
+        self.label_sem_usuario.show()
+
+    def ocultar_mensagem_sem_usuarios(self):
+        if hasattr(self,"label_sem_usuario"):
+            self.label_sem_usuario.hide()
 
 #*******************************************************************************************************
     def confirmar_apagar_usuario(self):

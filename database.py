@@ -457,8 +457,6 @@ class DataBase:
         except Exception as e:
             print("Erro ao verificar se usuário existe:", e)
             return None
-
-            
 #*********************************************************************************************************************
     def insert_user(self, nome, usuario, senha, confirmar_senha, acesso, endereco, cep, cpf, numero, estado, email, 
                 telefone, rg, data_nascimento, complemento, segredo,usuario_logado, imagem=None):
@@ -495,7 +493,7 @@ class DataBase:
                                 "Data da Senha Cadastrada", "Data da Inclusão do Usuário", Secret,"Usuário Logado") 
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?)
             """, (nome, usuario, senha, confirmar_senha, acesso, endereco, cep, cpf, numero, estado, email, telefone, 
-                rg, data_nascimento, complemento, imagem, "Não Cadastrado", data_atual, data_atual,segredo, usuario_logado))
+                rg, data_nascimento, complemento, imagem, "Não Cadastrado", data_atual, data_atual, segredo,usuario_logado))
 
 
             self.connection.commit()

@@ -1,6 +1,7 @@
 from PySide6.QtWidgets import (QWidget,QTableWidget,QMessageBox,
-                               QTableWidgetItem,QInputDialog,QLineEdit,QCheckBox,QFileDialog)
-from PySide6.QtGui import QBrush,QColor
+                               QTableWidgetItem,QInputDialog,QLineEdit,QCheckBox,
+                               QFileDialog,QMainWindow,QVBoxLayout,QPushButton)
+from PySide6.QtGui import QBrush,QColor,QGuiApplication
 from PySide6.QtCore import Qt,QEvent
 from database import DataBase
 import sqlite3
@@ -24,7 +25,7 @@ class Pagina_Usuarios(QWidget):
         self.db = DataBase("banco_de_dados.db")
         self.alteracoes_salvas = False
 
-        self.tabela_historico_usuarios = QTableWidget()  # A tabela que você está usando
+
         self.checkboxes = []  # Lista para armazenar os checkboxes
         self.coluna_checkboxes_adicionada = False
         self.todos_selecionados = False
@@ -52,6 +53,7 @@ class Pagina_Usuarios(QWidget):
         self.btn_atualizar_inativos.clicked.connect(self.atualizar_inativos)
         self.btn_cadastrar_todos.clicked.connect(self.cadastrar_em_massa)
         self.btn_gerar_pdf_usuario.clicked.connect(self.exibir_pdf_usuarios)
+        self.btn_historico_usuarios.clicked.connect(self.exibir_tabela_historico_usuario)
         self.main_window.table_ativos.viewport().installEventFilter(self)
         self.main_window.table_inativos.viewport().installEventFilter(self)
 
@@ -504,7 +506,7 @@ class Pagina_Usuarios(QWidget):
 
     def limpar_tabelas(self):
         # Verifica se as tabelas estão vazias
-        if self.table_inativos_usuarios.rowCount() == 0 and self.table_ativos_usuarios.rowCount() == 0:
+        if self.table_inativos.rowCount() == 0 and self.table_ativos.rowCount() == 0:
             msg = QMessageBox()
             msg.setIcon(QMessageBox.Warning)
             msg.setWindowTitle("Aviso")
@@ -512,13 +514,11 @@ class Pagina_Usuarios(QWidget):
             msg.exec()
             return
 
-        # Limpa a tabela de ativos (table_ativos_usuarios)
-        self.table_ativos_usuarios.setRowCount(0)
-        self.formatar_texto(self.table_ativos_usuarios)
+        # Limpa a tabela de ativos
+        self.table_ativos.setRowCount(0)
 
-        # Limpa a tabela de saída (table_inativos_usuarios)
-        self.table_inativos_usuarios.setRowCount(0)
-        self.formatar_texto(self.table_inativos_usuarios)
+        # Limpa a tabela de inativos
+        self.table_inativos.setRowCount(0)
 
         # Mensagem de confirmação após a limpeza
         msg = QMessageBox()
@@ -526,6 +526,7 @@ class Pagina_Usuarios(QWidget):
         msg.setWindowTitle("Limpeza Concluída")
         msg.setText("As tabelas foram limpas com sucesso.")
         msg.exec()
+
 
     # Limpa a coluna selecionada clicando em qualquer lugar da tabela
     def eventFilter(self, source, event):
@@ -658,6 +659,71 @@ class Pagina_Usuarios(QWidget):
 
         except Exception as e:
             QMessageBox.critical(None, "Erro ao gerar PDF", f"Erro: {str(e)}")
+
+    def exibir_tabela_historico_usuario(self):
+        self.janela_historico = QMainWindow()
+        self.janela_historico.setWindowTitle("Histórico de Ações")
+        self.janela_historico.resize(800,650)
+
+        screen = QGuiApplication.primaryScreen()
+        screen_geometry = screen.availableGeometry()
+        window_geometry = self.janela_historico.frameGeometry()
+        window_geometry.moveCenter(screen_geometry.center())
+        self.janela_historico.move(window_geometry.topLeft())
+        
+        central_widget = QWidget()
+        layout = QVBoxLayout(central_widget)
+
+        # Tabela do histórico
+        self.janela_historico_usuario = QTableWidget()
+        self.janela_historico_usuario.setColumnCount(4)
+        self.janela_historico_usuario.setHorizontalHeaderLabels(["Data/Hora", "Usuário", "Ação", "Descrição"])
+
+        #Botão Atualizar
+        botao_atualizar = QPushButton("Atualizar Histórico")
+        botao_atualizar.clicked.connect(self.atualizar_historico)
+
+        # Botão Apagar
+        botao_apagar = QPushButton("Apagar Histórico")
+        botao_apagar.clicked.connect(self.apagar_historico)
+
+        botao_exportar_csv = QPushButton("Exportar para CSV")
+        botao_exportar_csv.clicked.connect(self.exportar_csv)
+
+        botao_exportar_excel = QPushButton("Exportar para Excel")
+        botao_exportar_excel.clicked.connect(self.exportar_excel)
+
+        botao_exportar_pdf = QPushButton("Exportar PDF")
+        botao_exportar_pdf.clicked.connect(self.exportar_pdf)
+
+        botao_pausar_historico = QPushButton("Pausar Histórico")
+        botao_pausar_historico.clicked.connect(self.pausar_historico)
+
+
+        botao_filtrar_historico = QPushButton("Filtrar Histórico")
+        botao_filtrar_historico.clicked.connect(self.filtrar_historico)
+
+        botao_ordenar_historico = QPushButton("Ordenar Histórico")
+        botao_ordenar_historico.clicked.connect(self.ordenar_historico)
+
+        # Criar checkbox "Selecionar Todos" toda vez que a janela for aberta
+        self.todos_selecionados = QCheckBox("Selecionar todo o histórico")
+        self.todos_selecionados.stateChanged.connect(self.selecionar_todos)
+
+        # Criar checkbox "Selecionar Individualmente" toda vez que a janela for aberta
+        self.checkbox_selecionar_individual = QCheckBox("Selecionar Individualmente")
+        self.checkbox_selecionar_individual.stateChanged.connect(self.selecionar_individual)
+
+        # Adicionar os checkboxes ao layout
+        layout.addWidget(self.todos_selecionados)
+        layout.addWidget(self.checkbox_selecionar_individual)
+
+
+
+        self.janela_historico.show()
+
+
+
 
 
     
