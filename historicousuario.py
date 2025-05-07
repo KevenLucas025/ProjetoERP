@@ -1,8 +1,9 @@
 from PySide6.QtWidgets import (QWidget,QTableWidget,QMessageBox,
                                QTableWidgetItem,QInputDialog,QLineEdit,QCheckBox,
-                               QFileDialog,QMainWindow,QVBoxLayout,QPushButton)
+                               QFileDialog,QMainWindow,QVBoxLayout,QPushButton,QHBoxLayout,
+                               QLabel,QRadioButton,QGroupBox,QDialog)
 from PySide6.QtGui import QBrush,QColor,QGuiApplication
-from PySide6.QtCore import Qt,QEvent
+from PySide6.QtCore import Qt,QEvent,QTimer
 from database import DataBase
 import sqlite3
 import pandas as pd
@@ -14,12 +15,15 @@ from reportlab.platypus import SimpleDocTemplate, Table, TableStyle,Spacer,Parag
 from reportlab.pdfgen import canvas
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib import colors
+from openpyxl.utils import get_column_letter
+from openpyxl.styles import Alignment, Font
 
 
 class Pagina_Usuarios(QWidget):
     def __init__(self,main_window,btn_abrir_planilha_usuarios,btn_cadastrar_novo_usuario,btn_gerar_pdf_usuario,
                   btn_historico_usuarios,btn_atualizar_ativos,btn_atualizar_inativos,btn_limpar_tabelas_usuarios,
-                  btn_gerar_saida_usuarios,btn_cadastrar_todos,parent=None):
+                  btn_gerar_saida_usuarios,btn_cadastrar_todos,line_excel_usuarios,progress_excel_usuarios,
+                  btn_importar_usuarios,parent=None):
         super().__init__(parent)
 
         self.db = DataBase("banco_de_dados.db")
@@ -27,7 +31,7 @@ class Pagina_Usuarios(QWidget):
 
 
         self.checkboxes = []  # Lista para armazenar os checkboxes
-        self.coluna_checkboxes_adicionada = False
+        self.coluna_checkboxes_usuarios_adicionada = False
         self.todos_selecionados = False
       
         
@@ -44,6 +48,9 @@ class Pagina_Usuarios(QWidget):
         self.btn_limpar_tabelas_usuarios = btn_limpar_tabelas_usuarios
         self.btn_gerar_saida_usuarios = btn_gerar_saida_usuarios
         self.btn_cadastrar_todos = btn_cadastrar_todos
+        self.line_excel_usuarios = line_excel_usuarios
+        self.progress_excel_usuarios = progress_excel_usuarios
+        self.btn_importar_usuarios = btn_importar_usuarios
         
         
 
@@ -54,6 +61,8 @@ class Pagina_Usuarios(QWidget):
         self.btn_cadastrar_todos.clicked.connect(self.cadastrar_em_massa)
         self.btn_gerar_pdf_usuario.clicked.connect(self.exibir_pdf_usuarios)
         self.btn_historico_usuarios.clicked.connect(self.exibir_tabela_historico_usuario)
+        self.btn_abrir_planilha_usuarios.clicked.connect(self.abrir_planilha_usuarios)
+        self.btn_importar_usuarios.clicked.connect(self.importar_usuario)
         self.main_window.table_ativos.viewport().installEventFilter(self)
         self.main_window.table_inativos.viewport().installEventFilter(self)
 
@@ -675,57 +684,834 @@ class Pagina_Usuarios(QWidget):
         layout = QVBoxLayout(central_widget)
 
         # Tabela do histórico
-        self.janela_historico_usuario = QTableWidget()
-        self.janela_historico_usuario.setColumnCount(4)
-        self.janela_historico_usuario.setHorizontalHeaderLabels(["Data/Hora", "Usuário", "Ação", "Descrição"])
+        self.tabela_historico_usuarios = QTableWidget()
+        self.tabela_historico_usuarios.setColumnCount(4)
+        self.tabela_historico_usuarios.setHorizontalHeaderLabels(["Data/Hora", "Usuário", "Ação", "Descrição"])
 
         #Botão Atualizar
         botao_atualizar = QPushButton("Atualizar Histórico")
-        botao_atualizar.clicked.connect(self.atualizar_historico)
+        botao_atualizar.clicked.connect(self.atualizar_historico_usuario)
 
         # Botão Apagar
         botao_apagar = QPushButton("Apagar Histórico")
-        botao_apagar.clicked.connect(self.apagar_historico)
+        botao_apagar.clicked.connect(self.apagar_historico_usuario)
 
         botao_exportar_csv = QPushButton("Exportar para CSV")
-        botao_exportar_csv.clicked.connect(self.exportar_csv)
+        botao_exportar_csv.clicked.connect(self.exportar_csv_usuarios)
 
         botao_exportar_excel = QPushButton("Exportar para Excel")
-        botao_exportar_excel.clicked.connect(self.exportar_excel)
+        botao_exportar_excel.clicked.connect(self.exportar_excel_usuarios)
 
         botao_exportar_pdf = QPushButton("Exportar PDF")
-        botao_exportar_pdf.clicked.connect(self.exportar_pdf)
+        botao_exportar_pdf.clicked.connect(self.exportar_pdf_usuarios)
 
         botao_pausar_historico = QPushButton("Pausar Histórico")
-        botao_pausar_historico.clicked.connect(self.pausar_historico)
+        botao_pausar_historico.clicked.connect(self.pausar_historico_usuario)
 
 
         botao_filtrar_historico = QPushButton("Filtrar Histórico")
-        botao_filtrar_historico.clicked.connect(self.filtrar_historico)
+        botao_filtrar_historico.clicked.connect(self.filtrar_historico_usuarios)
 
         botao_ordenar_historico = QPushButton("Ordenar Histórico")
-        botao_ordenar_historico.clicked.connect(self.ordenar_historico)
+        botao_ordenar_historico.clicked.connect(self.ordenar_historico_usuario)
 
         # Criar checkbox "Selecionar Todos" toda vez que a janela for aberta
         self.todos_selecionados = QCheckBox("Selecionar todo o histórico")
-        self.todos_selecionados.stateChanged.connect(self.selecionar_todos)
+        self.todos_selecionados.stateChanged.connect(self.selecionar_todos_usuarios)
 
         # Criar checkbox "Selecionar Individualmente" toda vez que a janela for aberta
         self.checkbox_selecionar_individual = QCheckBox("Selecionar Individualmente")
-        self.checkbox_selecionar_individual.stateChanged.connect(self.selecionar_individual)
+        self.checkbox_selecionar_individual.stateChanged.connect(self.selecionar_usuarios_individual)
 
         # Adicionar os checkboxes ao layout
         layout.addWidget(self.todos_selecionados)
         layout.addWidget(self.checkbox_selecionar_individual)
 
+        # Adicionar outros botões ao layout
+        layout.addWidget(botao_atualizar)
+        layout.addWidget(botao_apagar)
+        layout.addWidget(botao_exportar_csv)
+        layout.addWidget(botao_exportar_excel)
+        layout.addWidget(botao_exportar_pdf)
+        layout.addWidget(botao_pausar_historico)
+        layout.addWidget(botao_ordenar_historico)
+        layout.addWidget(botao_filtrar_historico)
+        layout.addWidget(self.tabela_historico_usuarios)
 
-
+        # Configurar o widget central e exibir a janela
+        self.janela_historico.setCentralWidget(central_widget)
         self.janela_historico.show()
 
+        # Preencher tabela pela primeira vez
+        self.carregar_historico_usuario()
+        self.tabela_historico_usuarios.resizeColumnsToContents()
+
+
+    def carregar_historico_usuario(self):
+        with sqlite3.connect('banco_de_dados.db') as cn:
+            cursor = cn.cursor()
+            cursor.execute('SELECT * FROM historico_usuarios ORDER BY "Data e Hora" DESC')
+            registros = cursor.fetchall()
+
+        self.tabela_historico_usuarios.clearContents()
+        self.tabela_historico_usuarios.setRowCount(len(registros))
+
+        for i, (data, usuario, acao, descricao) in enumerate(registros):
+            self.tabela_historico_usuarios.setItem(i, 0, QTableWidgetItem(data))
+            self.tabela_historico_usuarios.setItem(i, 1, QTableWidgetItem(usuario))
+            self.tabela_historico_usuarios.setItem(i, 2, QTableWidgetItem(acao))
+            self.tabela_historico_usuarios.setItem(i, 3, QTableWidgetItem(descricao))
 
 
 
+    def atualizar_historico_usuario(self):
+        QMessageBox.information(self.janela_historico, "Sucesso", "Dados carregados com sucesso!")
+        self.carregar_historico_usuario()
 
+    def apagar_historico_usuario(self):
+        """
+        Função principal para apagar histórico. Trata tanto exclusão por checkboxes 
+        quanto exclusão por seleção direta, dependendo do estado da tabela.
+        """
+        # Caso checkboxes estejam ativados
+        if self.coluna_checkboxes_usuarios_adicionada and self.checkboxes:
+            linhas_para_remover = []
+            ids_para_remover = []
+
+            # Identificar as linhas com checkboxes selecionados
+            for row, checkbox in enumerate(self.checkboxes):
+                if checkbox and checkbox.isChecked():
+                    linhas_para_remover.append(row)
+                    item_data_widget = self.tabela_historico_usuarios.item(row, 1)  # Coluna de Data/Hora
+                    if item_data_widget:
+                        item_data_text = item_data_widget.text().strip()
+                        # Excluir com base na data e hora
+                        item_id = self.get_id_by_data_hora_usuarios(item_data_text)
+                        if item_id:
+                            ids_para_remover.append(item_id)
+                        else:
+                            print(f"Erro ao capturar ID para a data/hora: '{item_data_text}'")
+                    else:
+                        print(f"Erro ao capturar Data/Hora na linha {row}")
+
+            if not ids_para_remover:
+                QMessageBox.warning(self, "Erro", "Nenhum item válido foi selecionado para apagar!")
+                return
+
+            # Confirmar exclusão
+            mensagem = (
+                f"Você tem certeza que deseja apagar os {len(ids_para_remover)} itens selecionados?"
+                if len(ids_para_remover) > 1
+                else "Você tem certeza que deseja apagar o item selecionado?"
+            )
+
+            if not self.confirmar_historico_usuarios_apagado(mensagem):
+                return
+
+            # Excluir do banco de dados
+            with sqlite3.connect('banco_de_dados.db') as cn:
+                cursor = cn.cursor()
+                try:
+                    for item_id in ids_para_remover:
+                        cursor.execute("DELETE FROM historico_usuarios WHERE id = ?", (item_id,))
+                        print(f"Item removido do banco: ID {item_id}")
+                    cn.commit()
+                except Exception as e:
+                    QMessageBox.critical(self, "Erro", f"Erro ao excluir do banco de dados: {e}")
+                    return
+
+            # Remover as linhas na interface
+            for row in sorted(linhas_para_remover, reverse=True):
+                self.tabela_historico_usuarios.removeRow(row)
+
+            QMessageBox.information(self, "Sucesso", "Itens removidos com sucesso!")
+
+        # Caso sem checkboxes (seleção manual)
+        else:
+            linha_selecionada = self.tabela_historico_usuarios.currentRow()
+
+            if linha_selecionada < 0:
+                QMessageBox.warning(self, "Erro", "Nenhum item foi selecionado para apagar!")
+                return
+
+            # Capturar a Data/Hora da célula correspondente (coluna 0)
+            item_data_widget = self.tabela_historico_usuarios.item(linha_selecionada, 0)  # Coluna de Data/Hora
+            if not item_data_widget:
+                QMessageBox.warning(self, "Erro", "Não foi possível identificar a Data/Hora do item a ser apagado!")
+                return
+
+            item_data_text = item_data_widget.text().strip()
+
+            # Conectar ao banco de dados para buscar o ID relacionado à Data/Hora
+            with sqlite3.connect('banco_de_dados.db') as cn:
+                cursor = cn.cursor()
+                try:
+                    # Buscar o ID com base na Data/Hora, removendo espaços ou caracteres extras
+                    cursor.execute('SELECT id FROM historico_usuarios WHERE "Data e Hora" = ?', (item_data_text,))
+                    resultado = cursor.fetchone()
+
+                    if resultado:
+                        item_id = resultado[0]  # Pegamos o ID encontrado
+                    else:
+                        QMessageBox.warning(self, "Erro", f"Não foi encontrado um item para a Data/Hora: {item_data_text}")
+                        return
+
+                except Exception as e:
+                    QMessageBox.critical(self, "Erro", f"Erro ao buscar ID: {e}")
+                    return
+
+            # Confirmar exclusão
+            mensagem = "Você tem certeza que deseja apagar o item selecionado?"
+
+            if not self.confirmar_historico_usuarios_apagado(mensagem):
+                return
+
+            # Excluir do banco de dados
+            with sqlite3.connect('banco_de_dados.db') as cn:
+                cursor = cn.cursor()
+                try:
+                    cursor.execute("DELETE FROM historico_usuarios WHERE id = ?", (item_id,))
+                    print(f"Item removido do banco de dados: ID {item_id}")
+                    cn.commit()
+                except Exception as e:
+                    QMessageBox.critical(self, "Erro", f"Erro ao excluir do banco de dados: {e}")
+                    return
+
+            # Remover a linha da interface
+            self.tabela_historico_usuarios.removeRow(linha_selecionada)
+
+            QMessageBox.information(self, "Sucesso", "Item removido com sucesso!")
+
+    def get_id_by_data_hora_usuarios(self, data_hora):
+        """
+        Função que busca o ID correspondente à Data/Hora no banco de dados.
+        """
+        with sqlite3.connect('banco_de_dados.db') as cn:
+            cursor = cn.cursor()
+            try:
+                # Converter a Data/Hora para um formato compatível com o banco de dados
+                cursor.execute('SELECT id FROM historico_usuarios WHERE "Data e Hora" = ?', (data_hora,))
+                resultado = cursor.fetchone()
+                if resultado:
+                    return resultado[0]  # Retorna o ID encontrado
+                else:
+                    return None  # Não encontrou nenhum ID correspondente
+            except Exception as e:
+                print(f"Erro ao buscar ID: {e}")
+                return None
+    def confirmar_historico_usuarios_apagado(self, mensagem):
+        """
+        Exibe uma caixa de diálogo para confirmar a exclusão.
+        """
+        msgbox = QMessageBox(self)
+        msgbox.setWindowTitle("Confirmação")
+        msgbox.setText(mensagem)
+
+        btn_sim = QPushButton("Sim")
+        btn_nao = QPushButton("Não")
+        msgbox.addButton(btn_sim, QMessageBox.ButtonRole.YesRole)
+        msgbox.addButton(btn_nao, QMessageBox.ButtonRole.NoRole)
+
+        msgbox.setDefaultButton(btn_nao)
+        resposta = msgbox.exec()
+
+        return msgbox.clickedButton() == btn_sim
     
+    # Função para desmarcar todos os checkboxes
+    def desmarcar_checkboxes_usuarios(self):
+        for checkbox in self.checkboxes:
+            if checkbox:
+                checkbox.setChecked(False)
+
+    def selecionar_todos_usuarios(self):
+        if not self.coluna_checkboxes_usuarios_adicionada:
+            QMessageBox.warning(self, "Aviso", "Ative a opção 'Selecionar Individualmente' antes.")
+            self.todos_selecionados.setChecked(False)
+            return
+
+        estado = self.todos_selecionados.isChecked()
+        for checkbox in self.checkboxes:
+            if checkbox:
+                # Bloquear sinais para evitar loops
+                checkbox.blockSignals(True)
+                checkbox.setChecked(estado)
+                checkbox.blockSignals(False)
+                
+    # Função para adicionar checkboxes selecionar_individual na tabela de histórico
+    def selecionar_usuarios_individual(self):
+        if self.tabela_historico_usuarios.rowCount() == 0:
+            QMessageBox.warning(self, "Aviso", "Nenhum histórico para selecionar.")
+            self.checkbox_selecionar_individual.setChecked(False)
+            return
+
+        if self.coluna_checkboxes_usuarios_adicionada:
+            self.desmarcar_checkboxes()
+            self.tabela_historico_usuarios.removeColumn(0)
+            self.coluna_checkboxes_usuarios_adicionada = False
+            return
+
+        self.tabela_historico_usuarios_usuarios.insertColumn(0)
+        self.tabela_historico_usuarios.setHorizontalHeaderItem(0, QTableWidgetItem("Selecionar"))
+        self.checkboxes = []
+
+        for row in range(self.tabela_historico_usuarios.rowCount()):
+            checkbox = QCheckBox()
+            checkbox.stateChanged.connect(self.atualizar_selecao_todos)
+            checkbox_widget = QWidget()
+            layout = QHBoxLayout(checkbox_widget)
+            layout.addWidget(checkbox)
+            layout.setAlignment(Qt.AlignCenter)
+            layout.setContentsMargins(0, 0, 0, 0)
+            checkbox_widget.setLayout(layout)
+            self.tabela_historico_usuarios.setCellWidget(row, 0, checkbox)
+            self.checkboxes.append(checkbox)
+
+        self.tabela_historico_usuarios.setColumnWidth(0, 30)
+        self.coluna_checkboxes_usuarios_adicionada = True
+        return
+    
+    def atualizar_selecao_todos_usuarios(self):
+        self.todos_selecionados.blockSignals(True)
+
+        # Atualizar o estado do "Selecionar Todos"
+        all_checked = all(checkbox.isChecked() for checkbox in self.checkboxes if checkbox)
+        any_checked = any(checkbox.isChecked() for checkbox in self.checkboxes if checkbox)
+
+        self.todos_selecionados.setChecked(all_checked)
+
+        self.todos_selecionados.blockSignals(False)
+
+    def ordenar_historico_usuario(self):
+        # Obter a coluna pela qual o usuário deseja ordenar
+        coluna = self.obter_coluna_usuario_para_ordenar()  # Função fictícia para capturar escolha
+        if coluna is None:
+            return  # Cancela o processo todo
+        
+        # Determinar a direção de ordenação (ascendente ou descendente)
+        direcao = self.obter_direcao_ordenacao_usuario()  # Função fictícia para capturar escolha
+        if direcao is None:
+            return  # Cancela o processo todo
+        
+        # Mapeamento de colunas para índices (ajustar conforme sua tabela)
+        colunas_para_indices = {
+            "Data/Hora": 0,
+            "Usuário": 1,
+            "Ação": 2,
+            "Descrição": 3
+        }
+        
+        # Verificar se a coluna escolhida é válida
+        if coluna not in colunas_para_indices:
+            QMessageBox.warning(self, "Erro", "Coluna inválida para ordenação!")
+            return
+        
+        # Obter o índice da coluna escolhida
+        indice_coluna = colunas_para_indices[coluna]
+        
+        # Obter os dados atuais da tabela
+        dados = []
+        for row in range(self.tabela_historico_usuarios.rowCount()):
+            linha = [
+                self.tabela_historico_usuarios.item(row, col).text() if self.tabela_historico_usuarios.item(row, col) else ""
+                for col in range(self.tabela_historico_usuarios.columnCount())
+            ]
+            dados.append(linha)
+        
+        # Ordenar os dados com base na coluna escolhida e direção
+        dados.sort(key=lambda x: x[indice_coluna], reverse=(direcao == "Decrescente"))
+        
+        # Atualizar a tabela com os dados ordenados
+        self.tabela_historico_usuarios.setRowCount(0)  # Limpar tabela
+        for row_data in dados:
+            row = self.tabela_historico_usuarios.rowCount()
+            self.tabela_historico_usuarios.insertRow(row)
+            for col, value in enumerate(row_data):
+                self.tabela_historico_usuarios.setItem(row, col, QTableWidgetItem(value))
+
+    def obter_coluna_usuario_para_ordenar(self):
+        colunas = ["Data/Hora", "Usuário", "Ação", "Descrição"]
+        coluna, ok = QInputDialog.getItem(self, "Ordenar por", "Escolha a coluna:", colunas, 0, False)
+        return coluna if ok else None
+
+    def obter_direcao_ordenacao_usuario(self):
+        direcoes = ["Crescente", "Decrescente"]
+        direcao, ok = QInputDialog.getItem(self, "Direção da Ordenação", "Escolha a direção:", direcoes, 0, False)
+        return direcao if ok else None
+    
+    def filtrar_historico_usuarios(self):
+        # Criar a janela de filtro
+        janela_filtro = QDialog(self)
+        janela_filtro.setWindowTitle("Filtrar Histórico")
+        layout = QVBoxLayout(janela_filtro)
+
+        # Campo para inserir a data
+        campo_data = QLineEdit()
+        campo_data.setPlaceholderText("Digite a data no formato DD/MM/AAAA")
+        
+        # Conectar ao método de formatação, passando o texto
+        campo_data.textChanged.connect(lambda: self.formatar_data_usuarios(campo_data))
+
+
+        # Campo para selecionar se quer o mais recente ou mais antigo (filtro por hora)
+        grupo_hora = QGroupBox("Filtrar por Hora")
+        layout_hora = QVBoxLayout(grupo_hora)
+
+        radio_mais_novo = QRadioButton("Mais Recente")
+        radio_mais_velho = QRadioButton("Mais Antigo")
+
+        layout_hora.addWidget(radio_mais_novo)
+        layout_hora.addWidget(radio_mais_velho)
+        grupo_hora.setLayout(layout_hora)
+
+        # Botão para aplicar o filtro
+        botao_filtrar = QPushButton("Aplicar Filtro")
+        botao_filtrar.clicked.connect(
+            lambda: self.aplicar_filtro_usuarios(
+                campo_data.text(),
+                radio_mais_novo.isChecked(),
+                radio_mais_velho.isChecked()
+            )
+        )
+
+        # Adicionar widgets ao layout
+        layout.addWidget(QLabel("Filtros Disponíveis"))
+        layout.addWidget(campo_data)
+        layout.addWidget(grupo_hora)
+        layout.addWidget(botao_filtrar)
+
+        # Exibir a janela de filtro
+        janela_filtro.setLayout(layout)
+        janela_filtro.exec()
+
+    def formatar_data_usuarios(self, campo_data):
+        # Obter o texto do campo de data
+        texto_data = campo_data.text().replace("/", "")  # Remover as barras existentes
+        texto_data = ''.join(filter(str.isdigit, texto_data))  # Permite apenas números
+
+        # Verificar se há caracteres alfabéticos (letras)
+        if any(char.isalpha() for char in texto_data):
+            # Mostrar mensagem de erro caso haja letras
+            QMessageBox.warning(self, "Erro", "Somente números são permitidos.")
+            campo_data.clear()
+            return  # Não aplica a formatação se houver letras
+
+        # Limitar a entrada para no máximo 8 dígitos
+        if len(texto_data) > 8:
+            texto_data = texto_data[:8]
+
+         # Formatar a data no formato DD/MM/AAAA
+        if len(texto_data) >= 8:
+            data_formatada = "{}/{}/{}".format(texto_data[:2], texto_data[2:4], texto_data[4:])  # DD/MM/AAAA
+        elif len(texto_data) > 6:
+            data_formatada = "{}/{}".format(texto_data[:2], texto_data[2:8])  # DD/MM
+        else:
+            data_formatada = texto_data[:8]  # Apenas o DD
+
+        # Atualizar o texto do campo de data se houver mudança
+        if campo_data.text() != data_formatada:
+            campo_data.setText(data_formatada)  # Atualiza o texto do campo de data
+            campo_data.setCursorPosition(len(data_formatada))  # Move o cursor para o final do texto
+
+    def aplicar_filtro_usuarios(self, data, filtrar_novo, filtrar_velho):
+        with sqlite3.connect('banco_de_dados.db') as cn:
+            cursor = cn.cursor()
+
+            query = "SELECT * FROM historico"
+            params = []
+
+            # Filtrar pela data, se fornecida
+            if data:
+                try:
+                    # Garantir que a data seja no formato correto (DD/MM/AAAA)
+                    data_formatada = datetime.strptime(data, "%d/%m/%Y").strftime("%d/%m/%Y")  # Formato DD/MM/YYYY
+                    query += " WHERE SUBSTR([Data e Hora], 1, 10) = ?"
+                    params.append(data_formatada)
+                except ValueError:
+                    QMessageBox.warning(self, "Erro", "Data inválida. Use o formato DD/MM/AAAA.")
+                    return
+
+            # Ordenar por hora, se aplicável
+            if filtrar_novo:
+                query += " ORDER BY [Data e Hora] DESC LIMIT 1"
+            elif filtrar_velho:
+                query += " ORDER BY [Data e Hora] ASC LIMIT 1"
+
+            # Executar a consulta
+            cursor.execute(query, params)
+            registros = cursor.fetchall()
+
+        # Atualizar a tabela com os registros filtrados
+        self.tabela_historico_usuarios.clearContents()
+        self.tabela_historico_usuarios.setRowCount(len(registros))
+
+        for i, row in enumerate(registros):
+            self.tabela_historico_usuarios.setItem(i, 0, QTableWidgetItem(row[0]))  # Data/Hora
+            self.tabela_historico_usuarios.setItem(i, 1, QTableWidgetItem(row[1]))  # Usuário
+            self.tabela_historico_usuarios.setItem(i, 2, QTableWidgetItem(row[2]))  # Ação
+            self.tabela_historico_usuarios.setItem(i, 3, QTableWidgetItem(row[3]))  # Descrição
+
+        QMessageBox.information(self, "Filtro Aplicado", f"{len(registros)} registro(s) encontrado(s)!")
+
+    def exportar_csv_usuarios(self):
+        num_linhas = self.tabela_historico_usuarios.rowCount()
+        num_colunas = self.tabela_historico_usuarios.columnCount()
+
+        # Verificar se a tabela está vazia
+        if self.tabela_historico_usuarios.rowCount() == 0:
+            QMessageBox.warning(self, "Aviso", "Nenhum histórico encontrado para gerar arquivo CSV.")
+            return  # Se a tabela estiver vazia, encerra a função sem prosseguir
+
+        nome_arquivo, _ = QFileDialog.getSaveFileName(
+            self,
+            "Salvar Arquivo CSV",
+            "historico_usuarios.csv",
+            "Arquivos CSV (*.csv)"
+
+        )
+
+        if not nome_arquivo:
+            return
+        
+        #Criar o arquivo CSV
+        try:
+            with open(nome_arquivo, mode="w",newline="",encoding="utf-8-sig") as arquivo_csv:
+                escritor = csv.writer(arquivo_csv, delimiter=";")
+
+                 # Adicionar cabeçalhos ao CSV
+                cabecalhos = [self.tabela_historico_usuarios.horizontalHeaderItem(col).text() for col in range (num_colunas)]
+                escritor.writerow(cabecalhos)
+
+                # Adicionar os dados da tabela ao CSV
+                for linha in range(num_linhas):
+                    dados_linhas = [
+                        self.tabela_historico_usuarios.item(linha, col).text() if self.tabela_historico_usuarios.item(linha, col) else ""
+                        for col in range(num_colunas)
+
+                    ]
+                    escritor.writerow(dados_linhas)
+
+                    QMessageBox.information(self, "Sucesso", f"Arquivo CSV salvo com sucesso em:\n{nome_arquivo}")
+
+        except Exception as e:
+            QMessageBox.critical(self, "Erro", f"Falha ao salvar o arquivo CSV:\n{str(e)}")
+
+
+    def exportar_excel_usuarios(self):
+        num_linhas = self.tabela_historico_usuarios.rowCount()
+        num_colunas = self.tabela_historico_usuarios.columnCount()
+
+        # Verificar se a tabela está vazia
+        if self.tabela_historico_usuarios.rowCount() == 0:
+            QMessageBox.warning(self, "Aviso", "Nenhum histórico encontrado para gerar arquivo Excel.")
+            return  # Se a tabela estiver vazia, encerra a função sem prosseguir
+        
+        nome_arquivo, _ = QFileDialog.getSaveFileName(
+            self,
+            "Salvar Arquivo Excel",
+            "historico_usuarios.xlsx",
+            "Arquivos Excel (*.xlsx)"
+
+        )
+
+        if not nome_arquivo:
+            return
+        
+        # Garantir que o arquivo tenha extensão .xlsx
+        if not nome_arquivo.endswith(".xlsx"):
+            nome_arquivo += ".xlsx"
+
+        # Criar uma lista para armazenar os dados da tabela
+        dados = []
+
+
+        for linha in range(num_linhas):
+            linha_dados = []
+            for coluna in range(num_colunas):
+                item = self.tabela_historico_usuarios.item(linha, coluna)
+                linha_dados.append(item.text() if item else "") # Adicionar o texto ou vazio se o item for None
+            dados.append(linha_dados)
+
+        # Obter os cabeçalhos da tabela        
+        cabecalhos = [self.tabela_historico_usuarios.horizontalHeaderItem(coluna).text() for coluna in range (num_colunas)]
+        
+        try:
+            # Criar um DataFrame do pandas com os dados e cabeçalhos
+            df = pd.DataFrame(dados, columns=cabecalhos)
+
+            # Exportar para Excel
+            df.to_excel(nome_arquivo, index=False,engine="openpyxl")
+            QMessageBox.information(self, "Sucesso",f"Arquivo Excel gerado com sucesso em: \n{nome_arquivo}")
+        except Exception as e:
+            QMessageBox.critical(self, "Erro",f"Erro ao salvar arquivo Excel: {str(e)}")
+
+    def exportar_pdf_usuarios(self):
+        num_linhas = self.tabela_historico.rowCount()
+        num_colunas = self.tabela_historico.columnCount()
+
+        # Verificar se a tabela está vazia
+        if self.tabela_historico.rowCount() == 0:
+            QMessageBox.warning(self, "Aviso", "Nenhum histórico encontrado para gerar arquivo PDF.")
+            return  # Se a tabela estiver vazia, encerra a função sem prosseguir
+
+        nome_arquivo, _ = QFileDialog.getSaveFileName(
+            self,
+            "Salvar Arquivo PDF",
+            "historico.pdf",
+            "Arquivos PDF (*.pdf)"
+        )
+
+        if not nome_arquivo:
+            return
+
+        # Garantir que o arquivo tenha extensão .pdf
+        if not nome_arquivo.endswith(".pdf"):
+            nome_arquivo += ".pdf"
+
+        # Criar uma lista para armazenar os dados da tabela
+        dados = []
+
+        # Obter os cabeçalhos da tabela
+        cabecalhos = [self.tabela_historico.horizontalHeaderItem(coluna).text() for coluna in range(num_colunas)]
+        dados.append(cabecalhos)  # Adicionar os cabeçalhos como a primeira linha do PDF
+
+        # Adicionar os dados da tabela
+        for linha in range(num_linhas):
+            linha_dados = []
+            for coluna in range(num_colunas):
+                item = self.tabela_historico.item(linha, coluna)
+                linha_dados.append(item.text() if item else "")  # Adicionar o texto ou vazio se o item for None
+            dados.append(linha_dados)
+
+        try:
+            # Criar o PDF
+            pdf = SimpleDocTemplate(nome_arquivo, pagesize=landscape(letter))
+            tabela = Table(dados)
+
+            # Adicionar estilo à tabela
+            estilo = TableStyle([
+                ('BACKGROUND', (0, 0), (-1, 0), colors.grey),  # Cabeçalho com fundo cinza
+                ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),  # Texto do cabeçalho branco
+                ('ALIGN', (0, 0), (-1, -1), 'CENTER'),  # Centralizar texto
+                ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),  # Fonte do cabeçalho
+                ('BOTTOMPADDING', (0, 0), (-1, 0), 12),  # Espaçamento inferior no cabeçalho
+                ('BACKGROUND', (0, 1), (-1, -1), colors.beige),  # Fundo das linhas de dados
+                ('GRID', (0, 0), (-1, -1), 1, colors.black)  # Bordas da tabela
+            ])
+            tabela.setStyle(estilo)
+
+            # Gerar o PDF
+            pdf.build([tabela])
+            QMessageBox.information(self, "Sucesso", f"Arquivo PDF gerado com sucesso em: \n{nome_arquivo}")
+
+        except Exception as e:
+            QMessageBox.critical(self, "Erro", f"Erro ao salvar arquivo PDF: {str(e)}")
+
+    def pausar_historico_usuario(self):
+        # Criação da nova janela de histórico como QMainWindow
+        self.janela_escolha = QMainWindow()
+        self.janela_escolha.setWindowTitle("Pausar Histórico")
+        self.janela_escolha.resize(255, 150)
+
+
+        # Botão "Sim"
+        botao_sim = QPushButton("Sim")
+        botao_sim.clicked.connect(self.historico_ativo_usuario)
+
+        # Botão "Não"
+        botao_nao = QPushButton("Não")
+        botao_nao.clicked.connect(self.historico_inativo_usuario)
+
+
+        # Criação do layout e tabela para exibir o histórico
+        central_widget = QWidget()
+        layout = QVBoxLayout(central_widget)
+
+        # Texto centralizado
+        label = QLabel("Deseja pausar o histórico?")
+        label.setAlignment(Qt.AlignmentFlag.AlignCenter)  # Alinha o texto ao centro
+
+        layout.addWidget(label)  # Adiciona o texto centralizado
+        layout.addWidget(botao_sim)
+        layout.addWidget(botao_nao)
+
+        self.janela_escolha.setCentralWidget(central_widget)
+        self.janela_escolha.show()
+
+
+    def historico_ativo_usuario(self):
+        # Atualiza o estado do histórico para ativo
+        self.main_window.historico_usuario_pausado = True  # Atualiza a variável no MainWindow
+        QMessageBox.information(self, "Histórico", "O registro do histórico foi pausado.")
+        self.janela_escolha.close()
+
+    def historico_inativo_usuario(self):
+        # Atualiza o estado do histórico para inativo (continua registrando)
+        self.main_window.historico_usuario_pausado = False  # Atualiza a variável no MainWindow
+        QMessageBox.information(self, "Histórico", "O registro do histórico continua ativo.")
+        self.janela_escolha.close()
+
+
+    def abrir_planilha_usuarios(self):
+        # Abrir o diálogo para selecionar o arquivo Excel
+        nome_arquivo, _ = QFileDialog.getOpenFileName(self, "Abrir Arquivo Excel", "", "Arquivos Excel (*.xlsx)")
+
+        if not nome_arquivo:
+            return  # Se o usuário cancelar a seleção do arquivo
+
+        
+        # Alterar o texto da line_excel para "Carregando arquivo Excel..."
+        self.line_excel_usuarios.setText("Carregando arquivo Excel...")
+        self.nome_arquivo_excel = nome_arquivo  # Salva para usar depois
+
+        # Inicializar a barra de progresso
+        self.progress_excel_usuarios.setValue(0)
+        self.progresso = 0
+        
+
+        # Começar o timer para simular carregamento visual
+        self.timer_excel = QTimer()
+        self.timer_excel.timeout.connect(self.atualizar_progresso_excel_usuarios)
+        self.timer_excel.start(20)
+
+
+    def atualizar_progresso_excel_usuarios(self):
+        if self.progresso < 100:
+            self.progresso += 1
+            self.progress_excel_usuarios.setValue(self.progresso)
+        else:
+            self.timer_excel.stop()
+
+            try:
+                df = pd.read_excel(self.nome_arquivo_excel, engine="openpyxl", header=0)
+                df = df.fillna("Não informado")
+
+                coluna_table_ativos = [
+                    "Nome", "Usuário", "Senha", "Confirmar Senha", "Acesso",
+                    "Endereço", "CEP", "CPF", "Número", "Estado", "E-mail", "RG", "Complemento", "Telefone",
+                    "Data de Nascimento", "Última Troca de Senha", "Data da Senha Cadastrada",
+                    "Data da Inclusão do Usuário", "Segredo", "Usuário Logado"
+                ]
+
+                if df.shape[1] != len(coluna_table_ativos):
+                    QMessageBox.warning(self, "Erro", "O número de colunas no arquivo Excel não corresponde ao número esperado.")
+                    self.line_excel_usuarios.clear()
+                    self.resetar_progresso()
+                    return
+
+                if df.empty:
+                    QMessageBox.warning(self, "Erro", "O arquivo Excel está vazio.")
+                    self.line_excel_usuarios.clear()
+                    self.resetar_progresso()
+                    return
+
+                self.table_ativos.setRowCount(0)
+
+                for row in df.itertuples(index=False):
+                    row_position = self.table_ativos.rowCount()
+                    self.table_ativos.insertRow(row_position)
+                    for column, value in enumerate(row):
+                        item = self.formatar_texto(str(value))
+                        self.table_ativos.setItem(row_position, column, item)
+
+                QMessageBox.information(self, "Sucesso", "Arquivo Excel importado com sucesso!")
+
+            except Exception as e:
+                QMessageBox.critical(self, "Erro", f"Erro ao importar o arquivo Excel: {e}")
+
+            self.line_excel_usuarios.setText(self.nome_arquivo_excel)
+            self.resetar_progresso()
+            # Ajusta colunas e linhas automaticamente após preencher
+            self.main_window.table_ativos.resizeColumnsToContents()
+            self.main_window.table_ativos.resizeRowsToContents()
+
+    def resetar_progresso(self):
+        self.progress_excel_usuarios.setValue(0)
+        self.progresso = 0
+    
+    def importar_usuario(self):
+        if self.table_ativos.rowCount() == 0 and self.table_inativos.rowCount() == 0:
+            QMessageBox.warning(self, "Aviso", "Nenhum dado encontrado para gerar arquivo Excel.")
+            return
+
+        nome_arquivo, _ = QFileDialog.getSaveFileName(
+            self,
+            "Salvar Arquivo Excel",
+            "relatório de usuários.xlsx",
+            "Arquivos Excel (*.xlsx)"
+        )
+
+        if not nome_arquivo:
+            return
+
+        if not nome_arquivo.endswith(".xlsx"):
+            nome_arquivo += ".xlsx"
+
+        try:
+            with pd.ExcelWriter(nome_arquivo, engine="openpyxl") as writer:
+                def tabela_para_dataframe(tabela):
+                    dados = []
+                    cabecalhos = [tabela.horizontalHeaderItem(col).text() for col in range(tabela.columnCount())]
+                    for linha in range(tabela.rowCount()):
+                        linha_dados = []
+                        for coluna in range(tabela.columnCount()):
+                            item = tabela.item(linha, coluna)
+                            linha_dados.append(item.text() if item else "")
+                        dados.append(linha_dados)
+                    return pd.DataFrame(dados, columns=cabecalhos)
+                
+                if self.table_ativos.rowCount() > 0:
+                    df_ativos = tabela_para_dataframe(self.table_ativos)
+                    df_ativos.to_excel(writer, sheet_name="Ativos", index=False)
+
+                if self.table_inativos.rowCount() > 0:
+                    df_inativos = tabela_para_dataframe(self.table_inativos)
+                    df_inativos.to_excel(writer, sheet_name="Inativos", index=False)
+
+            # Abrir o arquivo com openpyxl para ajustar estilos
+            from openpyxl import load_workbook
+            wb = load_workbook(nome_arquivo)
+
+            for sheet_name in wb.sheetnames:
+                ws = wb[sheet_name]
+
+                for col in ws.columns:
+                    max_length = 0
+                    column = col[0].column  # número da coluna (1, 2, ...)
+                    column_letter = get_column_letter(column)
+
+                    for cell in col:
+                        if cell.value:
+                            max_length = max(max_length, len(str(cell.value)))
+                        cell.alignment = Alignment(horizontal="center", vertical="center")
+
+                    ws.column_dimensions[column_letter].width = max_length + 2  # ajustar largura
+
+                # Negrito no cabeçalho
+                for cell in ws[1]:
+                    cell.font = Font(bold=True)
+
+            wb.save(nome_arquivo)
+
+            QMessageBox.information(self, "Sucesso", f"Arquivo Excel gerado com sucesso em:\n{nome_arquivo}")
+
+        except Exception as e:
+            QMessageBox.critical(self, "Erro", f"Erro ao salvar arquivo Excel: {str(e)}")
+
+    # Limpa a coluna selecionada clicando em qualquer lugar da tabela
+    def eventFilter(self, source, event):
+        if event.type() == QEvent.MouseButtonPress:
+            if source == self.main_window.table_ativos.viewport():
+                index = self.main_window.table_ativos.indexAt(event.pos())
+                if not index.isValid():
+                    self.main_window.table_ativos.clearSelection()
+
+            elif source == self.main_window.table_inativos.viewport():
+                index = self.main_window.table_inativos.indexAt(event.pos())
+                if not index.isValid():
+                    self.main_window.table_inativos.clearSelection()
+
+        return super().eventFilter(source, event)
+
+
     def cadastrar_em_massa(self):
         pass

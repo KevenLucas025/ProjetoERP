@@ -194,7 +194,26 @@ class DataBase:
             self.connection.commit() # Confirmar a transação
             print("Tabela de histórico criada com sucesso! ")
         except Exception as e:
-            print("Erro ao criar tabela de usuário: ", e)
+            print("Erro ao criar tabela de histórico: ", e)
+#*********************************************************************************************************************            
+    def create_table_historico_usuario(self):
+        try:
+            if self.tabela_existe("historico_usuarios"):
+                print("A tabela 'historico_usuarios' já está criada")
+                return
+            cursor = self.connection.cursor()
+            cursor.execute("""
+                CREATE TABLE IF NOT EXISTS historico_usuarios(
+                    'Data e Hora' TEXT,
+                    Usuário TEXT,
+                    Ação TEXT,
+                    Descrição TEXT                                   
+                )           
+            """)
+            self.connection.commit()
+            print("Tabela de histórico usuários criada com sucesso! ")
+        except Exception as e:
+            print("Erro ao criar tabela de historico_usuarios: ", e)
 #*********************************************************************************************************************
     def insert_product(self, produto, quantidade, valor_real, desconto, data_compra, 
                     codigo_item, cliente, descricao_produto, usuario, imagem=None):
@@ -488,10 +507,10 @@ class DataBase:
             
 
             cursor.execute("""
-                INSERT INTO users(Nome, Usuário, Senha, "Confirmar Senha", Acesso, Endereço, CEP, CPF, Número, Estado, 
+                'INSERT INTO users(Nome, Usuário, Senha, "Confirmar Senha", Acesso, Endereço, CEP, CPF, Número, Estado, 
                                 Email, Telefone, RG, Data_nascimento, Complemento, Imagem, "Última Troca de Senha",
                                 "Data da Senha Cadastrada", "Data da Inclusão do Usuário", Secret,"Usuário Logado") 
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?)'
             """, (nome, usuario, senha, confirmar_senha, acesso, endereco, cep, cpf, numero, estado, email, telefone, 
                 rg, data_nascimento, complemento, imagem, "Não Cadastrado", data_atual, data_atual, segredo,usuario_logado))
 

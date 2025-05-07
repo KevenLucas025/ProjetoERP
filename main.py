@@ -45,6 +45,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.setupUi(self)
         self.setWindowTitle("Sistema de Gerenciamento")
         self.historico_pausado = False
+        self.historico_usuario_pausado = False
 
 
 
@@ -91,6 +92,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.db.create_table_users()
         self.db.create_table_historico()
         self.db.create_table_users_inativos()
+        self.db.create_table_historico_usuario()
 
         self.table_base.verticalHeader().setVisible(True)
         self.table_saida.verticalHeader().setVisible(True)
@@ -273,7 +275,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.pagina_usuarios = Pagina_Usuarios(self, self.btn_abrir_planilha_usuarios,self.btn_cadastrar_novo_usuario,
                                                self.btn_gerar_pdf_usuarios,self.btn_historico_usuarios,self.btn_atualizar_ativos,
                                                self.btn_atualizar_inativos,self.btn_limpar_tabelas_usuarios,
-                                               self.btn_gerar_saida_usuarios,self.btn_cadastrar_todos)
+                                               self.btn_gerar_saida_usuarios,self.btn_cadastrar_todos,
+                                               self.line_excel_usuarios,self.progress_excel_usuarios,self.btn_importar_usuarios)
 
         self.estoque_produtos = EstoqueProduto(self,self.btn_gerar_pdf,self.btn_gerar_estorno,
                                                self.btn_gerar_saida,self.btn_importar,self.btn_limpar_tabelas,
@@ -1163,7 +1166,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 imagem=imagem
             )
 
-            
+            # Registrar no histórico após a inserção do produto
+            descricao = f"Usuario {user} foi cadastrado no sistema."
+            self.registrar_historico_usuarios("Cadastro de Usuários", descricao)
 
             # Exibir mensagem de sucesso
             msg = QMessageBox()
@@ -1268,7 +1273,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         else:
             print("Imagem base64 vazia ou inválida.")
 #*********************************************************************************************************************
-
     def erros_frames(self):
         # Definir os campos obrigatórios e seus respectivos frames de erro
         self.campos_obrigatorios = {
@@ -1798,7 +1802,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 QMessageBox.critical(self, "Erro", f"Erro ao atualizar o produto: {str(e)}")
             finally:
                pass
-
+#*******************************************************************************************************
     def registrar_historico(self, acao, descricao):
         # Verifica se o histórico está pausado
         if self.historico_pausado:
@@ -1815,6 +1819,22 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 VALUES (?, ?, ?, ?)
             """, (data_hora, usuario, acao, descricao))
             cn.commit()
+#*******************************************************************************************************
+    def registrar_historico_usuarios(self,acao,descricao):
+        #Verifica se o histórico está pausado
+        if self.historico_usuario_pausado:
+            print("Histórico pausado. Registro não será feito")
+            return # Se o histórico estiver pausado, não faz 
+        usuario = self.get_usuario_logado()
+        data_hora = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+
+        with sqlite3.connect('banco_de_dados.db') as cn:
+            cursor = cn.cursor()
+            cursor.execute("""
+                INSERT INTO historico_usuarios('Data e Hora', Usuário, Ação, Descrição)
+                VALUES (?,?,?,?)
+        """,(data_hora,usuario,acao,descricao))
+        cn.commit()
 #*******************************************************************************************************
     def campos_obrigatorios_preenchidos(self):
         # Verificar se todos os campos obrigatórios estão preenchidos
