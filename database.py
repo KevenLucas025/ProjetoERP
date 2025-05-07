@@ -456,21 +456,37 @@ class DataBase:
             print("Erro ao obter caminho da imagem:", e)
             return None
 #*********************************************************************************************************************        
-    def user_exists(self, CPF, Usuario):
+    def user_exists(self,Usuario, Telefone,Email,RG,CPF,):
         try:
             if not self.connection:  # Verifica se a conexão está ativa
                 self.connecta()
             cursor = self.connection.cursor()
+
+            cursor.execute("SELECT 1 FROM users WHERE Usuário = ?", (Usuario,))
+            user_result = cursor.fetchone()
+
+            cursor.execute("SELECT 1 FROM users WHERE Telefone = ?",(Telefone,))
+            telefone_result = cursor.fetchone()
+
+            cursor.execute("SELECT 1 FROM users WHERE Email = ?",(Email,))
+            email_result = cursor.fetchone()
+
+            cursor.execute("SELECT 1 FROM users WHERE RG = ?", (RG,))
+            rg_result = cursor.fetchone()
+
             cursor.execute("SELECT 1 FROM users WHERE CPF = ?", (CPF,))
             cpf_result = cursor.fetchone()
             
-            cursor.execute("SELECT 1 FROM users WHERE Usuário = ?", (Usuario,))
-            user_result = cursor.fetchone()
-            
-            if cpf_result:
-                return 'cpf'
-            elif user_result:
+            if user_result:
                 return 'Usuário'
+            elif telefone_result:
+                return 'Telefone'
+            elif email_result:
+                return 'Email'
+            elif rg_result:
+                return 'RG'
+            elif cpf_result:
+                return'cpf' 
             else:
                 return None
         except Exception as e:
@@ -507,10 +523,10 @@ class DataBase:
             
 
             cursor.execute("""
-                'INSERT INTO users(Nome, Usuário, Senha, "Confirmar Senha", Acesso, Endereço, CEP, CPF, Número, Estado, 
+                INSERT INTO users(Nome, Usuário, Senha, "Confirmar Senha", Acesso, Endereço, CEP, CPF, Número, Estado, 
                                 Email, Telefone, RG, Data_nascimento, Complemento, Imagem, "Última Troca de Senha",
                                 "Data da Senha Cadastrada", "Data da Inclusão do Usuário", Secret,"Usuário Logado") 
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?)'
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?)
             """, (nome, usuario, senha, confirmar_senha, acesso, endereco, cep, cpf, numero, estado, email, telefone, 
                 rg, data_nascimento, complemento, imagem, "Não Cadastrado", data_atual, data_atual, segredo,usuario_logado))
 

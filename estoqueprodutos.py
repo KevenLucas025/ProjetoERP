@@ -61,10 +61,6 @@ class EstoqueProduto(QWidget):
         self.main_window.table_base.viewport().installEventFilter(self)
         self.main_window.table_saida.viewport().installEventFilter(self)
 
-       
-
-
-
 
     # Função auxiliar para criar um QTableWidgetItem com texto centralizado
     def criar_item(self, text):

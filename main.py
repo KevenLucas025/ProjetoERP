@@ -1065,10 +1065,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 #*********************************************************************************************************************
     def subscribe_user(self):
         # Verificar se todos os campos obrigatórios estão preenchidos
-        if not all([self.txt_nome.text(), self.perfil_usuarios.currentText(), self.txt_senha.text(), 
-                    self.txt_confirmar_senha.text(), self.txt_endereco.text(), self.txt_cep.text(), self.txt_cpf.text(), 
+        if not all([self.txt_nome.text(),self.txt_usuario, self.perfil_usuarios.currentText(), self.txt_senha.text(),
+                    self.txt_confirmar_senha.text(), self.txt_endereco.text(), self.txt_cep.text(), self.txt_cpf.text(),
                     self.txt_numero.text(), self.perfil_estado.currentText(), self.txt_email.text(), self.txt_telefone.text(),
                     self.txt_data_nascimento.text(), self.txt_rg.text()]):
+
             msg = QMessageBox()
             msg.setIcon(QMessageBox.Warning)
             msg.setWindowTitle("Erro")
@@ -1120,28 +1121,35 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         data_nascimento = self.txt_data_nascimento.text()
         complemento = self.txt_complemento.text()
         imagem = self.converter_imagem_usuario()
-        
 
         # Conectar ao banco de dados e inserir o usuário
         db = DataBase()
         db.connecta()
-
         try:
-           
             # Obter o usuário logado
-            usuario_logado = self.config.obter_usuario_logado()
-            print(f"Usuário recebido: ",{usuario_logado})
-
+            usuario_logado = self.config.obter_usuario_logado()   
             # Salvar o usuário logado no banco
             db.salvar_usuario_logado(usuario_logado)
 
             # Verificar se o usuário já está cadastrado pelo CPF ou nome de usuário
-            user_exists_result = db.user_exists(cpf, user)
-            if user_exists_result == 'cpf':
-                QMessageBox.critical(None, "Erro", "O usuário com este CPF já está cadastrado. Por favor, insira um CPF diferente.")
-                return
-            elif user_exists_result == 'Usuário':
+            user_exists_result = db.user_exists(user,telefone,email,rg,cpf)
+            if user_exists_result == 'Usuário':
                 QMessageBox.critical(None, "Erro", "Este nome de usuário já está em uso. Por favor, escolha um nome de usuário diferente.")
+                return
+            elif user_exists_result == 'Telefone':
+                QMessageBox.critical(None, "Erro","Já existe um usuário cadastrado com número de telefone.\n Por favor escolha um diferente")
+                return
+            
+            elif user_exists_result == 'Email':
+                QMessageBox.critical(None, 'Erro',"Já existe um usuário cadastrado com esse e-mail.\n Clique abaixo para mudar a senha")
+                return
+            
+            elif user_exists_result == 'RG':
+                QMessageBox.critical(None, "Erro","Já existe um usuário cadastrado com esse RG.\n Por favor escolha um diferente")
+                return
+            
+            elif user_exists_result == 'cpf':
+                QMessageBox.critical(None, "Erro", "Já existe um usuário cadastrado com esse CPF. Por favor, escolha um nome de usuário diferente.")
                 return
 
             # Inserir o usuário no banco de dados
@@ -1164,7 +1172,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 segredo=None,
                 usuario_logado=usuario_logado,
                 imagem=imagem
-            )
+           )
 
             # Registrar no histórico após a inserção do produto
             descricao = f"Usuario {user} foi cadastrado no sistema."
@@ -1176,6 +1184,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             msg.setWindowTitle("Cadastro de Usuário")
             msg.setText("Cadastro realizado com sucesso")
             msg.exec()
+
+ 
 
             # Limpar os campos de entrada após a conclusão do cadastro
             self.txt_nome.setText("")
@@ -1191,16 +1201,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.txt_rg.setText("")
             self.txt_telefone.setText("")
             self.txt_data_nascimento.setText("")
-            
-            if self.frame_imagem_cadastro.layout():
-                old_layout = self.frame_imagem_cadastro.layout()
-                while old_layout.count():
-                    item = old_layout.takeAt(0)
-                    widget = item.widget()
-                    if widget:
-                        widget.setParent(None)
-                self.frame_imagem_cadastro.setLayout(None)
-
+            self.perfil_estado.setCurrentIndex(0)
+            self.perfil_usuarios.setCurrentIndex(0)
+            self.label_imagem_usuario.clear()
+                        
         except Exception as e:
             # Exibir mensagem de erro se ocorrer algum problema durante a inserção
             error_message = f"Erro ao cadastrar usuário {user}: {str(e)}"
