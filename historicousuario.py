@@ -756,7 +756,7 @@ class Pagina_Usuarios(QWidget):
         self.tabela_historico_usuarios.clearContents()
         self.tabela_historico_usuarios.setRowCount(len(registros))
 
-        for i, (data, usuario, acao, descricao) in enumerate(registros):
+        for i, (_, data, usuario, acao, descricao) in enumerate(registros):
             self.tabela_historico_usuarios.setItem(i, 0, QTableWidgetItem(data))
             self.tabela_historico_usuarios.setItem(i, 1, QTableWidgetItem(usuario))
             self.tabela_historico_usuarios.setItem(i, 2, QTableWidgetItem(acao))
@@ -899,6 +899,7 @@ class Pagina_Usuarios(QWidget):
             except Exception as e:
                 print(f"Erro ao buscar ID: {e}")
                 return None
+            
     def confirmar_historico_usuarios_apagado(self, mensagem):
         """
         Exibe uma caixa de diálogo para confirmar a exclusão.

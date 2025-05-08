@@ -5,7 +5,7 @@ from PySide6.QtCore import (Qt, QTimer, QDate, QBuffer, QByteArray, QIODevice, S
 from PySide6 import QtCore
 from PySide6.QtWidgets import (QMainWindow, QMessageBox, QPushButton,
                                QLabel, QFileDialog, QVBoxLayout,
-                               QMenu,QTableWidgetItem,QCheckBox,QApplication,QToolButton,QHeaderView,QCompleter)
+                               QMenu,QTableWidgetItem,QCheckBox,QApplication,QToolButton,QHeaderView,QCompleter,QComboBox)
 from PySide6.QtGui import (QDoubleValidator, QIcon, QColor, QPixmap,QBrush,
                            QAction,QMovie,QImage)
 from PySide6 import QtWidgets
@@ -83,9 +83,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             "line_clientes": self.line_clientes,
             "txt_usuario": self.txt_usuario
         }
-
-        
-        
         #Cria as tabelas no banco de dados sempre que executar o sistema em um novo ambiente
         self.db.create_table_products()
         self.db.create_table_products_saida()
@@ -105,14 +102,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.table_ativos.setShowGrid(True)
         self.table_inativos.setShowGrid(True)
 
-
-        
-        
-
         # funções que precisam do banco de dados
-        self.erros_frames()
+        self.erros_frames_produtos()
+        self.erros_frames_usuarios()
         
-
         # Carregar informações ao iniciar
         self.carregar_informacoes_tabelas()
 
@@ -265,12 +258,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.btn_cadastrar_produto.setVisible(False)
             self.btn_cadastro_usuario.setVisible(False)
             self.btn_clientes.setVisible(False)
-            
 
         self.carregar_configuracoes()
-
-        
-
 
         self.pagina_usuarios = Pagina_Usuarios(self, self.btn_abrir_planilha_usuarios,self.btn_cadastrar_novo_usuario,
                                                self.btn_gerar_pdf_usuarios,self.btn_historico_usuarios,self.btn_atualizar_ativos,
@@ -355,7 +344,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.btn_cadastrar_usuarios.clicked.connect(lambda: self.paginas_sistemas.setCurrentWidget(self.pg_cadastrar_usuario))
         self.btn_configuracoes.clicked.connect(lambda: self.paginas_sistemas.setCurrentWidget(self.pg_configuracoes))      
         self.btn_cadastrar_produto.clicked.connect(lambda: self.paginas_sistemas.setCurrentWidget(self.pg_cadastrar_produto))
-        self.btn_ver_item.clicked.connect(lambda: self.paginas_sistemas.setCuclerrentWidget(self.pag_estoque))
+        self.btn_ver_item.clicked.connect(lambda: self.paginas_sistemas.setCurrentWidget(self.pag_estoque))
         self.btn_novo_produto.clicked.connect(lambda: self.paginas_sistemas.setCurrentWidget(self.pg_cadastrar_produto))
         self.btn_verificar_usuarios.clicked.connect(lambda: self.paginas_sistemas.setCurrentWidget(self.page_verificar_usuarios))
         self.btn_ver_usuario.clicked.connect(lambda: self.paginas_sistemas.setCurrentWidget(self.page_verificar_usuarios))
@@ -432,8 +421,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # Inicia as animações
         self.animacao_frame.start()
         self.animacao_paginas.start()
-
-
 
     def boas_vindas(self):
         if self.config.nao_mostrar_mensagem_boas_vindas:
@@ -1065,20 +1052,22 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 #*********************************************************************************************************************
     def subscribe_user(self):
         # Verificar se todos os campos obrigatórios estão preenchidos
-        if not all([self.txt_nome.text(),self.txt_usuario, self.perfil_usuarios.currentText(), self.txt_senha.text(),
-                    self.txt_confirmar_senha.text(), self.txt_endereco.text(), self.txt_cep.text(), self.txt_cpf.text(),
-                    self.txt_numero.text(), self.perfil_estado.currentText(), self.txt_email.text(), self.txt_telefone.text(),
-                    self.txt_data_nascimento.text(), self.txt_rg.text()]):
-
+        campos_nao_preenchidos_usuarios = [
+            campo for campo, widget in self.campos_obrigatorios_usuarios.items()
+            if not (widget.currentText() if isinstance(widget,QComboBox) else widget.text()) == ''
+        ]
+        if campos_nao_preenchidos_usuarios:
+            self.exibir_asteriscos_usuarios(campos_nao_preenchidos_usuarios)
             msg = QMessageBox()
             msg.setIcon(QMessageBox.Warning)
-            msg.setWindowTitle("Erro")
+            msg.setWindowTitle("Erro")      
             msg.setText("Todos os campos são obrigatórios.")
             msg.exec()
             return
 
         # Verificar se as senhas coincidem
         if self.txt_senha.text() != self.txt_confirmar_senha.text():
+            self.exibir_asteriscos_usuarios()
             msg = QMessageBox()
             msg.setIcon(QMessageBox.Warning)
             msg.setWindowTitle("Erro")
@@ -1088,6 +1077,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         # Verificar se o email é válido
         if not self.is_valid_email(self.txt_email.text()):
+            self.exibir_asteriscos_usuarios()
             msg = QMessageBox()
             msg.setIcon(QMessageBox.Warning)
             msg.setWindowTitle('Erro')
@@ -1277,7 +1267,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         else:
             print("Imagem base64 vazia ou inválida.")
 #*********************************************************************************************************************
-    def erros_frames(self):
+    def erros_frames_produtos(self):
         # Definir os campos obrigatórios e seus respectivos frames de erro
         self.campos_obrigatorios = {
             'produto': self.txt_produto,
@@ -1305,7 +1295,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         for widget in self.campos_obrigatorios.values():
             widget.installEventFilter(self)
 
-    def exibir_asteriscos(self, campos_nao_preenchidos):
+    def exibir_asteriscos_produtos(self, campos_nao_preenchidos):
         for campo in campos_nao_preenchidos:
             frame = self.frames_erro.get(campo)
             if frame and not hasattr(self, f'label_asterisco_{campo}'):
@@ -1438,7 +1428,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         
         # Verificar se o nome do produto começa com um número ou caractere especial
         if re.match(r'^[\d\W]', self.txt_produto.text()):
-            self.exibir_asteriscos(["produto"])  # Mostrar o asterisco ao lado do campo Produto
+            self.exibir_asteriscos_produtos(["produto"])  # Mostrar o asterisco ao lado do campo Produto
 
             msg = QMessageBox()
             msg.setIcon(QMessageBox.Warning)
@@ -2121,7 +2111,79 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         return False
 
 
+    def erros_frames_usuarios(self):
+        self.campos_obrigatorios_usuarios = {
+        'nome': self.txt_produto,
+        'usuário': self.txt_quantidade,
+        'telefone': self.txt_valor_produto_3,
+        'endereco': self.dateEdit_3,            # <--- corrigido
+        'numero': self.txt_cliente_3,          # <--- corrigido
+        'complemento': self.txt_descricao_produto_3,
+        'email': self.txt_email,               # <--- corrigido
+        'data_nascimento': self.txt_data_nascimento,  # <--- corrigido
+        'rg': self.txt_rg,
+        'cpf': self.txt_cpf,
+        'cep': self.txt_cep,
+        'estado': self.perfil_estado,
+        'senha': self.txt_senha,
+        'confirmar senha': self.txt_confirmar_senha,
+        'perfil': self.perfil_usuarios
+        }
 
+        self.frames_erros_usuarios = {
+            'nome': self.frame_erro_nome,
+            'usuário': self.frame_erro_usuario,
+            'telefone': self.frame_erro_telefone,
+            'endereco': self.frame_erro_endereco,
+            'numero': self.frame_erro_numero,
+            'complemento': self.frame_erro_complemento,
+            'email': self.frame_erro_email,
+            'data_nascimento': self.frame_data_nascimento,
+            'rg': self.frame_erro_rg,
+            'cpf': self.frame_erro_cpf,
+            'cep': self.frame_erro_cep,
+            'estado': self.frame_erro_estado,
+            'senha': self.frame_senha,
+            'confirmar senha': self.frame_confirmar_senha,
+            'perfil': self.frame_erro_perfil
+        }
+
+
+        # Esconder todos os frames de erro inicialmente
+        for frame in self.frames_erros_usuarios.values():
+            frame.hide()
+
+        # Conectar o sinal focusIn ao método esconder_asteriscos
+        for widget in self.campos_obrigatorios_usuarios.values():
+            widget.installEventFilter(self)
+
+    def exibir_asteriscos_usuarios(self, campos_nao_preenchidos_usuarios):
+        for campo in campos_nao_preenchidos_usuarios:
+            frame = self.frames_erros_usuarios.get(campo)
+            if not frame:
+                continue  # pula se o frame não existir
+
+            if not hasattr(self, f'label_asterisco_usuarios{campo}'):
+                label = QLabel(frame)
+                asterisco_pixmap = QPixmap("imagens/Imagem1.png").scaled(12, 12, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+                label.setPixmap(asterisco_pixmap)
+                label.setAlignment(Qt.AlignCenter)
+                setattr(self, f'label_asterisco_usuarios{campo}', label)
+            
+            frame.show()
+            getattr(self, f'label_asterisco_usuarios{campo}').show()
+
+
+    def esconder_asteriscos_usuarios(self):
+        for frame in self.frames_erros_usuarios.values():
+            frame.hide()
+
+    def filtro_evento_frames_usuarios(self, obj, event):
+        if event.type() == QEvent.FocusIn:
+            for campo, widget in self.campos_obrigatorios.items():
+                if obj == widget:
+                    self.esconder_asteriscos_usuarios()
+        return super().eventFilter(obj, event)
 
     
 

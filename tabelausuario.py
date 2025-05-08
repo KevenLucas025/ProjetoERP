@@ -193,7 +193,6 @@ class TabelaUsuario(QDialog):
     def ocultar_mensagem_sem_usuarios(self):
         if hasattr(self,"label_sem_usuario"):
             self.label_sem_usuario.hide()
-
 #*******************************************************************************************************
     def confirmar_apagar_usuario(self):
         # Verificar se uma linha está selecionada
@@ -228,6 +227,9 @@ class TabelaUsuario(QDialog):
             # Obter o ID do usuário da coluna 0 (ID)
             id_usuario = int(item.text())
             
+            #Obter o nome do usuário 
+            nome_usuario = self.table_widget.item(index, 1).text()
+            
             # Remover a linha da tabela
             self.table_widget.removeRow(index)
             
@@ -237,6 +239,9 @@ class TabelaUsuario(QDialog):
                 db.connecta()
                 db.remover_usuario(id_usuario)
                 QMessageBox.information(self, "Sucesso", "Usuário removido com sucesso!")
+                
+                usuario = f"O Usuário {nome_usuario} foi removido."
+                self.main_window.registrar_historico_usuarios("Removação de Usuário", usuario)
             except Exception as e:
                 QMessageBox.critical(self, "Erro", f"Erro ao remover o usuário: {str(e)}")
             finally:
@@ -532,8 +537,6 @@ class TabelaUsuario(QDialog):
             if cursor:
                 cursor.close()  # Fechamos o cursor apenas se ele não for None
             pass
-
-
 #*******************************************************************************************************
     def fechar_janela_tabela(self):
         # Fechar a janela

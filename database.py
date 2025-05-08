@@ -61,21 +61,22 @@ class DataBase:
                     Senha TEXT NOT NULL,
                     "Confirmar Senha" TEXT NOT NULL,
                     Acesso TEXT NOT NULL,
-                    Endereço TEXT NOT NULL,
-                    CEP TEXT NOT NULL,
-                    CPF TEXT NOT NULL,
-                    Número TEXT NOT NULL,
-                    Estado TEXT NOT NULL,
-                    Email TEXT NOT NULL,
+                    Endereço TEXT ,
+                    CEP TEXT ,
+                    CPF TEXT ,
+                    Número TEXT ,
+                    Estado TEXT ,
+                    Email TEXT ,
                     Complemento TEXT,
-                    Telefone TEXT NOT NULL,
-                    Data_nascimento TEXT NOT NULL,
-                    RG TEXT NOT NULL,
-                    Imagem BLOB NOT NULL,
+                    Telefone TEXT ,
+                    Data_nascimento TEXT ,
+                    RG TEXT ,
+                    Imagem BLOB ,
                     "Última Troca de Senha" TEXT,
                     "Data da Senha Cadastrada" TEXT,
                     "Data da Inclusão do Usuário" TEXT,
-                    Secret TEXT
+                    Secret TEXT,
+                    "Usuário Logado" TEXT
                 )
             """)
             print("Tabela de usuários criada com sucesso!")

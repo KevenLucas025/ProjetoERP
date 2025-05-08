@@ -41,7 +41,8 @@
         "txt_endereco": [
             "jdjdh",
             "dsad",
-            "dkddflk"
+            "dkddflk",
+            "dfdf"
         ],
         "txt_numero": [
             "123",
@@ -99,6 +100,26 @@
         ],
         "txt_confirmar_senha": [
             "123"
+        ],
+        "txt_produto": [
+            "11",
+            "14",
+            "42"
+        ],
+        "txt_quantidade": [
+            "12"
+        ],
+        "txt_valor_produto_3": [
+            "12"
+        ],
+        "txt_codigo_item": [
+            "12"
+        ],
+        "txt_cliente_3": [
+            "12"
+        ],
+        "txt_descricao_produto_3": [
+            "12"
         ]
     }
 }
