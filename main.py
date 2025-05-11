@@ -5,7 +5,8 @@ from PySide6.QtCore import (Qt, QTimer, QDate, QBuffer, QByteArray, QIODevice, S
 from PySide6 import QtCore
 from PySide6.QtWidgets import (QMainWindow, QMessageBox, QPushButton,
                                QLabel, QFileDialog, QVBoxLayout,
-                               QMenu,QTableWidgetItem,QCheckBox,QApplication,QToolButton,QHeaderView,QCompleter,QComboBox)
+                               QMenu,QTableWidgetItem,QCheckBox,QApplication,QToolButton,QHeaderView,QCompleter,
+                               QComboBox,QInputDialog)
 from PySide6.QtGui import (QDoubleValidator, QIcon, QColor, QPixmap,QBrush,
                            QAction,QMovie,QImage)
 from PySide6 import QtWidgets
@@ -35,6 +36,10 @@ import string
 import socket
 from  plyer import notification
 import subprocess
+import pandas as pd
+from openpyxl.utils import get_column_letter
+from openpyxl.styles import Alignment
+from openpyxl import load_workbook
 
 
 
@@ -114,6 +119,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         # Inicializar as configurações antes de chamar fazer_login_automatico
         self.config = Configuracoes_Login(self)
+        self.config.carregar()
+        self.fazer_login_automatico()
 
         # Aplica completer individual a cada campo
         for nome_campo, campo in self.campos_com_autocomplete.items():
@@ -223,14 +230,22 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.action_configuracoes = QAction("Configurações", self)
         self.action_contato = QAction("Contato", self)
         self.action_reiniciar = QAction("Reiniciar Sistema")
+        self.action_planilhas_exemplo = QAction("Planilhas de exemplo")
+        self.action_em_massa_produtos = QAction("Cadastrar produtos em massa")
+        self.action_em_massa_usuarios = QAction("Cadastrar usuários em massa")
         self.action_informacoes_sistema = QAction("Informações do sistema")
+        
 
         # Adicionar as ações ao menu (FUNDAMENTAL!)
         self.menu_opcoes.addAction(self.action_sair)
         self.menu_opcoes.addAction(self.action_configuracoes)
         self.menu_opcoes.addAction(self.action_contato)
         self.menu_opcoes.addAction(self.action_reiniciar)
+        self.menu_opcoes.addAction(self.action_planilhas_exemplo)
+        self.menu_opcoes.addAction(self.action_em_massa_produtos)
+        self.menu_opcoes.addAction(self.action_em_massa_usuarios)
         self.menu_opcoes.addAction(self.action_informacoes_sistema)
+        
 
         # Associar o menu ao botão
         self.btn_mais_opcoes.setMenu(self.menu_opcoes)
@@ -243,12 +258,16 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.action_configuracoes.triggered.connect(self.combobox_caixa)
         self.action_contato.triggered.connect(self.show_pg_contato)
         self.action_reiniciar.triggered.connect(self.reiniciar_sistema)
+        self.action_planilhas_exemplo.triggered.connect(self.exibir_planilhas_exemplo)
+        self.action_em_massa_produtos.triggered.connect(self.pagina_cadastro_em_massa_produtos)
+        self.action_em_massa_usuarios.triggered.connect(self.pagina_cadastro_em_massa_usuarios)
         self.action_informacoes_sistema.triggered.connect(self.show_mensagem_sistema)
+        
         
         self.fechar_janela_login_signal.connect(self.fechar_janela_login)  
 
 
-        self.fazer_login_automatico()
+        
 
         # Defina a visibilidade do botão de cadastro de usuário com base no tipo de usuário
         user = tipo_usuario.lower() if tipo_usuario else ""
@@ -263,15 +282,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.pagina_usuarios = Pagina_Usuarios(self, self.btn_abrir_planilha_usuarios,self.btn_cadastrar_novo_usuario,
                                                self.btn_gerar_pdf_usuarios,self.btn_historico_usuarios,self.btn_atualizar_ativos,
-                                               self.btn_atualizar_inativos,self.btn_limpar_tabelas_usuarios,
-                                               self.btn_gerar_saida_usuarios,self.btn_cadastrar_todos,
+                                               self.btn_atualizar_inativos,self.btn_limpar_tabelas_usuarios,self.btn_gerar_saida_usuarios,
                                                self.line_excel_usuarios,self.progress_excel_usuarios,self.btn_importar_usuarios)
 
         self.estoque_produtos = EstoqueProduto(self,self.btn_gerar_pdf,self.btn_gerar_estorno,
                                                self.btn_gerar_saida,self.btn_importar,self.btn_limpar_tabelas,
                                                self.btn_atualizar_saida,self.btn_atualizar_estoque,self.btn_historico,
                                                self.btn_abrir_planilha,self.line_excel,self.progress_excel,
-                                               self.btn_incluir_produto_sistema,self.btn_confirmar_massa)
+                                               self.btn_incluir_produto_sistema,self.btn_fazer_cadastro_massa_produtos,
+                                               self.btn_abrir_planilha_massa_produtos,self.progress_massa_produtos,self.line_edit_massa_produtos,)
         
 
         # Criar instância de TabelaProdutos passando uma referência à MainWindow
@@ -303,7 +322,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # Lista de páginas na ordem desejada
         self.paginas = [self.home_pag, self.pag_estoque, self.pg_cadastrar_produto, 
                         self.pg_cadastrar_usuario, self.pg_clientes, self.pg_configuracoes, 
-                        self.pg_contato,self.page_teste]
+                        self.pg_contato]
         self.pagina_atual_index = 0  # Índice da página atual na lista
         self.historico_paginas = []  # Lista para armazenar o histórico de páginas
 
@@ -358,6 +377,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.btn_atualizar_cadastro.clicked.connect(self.atualizar_usuario_no_bd)
         self.btn_verificar_estoque.clicked.connect(self.mostrar_page_estoque)
         self.btn_apagar_cadastro.clicked.connect(self.eliminar_campos_usuarios)
+        self.btn_remover_imagem_usuario.clicked.connect(self.retirar_imagem_usuario)
         
         self.btn_fazer_cadastro.clicked.connect(self.subscribe_user)
         self.btn_editar.clicked.connect(self.exibir_tabela_produtos)
@@ -546,6 +566,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.table_inativos.resizeColumnsToContents()
         self.table_inativos.resizeRowsToContents()
+        self.table_massa_produtos.resizeColumnsToContents()
+        self.table_massa_produtos.resizeRowsToContents()
      
     
     
@@ -941,7 +963,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         if resposta == QMessageBox.Yes:
             # Limpar configurações de login
-            self.login_window.config.salvar_configuracoes("",False)
+            self.login_window.config.salvar_configuracoes("","",False)
 
             # Limpar os campos de login e desmarcar "Manter conectado"
             self.login_window.limpar_campos()
@@ -950,15 +972,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             # Fechar a janela principal e abrir a janela de login
             self.close()
             self.login_window.show()
-
 #*********************************************************************************************************************
     def fazer_login_automatico(self):
         if self.config.verificar_credenciais_salvas():
             usuario = self.config.usuario
-            senha = self.obter_senha_salva()
-            
+            senha = self.config.obter_senha_salva()
             tipo_usuario = self.db.check_user(usuario, senha)
-            
             if tipo_usuario:
                 print("Login automático bem sucedido!")
                 self.fechar_janela_login_signal.emit(tipo_usuario)
@@ -1051,23 +1070,32 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             detalhes_msg_detalhes.exec()
 #*********************************************************************************************************************
     def subscribe_user(self):
+        print("Função subscribe_user chamada")
+        # Verificar se a conexão com o banco de dados está ativa
+        db = DataBase()
+        db.connecta()
+        campos_vazios = []
         # Verificar se todos os campos obrigatórios estão preenchidos
-        campos_nao_preenchidos_usuarios = [
-            campo for campo, widget in self.campos_obrigatorios_usuarios.items()
-            if not (widget.currentText() if isinstance(widget,QComboBox) else widget.text()) == ''
-        ]
-        if campos_nao_preenchidos_usuarios:
-            self.exibir_asteriscos_usuarios(campos_nao_preenchidos_usuarios)
+        for campo, widget in self.campos_obrigatorios_usuarios.items():
+            valor = widget.currentText() if isinstance(widget, QComboBox) else widget.text()
+            print(f"Verificando campo: {campo}, valor: '{valor.strip()}'")
+            if valor.strip() == "":
+                campos_vazios.append(campo)
+                
+        if campos_vazios:
+            print("Campos com erro:", campos_vazios)
+            self.exibir_asteriscos_usuarios(campos_vazios)
+            campo = campos_vazios[0]
             msg = QMessageBox()
             msg.setIcon(QMessageBox.Warning)
             msg.setWindowTitle("Erro")      
-            msg.setText("Todos os campos são obrigatórios.")
+            msg.setText(f"O campo {campo} é obrigatório.")
             msg.exec()
             return
 
         # Verificar se as senhas coincidem
         if self.txt_senha.text() != self.txt_confirmar_senha.text():
-            self.exibir_asteriscos_usuarios()
+            self.exibir_asteriscos_usuarios(['senha', 'confirmar senha'])
             msg = QMessageBox()
             msg.setIcon(QMessageBox.Warning)
             msg.setWindowTitle("Erro")
@@ -1077,20 +1105,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         # Verificar se o email é válido
         if not self.is_valid_email(self.txt_email.text()):
-            self.exibir_asteriscos_usuarios()
+            self.exibir_asteriscos_usuarios(['email'])
             msg = QMessageBox()
             msg.setIcon(QMessageBox.Warning)
             msg.setWindowTitle('Erro')
             msg.setText("Por favor, insira um e-mail correto")
-            msg.exec()
-            return
-
-        # Verificar se uma imagem foi carregada
-        if not self.label_imagem_usuario.pixmap():
-            msg = QMessageBox()
-            msg.setIcon(QMessageBox.Warning)
-            msg.setWindowTitle("Erro")
-            msg.setText("É necessário inserir uma imagem antes de fazer o cadastro!! ")
             msg.exec()
             return
 
@@ -1112,9 +1131,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         complemento = self.txt_complemento.text()
         imagem = self.converter_imagem_usuario()
 
-        # Conectar ao banco de dados e inserir o usuário
-        db = DataBase()
-        db.connecta()
+        
         try:
             # Obter o usuário logado
             usuario_logado = self.config.obter_usuario_logado()   
@@ -1123,25 +1140,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
             # Verificar se o usuário já está cadastrado pelo CPF ou nome de usuário
             user_exists_result = db.user_exists(user,telefone,email,rg,cpf)
-            if user_exists_result == 'Usuário':
-                QMessageBox.critical(None, "Erro", "Este nome de usuário já está em uso. Por favor, escolha um nome de usuário diferente.")
+            if user_exists_result:
+                self.exibir_asteriscos_usuarios([user_exists_result])
+                QMessageBox.critical(None, "Erro",f"Já existe um usuário com esse {user_exists_result}")
                 return
-            elif user_exists_result == 'Telefone':
-                QMessageBox.critical(None, "Erro","Já existe um usuário cadastrado com número de telefone.\n Por favor escolha um diferente")
-                return
-            
-            elif user_exists_result == 'Email':
-                QMessageBox.critical(None, 'Erro',"Já existe um usuário cadastrado com esse e-mail.\n Clique abaixo para mudar a senha")
-                return
-            
-            elif user_exists_result == 'RG':
-                QMessageBox.critical(None, "Erro","Já existe um usuário cadastrado com esse RG.\n Por favor escolha um diferente")
-                return
-            
-            elif user_exists_result == 'cpf':
-                QMessageBox.critical(None, "Erro", "Já existe um usuário cadastrado com esse CPF. Por favor, escolha um nome de usuário diferente.")
-                return
-
             # Inserir o usuário no banco de dados
             db.insert_user(
                 nome=nome,
@@ -1163,7 +1165,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 usuario_logado=usuario_logado,
                 imagem=imagem
            )
-
             # Registrar no histórico após a inserção do produto
             descricao = f"Usuario {user} foi cadastrado no sistema."
             self.registrar_historico_usuarios("Cadastro de Usuários", descricao)
@@ -1174,8 +1175,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             msg.setWindowTitle("Cadastro de Usuário")
             msg.setText("Cadastro realizado com sucesso")
             msg.exec()
-
- 
 
             # Limpar os campos de entrada após a conclusão do cadastro
             self.txt_nome.setText("")
@@ -1369,7 +1368,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             db.connecta()
 
             # Formatando o valor_real com o símbolo "R$" e duas casas decimais
-            valor_real_formatado = f"R$ {produto_info['valor_produto']:.2f}"
+            valor_real_formatado = produto_info['valor_produto']
+
 
             # Se o desconto for zero, inserir "Sem desconto", caso contrário, formatar com porcentagem
             desconto_formatado = "Sem desconto" if produto_info['desconto'] == 0 else f"{produto_info['desconto']:.2f}%"
@@ -1642,6 +1642,22 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                     return
         print("Não há imagem do produto para remover.")
         msg_box = QMessageBox(QMessageBox.Warning, "Erro", "Não há imagem para remover")
+        msg_box.exec()
+#*********************************************************************************************************************
+    def retirar_imagem_usuario(self):
+        frame = self.frame_imagem_cadastro
+        if frame is not None:
+            for widget in frame.children():
+                if isinstance(widget,QLabel) and widget.pixmap() is not None and not widget.pixmap().isNull():
+                    widget.clear()
+                    widget.setPixmap(QPixmap())
+                    widget.hide()
+                    print("Imagem removida do usuário com sucesso")
+                    msg_box = QMessageBox(QMessageBox.Information, "Sucesso", "Imagem removida do usuário com sucesso")
+                    msg_box.exec()
+                    return
+        print("Não há imagem do usuário para remover.")
+        msg_box = QMessageBox(QMessageBox.Warning, "Erro", "Não há imagem do usuário para remover")
         msg_box.exec()
 #*********************************************************************************************************************
     def carregar_imagem_produto(self):
@@ -2112,13 +2128,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
 
     def erros_frames_usuarios(self):
+        print("Inicializando erros_frames_usuarios")
         self.campos_obrigatorios_usuarios = {
-        'nome': self.txt_produto,
-        'usuário': self.txt_quantidade,
-        'telefone': self.txt_valor_produto_3,
-        'endereco': self.dateEdit_3,            # <--- corrigido
-        'numero': self.txt_cliente_3,          # <--- corrigido
-        'complemento': self.txt_descricao_produto_3,
+        'nome': self.txt_nome,
+        'usuario': self.txt_usuario,
+        'telefone': self.txt_telefone,
+        'endereco': self.txt_endereco,            # <--- corrigido
+        'numero': self.txt_numero,          # <--- corrigido
+        'complemento': self.txt_complemento,
         'email': self.txt_email,               # <--- corrigido
         'data_nascimento': self.txt_data_nascimento,  # <--- corrigido
         'rg': self.txt_rg,
@@ -2132,7 +2149,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.frames_erros_usuarios = {
             'nome': self.frame_erro_nome,
-            'usuário': self.frame_erro_usuario,
+            'usuario': self.frame_erro_usuario,
             'telefone': self.frame_erro_telefone,
             'endereco': self.frame_erro_endereco,
             'numero': self.frame_erro_numero,
@@ -2148,7 +2165,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             'perfil': self.frame_erro_perfil
         }
 
-
         # Esconder todos os frames de erro inicialmente
         for frame in self.frames_erros_usuarios.values():
             frame.hide()
@@ -2160,32 +2176,154 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def exibir_asteriscos_usuarios(self, campos_nao_preenchidos_usuarios):
         for campo in campos_nao_preenchidos_usuarios:
             frame = self.frames_erros_usuarios.get(campo)
-            if not frame:
-                continue  # pula se o frame não existir
+            if frame is None:
+                print(f"[ERRO] Campo '{campo}' não tem frame correspondente!")
+                continue
 
             if not hasattr(self, f'label_asterisco_usuarios{campo}'):
                 label = QLabel(frame)
                 asterisco_pixmap = QPixmap("imagens/Imagem1.png").scaled(12, 12, Qt.KeepAspectRatio, Qt.SmoothTransformation)
                 label.setPixmap(asterisco_pixmap)
                 label.setAlignment(Qt.AlignCenter)
+                layout = QVBoxLayout(frame)
+                layout.setContentsMargins(0, 0, 0, 0)  # Remove margens
+                layout.addWidget(label)
                 setattr(self, f'label_asterisco_usuarios{campo}', label)
-            
+                
+                # Adiciona o print para verificar se o asterisco foi realmente adicionado
+                print(f"Asterisco adicionado ao frame de: {campo}")
+
             frame.show()
-            getattr(self, f'label_asterisco_usuarios{campo}').show()
+            getattr(self, f'label_asterisco_usuarios{campo}', label)
 
 
     def esconder_asteriscos_usuarios(self):
-        for frame in self.frames_erros_usuarios.values():
+        for campo, frame in self.frames_erros_usuarios.items():
             frame.hide()
+            label_name = f'label_asterisco_usuarios_{campo}'
+            if hasattr(self, label_name):
+                getattr(self, label_name).hide()
 
-    def filtro_evento_frames_usuarios(self, obj, event):
+
+    def eventFilter(self, obj, event):
         if event.type() == QEvent.FocusIn:
-            for campo, widget in self.campos_obrigatorios.items():
-                if obj == widget:
-                    self.esconder_asteriscos_usuarios()
+            if obj in self.campos_obrigatorios_usuarios.values():
+                self.esconder_asteriscos_usuarios()
+            elif obj in self.campos_obrigatorios.values():
+                self.esconder_asteriscos_usuarios()
         return super().eventFilter(obj, event)
 
-    
+    def exibir_planilhas_exemplo(self):
+        opcoes = ["Planilha de Exemplo 1", "Planilha de Exemplo 2"]
+        escolha, ok = QInputDialog.getItem(
+            None,
+            "Escolher Planilha de Exemplo", 
+            "Selecione uma planilha de exemplo:",
+            opcoes,
+            0,  # Índice padrão
+            False,  # Não permitir edição
+        )
+        if not ok or not escolha:
+            print("Operação cancelada pelo usuário.")
+            return
+
+        # Agora, a escolha é diretamente mapeada
+        if escolha == "Planilha de Exemplo 1":
+            nome_sugestao = "produtos_exemplos1.xlsx"
+            sheet_name = 'Produtos'
+            dados = {
+                "Produto": ["Exemplo 1", "Exemplo 2", "Exemplo 3", "Exemplo 4"],
+                "Quantidade": [10, 50, 5, 20],
+                "Valor do Produto": [4500.00, 150.00, 1200.00, 900.00],
+                "Desconto": [5, "Sem desconto", 10, "Sem desconto"],
+                "Data da Compra": ["10/05/2024", "10/04/2024", "10/03/2024", "10/02/2024"],
+                "Código do Item": ["AUTO12345", "AUTO67890", "AUTO11223", "AUTO33445"],
+                "Cliente": ["João da Silva", "Maria Oliveira", "Pedro Santos", "Carla Lima"],
+                "Descrição": [
+                    "Notebook com 16GB RAM, SSD",
+                    "Mouse sem fio, modelo M170",
+                    "Impressora multifuncional",
+                    "Monitor 24”, Full HD"
+                ]
+            }
+        else:
+            nome_sugestao = "produtos_exemplos2.xlsx"
+            sheet_name = 'Usuários'
+            dados = {
+                "Nome": ["Ex: Keven Lucas da Silva Jesus", "Ex: Maria Oliveira da Silva", "Ex: Pedro Santos Reis", "Ex: Carla Lima Medeiros"],
+                "Usuário": ["Ex: SIG2515", "Ex: SIG2514", "Ex: SIG2513", "Ex: SIG2513"],
+                "Telefone": ["(11) 00000-0000", "(21) 00000-0000", "(31) 00000-0000", "(41) 00000-0000"],
+                "Endereço": ["Rua A, 123", "Avenida B, 456", "Praça C, 789", "Travessa D, 101"],
+                "Número": [123, 456, 789, 101], 
+                "Complemento": ["Apto 1", "", "", ""],
+                "Email": ["keven.lucas00@dhdfge.com", "mariolieira1000@gmail.com","pedrosantos00123@gmail.com","carlalima14520@gmail.com"],
+                "Data de Nascimento": ["01/01/2000", "02/02/1995", "03/03/1990", "04/04/1985"],
+                "RG": ["12.345.678-9", "98.765.432-1", "11.223.344-5", "22.334.455-6"],
+                "CPF": ["123.456.789-00", "987.654.321-00", "111.222.333-44", "222.333.444-55"],
+                "CEP": ["12345-678", "98765-432", "11111-222", "33333-444"],
+                "Estado": ["SP", "RJ", "MG", "PR"],
+                "Senha": ["senha123", "senha456", "senha789", "senha101"],
+                "Confirmar Senha": ["senha123", "senha456", "senha789", "senha101"],
+                "Perfil": ["Admin", "Usuário", "Usuário", "Usuário"]
+            }
+
+        # Gerar a planilha com os dados corretos
+        df = pd.DataFrame(dados)
+
+        file_path, _ = QFileDialog.getSaveFileName(
+            None,
+            "Salvar Planilha de Exemplo",
+            nome_sugestao,
+            "Excel Files (*.xlsx)"
+        )
+
+        if not file_path:
+            print("Operação cancelada pelo usuário.")
+            return
+
+        # Salvar usando openpyxl para aplicar estilos
+        df.to_excel(file_path, index=False, engine='openpyxl', sheet_name=sheet_name)
+
+        # Abrir a planilha para formatação
+        wb = load_workbook(file_path)
+        ws = wb[sheet_name]  # Usar o nome da aba dinamicamente
+
+        # Formatar as colunas
+        for col in ws.columns:
+            max_length = 0
+            col_letter = get_column_letter(col[0].column)
+            for cell in col:
+                # Centralizar
+                cell.alignment = Alignment(horizontal='center', vertical='center')
+                try:
+                    if cell.value:
+                        max_length = max(max_length, len(str(cell.value)))
+                except:
+                    pass
+                # Ajustar largura da coluna
+                ws.column_dimensions[col_letter].width = max_length + 2
+
+        # Salvar as alterações
+        wb.save(file_path)
+
+        # Mostrar a mensagem de sucesso
+        QMessageBox.information(
+            None,
+            "Sucesso",
+            f"Planilha '{escolha}' salva com sucesso em {file_path}!",
+            QMessageBox.Ok
+        )
+     
+    def pagina_cadastro_em_massa_produtos(self):
+        selected_action = self.sender()
+        if selected_action == self.action_em_massa_produtos:
+            self.paginas_sistemas.setCurrentWidget(self.page_cadastrar_massa_produtos)
+        
+    def pagina_cadastro_em_massa_usuarios(self):
+        selected_action = self.sender()
+        if selected_action == self.action_em_massa_usuarios:
+            self.paginas_sistemas.setCurrentWidget(self.page_cadastrar_massa_usuarios)
+
 
 # Função principal
 if __name__ == '__main__':
@@ -2195,7 +2333,7 @@ if __name__ == '__main__':
     
     # Usa estilo nativo do Windows explicitamente
     app.setStyle("WindowsVista")
-
+    app.setWindowIcon(QIcon("imagens/ícone_sistema_provisório.png"))
     
     login_window.show()
     sys.exit(app.exec())

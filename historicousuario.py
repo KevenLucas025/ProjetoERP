@@ -22,7 +22,7 @@ from openpyxl.styles import Alignment, Font
 class Pagina_Usuarios(QWidget):
     def __init__(self,main_window,btn_abrir_planilha_usuarios,btn_cadastrar_novo_usuario,btn_gerar_pdf_usuario,
                   btn_historico_usuarios,btn_atualizar_ativos,btn_atualizar_inativos,btn_limpar_tabelas_usuarios,
-                  btn_gerar_saida_usuarios,btn_cadastrar_todos,line_excel_usuarios,progress_excel_usuarios,
+                  btn_gerar_saida_usuarios,line_excel_usuarios,progress_excel_usuarios,
                   btn_importar_usuarios,parent=None):
         super().__init__(parent)
 
@@ -47,7 +47,6 @@ class Pagina_Usuarios(QWidget):
         self.btn_atualizar_inativos = btn_atualizar_inativos
         self.btn_limpar_tabelas_usuarios = btn_limpar_tabelas_usuarios
         self.btn_gerar_saida_usuarios = btn_gerar_saida_usuarios
-        self.btn_cadastrar_todos = btn_cadastrar_todos
         self.line_excel_usuarios = line_excel_usuarios
         self.progress_excel_usuarios = progress_excel_usuarios
         self.btn_importar_usuarios = btn_importar_usuarios
@@ -58,7 +57,6 @@ class Pagina_Usuarios(QWidget):
         self.btn_limpar_tabelas_usuarios.clicked.connect(self.limpar_tabelas)
         self.btn_atualizar_ativos.clicked.connect(self.atualizar_ativos)
         self.btn_atualizar_inativos.clicked.connect(self.atualizar_inativos)
-        self.btn_cadastrar_todos.clicked.connect(self.cadastrar_em_massa)
         self.btn_gerar_pdf_usuario.clicked.connect(self.exibir_pdf_usuarios)
         self.btn_historico_usuarios.clicked.connect(self.exibir_tabela_historico_usuario)
         self.btn_abrir_planilha_usuarios.clicked.connect(self.abrir_planilha_usuarios)
@@ -66,8 +64,6 @@ class Pagina_Usuarios(QWidget):
         self.main_window.table_ativos.viewport().installEventFilter(self)
         self.main_window.table_inativos.viewport().installEventFilter(self)
 
-        
-        
 
 
     # Função auxiliar para criar um QTableWidgetItem com texto centralizado
@@ -243,6 +239,7 @@ class Pagina_Usuarios(QWidget):
             QLineEdit.Normal,
             "Sim"
         )
+        
 
         if not ok or confirmar_saida != "Sim":
             return
@@ -756,7 +753,7 @@ class Pagina_Usuarios(QWidget):
         self.tabela_historico_usuarios.clearContents()
         self.tabela_historico_usuarios.setRowCount(len(registros))
 
-        for i, (_, data, usuario, acao, descricao) in enumerate(registros):
+        for i, (data, usuario, acao, descricao) in enumerate(registros):
             self.tabela_historico_usuarios.setItem(i, 0, QTableWidgetItem(data))
             self.tabela_historico_usuarios.setItem(i, 1, QTableWidgetItem(usuario))
             self.tabela_historico_usuarios.setItem(i, 2, QTableWidgetItem(acao))
@@ -1513,6 +1510,6 @@ class Pagina_Usuarios(QWidget):
 
         return super().eventFilter(source, event)
 
-
-    def cadastrar_em_massa(self):
+    def cadastrar_usuarios_em_massa(self):
         pass
+    #Função que incrementarei depois que para ser ativada, terá que ser paga

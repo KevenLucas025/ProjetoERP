@@ -61,11 +61,11 @@ class DataBase:
                     Senha TEXT NOT NULL,
                     "Confirmar Senha" TEXT NOT NULL,
                     Acesso TEXT NOT NULL,
-                    Endereço TEXT ,
-                    CEP TEXT ,
-                    CPF TEXT ,
-                    Número TEXT ,
-                    Estado TEXT ,
+                    Endereço TEXT,
+                    CEP TEXT,
+                    CPF TEXT,
+                    Número TEXT,
+                    Estado TEXT,
                     Email TEXT ,
                     Complemento TEXT,
                     Telefone TEXT ,
@@ -457,19 +457,19 @@ class DataBase:
             print("Erro ao obter caminho da imagem:", e)
             return None
 #*********************************************************************************************************************        
-    def user_exists(self,Usuario, Telefone,Email,RG,CPF,):
+    def user_exists(self, Usuario, Telefone, Email, RG, CPF):
         try:
-            if not self.connection:  # Verifica se a conexão está ativa
+            if not self.connection:
                 self.connecta()
             cursor = self.connection.cursor()
 
             cursor.execute("SELECT 1 FROM users WHERE Usuário = ?", (Usuario,))
             user_result = cursor.fetchone()
 
-            cursor.execute("SELECT 1 FROM users WHERE Telefone = ?",(Telefone,))
+            cursor.execute("SELECT 1 FROM users WHERE Telefone = ?", (Telefone,))
             telefone_result = cursor.fetchone()
 
-            cursor.execute("SELECT 1 FROM users WHERE Email = ?",(Email,))
+            cursor.execute("SELECT 1 FROM users WHERE Email = ?", (Email,))
             email_result = cursor.fetchone()
 
             cursor.execute("SELECT 1 FROM users WHERE RG = ?", (RG,))
@@ -477,17 +477,17 @@ class DataBase:
 
             cursor.execute("SELECT 1 FROM users WHERE CPF = ?", (CPF,))
             cpf_result = cursor.fetchone()
-            
+
             if user_result:
-                return 'Usuário'
+                return 'usuario'
             elif telefone_result:
-                return 'Telefone'
+                return 'telefone'
             elif email_result:
-                return 'Email'
+                return 'email'
             elif rg_result:
-                return 'RG'
+                return 'rg'
             elif cpf_result:
-                return'cpf' 
+                return 'cpf'
             else:
                 return None
         except Exception as e:
