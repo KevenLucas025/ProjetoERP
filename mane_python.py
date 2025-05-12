@@ -3614,7 +3614,10 @@ class Ui_MainWindow(object):
 
         self.btn_editar_massa_produtos = QPushButton(self.frame_9)
         self.btn_editar_massa_produtos.setObjectName(u"btn_editar_massa_produtos")
+        sizePolicy.setHeightForWidth(self.btn_editar_massa_produtos.sizePolicy().hasHeightForWidth())
+        self.btn_editar_massa_produtos.setSizePolicy(sizePolicy)
         self.btn_editar_massa_produtos.setMaximumSize(QSize(16777215, 31))
+        self.btn_editar_massa_produtos.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.btn_editar_massa_produtos.setStyleSheet(u"QPushButton {\n"
 "    color: rgb(255, 255, 255);\n"
 "    border-radius: 8px;\n"

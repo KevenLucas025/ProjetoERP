@@ -1797,15 +1797,13 @@ class EstoqueProduto(QWidget):
                 QMessageBox.warning(self, "Aviso", "Nenhum produto encontrado para cadastrar.")
                 return
             for linha in range(total_linhas):
-                produto = self.table_massa_produtos.item(linha,0).text()
-                quantidade = self.table_massa_produtos.item(linha,1).text()
+                produto = self.table_massa_produtos.item(linha, 0).text()
+                quantidade = self.table_massa_produtos.item(linha, 1).text()
 
                 # Tratamento do valor (remover R$ e converter para float)
                 valor_str = self.table_massa_produtos.item(linha, 2).text().replace("R$", "").replace(".", "").replace(",", ".").strip()
                 valor_float = float(valor_str) if valor_str else 0.0
                 valor_produto = f"R$ {valor_float:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
-
-
 
                 # Desconto: tratar "Sem desconto" como 0
                 desconto_str = self.table_massa_produtos.item(linha, 3).text().replace("%", "").replace(",", ".").strip()
@@ -1827,22 +1825,24 @@ class EstoqueProduto(QWidget):
                     "codigo_item": codigo_aleatorio,
                     "cliente": cliente,
                     "descricao_produto": descricao_produto
-
                 }
-                self.main_window.inserir_produto_no_bd(produto_info)
-                descricao = self.main_window.registrar_historico("Cadastro em massa", "Produtos cadastrados em massa com sucesso!")
-                self.main_window.registrar_historico("Cadastro em massa", descricao)
+                self.main_window.inserir_produto_no_bd(produto_info,registrar_historico=False)
+
+                # Registrar no histórico para o cadastro em massa
+                descricao = f"Produto {produto} foi cadastrado com quantidade {quantidade} e valor {valor_produto}!"
+                self.main_window.registrar_historico("Cadastro em Massa", descricao)
+
             QMessageBox.information(self, "Sucesso", "Produtos cadastrados com sucesso!")
             self.line_edit_massa_produtos.clear()
 
-            #Limpar a tabela após a inserção
+            # Limpar a tabela após a inserção
             self.table_massa_produtos.setRowCount(0)
 
         except Exception as e:
             QMessageBox.critical(self, "Erro", f"Erro ao cadastrar produtos em massa:\n{e}")
-            
-    
 
+    
+    
 
 
 

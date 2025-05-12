@@ -23,7 +23,8 @@ class Pagina_Usuarios(QWidget):
     def __init__(self,main_window,btn_abrir_planilha_usuarios,btn_cadastrar_novo_usuario,btn_gerar_pdf_usuario,
                   btn_historico_usuarios,btn_atualizar_ativos,btn_atualizar_inativos,btn_limpar_tabelas_usuarios,
                   btn_gerar_saida_usuarios,line_excel_usuarios,progress_excel_usuarios,
-                  btn_importar_usuarios,parent=None):
+                  btn_importar_usuarios,btn_abrir_planilha_massa_usuarios,btn_fazer_cadastro_massa_usuarios,
+                  progress_massa_usuarios,line_edit_massa_usuarios,parent=None):
         super().__init__(parent)
 
         self.db = DataBase("banco_de_dados.db")
@@ -39,6 +40,7 @@ class Pagina_Usuarios(QWidget):
         self.main_window = main_window
         self.table_ativos = self.main_window.table_ativos  # Referência para a tabela no main window
         self.table_inativos = self.main_window.table_inativos
+        self.table_massa_usuarios = self.main_window.table_massa_usuarios
         self.btn_abrir_planilha_usuarios = btn_abrir_planilha_usuarios
         self.btn_cadastrar_novo_usuario = btn_cadastrar_novo_usuario
         self.btn_gerar_pdf_usuario = btn_gerar_pdf_usuario
@@ -50,6 +52,10 @@ class Pagina_Usuarios(QWidget):
         self.line_excel_usuarios = line_excel_usuarios
         self.progress_excel_usuarios = progress_excel_usuarios
         self.btn_importar_usuarios = btn_importar_usuarios
+        self.btn_abrir_planilha_massa_usuarios = btn_abrir_planilha_massa_usuarios
+        self.btn_fazer_cadastro_massa_usuarios = btn_fazer_cadastro_massa_usuarios
+        self.progress_massa_usuarios = progress_massa_usuarios
+        self.line_edit_massa_usuarios = line_edit_massa_usuarios
         
         
 
@@ -1509,6 +1515,68 @@ class Pagina_Usuarios(QWidget):
                     self.main_window.table_inativos.clearSelection()
 
         return super().eventFilter(source, event)
+    
+    def abrir_panilha_usuarios_em_massa(self):
+        # Abrir o diálogo para selecionar o arquivo Excel
+        nome_arquivo, _ = QFileDialog.getOpenFileName(self, "Abrir Arquivo Excel", "", "Arquivos Excel (*.xlsx)")
+
+        # Se o usuário cancelar a seleção do arquivo
+        if not nome_arquivo:
+            return
+        # Alterar o texto da line_excel para "Carregando arquivo Excel..."
+        self.line_edit_massa_usuarios.setText("Carregando arquivo Excel...")
+        self.nome_arquivo_excel_massa = nome_arquivo
+
+        # Inicializar a barra de progresso
+        self.progress_massa_usuarios.setValue(0)
+        self.progresso_massa = 0
+
+        # Começar o timer para simular carregamento visual
+        self.timer_excel_massa_usuarios = QTimer()
+        self.timer_excel_massa_usuarios.timeout.connect(self.atualizar_progress_line_usuarios_em_massa)
+        self.timer_excel_massa_usuarios.start(20)
+
+    def atualizar_progress_line_usuarios_em_massa(self):
+        if self.progresso_massa < 100:
+            self.progresso_massa += 1
+            self.progress_massa_usuarios.setValue(self.progresso_massa)
+        else:
+            self.timer_excel_massa_usuarios.stop()
+
+            try:
+                df = pd.read_excel(self.nome_arquivo_excel_massa, engine="openpyxl", header=0)
+                df = df.fillna("Não informado")
+
+                colunas_table_massa_usuarios = ["Nome", "Usuário", "Senha", "Confirmar Senha", "Acesso",
+                    "Endereço", "CEP", "CPF", "Número", "Estado", "E-mail", "RG", "Complemento", "Telefone",
+                    "Data de Nascimento", "Última Troca de Senha", "Data da Senha Cadastrada",
+                    "Data da Inclusão do Usuário", "Segredo", "Usuário Logado"]
+
+                # Verificar se o DataFrame está vazio
+                if df.empty:
+                    QMessageBox.warning(self, "Erro", "O arquivo Excel está vazio.")
+                    self.line_edit_massa_usuarios.clear()
+                    self.resetar_progresso_massa_usuarios()
+                    return
+
+                # Adicionar os dados à tabela
+                self.table_massa_usuarios.setRowCount(0)
+
+                for row in df.itertuples(index=False):
+                    row_position = self.table_massa_usuarios.rowCount()
+                    self.table_massa_usuarios.insertRow(row_position)
+                    for column, value in enumerate(row):
+                        item = QTableWidgetItem(str(value))
+                        item.setFlags(item.flags() & ~Qt.ItemFlag.ItemIsEditable)  # Desabilitar edição
+                        self.table_massa_usuarios.setItem(row_position, column, item)
+
+                QMessageBox.information(self, "Sucesso", "Arquivo Excel importado com sucesso!")
+
+            except Exception as e:
+                QMessageBox.critical(self, "Erro", f"Erro ao importar o arquivo Excel: {e}")
+
+            self.line_edit_massa_usuarios.setText(self.nome_arquivo_excel_massa)
+            self.resetar_progresso_massa_usuarios()
 
     def cadastrar_usuarios_em_massa(self):
         pass

@@ -283,7 +283,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.pagina_usuarios = Pagina_Usuarios(self, self.btn_abrir_planilha_usuarios,self.btn_cadastrar_novo_usuario,
                                                self.btn_gerar_pdf_usuarios,self.btn_historico_usuarios,self.btn_atualizar_ativos,
                                                self.btn_atualizar_inativos,self.btn_limpar_tabelas_usuarios,self.btn_gerar_saida_usuarios,
-                                               self.line_excel_usuarios,self.progress_excel_usuarios,self.btn_importar_usuarios)
+                                               self.line_excel_usuarios,self.progress_excel_usuarios,self.btn_importar_usuarios,
+                                               self.btn_abrir_planilha_massa_usuarios,self.btn_fazer_cadastro_massa_usuarios,self.progress_massa_usuarios,
+                                               self.line_edit_massa_usuarios)
 
         self.estoque_produtos = EstoqueProduto(self,self.btn_gerar_pdf,self.btn_gerar_estorno,
                                                self.btn_gerar_saida,self.btn_importar,self.btn_limpar_tabelas,
@@ -368,6 +370,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.btn_verificar_usuarios.clicked.connect(lambda: self.paginas_sistemas.setCurrentWidget(self.page_verificar_usuarios))
         self.btn_ver_usuario.clicked.connect(lambda: self.paginas_sistemas.setCurrentWidget(self.page_verificar_usuarios))
         self.btn_cadastrar_novo_usuario.clicked.connect(lambda: self.paginas_sistemas.setCurrentWidget(self.pg_cadastrar_usuario))
+        self.btn_editar_massa_produtos.clicked.connect(lambda: self.paginas_sistemas.setCurrentWidget(self.pg_cadastrar_produto))
+        self.btn_editar_massa_usuario.clicked.connect(lambda: self.paginas_sistemas.setCurrentWidget(self.pg_cadastrar_usuario))
 
 
         self.btn_remover_imagem.clicked.connect(self.retirar_imagem_produto)
@@ -1362,14 +1366,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.frame_quantidade.adjustSize()
 
 #*********************************************************************************************************************
-    def inserir_produto_no_bd(self, produto_info):
-        try: 
+    def inserir_produto_no_bd(self, produto_info,registrar_historico=True):
+        try:
             db = DataBase()
             db.connecta()
 
             # Formatando o valor_real com o símbolo "R$" e duas casas decimais
             valor_real_formatado = produto_info['valor_produto']
-
 
             # Se o desconto for zero, inserir "Sem desconto", caso contrário, formatar com porcentagem
             desconto_formatado = "Sem desconto" if produto_info['desconto'] == 0 else f"{produto_info['desconto']:.2f}%"
@@ -1401,10 +1404,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             )
         except Exception as e:
             QMessageBox.critical(self, "Erro", f"Erro ao cadastrar produto: {str(e)}")
-        
-        # Registrar no histórico após a inserção do produto
-        descricao = f"Produto {produto_info['produto']} foi cadastrado com quantidade {produto_info['quantidade']} e valor {valor_real_formatado}."
-        self.registrar_historico("Cadastro de Produto", descricao)
+
+        if registrar_historico:
+            # Registrar no histórico após a inserção do produto
+            descricao = f"Produto {produto_info['produto']} foi cadastrado com quantidade {produto_info['quantidade']} e valor {valor_real_formatado}."
+            self.registrar_historico("Cadastro de Produto", descricao)
 #*********************************************************************************************************************
     def get_usuario_logado(self):
         # Obtenha o usuário logado das configurações
@@ -1937,7 +1941,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # Atualizar o texto do campo de data de nascimento
         self.txt_data_nascimento.setText(data_formatada)
 #*********************************************************************************************************************
-
     def formatar_telefone(self, text):
         # Remover todos os caracteres que não são dígitos
         numero_limpo = ''.join(filter(str.isdigit, text))
@@ -2050,7 +2053,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def limpar_frame_cadastro_usuario(self): 
         # Remover imagem do QLabel
         self.frame_imagem_cadastro.clear()
-
 #*******************************************************************************************************
     def atualizar_imagem(self):
         if hasattr(self, 'produto_imagem') and self.produto_imagem:
@@ -2266,7 +2268,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 "Confirmar Senha": ["senha123", "senha456", "senha789", "senha101"],
                 "Perfil": ["Admin", "Usuário", "Usuário", "Usuário"]
             }
-
         # Gerar a planilha com os dados corretos
         df = pd.DataFrame(dados)
 
