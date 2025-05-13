@@ -5,7 +5,8 @@ from PySide6.QtCore import (Qt, QTimer, QDate, QBuffer, QByteArray, QIODevice, S
 from PySide6 import QtCore
 from PySide6.QtWidgets import (QMainWindow, QMessageBox, QPushButton,
                                QLabel, QFileDialog, QVBoxLayout,
-                               QMenu,QTableWidgetItem,QCheckBox,QApplication,QToolButton,QHeaderView,QCompleter,QComboBox)
+                               QMenu,QTableWidgetItem,QCheckBox,QApplication,QToolButton,QHeaderView,QCompleter,
+                               QComboBox,QInputDialog)
 from PySide6.QtGui import (QDoubleValidator, QIcon, QColor, QPixmap,QBrush,
                            QAction,QMovie,QImage)
 from PySide6 import QtWidgets
@@ -35,6 +36,10 @@ import string
 import socket
 from  plyer import notification
 import subprocess
+import pandas as pd
+from openpyxl.utils import get_column_letter
+from openpyxl.styles import Alignment
+from openpyxl import load_workbook
 
 
 
@@ -114,6 +119,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         # Inicializar as configurações antes de chamar fazer_login_automatico
         self.config = Configuracoes_Login(self)
+        self.config.carregar()
+        self.fazer_login_automatico()
 
         # Aplica completer individual a cada campo
         for nome_campo, campo in self.campos_com_autocomplete.items():
@@ -223,14 +230,22 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.action_configuracoes = QAction("Configurações", self)
         self.action_contato = QAction("Contato", self)
         self.action_reiniciar = QAction("Reiniciar Sistema")
+        self.action_planilhas_exemplo = QAction("Planilhas de exemplo")
+        self.action_em_massa_produtos = QAction("Cadastrar produtos em massa")
+        self.action_em_massa_usuarios = QAction("Cadastrar usuários em massa")
         self.action_informacoes_sistema = QAction("Informações do sistema")
+        
 
         # Adicionar as ações ao menu (FUNDAMENTAL!)
         self.menu_opcoes.addAction(self.action_sair)
         self.menu_opcoes.addAction(self.action_configuracoes)
         self.menu_opcoes.addAction(self.action_contato)
         self.menu_opcoes.addAction(self.action_reiniciar)
+        self.menu_opcoes.addAction(self.action_planilhas_exemplo)
+        self.menu_opcoes.addAction(self.action_em_massa_produtos)
+        self.menu_opcoes.addAction(self.action_em_massa_usuarios)
         self.menu_opcoes.addAction(self.action_informacoes_sistema)
+        
 
         # Associar o menu ao botão
         self.btn_mais_opcoes.setMenu(self.menu_opcoes)
@@ -243,12 +258,16 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.action_configuracoes.triggered.connect(self.combobox_caixa)
         self.action_contato.triggered.connect(self.show_pg_contato)
         self.action_reiniciar.triggered.connect(self.reiniciar_sistema)
+        self.action_planilhas_exemplo.triggered.connect(self.exibir_planilhas_exemplo)
+        self.action_em_massa_produtos.triggered.connect(self.pagina_cadastro_em_massa_produtos)
+        self.action_em_massa_usuarios.triggered.connect(self.pagina_cadastro_em_massa_usuarios)
         self.action_informacoes_sistema.triggered.connect(self.show_mensagem_sistema)
+        
         
         self.fechar_janela_login_signal.connect(self.fechar_janela_login)  
 
 
-        self.fazer_login_automatico()
+        
 
         # Defina a visibilidade do botão de cadastro de usuário com base no tipo de usuário
         user = tipo_usuario.lower() if tipo_usuario else ""
@@ -263,15 +282,17 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.pagina_usuarios = Pagina_Usuarios(self, self.btn_abrir_planilha_usuarios,self.btn_cadastrar_novo_usuario,
                                                self.btn_gerar_pdf_usuarios,self.btn_historico_usuarios,self.btn_atualizar_ativos,
-                                               self.btn_atualizar_inativos,self.btn_limpar_tabelas_usuarios,
-                                               self.btn_gerar_saida_usuarios,self.btn_cadastrar_todos,
-                                               self.line_excel_usuarios,self.progress_excel_usuarios,self.btn_importar_usuarios)
+                                               self.btn_atualizar_inativos,self.btn_limpar_tabelas_usuarios,self.btn_gerar_saida_usuarios,
+                                               self.line_excel_usuarios,self.progress_excel_usuarios,self.btn_importar_usuarios,
+                                               self.btn_abrir_planilha_massa_usuarios,self.btn_fazer_cadastro_massa_usuarios,self.progress_massa_usuarios,
+                                               self.line_edit_massa_usuarios)
 
         self.estoque_produtos = EstoqueProduto(self,self.btn_gerar_pdf,self.btn_gerar_estorno,
                                                self.btn_gerar_saida,self.btn_importar,self.btn_limpar_tabelas,
                                                self.btn_atualizar_saida,self.btn_atualizar_estoque,self.btn_historico,
                                                self.btn_abrir_planilha,self.line_excel,self.progress_excel,
-                                               self.btn_incluir_produto_sistema,self.btn_confirmar_massa)
+                                               self.btn_incluir_produto_sistema,self.btn_fazer_cadastro_massa_produtos,
+                                               self.btn_abrir_planilha_massa_produtos,self.progress_massa_produtos,self.line_edit_massa_produtos,)
         
 
         # Criar instância de TabelaProdutos passando uma referência à MainWindow
@@ -303,7 +324,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # Lista de páginas na ordem desejada
         self.paginas = [self.home_pag, self.pag_estoque, self.pg_cadastrar_produto, 
                         self.pg_cadastrar_usuario, self.pg_clientes, self.pg_configuracoes, 
-                        self.pg_contato,self.page_teste]
+                        self.pg_contato]
         self.pagina_atual_index = 0  # Índice da página atual na lista
         self.historico_paginas = []  # Lista para armazenar o histórico de páginas
 
@@ -349,6 +370,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.btn_verificar_usuarios.clicked.connect(lambda: self.paginas_sistemas.setCurrentWidget(self.page_verificar_usuarios))
         self.btn_ver_usuario.clicked.connect(lambda: self.paginas_sistemas.setCurrentWidget(self.page_verificar_usuarios))
         self.btn_cadastrar_novo_usuario.clicked.connect(lambda: self.paginas_sistemas.setCurrentWidget(self.pg_cadastrar_usuario))
+        self.btn_editar_massa_produtos.clicked.connect(lambda: self.paginas_sistemas.setCurrentWidget(self.pg_cadastrar_produto))
+        self.btn_editar_massa_usuario.clicked.connect(lambda: self.paginas_sistemas.setCurrentWidget(self.pg_cadastrar_usuario))
 
 
         self.btn_remover_imagem.clicked.connect(self.retirar_imagem_produto)
@@ -358,6 +381,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.btn_atualizar_cadastro.clicked.connect(self.atualizar_usuario_no_bd)
         self.btn_verificar_estoque.clicked.connect(self.mostrar_page_estoque)
         self.btn_apagar_cadastro.clicked.connect(self.eliminar_campos_usuarios)
+        self.btn_remover_imagem_usuario.clicked.connect(self.retirar_imagem_usuario)
         
         self.btn_fazer_cadastro.clicked.connect(self.subscribe_user)
         self.btn_editar.clicked.connect(self.exibir_tabela_produtos)
@@ -546,6 +570,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.table_inativos.resizeColumnsToContents()
         self.table_inativos.resizeRowsToContents()
+        self.table_massa_produtos.resizeColumnsToContents()
+        self.table_massa_produtos.resizeRowsToContents()
      
     
     
@@ -941,7 +967,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         if resposta == QMessageBox.Yes:
             # Limpar configurações de login
-            self.login_window.config.salvar_configuracoes("",False)
+            self.login_window.config.salvar_configuracoes("","",False)
 
             # Limpar os campos de login e desmarcar "Manter conectado"
             self.login_window.limpar_campos()
@@ -950,15 +976,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             # Fechar a janela principal e abrir a janela de login
             self.close()
             self.login_window.show()
-
 #*********************************************************************************************************************
     def fazer_login_automatico(self):
         if self.config.verificar_credenciais_salvas():
             usuario = self.config.usuario
-            senha = self.obter_senha_salva()
-            
+            senha = self.config.obter_senha_salva()
             tipo_usuario = self.db.check_user(usuario, senha)
-            
             if tipo_usuario:
                 print("Login automático bem sucedido!")
                 self.fechar_janela_login_signal.emit(tipo_usuario)
@@ -1343,13 +1366,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.frame_quantidade.adjustSize()
 
 #*********************************************************************************************************************
-    def inserir_produto_no_bd(self, produto_info):
-        try: 
+    def inserir_produto_no_bd(self, produto_info,registrar_historico=True):
+        try:
             db = DataBase()
             db.connecta()
 
             # Formatando o valor_real com o símbolo "R$" e duas casas decimais
-            valor_real_formatado = f"R$ {produto_info['valor_produto']:.2f}"
+            valor_real_formatado = produto_info['valor_produto']
 
             # Se o desconto for zero, inserir "Sem desconto", caso contrário, formatar com porcentagem
             desconto_formatado = "Sem desconto" if produto_info['desconto'] == 0 else f"{produto_info['desconto']:.2f}%"
@@ -1381,10 +1404,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             )
         except Exception as e:
             QMessageBox.critical(self, "Erro", f"Erro ao cadastrar produto: {str(e)}")
-        
-        # Registrar no histórico após a inserção do produto
-        descricao = f"Produto {produto_info['produto']} foi cadastrado com quantidade {produto_info['quantidade']} e valor {valor_real_formatado}."
-        self.registrar_historico("Cadastro de Produto", descricao)
+
+        if registrar_historico:
+            # Registrar no histórico após a inserção do produto
+            descricao = f"Produto {produto_info['produto']} foi cadastrado com quantidade {produto_info['quantidade']} e valor {valor_real_formatado}."
+            self.registrar_historico("Cadastro de Produto", descricao)
 #*********************************************************************************************************************
     def get_usuario_logado(self):
         # Obtenha o usuário logado das configurações
@@ -1622,6 +1646,22 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                     return
         print("Não há imagem do produto para remover.")
         msg_box = QMessageBox(QMessageBox.Warning, "Erro", "Não há imagem para remover")
+        msg_box.exec()
+#*********************************************************************************************************************
+    def retirar_imagem_usuario(self):
+        frame = self.frame_imagem_cadastro
+        if frame is not None:
+            for widget in frame.children():
+                if isinstance(widget,QLabel) and widget.pixmap() is not None and not widget.pixmap().isNull():
+                    widget.clear()
+                    widget.setPixmap(QPixmap())
+                    widget.hide()
+                    print("Imagem removida do usuário com sucesso")
+                    msg_box = QMessageBox(QMessageBox.Information, "Sucesso", "Imagem removida do usuário com sucesso")
+                    msg_box.exec()
+                    return
+        print("Não há imagem do usuário para remover.")
+        msg_box = QMessageBox(QMessageBox.Warning, "Erro", "Não há imagem do usuário para remover")
         msg_box.exec()
 #*********************************************************************************************************************
     def carregar_imagem_produto(self):
@@ -1901,7 +1941,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # Atualizar o texto do campo de data de nascimento
         self.txt_data_nascimento.setText(data_formatada)
 #*********************************************************************************************************************
-
     def formatar_telefone(self, text):
         # Remover todos os caracteres que não são dígitos
         numero_limpo = ''.join(filter(str.isdigit, text))
@@ -2014,7 +2053,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def limpar_frame_cadastro_usuario(self): 
         # Remover imagem do QLabel
         self.frame_imagem_cadastro.clear()
-
 #*******************************************************************************************************
     def atualizar_imagem(self):
         if hasattr(self, 'produto_imagem') and self.produto_imagem:
@@ -2161,8 +2199,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             getattr(self, f'label_asterisco_usuarios{campo}', label)
 
 
-
-
     def esconder_asteriscos_usuarios(self):
         for campo, frame in self.frames_erros_usuarios.items():
             frame.hide()
@@ -2179,7 +2215,115 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 self.esconder_asteriscos_usuarios()
         return super().eventFilter(obj, event)
 
+    def exibir_planilhas_exemplo(self):
+        opcoes = ["Planilha de Exemplo 1", "Planilha de Exemplo 2"]
+        escolha, ok = QInputDialog.getItem(
+            None,
+            "Escolher Planilha de Exemplo", 
+            "Selecione uma planilha de exemplo:",
+            opcoes,
+            0,  # Índice padrão
+            False,  # Não permitir edição
+        )
+        if not ok or not escolha:
+            print("Operação cancelada pelo usuário.")
+            return
 
+        # Agora, a escolha é diretamente mapeada
+        if escolha == "Planilha de Exemplo 1":
+            nome_sugestao = "produtos_exemplos1.xlsx"
+            sheet_name = 'Produtos'
+            dados = {
+                "Produto": ["Exemplo 1", "Exemplo 2", "Exemplo 3", "Exemplo 4"],
+                "Quantidade": [10, 50, 5, 20],
+                "Valor do Produto": [4500.00, 150.00, 1200.00, 900.00],
+                "Desconto": [5, "Sem desconto", 10, "Sem desconto"],
+                "Data da Compra": ["10/05/2024", "10/04/2024", "10/03/2024", "10/02/2024"],
+                "Código do Item": ["AUTO12345", "AUTO67890", "AUTO11223", "AUTO33445"],
+                "Cliente": ["João da Silva", "Maria Oliveira", "Pedro Santos", "Carla Lima"],
+                "Descrição": [
+                    "Notebook com 16GB RAM, SSD",
+                    "Mouse sem fio, modelo M170",
+                    "Impressora multifuncional",
+                    "Monitor 24”, Full HD"
+                ]
+            }
+        else:
+            nome_sugestao = "produtos_exemplos2.xlsx"
+            sheet_name = 'Usuários'
+            dados = {
+                "Nome": ["Keven Lucas da Silva Jesus", "Maria Oliveira da Silva", "Pedro Santos Reis", "Carla Lima Medeiros"],
+                "Usuário": ["Ex: SIG2515", "Ex: SIG2514", "Ex: SIG2513", "Ex: SIG2513"],
+                "Senha": ["senha123", "senha456", "senha789", "senha101"],
+                "Confirmar Senha": ["senha123", "senha456", "senha789", "senha101"],
+                "Acesso": ["Administrador", "Usuário", "Usuário", "Convidado"],
+                "Endereço": ["Rua A, 123", "Rua B, 456", "Rua C, 789", "Rua D, 101"],
+                "CEP": ["00000-0000", "00000-0000", "00000-0000", "00000-0000"],
+                "CPF": ["000.000.000-00", "000.000.000-00", "000.000.000-00", "000.000.000-00"],
+                "Número": [123, 456, 789, 101],
+                "Estado": ["SP", "RJ", "MG", "PR"],
+                "E-mail": ["keven.lucas00@dhdfge.com", "mariolieira1000@gmail.com","pedrosantos00123@gmail.com","carlalima14520@gmail.com"],
+                "RG": ["00.000.000-0", "00.000.000-0", "00.000.000-0", "00.000.000-0"],
+                "Complemento": ["Apto 1", "", "", ""],
+                "Telefone": ["(11) 00000-0000", "(21) 00000-0000", "(31) 00000-0000", "(41) 00000-0000"],
+                "Data de Nascimento": ["01/01/2000", "02/02/1995", "03/03/1990", "04/04/1985"]
+            }
+        # Gerar a planilha com os dados corretos
+        df = pd.DataFrame(dados)
+
+        file_path, _ = QFileDialog.getSaveFileName(
+            None,
+            "Salvar Planilha de Exemplo",
+            nome_sugestao,
+            "Excel Files (*.xlsx)"
+        )
+
+        if not file_path:
+            print("Operação cancelada pelo usuário.")
+            return
+
+        # Salvar usando openpyxl para aplicar estilos
+        df.to_excel(file_path, index=False, engine='openpyxl', sheet_name=sheet_name)
+
+        # Abrir a planilha para formatação
+        wb = load_workbook(file_path)
+        ws = wb[sheet_name]  # Usar o nome da aba dinamicamente
+
+        # Formatar as colunas
+        for col in ws.columns:
+            max_length = 0
+            col_letter = get_column_letter(col[0].column)
+            for cell in col:
+                # Centralizar
+                cell.alignment = Alignment(horizontal='center', vertical='center')
+                try:
+                    if cell.value:
+                        max_length = max(max_length, len(str(cell.value)))
+                except:
+                    pass
+                # Ajustar largura da coluna
+                ws.column_dimensions[col_letter].width = max_length + 2
+
+        # Salvar as alterações
+        wb.save(file_path)
+
+        # Mostrar a mensagem de sucesso
+        QMessageBox.information(
+            None,
+            "Sucesso",
+            f"Planilha '{escolha}' salva com sucesso em {file_path}!",
+            QMessageBox.Ok
+        )
+     
+    def pagina_cadastro_em_massa_produtos(self):
+        selected_action = self.sender()
+        if selected_action == self.action_em_massa_produtos:
+            self.paginas_sistemas.setCurrentWidget(self.page_cadastrar_massa_produtos)
+        
+    def pagina_cadastro_em_massa_usuarios(self):
+        selected_action = self.sender()
+        if selected_action == self.action_em_massa_usuarios:
+            self.paginas_sistemas.setCurrentWidget(self.page_cadastrar_massa_usuarios)
 
 
 # Função principal
@@ -2190,7 +2334,7 @@ if __name__ == '__main__':
     
     # Usa estilo nativo do Windows explicitamente
     app.setStyle("WindowsVista")
-
+    app.setWindowIcon(QIcon("imagens/ícone_sistema_provisório.png"))
     
     login_window.show()
     sys.exit(app.exec())

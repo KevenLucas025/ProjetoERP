@@ -19,7 +19,9 @@ class EstoqueProduto(QWidget):
     def __init__(self, main_window, btn_gerar_pdf, btn_gerar_estorno, 
                  btn_gerar_saida,btn_importar, btn_limpar_tabela, 
                  btn_atualizar_saida, btn_atualizar_estoque, btn_historico,
-                 btn_abrir_planilha, line_excel, progress_excel, btn_incluir_produto_sistema,btn_confirmar_massa,parent=None):
+                 btn_abrir_planilha, line_excel, progress_excel, btn_incluir_produto_sistema,
+                 btn_fazer_cadastro_massa_produtos,btn_abrir_planilha_massa_produtos,progress_massa_produtos,
+                 line_edit_massa_produtos,parent=None):
         super().__init__(parent)
 
         self.db = DataBase("banco_de_dados.db")
@@ -33,6 +35,7 @@ class EstoqueProduto(QWidget):
         self.main_window = main_window
         self.table_base = self.main_window.table_base  # Referência para a tabela no main window
         self.table_saida = self.main_window.table_saida
+        self.table_massa_produtos = self.main_window.table_massa_produtos
         self.btn_gerar_pdf = btn_gerar_pdf
         self.btn_gerar_estorno = btn_gerar_estorno
         self.btn_gerar_saida = btn_gerar_saida
@@ -45,7 +48,11 @@ class EstoqueProduto(QWidget):
         self.line_excel = line_excel
         self.progress_excel = progress_excel
         self.btn_incluir_produto_sistema = btn_incluir_produto_sistema
-        self.btn_confirmar_massa = btn_confirmar_massa
+        self.btn_fazer_cadastro_massa_produtos = btn_fazer_cadastro_massa_produtos
+        self.btn_abrir_planilha_massa_produtos = btn_abrir_planilha_massa_produtos
+        self.progress_massa_produtos = progress_massa_produtos
+        self.line_edit_massa_produtos = line_edit_massa_produtos
+        
 
 
         self.btn_gerar_pdf.clicked.connect(self.exibir_pdf)
@@ -58,6 +65,8 @@ class EstoqueProduto(QWidget):
         self.btn_historico.clicked.connect(self.exibir_historico)    
         self.btn_abrir_planilha.clicked.connect(self.abrir_planilha)
         self.btn_incluir_produto_sistema.clicked.connect(self.incluir_produto_no_sistema)
+        self.btn_fazer_cadastro_massa_produtos.clicked.connect(self.cadastrar_produtos_em_massa)
+        self.btn_abrir_planilha_massa_produtos.clicked.connect(self.abrir_planilha_em_massa_produtos)
         self.main_window.table_base.viewport().installEventFilter(self)
         self.main_window.table_saida.viewport().installEventFilter(self)
 
@@ -871,7 +880,7 @@ class EstoqueProduto(QWidget):
         self.tabela_historico.clearContents()
         self.tabela_historico.setRowCount(len(registros))
 
-        for i, (_, data, usuario, acao, descricao) in enumerate(registros):
+        for i, (data, usuario, acao, descricao) in enumerate(registros):
             self.tabela_historico.setItem(i, 0, QTableWidgetItem(data))
             self.tabela_historico.setItem(i, 1, QTableWidgetItem(usuario))
             self.tabela_historico.setItem(i, 2, QTableWidgetItem(acao))
@@ -1675,6 +1684,8 @@ class EstoqueProduto(QWidget):
         except Exception as e:
             QMessageBox.critical(self, "Erro", f"Erro ao incluir o produto no sistema:\n{e}")
 
+
+
     # Limpa a coluna selecionada clicando em qualquer lugar da tabela
     def eventFilter(self, source, event):
         if event.type() == QEvent.MouseButtonPress:
@@ -1689,3 +1700,151 @@ class EstoqueProduto(QWidget):
                     self.main_window.table_saida.clearSelection()
 
         return super().eventFilter(source, event)
+
+    def abrir_planilha_em_massa_produtos(self):
+        # Abrir o diálogo para selecionar o arquivo Excel
+        nome_arquivo, _ = QFileDialog.getOpenFileName(self, "Abrir Arquivo Excel", "", "Arquivos Excel (*.xlsx)")
+
+        # Se o usuário cancelar a seleção do arquivo
+        if not nome_arquivo:
+            return
+        
+        # Alterar o texto da line_excel para "Carregando arquivo Excel..."
+        self.line_edit_massa_produtos.setText("Carregando arquivo Excel...")
+        self.nome_arquivo_excel_massa = nome_arquivo
+
+        # Inicializar a barra de progresso
+        self.progress_massa_produtos.setValue(0)
+        self.progresso_massa = 0
+
+        # Começar o timer para simular carregamento visual
+        self.timer_excel_massa = QTimer()
+        self.timer_excel_massa.timeout.connect(self.atualizar_progress_excel_massa)
+        self.timer_excel_massa.start(20)
+
+    def atualizar_progress_excel_massa(self):
+        if self.progresso_massa < 100:
+            self.progresso_massa += 1
+            self.progress_massa_produtos.setValue(self.progresso_massa)
+        else:
+            self.timer_excel_massa.stop()
+            try:
+                df = pd.read_excel(self.nome_arquivo_excel_massa, engine="openpyxl", header=0)
+                df = df.fillna("Não informado")
+
+                coluna_table_massa_produtos = ["Produto", "Quantidade", "Valor do Produto", "Desconto", "Data da Compra",
+                                            "Código do Item", "Cliente", "Descrição do Produto"]
+                if df.shape[1] != len(coluna_table_massa_produtos):
+                    QMessageBox.warning(self, "Erro", "O número de colunas no arquivo Excel não corresponde ao número esperado.")
+                    self.line_edit_massa_produtos.clear()
+                    # Zerando a barra de progresso
+                    self.progress_massa_produtos.setValue(0)
+                    self.progresso_massa = 0
+                    return
+                if df.shape[0] == 0:
+                    QMessageBox.warning(self, "Erro", "O arquivo Excel está vazio.")
+                    self.line_edit_massa_produtos.clear()
+                    # Zerando a barra de progresso
+                    self.progress_massa_produtos.setValue(0)
+                    self.progresso_massa = 0
+                    return
+                self.table_massa_produtos.setRowCount(0)
+
+                if df["Valor do Produto"].dtype != object or not df["Valor do Produto"].iloc[0].startswith("R$"):
+                    df["Valor do Produto"] = pd.to_numeric(df["Valor do Produto"], errors="coerce").fillna(0)
+                    df["Valor do Produto"] = df["Valor do Produto"].apply(
+                        lambda x: f"R$ {x:,.2f}".replace(",", "_").replace(".", ",").replace("_", ".")
+                    )
+
+
+                df["Desconto"] = pd.to_numeric(df.iloc[:, 3], errors="coerce").fillna(0)
+                df["Desconto"] = df["Desconto"].apply(
+                    lambda x: "Sem desconto" if x == 0  else f"{x:.2f}%" if x < 1 else f"{x / 100:.2f}%"
+                )
+
+                if "Data da Compra" in df.columns:
+                    df["Data da Compra"] = pd.to_datetime(df["Data da Compra"], errors="coerce").dt.strftime('%d/%m/%Y')
+                else:
+                    df["Data da Compra"] = ""
+                for _, row in df.iterrows():
+                    row_position = self.table_massa_produtos.rowCount()
+                    self.table_massa_produtos.insertRow(row_position)
+                    for column, value in enumerate(row):
+                        item = self.formatar_texto_produtos_em_massa(str(value))
+                        self.table_massa_produtos.setItem(row_position, column, item)
+                QMessageBox.information(self, "Sucesso", "Arquivo Excel importado com sucesso!")
+            except Exception as e:
+                QMessageBox.critical(self, "Erro", f"Erro ao importar o arquivo Excel: {e}")
+            # Quando o arquivo for carregado, atualizar o texto da line_excel com o caminho do arquivo
+            self.line_edit_massa_produtos.setText(self.nome_arquivo_excel_massa)
+
+            # Zerando a barra de progresso
+            self.progress_massa_produtos.setValue(0)
+            self.progresso_massa = 0
+            self.table_massa_produtos.resizeColumnsToContents()  # Ajusta a largura das colunas para o conteúdo
+            self.table_massa_produtos.resizeRowsToContents()
+
+    def formatar_texto_produtos_em_massa(self, texto):
+        item = QTableWidgetItem(texto)
+        item.setTextAlignment(Qt.AlignCenter)  # Centraliza o texto
+        item.setForeground(QBrush(QColor("white"))) 
+        return item
+    
+    def cadastrar_produtos_em_massa(self):
+        try:
+            total_linhas = self.table_massa_produtos.rowCount()
+            if total_linhas == 0:
+                QMessageBox.warning(self, "Aviso", "Nenhum produto encontrado para cadastrar.")
+                return
+            for linha in range(total_linhas):
+                produto = self.table_massa_produtos.item(linha, 0).text()
+                quantidade = self.table_massa_produtos.item(linha, 1).text()
+
+                # Tratamento do valor (remover R$ e converter para float)
+                valor_str = self.table_massa_produtos.item(linha, 2).text().replace("R$", "").replace(".", "").replace(",", ".").strip()
+                valor_float = float(valor_str) if valor_str else 0.0
+                valor_produto = f"R$ {valor_float:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
+
+                # Desconto: tratar "Sem desconto" como 0
+                desconto_str = self.table_massa_produtos.item(linha, 3).text().replace("%", "").replace(",", ".").strip()
+                desconto = 0.0 if desconto_str.lower() == "sem desconto" else float(desconto_str)
+
+                data_compra = self.table_massa_produtos.item(linha, 4).text()
+                cliente = self.table_massa_produtos.item(linha, 6).text()
+                descricao_produto = self.table_massa_produtos.item(linha, 7).text()
+
+                # Gerar código aleatório para cada produto
+                codigo_aleatorio = self.main_window.gerar_codigo_aleatorio()
+
+                produto_info = {
+                    "produto": produto,
+                    "quantidade": quantidade,
+                    "valor_produto": valor_produto,
+                    "desconto": desconto,
+                    "data_compra": data_compra,
+                    "codigo_item": codigo_aleatorio,
+                    "cliente": cliente,
+                    "descricao_produto": descricao_produto
+                }
+                self.main_window.inserir_produto_no_bd(produto_info,registrar_historico=False)
+
+                # Registrar no histórico para o cadastro em massa
+                descricao = f"Produto {produto} foi cadastrado com quantidade {quantidade} e valor {valor_produto}!"
+                self.main_window.registrar_historico("Cadastro em Massa", descricao)
+
+            QMessageBox.information(self, "Sucesso", "Produtos cadastrados com sucesso!")
+            self.line_edit_massa_produtos.clear()
+
+            # Limpar a tabela após a inserção
+            self.table_massa_produtos.setRowCount(0)
+
+        except Exception as e:
+            QMessageBox.critical(self, "Erro", f"Erro ao cadastrar produtos em massa:\n{e}")
+
+    
+    
+
+
+
+
+

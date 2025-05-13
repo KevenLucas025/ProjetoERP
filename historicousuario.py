@@ -22,8 +22,9 @@ from openpyxl.styles import Alignment, Font
 class Pagina_Usuarios(QWidget):
     def __init__(self,main_window,btn_abrir_planilha_usuarios,btn_cadastrar_novo_usuario,btn_gerar_pdf_usuario,
                   btn_historico_usuarios,btn_atualizar_ativos,btn_atualizar_inativos,btn_limpar_tabelas_usuarios,
-                  btn_gerar_saida_usuarios,btn_cadastrar_todos,line_excel_usuarios,progress_excel_usuarios,
-                  btn_importar_usuarios,parent=None):
+                  btn_gerar_saida_usuarios,line_excel_usuarios,progress_excel_usuarios,
+                  btn_importar_usuarios,btn_abrir_planilha_massa_usuarios,btn_fazer_cadastro_massa_usuarios,
+                  progress_massa_usuarios,line_edit_massa_usuarios,parent=None):
         super().__init__(parent)
 
         self.db = DataBase("banco_de_dados.db")
@@ -39,6 +40,7 @@ class Pagina_Usuarios(QWidget):
         self.main_window = main_window
         self.table_ativos = self.main_window.table_ativos  # Referência para a tabela no main window
         self.table_inativos = self.main_window.table_inativos
+        self.table_massa_usuarios = self.main_window.table_massa_usuarios
         self.btn_abrir_planilha_usuarios = btn_abrir_planilha_usuarios
         self.btn_cadastrar_novo_usuario = btn_cadastrar_novo_usuario
         self.btn_gerar_pdf_usuario = btn_gerar_pdf_usuario
@@ -47,10 +49,13 @@ class Pagina_Usuarios(QWidget):
         self.btn_atualizar_inativos = btn_atualizar_inativos
         self.btn_limpar_tabelas_usuarios = btn_limpar_tabelas_usuarios
         self.btn_gerar_saida_usuarios = btn_gerar_saida_usuarios
-        self.btn_cadastrar_todos = btn_cadastrar_todos
         self.line_excel_usuarios = line_excel_usuarios
         self.progress_excel_usuarios = progress_excel_usuarios
         self.btn_importar_usuarios = btn_importar_usuarios
+        self.btn_abrir_planilha_massa_usuarios = btn_abrir_planilha_massa_usuarios
+        self.btn_fazer_cadastro_massa_usuarios = btn_fazer_cadastro_massa_usuarios
+        self.progress_massa_usuarios = progress_massa_usuarios
+        self.line_edit_massa_usuarios = line_edit_massa_usuarios
         
         
 
@@ -58,16 +63,14 @@ class Pagina_Usuarios(QWidget):
         self.btn_limpar_tabelas_usuarios.clicked.connect(self.limpar_tabelas)
         self.btn_atualizar_ativos.clicked.connect(self.atualizar_ativos)
         self.btn_atualizar_inativos.clicked.connect(self.atualizar_inativos)
-        self.btn_cadastrar_todos.clicked.connect(self.cadastrar_em_massa)
         self.btn_gerar_pdf_usuario.clicked.connect(self.exibir_pdf_usuarios)
         self.btn_historico_usuarios.clicked.connect(self.exibir_tabela_historico_usuario)
         self.btn_abrir_planilha_usuarios.clicked.connect(self.abrir_planilha_usuarios)
         self.btn_importar_usuarios.clicked.connect(self.importar_usuario)
+        self.btn_abrir_planilha_massa_usuarios.clicked.connect(self.abrir_panilha_usuarios_em_massa)
         self.main_window.table_ativos.viewport().installEventFilter(self)
         self.main_window.table_inativos.viewport().installEventFilter(self)
 
-        
-        
 
 
     # Função auxiliar para criar um QTableWidgetItem com texto centralizado
@@ -243,6 +246,7 @@ class Pagina_Usuarios(QWidget):
             QLineEdit.Normal,
             "Sim"
         )
+        
 
         if not ok or confirmar_saida != "Sim":
             return
@@ -756,7 +760,7 @@ class Pagina_Usuarios(QWidget):
         self.tabela_historico_usuarios.clearContents()
         self.tabela_historico_usuarios.setRowCount(len(registros))
 
-        for i, (_, data, usuario, acao, descricao) in enumerate(registros):
+        for i, (data, usuario, acao, descricao) in enumerate(registros):
             self.tabela_historico_usuarios.setItem(i, 0, QTableWidgetItem(data))
             self.tabela_historico_usuarios.setItem(i, 1, QTableWidgetItem(usuario))
             self.tabela_historico_usuarios.setItem(i, 2, QTableWidgetItem(acao))
@@ -1512,7 +1516,86 @@ class Pagina_Usuarios(QWidget):
                     self.main_window.table_inativos.clearSelection()
 
         return super().eventFilter(source, event)
+    
+    def abrir_panilha_usuarios_em_massa(self):
+        # Abrir o diálogo para selecionar o arquivo Excel
+        nome_arquivo, _ = QFileDialog.getOpenFileName(self, "Abrir Arquivo Excel", "", "Arquivos Excel (*.xlsx)")
 
+        # Se o usuário cancelar a seleção do arquivo
+        if not nome_arquivo:
+            return
+        # Alterar o texto da line_excel para "Carregando arquivo Excel..."
+        self.line_edit_massa_usuarios.setText("Carregando arquivo Excel...")
+        self.nome_arquivo_excel_massa = nome_arquivo
 
-    def cadastrar_em_massa(self):
+        # Inicializar a barra de progresso
+        self.progress_massa_usuarios.setValue(0)
+        self.progresso_massa = 0
+
+        # Começar o timer para simular carregamento visual
+        self.timer_excel_massa_usuarios = QTimer()
+        self.timer_excel_massa_usuarios.timeout.connect(self.atualizar_progress_line_usuarios_em_massa)
+        self.timer_excel_massa_usuarios.start(20)
+
+    def atualizar_progress_line_usuarios_em_massa(self):
+        if self.progresso_massa < 100:
+            self.progresso_massa += 1
+            self.progress_massa_usuarios.setValue(self.progresso_massa)
+        else:
+            self.timer_excel_massa_usuarios.stop()
+
+            try:
+                df = pd.read_excel(self.nome_arquivo_excel_massa, engine="openpyxl", header=0)
+                df = df.fillna("Não informado")
+
+                colunas_table_massa_usuarios = ["Nome", "Usuário", "Senha", "Confirmar Senha", "Acesso",
+                    "Endereço", "CEP", "CPF", "Número", "Estado", "E-mail", "RG", "Complemento", "Telefone",
+                    "Data de Nascimento"]
+
+                # Verificar se o DataFrame está vazio
+                if df.shape[1] != len(colunas_table_massa_usuarios):
+                    QMessageBox.warning(self, "Erro", "O número de colunas no arquivo Excel não corresponde ao número esperado.")
+                    self.line_edit_massa_usuarios.clear()
+                    # Zerando a barra de progresso
+                    self.progress_massa_usuarios.setValue(0)
+                    self.progresso_massa = 0
+                    
+                    
+                if df.shape[0] == 0:
+                    QMessageBox.warning(self, "Erro", "O arquivo Excel está vazio.")
+                    self.line_edit_massa_usuarios.clear()
+                    # Zerando a barra de progresso
+                    self.progress_massa_usuarios.setValue(0)
+                    self.progresso_massa = 0
+                    return  
+                # Adicionar os dados à tabela
+                self.table_massa_usuarios.setRowCount(0)
+                
+        
+                for _, row in df.iterrows():
+                    row_position = self.table_massa_usuarios.rowCount()
+                    self.table_massa_usuarios.insertRow(row_position)
+                    for column, value in enumerate(row):
+                        item = self.formatar_texto_usuarios_em_massa(str(value))
+                        self.table_massa_usuarios.setItem(row_position, column, item)
+                QMessageBox.information(self, "Sucesso", "Arquivo Excel importado com sucesso!")
+
+            except Exception as e:
+                QMessageBox.critical(self, "Erro", f"Erro ao importar o arquivo Excel: {e}")
+             # Quando o arquivo for carregado, atualizar o texto da line_excel com o caminho do arquivo
+            self.line_edit_massa_usuarios.setText(self.nome_arquivo_excel_massa)
+            
+            self.progress_massa_usuarios.setValue(0)
+            self.progresso_massa = 0
+            self.table_massa_usuarios.resizeColumnsToContents()
+            self.table_massa_usuarios.resizeRowsToContents()
+            
+    def formatar_texto_usuarios_em_massa(self, texto):
+        item = QTableWidgetItem(texto)
+        item.setTextAlignment(Qt.AlignCenter)  # Centraliza o texto
+        item.setForeground(QBrush(QColor("white"))) 
+        return item
+
+    def cadastrar_usuarios_em_massa(self):
         pass
+    #Função que incrementarei depois que para ser ativada, terá que ser paga

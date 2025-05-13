@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'novamaine.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.9.0
+## Created by: Qt User Interface Compiler version 6.8.2
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -48,6 +48,195 @@ class Ui_MainWindow(object):
         self.horizontalSpacer_5 = QSpacerItem(1130, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
 
         self.gridLayout_2.addItem(self.horizontalSpacer_5, 0, 1, 1, 1)
+
+        self.frame_botoes_navegacoes = QFrame(self.centralwidget)
+        self.frame_botoes_navegacoes.setObjectName(u"frame_botoes_navegacoes")
+        sizePolicy.setHeightForWidth(self.frame_botoes_navegacoes.sizePolicy().hasHeightForWidth())
+        self.frame_botoes_navegacoes.setSizePolicy(sizePolicy)
+        self.frame_botoes_navegacoes.setMaximumSize(QSize(162, 16777215))
+        self.frame_botoes_navegacoes.setAutoFillBackground(False)
+        self.frame_botoes_navegacoes.setFrameShape(QFrame.NoFrame)
+        self.frame_botoes_navegacoes.setFrameShadow(QFrame.Plain)
+        self.gridLayout = QGridLayout(self.frame_botoes_navegacoes)
+        self.gridLayout.setObjectName(u"gridLayout")
+        self.btn_configuracoes = QPushButton(self.frame_botoes_navegacoes)
+        self.btn_configuracoes.setObjectName(u"btn_configuracoes")
+        sizePolicy.setHeightForWidth(self.btn_configuracoes.sizePolicy().hasHeightForWidth())
+        self.btn_configuracoes.setSizePolicy(sizePolicy)
+        self.btn_configuracoes.setMaximumSize(QSize(145, 27))
+        self.btn_configuracoes.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
+        self.btn_configuracoes.setStyleSheet(u"QPushButton {\n"
+"    color: rgb(255, 255, 255);\n"
+"    border-radius: 8px;\n"
+"    font-size: 16px;\n"
+"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */\n"
+"    border: 4px solid transparent;\n"
+"}\n"
+"\n"
+"QPushButton:hover {\n"
+"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */\n"
+"    color: black;\n"
+"}")
+
+        self.gridLayout.addWidget(self.btn_configuracoes, 6, 0, 1, 1)
+
+        self.btn_verificar_usuarios = QPushButton(self.frame_botoes_navegacoes)
+        self.btn_verificar_usuarios.setObjectName(u"btn_verificar_usuarios")
+        sizePolicy.setHeightForWidth(self.btn_verificar_usuarios.sizePolicy().hasHeightForWidth())
+        self.btn_verificar_usuarios.setSizePolicy(sizePolicy)
+        self.btn_verificar_usuarios.setMaximumSize(QSize(145, 27))
+        self.btn_verificar_usuarios.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
+        self.btn_verificar_usuarios.setStyleSheet(u"QPushButton {\n"
+"    color: rgb(255, 255, 255);\n"
+"    border-radius: 8px;\n"
+"    font-size: 16px;\n"
+"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */\n"
+"    border: 4px solid transparent;\n"
+"}\n"
+"\n"
+"QPushButton:hover {\n"
+"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */\n"
+"    color: black;\n"
+"}")
+
+        self.gridLayout.addWidget(self.btn_verificar_usuarios, 2, 0, 1, 1)
+
+        self.btn_home = QPushButton(self.frame_botoes_navegacoes)
+        self.btn_home.setObjectName(u"btn_home")
+        sizePolicy.setHeightForWidth(self.btn_home.sizePolicy().hasHeightForWidth())
+        self.btn_home.setSizePolicy(sizePolicy)
+        self.btn_home.setMaximumSize(QSize(145, 27))
+        self.btn_home.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
+        self.btn_home.setAutoFillBackground(False)
+        self.btn_home.setStyleSheet(u"QPushButton {\n"
+"    color: rgb(255, 255, 255);\n"
+"    border-radius: 8px;\n"
+"    font-size: 16px;\n"
+"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */\n"
+"    border: 4px solid transparent;\n"
+"}\n"
+"\n"
+"QPushButton:hover {\n"
+"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */\n"
+"    color: black;\n"
+"}")
+
+        self.gridLayout.addWidget(self.btn_home, 0, 0, 1, 1)
+
+        self.btn_verificar_estoque = QPushButton(self.frame_botoes_navegacoes)
+        self.btn_verificar_estoque.setObjectName(u"btn_verificar_estoque")
+        sizePolicy.setHeightForWidth(self.btn_verificar_estoque.sizePolicy().hasHeightForWidth())
+        self.btn_verificar_estoque.setSizePolicy(sizePolicy)
+        self.btn_verificar_estoque.setMaximumSize(QSize(145, 27))
+        self.btn_verificar_estoque.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
+        self.btn_verificar_estoque.setAutoFillBackground(False)
+        self.btn_verificar_estoque.setStyleSheet(u"QPushButton {\n"
+"    color: rgb(255, 255, 255);\n"
+"    border-radius: 8px;\n"
+"    font-size: 16px;\n"
+"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */\n"
+"    border: 4px solid transparent;\n"
+"}\n"
+"\n"
+"QPushButton:hover {\n"
+"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */\n"
+"    color: black;\n"
+"}")
+
+        self.gridLayout.addWidget(self.btn_verificar_estoque, 1, 0, 1, 1)
+
+        self.btn_clientes = QPushButton(self.frame_botoes_navegacoes)
+        self.btn_clientes.setObjectName(u"btn_clientes")
+        sizePolicy.setHeightForWidth(self.btn_clientes.sizePolicy().hasHeightForWidth())
+        self.btn_clientes.setSizePolicy(sizePolicy)
+        self.btn_clientes.setMaximumSize(QSize(145, 27))
+        self.btn_clientes.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
+        self.btn_clientes.setStyleSheet(u"QPushButton {\n"
+"    color: rgb(255, 255, 255);\n"
+"    border-radius: 8px;\n"
+"    font-size: 16px;\n"
+"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */\n"
+"    border: 4px solid transparent;\n"
+"}\n"
+"\n"
+"QPushButton:hover {\n"
+"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */\n"
+"    color: black;\n"
+"}")
+
+        self.gridLayout.addWidget(self.btn_clientes, 5, 0, 1, 1)
+
+        self.btn_cadastrar_usuarios = QPushButton(self.frame_botoes_navegacoes)
+        self.btn_cadastrar_usuarios.setObjectName(u"btn_cadastrar_usuarios")
+        sizePolicy.setHeightForWidth(self.btn_cadastrar_usuarios.sizePolicy().hasHeightForWidth())
+        self.btn_cadastrar_usuarios.setSizePolicy(sizePolicy)
+        self.btn_cadastrar_usuarios.setMaximumSize(QSize(145, 27))
+        self.btn_cadastrar_usuarios.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
+        self.btn_cadastrar_usuarios.setStyleSheet(u"QPushButton {\n"
+"    color: rgb(255, 255, 255);\n"
+"    border-radius: 8px;\n"
+"    font-size: 16px;\n"
+"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */\n"
+"    border: 4px solid transparent;\n"
+"}\n"
+"\n"
+"QPushButton:hover {\n"
+"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */\n"
+"    color: black;\n"
+"}")
+
+        self.gridLayout.addWidget(self.btn_cadastrar_usuarios, 4, 0, 1, 1)
+
+        self.btn_cadastrar_produto = QPushButton(self.frame_botoes_navegacoes)
+        self.btn_cadastrar_produto.setObjectName(u"btn_cadastrar_produto")
+        sizePolicy.setHeightForWidth(self.btn_cadastrar_produto.sizePolicy().hasHeightForWidth())
+        self.btn_cadastrar_produto.setSizePolicy(sizePolicy)
+        self.btn_cadastrar_produto.setMaximumSize(QSize(145, 27))
+        self.btn_cadastrar_produto.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
+        self.btn_cadastrar_produto.setStyleSheet(u"QPushButton {\n"
+"    color: rgb(255, 255, 255);\n"
+"    border-radius: 8px;\n"
+"    font-size: 16px;\n"
+"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */\n"
+"    border: 4px solid transparent;\n"
+"}\n"
+"\n"
+"QPushButton:hover {\n"
+"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */\n"
+"    color: black;\n"
+"}")
+
+        self.gridLayout.addWidget(self.btn_cadastrar_produto, 3, 0, 1, 1)
+
+
+        self.gridLayout_2.addWidget(self.frame_botoes_navegacoes, 0, 0, 2, 1)
+
+        self.btn_mais_opcoes = QToolButton(self.centralwidget)
+        self.btn_mais_opcoes.setObjectName(u"btn_mais_opcoes")
+        sizePolicy.setHeightForWidth(self.btn_mais_opcoes.sizePolicy().hasHeightForWidth())
+        self.btn_mais_opcoes.setSizePolicy(sizePolicy)
+        self.btn_mais_opcoes.setMaximumSize(QSize(120, 30))
+        font = QFont()
+        font.setFamilies([u"Calibri"])
+        font.setPointSize(11)
+        self.btn_mais_opcoes.setFont(font)
+        self.btn_mais_opcoes.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
+        self.btn_mais_opcoes.setStyleSheet(u"QToolButton {\n"
+"                background-color: rgb(50, 150, 250);\n"
+"                color: white;\n"
+"                border-radius: 10px;\n"
+"                border: 2px solid rgb(50, 150, 250);\n"
+"                padding: 5px 10px;\n"
+"            }\n"
+"            QToolButton:hover {\n"
+"                background-color: rgb(100, 180, 255);\n"
+"                border: 2px solid rgb(100, 180, 255);\n"
+"            }\n"
+"            ")
+        self.btn_mais_opcoes.setPopupMode(QToolButton.MenuButtonPopup)
+        self.btn_mais_opcoes.setToolButtonStyle(Qt.ToolButtonTextOnly)
+
+        self.gridLayout_2.addWidget(self.btn_mais_opcoes, 0, 2, 1, 1)
 
         self.paginas_sistemas = QStackedWidget(self.centralwidget)
         self.paginas_sistemas.setObjectName(u"paginas_sistemas")
@@ -1804,31 +1993,6 @@ class Ui_MainWindow(object):
         self.frame_confirmar_ver_produto.setFrameShadow(QFrame.Raised)
         self.verticalLayout_20 = QVBoxLayout(self.frame_confirmar_ver_produto)
         self.verticalLayout_20.setObjectName(u"verticalLayout_20")
-        self.btn_confirmar_massa = QPushButton(self.frame_confirmar_ver_produto)
-        self.btn_confirmar_massa.setObjectName(u"btn_confirmar_massa")
-        sizePolicy.setHeightForWidth(self.btn_confirmar_massa.sizePolicy().hasHeightForWidth())
-        self.btn_confirmar_massa.setSizePolicy(sizePolicy)
-        self.btn_confirmar_massa.setMaximumSize(QSize(177, 30))
-        self.btn_confirmar_massa.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
-        self.btn_confirmar_massa.setStyleSheet(u"QPushButton {\n"
-"    color: rgb(255, 255, 255); /* Cor do texto (branco) */\n"
-"    border-radius: 10px;\n"
-"    font-size: 12px;\n"
-"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 200, 100), stop:1 rgb(150, 255, 150)); /* Gradiente de verde claro para verde mais claro */\n"
-"    border: 3px solid transparent;\n"
-"}\n"
-"\n"
-"QPushButton:hover {\n"
-"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(150, 255, 150), stop:1 rgb(200, 255, 200)); /* Gradiente de verde mais claro para verde ainda mais claro */\n"
-"    color: rgb(0, 0, 0); /* Cor do texto (preto) */\n"
-"}\n"
-"")
-        icon6 = QIcon()
-        icon6.addFile(u"imagens/confirmacao.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
-        self.btn_confirmar_massa.setIcon(icon6)
-
-        self.verticalLayout_20.addWidget(self.btn_confirmar_massa)
-
         self.btn_confirmar = QPushButton(self.frame_confirmar_ver_produto)
         self.btn_confirmar.setObjectName(u"btn_confirmar")
         sizePolicy.setHeightForWidth(self.btn_confirmar.sizePolicy().hasHeightForWidth())
@@ -1849,6 +2013,8 @@ class Ui_MainWindow(object):
 "    color: rgb(0, 0, 0); /* Cor do texto (preto) */\n"
 "}\n"
 "")
+        icon6 = QIcon()
+        icon6.addFile(u"imagens/confirmacao.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
         self.btn_confirmar.setIcon(icon6)
 
         self.verticalLayout_20.addWidget(self.btn_confirmar)
@@ -2657,29 +2823,11 @@ class Ui_MainWindow(object):
         self.frame_20.setObjectName(u"frame_20")
         sizePolicy.setHeightForWidth(self.frame_20.sizePolicy().hasHeightForWidth())
         self.frame_20.setSizePolicy(sizePolicy)
-        self.frame_20.setMaximumSize(QSize(180, 250))
+        self.frame_20.setMaximumSize(QSize(200, 250))
         self.frame_20.setFrameShape(QFrame.NoFrame)
         self.frame_20.setFrameShadow(QFrame.Raised)
         self.verticalLayout_16 = QVBoxLayout(self.frame_20)
         self.verticalLayout_16.setObjectName(u"verticalLayout_16")
-        self.btn_cadastrar_todos = QPushButton(self.frame_20)
-        self.btn_cadastrar_todos.setObjectName(u"btn_cadastrar_todos")
-        self.btn_cadastrar_todos.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
-        self.btn_cadastrar_todos.setStyleSheet(u"QPushButton {\n"
-"    color: rgb(255, 255, 255);\n"
-"    border-radius: 8px;\n"
-"    font-size: 14px;\n"
-"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */\n"
-"    border: 4px solid transparent;\n"
-"}\n"
-"\n"
-"QPushButton:hover {\n"
-"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */\n"
-"    color: black;\n"
-"}")
-
-        self.verticalLayout_16.addWidget(self.btn_cadastrar_todos)
-
         self.btn_editar_cadastro = QPushButton(self.frame_20)
         self.btn_editar_cadastro.setObjectName(u"btn_editar_cadastro")
         sizePolicy.setHeightForWidth(self.btn_editar_cadastro.sizePolicy().hasHeightForWidth())
@@ -2697,6 +2845,7 @@ class Ui_MainWindow(object):
 "    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */\n"
 "    color: black;\n"
 "}")
+        self.btn_editar_cadastro.setIcon(icon1)
 
         self.verticalLayout_16.addWidget(self.btn_editar_cadastro)
 
@@ -2717,6 +2866,7 @@ class Ui_MainWindow(object):
 "    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */\n"
 "    color: black;\n"
 "}")
+        self.btn_atualizar_cadastro.setIcon(icon2)
 
         self.verticalLayout_16.addWidget(self.btn_atualizar_cadastro)
 
@@ -2737,6 +2887,8 @@ class Ui_MainWindow(object):
 "    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */\n"
 "    color: black;\n"
 "}")
+        self.btn_apagar_cadastro.setIcon(icon3)
+        self.btn_apagar_cadastro.setIconSize(QSize(24, 31))
 
         self.verticalLayout_16.addWidget(self.btn_apagar_cadastro)
 
@@ -2757,6 +2909,7 @@ class Ui_MainWindow(object):
 "    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */\n"
 "    color: black;\n"
 "}")
+        self.btn_carregar_imagem_4.setIcon(icon5)
 
         self.verticalLayout_16.addWidget(self.btn_carregar_imagem_4)
 
@@ -2777,6 +2930,8 @@ class Ui_MainWindow(object):
 "    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */\n"
 "    color: black;\n"
 "}")
+        self.btn_remover_imagem_usuario.setIcon(icon3)
+        self.btn_remover_imagem_usuario.setIconSize(QSize(24, 31))
 
         self.verticalLayout_16.addWidget(self.btn_remover_imagem_usuario)
 
@@ -2797,6 +2952,7 @@ class Ui_MainWindow(object):
 "    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */\n"
 "    color: black;\n"
 "}")
+        self.btn_fazer_cadastro.setIcon(icon6)
 
         self.verticalLayout_16.addWidget(self.btn_fazer_cadastro)
 
@@ -2817,6 +2973,10 @@ class Ui_MainWindow(object):
 "    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */\n"
 "    color: black;\n"
 "}")
+        icon8 = QIcon()
+        icon8.addFile(u"imagens/74472.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        self.btn_ver_usuario.setIcon(icon8)
+        self.btn_ver_usuario.setIconSize(QSize(17, 28))
 
         self.verticalLayout_16.addWidget(self.btn_ver_usuario)
 
@@ -3386,237 +3546,426 @@ class Ui_MainWindow(object):
         self.gridLayout_19.addWidget(self.frame_pg_contato, 0, 0, 1, 1)
 
         self.paginas_sistemas.addWidget(self.pg_contato)
-        self.page_teste = QWidget()
-        self.page_teste.setObjectName(u"page_teste")
-        self.gridLayout_23 = QGridLayout(self.page_teste)
-        self.gridLayout_23.setObjectName(u"gridLayout_23")
-        self.frame_8 = QFrame(self.page_teste)
+        self.page_cadastrar_massa_produtos = QWidget()
+        self.page_cadastrar_massa_produtos.setObjectName(u"page_cadastrar_massa_produtos")
+        self.gridLayout_12 = QGridLayout(self.page_cadastrar_massa_produtos)
+        self.gridLayout_12.setObjectName(u"gridLayout_12")
+        self.frame_8 = QFrame(self.page_cadastrar_massa_produtos)
         self.frame_8.setObjectName(u"frame_8")
         self.frame_8.setFrameShape(QFrame.StyledPanel)
         self.frame_8.setFrameShadow(QFrame.Raised)
+        self.gridLayout_23 = QGridLayout(self.frame_8)
+        self.gridLayout_23.setObjectName(u"gridLayout_23")
         self.frame_9 = QFrame(self.frame_8)
         self.frame_9.setObjectName(u"frame_9")
-        self.frame_9.setGeometry(QRect(510, 160, 335, 100))
         sizePolicy.setHeightForWidth(self.frame_9.sizePolicy().hasHeightForWidth())
         self.frame_9.setSizePolicy(sizePolicy)
-        self.frame_9.setMaximumSize(QSize(16777215, 16777215))
-        self.frame_9.setStyleSheet(u"QFrame{\n"
-"background-color: #FFF3CD;\n"
-"color: #856404;\n"
-"border: 1px solid #ffeeba;\n"
-"border-radius: 10px;\n"
-"padding: 10px;\n"
+        self.frame_9.setMinimumSize(QSize(0, 0))
+        self.frame_9.setMaximumSize(QSize(16777214, 200))
+        self.frame_9.setFrameShape(QFrame.Box)
+        self.frame_9.setFrameShadow(QFrame.Raised)
+        self.verticalLayout_22 = QVBoxLayout(self.frame_9)
+        self.verticalLayout_22.setObjectName(u"verticalLayout_22")
+        self.verticalLayout_22.setContentsMargins(9, -1, 9, -1)
+        self.btn_fazer_cadastro_massa_produtos = QPushButton(self.frame_9)
+        self.btn_fazer_cadastro_massa_produtos.setObjectName(u"btn_fazer_cadastro_massa_produtos")
+        sizePolicy.setHeightForWidth(self.btn_fazer_cadastro_massa_produtos.sizePolicy().hasHeightForWidth())
+        self.btn_fazer_cadastro_massa_produtos.setSizePolicy(sizePolicy)
+        self.btn_fazer_cadastro_massa_produtos.setMinimumSize(QSize(0, 0))
+        self.btn_fazer_cadastro_massa_produtos.setMaximumSize(QSize(16777215, 31))
+        self.btn_fazer_cadastro_massa_produtos.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
+        self.btn_fazer_cadastro_massa_produtos.setStyleSheet(u"QPushButton {\n"
+"    color: rgb(255, 255, 255);\n"
+"    border-radius: 8px;\n"
+"    font-size: 16px;\n"
+"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */\n"
+"    border: 4px solid transparent;\n"
+"}\n"
+"\n"
+"QPushButton:hover {\n"
+"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */\n"
+"    color: black;\n"
+"}\n"
+"")
+
+        self.verticalLayout_22.addWidget(self.btn_fazer_cadastro_massa_produtos)
+
+        self.btn_abrir_planilha_massa_produtos = QPushButton(self.frame_9)
+        self.btn_abrir_planilha_massa_produtos.setObjectName(u"btn_abrir_planilha_massa_produtos")
+        sizePolicy.setHeightForWidth(self.btn_abrir_planilha_massa_produtos.sizePolicy().hasHeightForWidth())
+        self.btn_abrir_planilha_massa_produtos.setSizePolicy(sizePolicy)
+        self.btn_abrir_planilha_massa_produtos.setMaximumSize(QSize(16777215, 31))
+        self.btn_abrir_planilha_massa_produtos.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
+        self.btn_abrir_planilha_massa_produtos.setStyleSheet(u"QPushButton {\n"
+"    color: rgb(255, 255, 255);\n"
+"    border-radius: 8px;\n"
+"    font-size: 16px;\n"
+"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */\n"
+"    border: 4px solid transparent;\n"
+"}\n"
+"\n"
+"QPushButton:hover {\n"
+"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */\n"
+"    color: black;\n"
+"}\n"
+"")
+
+        self.verticalLayout_22.addWidget(self.btn_abrir_planilha_massa_produtos)
+
+        self.btn_editar_massa_produtos = QPushButton(self.frame_9)
+        self.btn_editar_massa_produtos.setObjectName(u"btn_editar_massa_produtos")
+        sizePolicy.setHeightForWidth(self.btn_editar_massa_produtos.sizePolicy().hasHeightForWidth())
+        self.btn_editar_massa_produtos.setSizePolicy(sizePolicy)
+        self.btn_editar_massa_produtos.setMaximumSize(QSize(16777215, 31))
+        self.btn_editar_massa_produtos.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
+        self.btn_editar_massa_produtos.setStyleSheet(u"QPushButton {\n"
+"    color: rgb(255, 255, 255);\n"
+"    border-radius: 8px;\n"
+"    font-size: 16px;\n"
+"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */\n"
+"    border: 4px solid transparent;\n"
+"}\n"
+"\n"
+"QPushButton:hover {\n"
+"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */\n"
+"    color: black;\n"
+"}\n"
+"")
+
+        self.verticalLayout_22.addWidget(self.btn_editar_massa_produtos)
+
+        self.progress_massa_produtos = QProgressBar(self.frame_9)
+        self.progress_massa_produtos.setObjectName(u"progress_massa_produtos")
+        sizePolicy.setHeightForWidth(self.progress_massa_produtos.sizePolicy().hasHeightForWidth())
+        self.progress_massa_produtos.setSizePolicy(sizePolicy)
+        self.progress_massa_produtos.setMaximumSize(QSize(16777215, 31))
+        self.progress_massa_produtos.setStyleSheet(u"QProgressBar {\n"
+"	color: black;\n"
+"    border: 3px solid rgb(50,150,250);\n"
+"    border-radius: 13px;  /* Aumentei o valor para deixar a borda mais redonda */\n"
+"    background-color: #f0f0f0;  /* Cor cinza claro */\n"
+"}\n"
+"\n"
+"QProgressBar::chunk {\n"
+"    background-color: #4682b4;  /* Cor do progresso preenchido (azul) */\n"
+"    border-radius: 12px;  /* Faz com que o progresso tamb\u00e9m tenha bordas arredondadas */\n"
+"}\n"
+"")
+        self.progress_massa_produtos.setValue(0)
+        self.progress_massa_produtos.setAlignment(Qt.AlignCenter)
+        self.progress_massa_produtos.setTextVisible(True)
+
+        self.verticalLayout_22.addWidget(self.progress_massa_produtos)
+
+        self.line_edit_massa_produtos = QLineEdit(self.frame_9)
+        self.line_edit_massa_produtos.setObjectName(u"line_edit_massa_produtos")
+        sizePolicy.setHeightForWidth(self.line_edit_massa_produtos.sizePolicy().hasHeightForWidth())
+        self.line_edit_massa_produtos.setSizePolicy(sizePolicy)
+        self.line_edit_massa_produtos.setMaximumSize(QSize(16777215, 31))
+        self.line_edit_massa_produtos.setStyleSheet(u"QLineEdit {\n"
+"	color: black;\n"
+"    background-color: rgb(240, 240, 240); /* Cor de fundo cinza claro */\n"
+"    border: 2px solid rgb(50, 150,250); /* Borda azul */\n"
+"    border-radius: 12px; /* Cantos arredondados */\n"
+"    padding: 3px; /* Espa\u00e7amento interno */\n"
+"}\n"
+"\n"
+"QLineEdit::placeholderText {\n"
+"    color: black; /* Cor do texto do placeholder */\n"
 "}\n"
 "\n"
 "")
-        self.frame_9.setFrameShape(QFrame.Box)
-        self.frame_9.setFrameShadow(QFrame.Raised)
-        self.gridLayout_12 = QGridLayout(self.frame_9)
-        self.gridLayout_12.setObjectName(u"gridLayout_12")
-        self.label = QLabel(self.frame_9)
-        self.label.setObjectName(u"label")
-        sizePolicy.setHeightForWidth(self.label.sizePolicy().hasHeightForWidth())
-        self.label.setSizePolicy(sizePolicy)
-        self.label.setMinimumSize(QSize(0, 66))
-        self.label.setMaximumSize(QSize(16777215, 109))
+        self.line_edit_massa_produtos.setAlignment(Qt.AlignCenter)
 
-        self.gridLayout_12.addWidget(self.label, 0, 0, 1, 1)
+        self.verticalLayout_22.addWidget(self.line_edit_massa_produtos)
 
 
-        self.gridLayout_23.addWidget(self.frame_8, 0, 0, 1, 1)
+        self.gridLayout_23.addWidget(self.frame_9, 0, 0, 1, 1)
 
-        self.paginas_sistemas.addWidget(self.page_teste)
+        self.table_massa_produtos = QTableWidget(self.frame_8)
+        if (self.table_massa_produtos.columnCount() < 8):
+            self.table_massa_produtos.setColumnCount(8)
+        __qtablewidgetitem72 = QTableWidgetItem()
+        self.table_massa_produtos.setHorizontalHeaderItem(0, __qtablewidgetitem72)
+        __qtablewidgetitem73 = QTableWidgetItem()
+        self.table_massa_produtos.setHorizontalHeaderItem(1, __qtablewidgetitem73)
+        __qtablewidgetitem74 = QTableWidgetItem()
+        self.table_massa_produtos.setHorizontalHeaderItem(2, __qtablewidgetitem74)
+        __qtablewidgetitem75 = QTableWidgetItem()
+        self.table_massa_produtos.setHorizontalHeaderItem(3, __qtablewidgetitem75)
+        __qtablewidgetitem76 = QTableWidgetItem()
+        self.table_massa_produtos.setHorizontalHeaderItem(4, __qtablewidgetitem76)
+        __qtablewidgetitem77 = QTableWidgetItem()
+        self.table_massa_produtos.setHorizontalHeaderItem(5, __qtablewidgetitem77)
+        __qtablewidgetitem78 = QTableWidgetItem()
+        self.table_massa_produtos.setHorizontalHeaderItem(6, __qtablewidgetitem78)
+        __qtablewidgetitem79 = QTableWidgetItem()
+        self.table_massa_produtos.setHorizontalHeaderItem(7, __qtablewidgetitem79)
+        self.table_massa_produtos.setObjectName(u"table_massa_produtos")
+        self.table_massa_produtos.setMinimumSize(QSize(0, 0))
+        self.table_massa_produtos.setMaximumSize(QSize(16777215, 16777215))
+        self.table_massa_produtos.setStyleSheet(u"/* Estiliza apenas o QTableView com objectName \"table_ativos\" */\n"
+"QTableView{\n"
+"    gridline-color: black;\n"
+"    border: 2px solid white;\n"
+"    color: black;\n"
+"    selection-color: white;\n"
+"}\n"
+"\n"
+"\n"
+"/* Estiliza a barra de rolagem horizontal da \"table_ativos\" */\n"
+"QTableView QScrollBar:horizontal {\n"
+"    border: none;\n"
+"    background-color: rgb(255, 255, 255);\n"
+"    height: 15px;\n"
+"    margin: 0px 10px 0px 10px;\n"
+"}\n"
+"QTableWidget::item:selected {\n"
+"    background-color: rgb(0, 120, 215); /* azul personalizado */\n"
+"    color: white; /* texto branco */\n"
+"}\n"
+"\n"
+"")
+        self.table_massa_produtos.setEditTriggers(QAbstractItemView.NoEditTriggers)
+        self.table_massa_produtos.setProperty(u"showDropIndicator", True)
+        self.table_massa_produtos.setDragDropOverwriteMode(True)
+        self.table_massa_produtos.setAlternatingRowColors(False)
+        self.table_massa_produtos.setSelectionMode(QAbstractItemView.ExtendedSelection)
+        self.table_massa_produtos.setSelectionBehavior(QAbstractItemView.SelectRows)
+        self.table_massa_produtos.setShowGrid(True)
+        self.table_massa_produtos.setGridStyle(Qt.SolidLine)
+        self.table_massa_produtos.setCornerButtonEnabled(False)
+        self.table_massa_produtos.horizontalHeader().setCascadingSectionResizes(False)
+        self.table_massa_produtos.horizontalHeader().setMinimumSectionSize(39)
+        self.table_massa_produtos.horizontalHeader().setDefaultSectionSize(112)
+        self.table_massa_produtos.horizontalHeader().setProperty(u"showSortIndicator", False)
+        self.table_massa_produtos.verticalHeader().setVisible(False)
+        self.table_massa_produtos.verticalHeader().setCascadingSectionResizes(False)
+        self.table_massa_produtos.verticalHeader().setHighlightSections(True)
+
+        self.gridLayout_23.addWidget(self.table_massa_produtos, 1, 0, 1, 1)
+
+
+        self.gridLayout_12.addWidget(self.frame_8, 0, 0, 1, 1)
+
+        self.paginas_sistemas.addWidget(self.page_cadastrar_massa_produtos)
+        self.page_cadastrar_massa_usuarios = QWidget()
+        self.page_cadastrar_massa_usuarios.setObjectName(u"page_cadastrar_massa_usuarios")
+        self.gridLayout_24 = QGridLayout(self.page_cadastrar_massa_usuarios)
+        self.gridLayout_24.setObjectName(u"gridLayout_24")
+        self.frame_10 = QFrame(self.page_cadastrar_massa_usuarios)
+        self.frame_10.setObjectName(u"frame_10")
+        self.frame_10.setFrameShape(QFrame.StyledPanel)
+        self.frame_10.setFrameShadow(QFrame.Raised)
+        self.gridLayout_25 = QGridLayout(self.frame_10)
+        self.gridLayout_25.setObjectName(u"gridLayout_25")
+        self.frame_11 = QFrame(self.frame_10)
+        self.frame_11.setObjectName(u"frame_11")
+        sizePolicy.setHeightForWidth(self.frame_11.sizePolicy().hasHeightForWidth())
+        self.frame_11.setSizePolicy(sizePolicy)
+        self.frame_11.setMinimumSize(QSize(0, 0))
+        self.frame_11.setMaximumSize(QSize(16777214, 200))
+        self.frame_11.setFrameShape(QFrame.Box)
+        self.frame_11.setFrameShadow(QFrame.Raised)
+        self.gridLayout_26 = QGridLayout(self.frame_11)
+        self.gridLayout_26.setObjectName(u"gridLayout_26")
+        self.gridLayout_26.setContentsMargins(9, -1, 9, -1)
+        self.btn_abrir_planilha_massa_usuarios = QPushButton(self.frame_11)
+        self.btn_abrir_planilha_massa_usuarios.setObjectName(u"btn_abrir_planilha_massa_usuarios")
+        sizePolicy.setHeightForWidth(self.btn_abrir_planilha_massa_usuarios.sizePolicy().hasHeightForWidth())
+        self.btn_abrir_planilha_massa_usuarios.setSizePolicy(sizePolicy)
+        self.btn_abrir_planilha_massa_usuarios.setMinimumSize(QSize(0, 31))
+        self.btn_abrir_planilha_massa_usuarios.setMaximumSize(QSize(16777215, 31))
+        self.btn_abrir_planilha_massa_usuarios.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
+        self.btn_abrir_planilha_massa_usuarios.setStyleSheet(u"QPushButton {\n"
+"    color: rgb(255, 255, 255);\n"
+"    border-radius: 8px;\n"
+"    font-size: 16px;\n"
+"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */\n"
+"    border: 4px solid transparent;\n"
+"}\n"
+"\n"
+"QPushButton:hover {\n"
+"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */\n"
+"    color: black;\n"
+"}\n"
+"")
+
+        self.gridLayout_26.addWidget(self.btn_abrir_planilha_massa_usuarios, 1, 0, 1, 1)
+
+        self.btn_editar_massa_usuario = QPushButton(self.frame_11)
+        self.btn_editar_massa_usuario.setObjectName(u"btn_editar_massa_usuario")
+        sizePolicy.setHeightForWidth(self.btn_editar_massa_usuario.sizePolicy().hasHeightForWidth())
+        self.btn_editar_massa_usuario.setSizePolicy(sizePolicy)
+        self.btn_editar_massa_usuario.setMinimumSize(QSize(0, 31))
+        self.btn_editar_massa_usuario.setMaximumSize(QSize(16777215, 31))
+        self.btn_editar_massa_usuario.setStyleSheet(u"QPushButton {\n"
+"    color: rgb(255, 255, 255);\n"
+"    border-radius: 8px;\n"
+"    font-size: 16px;\n"
+"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */\n"
+"    border: 4px solid transparent;\n"
+"}\n"
+"\n"
+"QPushButton:hover {\n"
+"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */\n"
+"    color: black;\n"
+"}\n"
+"")
+
+        self.gridLayout_26.addWidget(self.btn_editar_massa_usuario, 2, 0, 1, 1)
+
+        self.line_edit_massa_usuarios = QLineEdit(self.frame_11)
+        self.line_edit_massa_usuarios.setObjectName(u"line_edit_massa_usuarios")
+        sizePolicy.setHeightForWidth(self.line_edit_massa_usuarios.sizePolicy().hasHeightForWidth())
+        self.line_edit_massa_usuarios.setSizePolicy(sizePolicy)
+        self.line_edit_massa_usuarios.setMinimumSize(QSize(0, 31))
+        self.line_edit_massa_usuarios.setMaximumSize(QSize(16777215, 31))
+        self.line_edit_massa_usuarios.setStyleSheet(u"QLineEdit {\n"
+"	color: black;\n"
+"    background-color: rgb(240, 240, 240); /* Cor de fundo cinza claro */\n"
+"    border: 2px solid rgb(50, 150,250); /* Borda azul */\n"
+"    border-radius: 12px; /* Cantos arredondados */\n"
+"    padding: 3px; /* Espa\u00e7amento interno */\n"
+"}\n"
+"\n"
+"QLineEdit::placeholderText {\n"
+"    color: black; /* Cor do texto do placeholder */\n"
+"}\n"
+"\n"
+"")
+
+        self.gridLayout_26.addWidget(self.line_edit_massa_usuarios, 4, 0, 1, 1)
+
+        self.progress_massa_usuarios = QProgressBar(self.frame_11)
+        self.progress_massa_usuarios.setObjectName(u"progress_massa_usuarios")
+        sizePolicy.setHeightForWidth(self.progress_massa_usuarios.sizePolicy().hasHeightForWidth())
+        self.progress_massa_usuarios.setSizePolicy(sizePolicy)
+        self.progress_massa_usuarios.setMinimumSize(QSize(0, 31))
+        self.progress_massa_usuarios.setMaximumSize(QSize(16777215, 31))
+        self.progress_massa_usuarios.setStyleSheet(u"QProgressBar {\n"
+"	color: black;\n"
+"    border: 3px solid rgb(50,150,250);\n"
+"    border-radius: 13px;  /* Aumentei o valor para deixar a borda mais redonda */\n"
+"    background-color: #f0f0f0;  /* Cor cinza claro */\n"
+"}\n"
+"\n"
+"QProgressBar::chunk {\n"
+"    background-color: #4682b4;  /* Cor do progresso preenchido (azul) */\n"
+"    border-radius: 12px;  /* Faz com que o progresso tamb\u00e9m tenha bordas arredondadas */\n"
+"}\n"
+"")
+        self.progress_massa_usuarios.setValue(0)
+        self.progress_massa_usuarios.setAlignment(Qt.AlignCenter)
+        self.progress_massa_usuarios.setTextVisible(True)
+
+        self.gridLayout_26.addWidget(self.progress_massa_usuarios, 3, 0, 1, 1)
+
+        self.btn_fazer_cadastro_massa_usuarios = QPushButton(self.frame_11)
+        self.btn_fazer_cadastro_massa_usuarios.setObjectName(u"btn_fazer_cadastro_massa_usuarios")
+        sizePolicy.setHeightForWidth(self.btn_fazer_cadastro_massa_usuarios.sizePolicy().hasHeightForWidth())
+        self.btn_fazer_cadastro_massa_usuarios.setSizePolicy(sizePolicy)
+        self.btn_fazer_cadastro_massa_usuarios.setMinimumSize(QSize(0, 31))
+        self.btn_fazer_cadastro_massa_usuarios.setMaximumSize(QSize(16777215, 31))
+        self.btn_fazer_cadastro_massa_usuarios.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
+        self.btn_fazer_cadastro_massa_usuarios.setStyleSheet(u"QPushButton {\n"
+"    color: rgb(255, 255, 255);\n"
+"    border-radius: 8px;\n"
+"    font-size: 16px;\n"
+"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */\n"
+"    border: 4px solid transparent;\n"
+"}\n"
+"\n"
+"QPushButton:hover {\n"
+"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */\n"
+"    color: black;\n"
+"}\n"
+"")
+
+        self.gridLayout_26.addWidget(self.btn_fazer_cadastro_massa_usuarios, 0, 0, 1, 1)
+
+
+        self.gridLayout_25.addWidget(self.frame_11, 0, 0, 1, 1)
+
+        self.table_massa_usuarios = QTableWidget(self.frame_10)
+        if (self.table_massa_usuarios.columnCount() < 15):
+            self.table_massa_usuarios.setColumnCount(15)
+        __qtablewidgetitem80 = QTableWidgetItem()
+        self.table_massa_usuarios.setHorizontalHeaderItem(0, __qtablewidgetitem80)
+        __qtablewidgetitem81 = QTableWidgetItem()
+        self.table_massa_usuarios.setHorizontalHeaderItem(1, __qtablewidgetitem81)
+        __qtablewidgetitem82 = QTableWidgetItem()
+        self.table_massa_usuarios.setHorizontalHeaderItem(2, __qtablewidgetitem82)
+        __qtablewidgetitem83 = QTableWidgetItem()
+        self.table_massa_usuarios.setHorizontalHeaderItem(3, __qtablewidgetitem83)
+        __qtablewidgetitem84 = QTableWidgetItem()
+        self.table_massa_usuarios.setHorizontalHeaderItem(4, __qtablewidgetitem84)
+        __qtablewidgetitem85 = QTableWidgetItem()
+        self.table_massa_usuarios.setHorizontalHeaderItem(5, __qtablewidgetitem85)
+        __qtablewidgetitem86 = QTableWidgetItem()
+        self.table_massa_usuarios.setHorizontalHeaderItem(6, __qtablewidgetitem86)
+        __qtablewidgetitem87 = QTableWidgetItem()
+        self.table_massa_usuarios.setHorizontalHeaderItem(7, __qtablewidgetitem87)
+        __qtablewidgetitem88 = QTableWidgetItem()
+        self.table_massa_usuarios.setHorizontalHeaderItem(8, __qtablewidgetitem88)
+        __qtablewidgetitem89 = QTableWidgetItem()
+        self.table_massa_usuarios.setHorizontalHeaderItem(9, __qtablewidgetitem89)
+        __qtablewidgetitem90 = QTableWidgetItem()
+        self.table_massa_usuarios.setHorizontalHeaderItem(10, __qtablewidgetitem90)
+        __qtablewidgetitem91 = QTableWidgetItem()
+        self.table_massa_usuarios.setHorizontalHeaderItem(11, __qtablewidgetitem91)
+        __qtablewidgetitem92 = QTableWidgetItem()
+        self.table_massa_usuarios.setHorizontalHeaderItem(12, __qtablewidgetitem92)
+        __qtablewidgetitem93 = QTableWidgetItem()
+        self.table_massa_usuarios.setHorizontalHeaderItem(13, __qtablewidgetitem93)
+        __qtablewidgetitem94 = QTableWidgetItem()
+        self.table_massa_usuarios.setHorizontalHeaderItem(14, __qtablewidgetitem94)
+        self.table_massa_usuarios.setObjectName(u"table_massa_usuarios")
+        self.table_massa_usuarios.setMinimumSize(QSize(0, 0))
+        self.table_massa_usuarios.setMaximumSize(QSize(16777215, 16777215))
+        self.table_massa_usuarios.setStyleSheet(u"/* Estiliza apenas o QTableView com objectName \"table_ativos\" */\n"
+"QTableView{\n"
+"    gridline-color: black;\n"
+"    border: 2px solid white;\n"
+"    color: black;\n"
+"    selection-color: white;\n"
+"}\n"
+"\n"
+"\n"
+"/* Estiliza a barra de rolagem horizontal da \"table_ativos\" */\n"
+"QTableView QScrollBar:horizontal {\n"
+"    border: none;\n"
+"    background-color: rgb(255, 255, 255);\n"
+"    height: 15px;\n"
+"    margin: 0px 10px 0px 10px;\n"
+"}\n"
+"QTableWidget::item:selected {\n"
+"    background-color: rgb(0, 120, 215); /* azul personalizado */\n"
+"    color: white; /* texto branco */\n"
+"}\n"
+"\n"
+"")
+        self.table_massa_usuarios.setFrameShape(QFrame.NoFrame)
+        self.table_massa_usuarios.setEditTriggers(QAbstractItemView.NoEditTriggers)
+        self.table_massa_usuarios.setSelectionMode(QAbstractItemView.ExtendedSelection)
+        self.table_massa_usuarios.setSelectionBehavior(QAbstractItemView.SelectRows)
+        self.table_massa_usuarios.setSortingEnabled(False)
+        self.table_massa_usuarios.setCornerButtonEnabled(False)
+        self.table_massa_usuarios.horizontalHeader().setCascadingSectionResizes(False)
+        self.table_massa_usuarios.horizontalHeader().setProperty(u"showSortIndicator", False)
+        self.table_massa_usuarios.horizontalHeader().setStretchLastSection(False)
+        self.table_massa_usuarios.verticalHeader().setVisible(False)
+        self.table_massa_usuarios.verticalHeader().setCascadingSectionResizes(False)
+        self.table_massa_usuarios.verticalHeader().setStretchLastSection(False)
+
+        self.gridLayout_25.addWidget(self.table_massa_usuarios, 1, 0, 1, 1)
+
+
+        self.gridLayout_24.addWidget(self.frame_10, 0, 0, 1, 1)
+
+        self.paginas_sistemas.addWidget(self.page_cadastrar_massa_usuarios)
 
         self.gridLayout_2.addWidget(self.paginas_sistemas, 1, 1, 1, 2)
-
-        self.frame_botoes_navegacoes = QFrame(self.centralwidget)
-        self.frame_botoes_navegacoes.setObjectName(u"frame_botoes_navegacoes")
-        sizePolicy.setHeightForWidth(self.frame_botoes_navegacoes.sizePolicy().hasHeightForWidth())
-        self.frame_botoes_navegacoes.setSizePolicy(sizePolicy)
-        self.frame_botoes_navegacoes.setMaximumSize(QSize(162, 16777215))
-        self.frame_botoes_navegacoes.setAutoFillBackground(False)
-        self.frame_botoes_navegacoes.setFrameShape(QFrame.NoFrame)
-        self.frame_botoes_navegacoes.setFrameShadow(QFrame.Plain)
-        self.gridLayout = QGridLayout(self.frame_botoes_navegacoes)
-        self.gridLayout.setObjectName(u"gridLayout")
-        self.btn_configuracoes = QPushButton(self.frame_botoes_navegacoes)
-        self.btn_configuracoes.setObjectName(u"btn_configuracoes")
-        sizePolicy.setHeightForWidth(self.btn_configuracoes.sizePolicy().hasHeightForWidth())
-        self.btn_configuracoes.setSizePolicy(sizePolicy)
-        self.btn_configuracoes.setMaximumSize(QSize(145, 27))
-        self.btn_configuracoes.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
-        self.btn_configuracoes.setStyleSheet(u"QPushButton {\n"
-"    color: rgb(255, 255, 255);\n"
-"    border-radius: 8px;\n"
-"    font-size: 16px;\n"
-"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */\n"
-"    border: 4px solid transparent;\n"
-"}\n"
-"\n"
-"QPushButton:hover {\n"
-"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */\n"
-"    color: black;\n"
-"}")
-
-        self.gridLayout.addWidget(self.btn_configuracoes, 6, 0, 1, 1)
-
-        self.btn_verificar_usuarios = QPushButton(self.frame_botoes_navegacoes)
-        self.btn_verificar_usuarios.setObjectName(u"btn_verificar_usuarios")
-        sizePolicy.setHeightForWidth(self.btn_verificar_usuarios.sizePolicy().hasHeightForWidth())
-        self.btn_verificar_usuarios.setSizePolicy(sizePolicy)
-        self.btn_verificar_usuarios.setMaximumSize(QSize(145, 27))
-        self.btn_verificar_usuarios.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
-        self.btn_verificar_usuarios.setStyleSheet(u"QPushButton {\n"
-"    color: rgb(255, 255, 255);\n"
-"    border-radius: 8px;\n"
-"    font-size: 16px;\n"
-"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */\n"
-"    border: 4px solid transparent;\n"
-"}\n"
-"\n"
-"QPushButton:hover {\n"
-"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */\n"
-"    color: black;\n"
-"}")
-
-        self.gridLayout.addWidget(self.btn_verificar_usuarios, 2, 0, 1, 1)
-
-        self.btn_home = QPushButton(self.frame_botoes_navegacoes)
-        self.btn_home.setObjectName(u"btn_home")
-        sizePolicy.setHeightForWidth(self.btn_home.sizePolicy().hasHeightForWidth())
-        self.btn_home.setSizePolicy(sizePolicy)
-        self.btn_home.setMaximumSize(QSize(145, 27))
-        self.btn_home.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
-        self.btn_home.setAutoFillBackground(False)
-        self.btn_home.setStyleSheet(u"QPushButton {\n"
-"    color: rgb(255, 255, 255);\n"
-"    border-radius: 8px;\n"
-"    font-size: 16px;\n"
-"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */\n"
-"    border: 4px solid transparent;\n"
-"}\n"
-"\n"
-"QPushButton:hover {\n"
-"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */\n"
-"    color: black;\n"
-"}")
-
-        self.gridLayout.addWidget(self.btn_home, 0, 0, 1, 1)
-
-        self.btn_verificar_estoque = QPushButton(self.frame_botoes_navegacoes)
-        self.btn_verificar_estoque.setObjectName(u"btn_verificar_estoque")
-        sizePolicy.setHeightForWidth(self.btn_verificar_estoque.sizePolicy().hasHeightForWidth())
-        self.btn_verificar_estoque.setSizePolicy(sizePolicy)
-        self.btn_verificar_estoque.setMaximumSize(QSize(145, 27))
-        self.btn_verificar_estoque.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
-        self.btn_verificar_estoque.setAutoFillBackground(False)
-        self.btn_verificar_estoque.setStyleSheet(u"QPushButton {\n"
-"    color: rgb(255, 255, 255);\n"
-"    border-radius: 8px;\n"
-"    font-size: 16px;\n"
-"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */\n"
-"    border: 4px solid transparent;\n"
-"}\n"
-"\n"
-"QPushButton:hover {\n"
-"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */\n"
-"    color: black;\n"
-"}")
-
-        self.gridLayout.addWidget(self.btn_verificar_estoque, 1, 0, 1, 1)
-
-        self.btn_clientes = QPushButton(self.frame_botoes_navegacoes)
-        self.btn_clientes.setObjectName(u"btn_clientes")
-        sizePolicy.setHeightForWidth(self.btn_clientes.sizePolicy().hasHeightForWidth())
-        self.btn_clientes.setSizePolicy(sizePolicy)
-        self.btn_clientes.setMaximumSize(QSize(145, 27))
-        self.btn_clientes.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
-        self.btn_clientes.setStyleSheet(u"QPushButton {\n"
-"    color: rgb(255, 255, 255);\n"
-"    border-radius: 8px;\n"
-"    font-size: 16px;\n"
-"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */\n"
-"    border: 4px solid transparent;\n"
-"}\n"
-"\n"
-"QPushButton:hover {\n"
-"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */\n"
-"    color: black;\n"
-"}")
-
-        self.gridLayout.addWidget(self.btn_clientes, 5, 0, 1, 1)
-
-        self.btn_cadastrar_usuarios = QPushButton(self.frame_botoes_navegacoes)
-        self.btn_cadastrar_usuarios.setObjectName(u"btn_cadastrar_usuarios")
-        sizePolicy.setHeightForWidth(self.btn_cadastrar_usuarios.sizePolicy().hasHeightForWidth())
-        self.btn_cadastrar_usuarios.setSizePolicy(sizePolicy)
-        self.btn_cadastrar_usuarios.setMaximumSize(QSize(145, 27))
-        self.btn_cadastrar_usuarios.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
-        self.btn_cadastrar_usuarios.setStyleSheet(u"QPushButton {\n"
-"    color: rgb(255, 255, 255);\n"
-"    border-radius: 8px;\n"
-"    font-size: 16px;\n"
-"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */\n"
-"    border: 4px solid transparent;\n"
-"}\n"
-"\n"
-"QPushButton:hover {\n"
-"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */\n"
-"    color: black;\n"
-"}")
-
-        self.gridLayout.addWidget(self.btn_cadastrar_usuarios, 4, 0, 1, 1)
-
-        self.btn_cadastrar_produto = QPushButton(self.frame_botoes_navegacoes)
-        self.btn_cadastrar_produto.setObjectName(u"btn_cadastrar_produto")
-        sizePolicy.setHeightForWidth(self.btn_cadastrar_produto.sizePolicy().hasHeightForWidth())
-        self.btn_cadastrar_produto.setSizePolicy(sizePolicy)
-        self.btn_cadastrar_produto.setMaximumSize(QSize(145, 27))
-        self.btn_cadastrar_produto.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
-        self.btn_cadastrar_produto.setStyleSheet(u"QPushButton {\n"
-"    color: rgb(255, 255, 255);\n"
-"    border-radius: 8px;\n"
-"    font-size: 16px;\n"
-"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */\n"
-"    border: 4px solid transparent;\n"
-"}\n"
-"\n"
-"QPushButton:hover {\n"
-"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */\n"
-"    color: black;\n"
-"}")
-
-        self.gridLayout.addWidget(self.btn_cadastrar_produto, 3, 0, 1, 1)
-
-
-        self.gridLayout_2.addWidget(self.frame_botoes_navegacoes, 0, 0, 2, 1)
-
-        self.btn_mais_opcoes = QToolButton(self.centralwidget)
-        self.btn_mais_opcoes.setObjectName(u"btn_mais_opcoes")
-        sizePolicy.setHeightForWidth(self.btn_mais_opcoes.sizePolicy().hasHeightForWidth())
-        self.btn_mais_opcoes.setSizePolicy(sizePolicy)
-        self.btn_mais_opcoes.setMaximumSize(QSize(120, 30))
-        font = QFont()
-        font.setFamilies([u"Calibri"])
-        font.setPointSize(11)
-        self.btn_mais_opcoes.setFont(font)
-        self.btn_mais_opcoes.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
-        self.btn_mais_opcoes.setStyleSheet(u"QToolButton {\n"
-"                background-color: rgb(50, 150, 250);\n"
-"                color: white;\n"
-"                border-radius: 10px;\n"
-"                border: 2px solid rgb(50, 150, 250);\n"
-"                padding: 5px 10px;\n"
-"            }\n"
-"            QToolButton:hover {\n"
-"                background-color: rgb(100, 180, 255);\n"
-"                border: 2px solid rgb(100, 180, 255);\n"
-"            }\n"
-"            ")
-        self.btn_mais_opcoes.setPopupMode(QToolButton.MenuButtonPopup)
-        self.btn_mais_opcoes.setToolButtonStyle(Qt.ToolButtonTextOnly)
-
-        self.gridLayout_2.addWidget(self.btn_mais_opcoes, 0, 2, 1, 1)
 
         MainWindow.setCentralWidget(self.centralwidget)
 
@@ -3631,6 +3980,14 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"MainWindow", None))
+        self.btn_configuracoes.setText(QCoreApplication.translate("MainWindow", u"Configura\u00e7\u00f5es", None))
+        self.btn_verificar_usuarios.setText(QCoreApplication.translate("MainWindow", u"Verificar Usu\u00e1rios", None))
+        self.btn_home.setText(QCoreApplication.translate("MainWindow", u"Home", None))
+        self.btn_verificar_estoque.setText(QCoreApplication.translate("MainWindow", u"Verificar Estoque", None))
+        self.btn_clientes.setText(QCoreApplication.translate("MainWindow", u"Clientes", None))
+        self.btn_cadastrar_usuarios.setText(QCoreApplication.translate("MainWindow", u"Cadastrar Usu\u00e1rio", None))
+        self.btn_cadastrar_produto.setText(QCoreApplication.translate("MainWindow", u"Cadastrar Produto", None))
+        self.btn_mais_opcoes.setText(QCoreApplication.translate("MainWindow", u"Mais op\u00e7\u00f5es", None))
         self.label_imagem_sistema.setText("")
         self.label_bem_vindo.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p align=\"center\"><span style=\" font-size:24pt; font-weight:600; font-style:italic;\">Bem vindo(a) ao</span></p><p align=\"center\"><br/></p><p align=\"center\"><span style=\" font-size:24pt; font-weight:600; font-style:italic;\">Sistema de Gerenciamento do </span></p><p align=\"center\"><span style=\" font-size:24pt; font-weight:600; font-style:italic;\">controle de Estoque</span></p></body></html>", None))
         self.btn_abrir_planilha.setText(QCoreApplication.translate("MainWindow", u"Abrir Planilha", None))
@@ -3809,7 +4166,6 @@ class Ui_MainWindow(object):
         self.label_valor_do_desconto.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p><span style=\" font-size:12pt; font-weight:600;\">Valor do desconto</span></p></body></html>", None))
         self.label_valor_com_desconto.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p><span style=\" font-size:12pt; font-weight:600;\">Valor do produto com desconto</span></p></body></html>", None))
         self.label_quantidade_2.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p><span style=\" font-size:12pt; font-weight:600;\">Quantidade total de produtos</span></p></body></html>", None))
-        self.btn_confirmar_massa.setText(QCoreApplication.translate("MainWindow", u"CONFIRMAR  EM MASSA", None))
         self.btn_confirmar.setText(QCoreApplication.translate("MainWindow", u"CONFIRMAR", None))
         self.btn_ver_item.setText(QCoreApplication.translate("MainWindow", u"VER PRODUTOS", None))
         self.label_nome.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p><span style=\" font-weight:600;\">Nome</span></p></body></html>", None))
@@ -3862,7 +4218,6 @@ class Ui_MainWindow(object):
         self.perfil_usuarios.setItemText(2, QCoreApplication.translate("MainWindow", u"Convidado", None))
         self.perfil_usuarios.setItemText(3, QCoreApplication.translate("MainWindow", u"Administrador", None))
 
-        self.btn_cadastrar_todos.setText(QCoreApplication.translate("MainWindow", u"CADASTRAR EM MASSA", None))
         self.btn_editar_cadastro.setText(QCoreApplication.translate("MainWindow", u"EDITAR", None))
         self.btn_atualizar_cadastro.setText(QCoreApplication.translate("MainWindow", u"ATUALIZAR", None))
         self.btn_apagar_cadastro.setText(QCoreApplication.translate("MainWindow", u"APAGAR", None))
@@ -3912,14 +4267,57 @@ class Ui_MainWindow(object):
         self.tool_atualizacoes.setText(QCoreApplication.translate("MainWindow", u"Atualiza\u00e7\u00f5es", None))
         self.tool_notificacoes.setText(QCoreApplication.translate("MainWindow", u"Notifica\u00e7\u00f5es", None))
         self.label_desenvolvido.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p align=\"center\"><span style=\" font-size:16pt; font-weight:600; font-style:italic;\">Desenvolvido e publicado por:</span></p><p align=\"center\"><span style=\" font-size:16pt; font-weight:600; font-style:italic;\">Keven Lucas</span></p><p align=\"center\"><br/></p><p align=\"center\"><span style=\" font-size:16pt; font-weight:600; font-style:italic;\">(19) 98201-8869</span></p></body></html>", None))
-        self.label.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p align=\"center\"><span style=\" font-size:9pt;\"> A fun\u00e7\u00e3o de sa\u00edda de usu\u00e1rio \u00e9 irrevers\u00edvel.</span></p><p align=\"center\"><span style=\" font-size:9pt;\">Usu\u00e1rios removidos n\u00e3o poder\u00e3o ser restaurados.</span></p><p><span style=\" font-size:9pt;\"><br/></span></p></body></html>", None))
-        self.btn_configuracoes.setText(QCoreApplication.translate("MainWindow", u"Configura\u00e7\u00f5es", None))
-        self.btn_verificar_usuarios.setText(QCoreApplication.translate("MainWindow", u"Verificar Usu\u00e1rios", None))
-        self.btn_home.setText(QCoreApplication.translate("MainWindow", u"Home", None))
-        self.btn_verificar_estoque.setText(QCoreApplication.translate("MainWindow", u"Verificar Estoque", None))
-        self.btn_clientes.setText(QCoreApplication.translate("MainWindow", u"Clientes", None))
-        self.btn_cadastrar_usuarios.setText(QCoreApplication.translate("MainWindow", u"Cadastrar Usu\u00e1rio", None))
-        self.btn_cadastrar_produto.setText(QCoreApplication.translate("MainWindow", u"Cadastrar Produto", None))
-        self.btn_mais_opcoes.setText(QCoreApplication.translate("MainWindow", u"Mais op\u00e7\u00f5es", None))
+        self.btn_fazer_cadastro_massa_produtos.setText(QCoreApplication.translate("MainWindow", u"Fazer o cadastro em massa", None))
+        self.btn_abrir_planilha_massa_produtos.setText(QCoreApplication.translate("MainWindow", u"Abrir planilha", None))
+        self.btn_editar_massa_produtos.setText(QCoreApplication.translate("MainWindow", u"Editar produto", None))
+        ___qtablewidgetitem72 = self.table_massa_produtos.horizontalHeaderItem(0)
+        ___qtablewidgetitem72.setText(QCoreApplication.translate("MainWindow", u"Produto", None));
+        ___qtablewidgetitem73 = self.table_massa_produtos.horizontalHeaderItem(1)
+        ___qtablewidgetitem73.setText(QCoreApplication.translate("MainWindow", u"Quantidade", None));
+        ___qtablewidgetitem74 = self.table_massa_produtos.horizontalHeaderItem(2)
+        ___qtablewidgetitem74.setText(QCoreApplication.translate("MainWindow", u"Valor do Produto", None));
+        ___qtablewidgetitem75 = self.table_massa_produtos.horizontalHeaderItem(3)
+        ___qtablewidgetitem75.setText(QCoreApplication.translate("MainWindow", u"Desconto", None));
+        ___qtablewidgetitem76 = self.table_massa_produtos.horizontalHeaderItem(4)
+        ___qtablewidgetitem76.setText(QCoreApplication.translate("MainWindow", u"Data da Compra", None));
+        ___qtablewidgetitem77 = self.table_massa_produtos.horizontalHeaderItem(5)
+        ___qtablewidgetitem77.setText(QCoreApplication.translate("MainWindow", u"C\u00f3digo do Item", None));
+        ___qtablewidgetitem78 = self.table_massa_produtos.horizontalHeaderItem(6)
+        ___qtablewidgetitem78.setText(QCoreApplication.translate("MainWindow", u"Cliente", None));
+        ___qtablewidgetitem79 = self.table_massa_produtos.horizontalHeaderItem(7)
+        ___qtablewidgetitem79.setText(QCoreApplication.translate("MainWindow", u"Descri\u00e7\u00e3o do Produto", None));
+        self.btn_abrir_planilha_massa_usuarios.setText(QCoreApplication.translate("MainWindow", u"Abrir planilha", None))
+        self.btn_editar_massa_usuario.setText(QCoreApplication.translate("MainWindow", u"Editar usu\u00e1rio", None))
+        self.btn_fazer_cadastro_massa_usuarios.setText(QCoreApplication.translate("MainWindow", u"Fazer o cadastro em massa", None))
+        ___qtablewidgetitem80 = self.table_massa_usuarios.horizontalHeaderItem(0)
+        ___qtablewidgetitem80.setText(QCoreApplication.translate("MainWindow", u"Nome", None));
+        ___qtablewidgetitem81 = self.table_massa_usuarios.horizontalHeaderItem(1)
+        ___qtablewidgetitem81.setText(QCoreApplication.translate("MainWindow", u"Usu\u00e1rio", None));
+        ___qtablewidgetitem82 = self.table_massa_usuarios.horizontalHeaderItem(2)
+        ___qtablewidgetitem82.setText(QCoreApplication.translate("MainWindow", u"Senha", None));
+        ___qtablewidgetitem83 = self.table_massa_usuarios.horizontalHeaderItem(3)
+        ___qtablewidgetitem83.setText(QCoreApplication.translate("MainWindow", u"Confirmar Senha", None));
+        ___qtablewidgetitem84 = self.table_massa_usuarios.horizontalHeaderItem(4)
+        ___qtablewidgetitem84.setText(QCoreApplication.translate("MainWindow", u"Acesso", None));
+        ___qtablewidgetitem85 = self.table_massa_usuarios.horizontalHeaderItem(5)
+        ___qtablewidgetitem85.setText(QCoreApplication.translate("MainWindow", u"Endere\u00e7o", None));
+        ___qtablewidgetitem86 = self.table_massa_usuarios.horizontalHeaderItem(6)
+        ___qtablewidgetitem86.setText(QCoreApplication.translate("MainWindow", u"CEP", None));
+        ___qtablewidgetitem87 = self.table_massa_usuarios.horizontalHeaderItem(7)
+        ___qtablewidgetitem87.setText(QCoreApplication.translate("MainWindow", u"CPF", None));
+        ___qtablewidgetitem88 = self.table_massa_usuarios.horizontalHeaderItem(8)
+        ___qtablewidgetitem88.setText(QCoreApplication.translate("MainWindow", u"N\u00famero", None));
+        ___qtablewidgetitem89 = self.table_massa_usuarios.horizontalHeaderItem(9)
+        ___qtablewidgetitem89.setText(QCoreApplication.translate("MainWindow", u"Estado", None));
+        ___qtablewidgetitem90 = self.table_massa_usuarios.horizontalHeaderItem(10)
+        ___qtablewidgetitem90.setText(QCoreApplication.translate("MainWindow", u"E-mail", None));
+        ___qtablewidgetitem91 = self.table_massa_usuarios.horizontalHeaderItem(11)
+        ___qtablewidgetitem91.setText(QCoreApplication.translate("MainWindow", u"RG", None));
+        ___qtablewidgetitem92 = self.table_massa_usuarios.horizontalHeaderItem(12)
+        ___qtablewidgetitem92.setText(QCoreApplication.translate("MainWindow", u"Complemento", None));
+        ___qtablewidgetitem93 = self.table_massa_usuarios.horizontalHeaderItem(13)
+        ___qtablewidgetitem93.setText(QCoreApplication.translate("MainWindow", u"Telefone", None));
+        ___qtablewidgetitem94 = self.table_massa_usuarios.horizontalHeaderItem(14)
+        ___qtablewidgetitem94.setText(QCoreApplication.translate("MainWindow", u"Data de Nascimento", None));
     # retranslateUi
 
