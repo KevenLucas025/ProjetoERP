@@ -1619,8 +1619,6 @@ class Pagina_Usuarios(QWidget):
                 complemento = self.table_massa_usuarios.item(linha, 12).text()
                 telefone = self.table_massa_usuarios.item(linha, 13).text()
                 data_nascimento = self.table_massa_usuarios.item(linha, 14).text()
-
-                
                 
                 dados_usuarios_massa = {
                     "Nome": nome,
@@ -1644,10 +1642,10 @@ class Pagina_Usuarios(QWidget):
                 
                 # Registrar no histórico para o cadastro em massa
                 descricao = f"Usuário {usuario} foi cadastrado no sistema!"
-                self.main_window.registrar_historico("Cadastro em Massa", descricao)
+                self.main_window.registrar_historico_usuarios("Cadastro em Massa", descricao)
                 
                 
-            QMessageBox.information(self, "Sucesso", "Usuários cadastrados com sucesso!")
+            QMessageBox.information(self, "Sucesso", "Usuários cadastrados em massa com sucesso!")
             self.line_edit_massa_usuarios.clear()
 
             # Limpar a tabela após a inserção
