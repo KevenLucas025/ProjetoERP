@@ -68,6 +68,7 @@ class Pagina_Usuarios(QWidget):
         self.btn_abrir_planilha_usuarios.clicked.connect(self.abrir_planilha_usuarios)
         self.btn_importar_usuarios.clicked.connect(self.importar_usuario)
         self.btn_abrir_planilha_massa_usuarios.clicked.connect(self.abrir_panilha_usuarios_em_massa)
+        self.btn_fazer_cadastro_massa_usuarios.clicked.connect(self.cadastrar_usuarios_em_massa)
         self.main_window.table_ativos.viewport().installEventFilter(self)
         self.main_window.table_inativos.viewport().installEventFilter(self)
 
@@ -1597,5 +1598,64 @@ class Pagina_Usuarios(QWidget):
         return item
 
     def cadastrar_usuarios_em_massa(self):
-        pass
-    #Função que incrementarei depois que para ser ativada, terá que ser paga
+        try:
+            total_linhas = self.table_massa_usuarios.rowCount()
+            if total_linhas == 0:
+                QMessageBox.warning(self, "Erro", "Nenhum usuário encontrado para cadastrar.")
+                return
+            for linha in range(total_linhas):
+                nome = self.table_massa_usuarios.item(linha, 0).text()
+                usuario = self.table_massa_usuarios.item(linha, 1).text()
+                senha = self.table_massa_usuarios.item(linha, 2).text()
+                confirmar_senha = self.table_massa_usuarios.item(linha, 3).text()
+                acesso = self.table_massa_usuarios.item(linha, 4).text()
+                endereco = self.table_massa_usuarios.item(linha, 5).text()
+                cep = self.table_massa_usuarios.item(linha, 6).text()
+                cpf = self.table_massa_usuarios.item(linha, 7).text()
+                numero = self.table_massa_usuarios.item(linha, 8).text()
+                estado = self.table_massa_usuarios.item(linha, 9).text()
+                email = self.table_massa_usuarios.item(linha, 10).text()
+                rg = self.table_massa_usuarios.item(linha, 11).text()
+                complemento = self.table_massa_usuarios.item(linha, 12).text()
+                telefone = self.table_massa_usuarios.item(linha, 13).text()
+                data_nascimento = self.table_massa_usuarios.item(linha, 14).text()
+
+                
+                
+                dados_usuarios_massa = {
+                    "Nome": nome,
+                    "Usuário": usuario,
+                    "Senha": senha,
+                    "Confirmar Senha": confirmar_senha,
+                    "Acesso": acesso,
+                    "Endereço": endereco,
+                    "CEP": cep,
+                    "CPF": cpf,
+                    "Número": numero,
+                    "Estado": estado,
+                    "E-mail": email,
+                    "RG": rg,
+                    "Complemento": complemento,
+                    "Telefone": telefone,
+                    "Data de Nascimento": data_nascimento
+                }
+                
+                self.main_window.subscribe_user(dados_usuarios_massa,registrar_historico=True)
+                
+                # Registrar no histórico para o cadastro em massa
+                descricao = f"Usuário {usuario} foi cadastrado no sistema!"
+                self.main_window.registrar_historico("Cadastro em Massa", descricao)
+                
+                
+            QMessageBox.information(self, "Sucesso", "Usuários cadastrados com sucesso!")
+            self.line_edit_massa_usuarios.clear()
+
+            # Limpar a tabela após a inserção
+            self.table_massa_usuarios.setRowCount(0)
+            
+            
+        except Exception as e:
+            QMessageBox.critical(self, "Erro", f"Erro ao cadastrar usuários em massa:\n{e}")
+                
+                
+        

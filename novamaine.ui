@@ -6799,6 +6799,9 @@ QLineEdit::placeholderText {
 
 </string>
                 </property>
+                <property name="alignment">
+                 <set>Qt::AlignCenter</set>
+                </property>
                </widget>
               </item>
               <item row="3" column="0">
@@ -6958,7 +6961,7 @@ QTableWidget::item:selected {
               <bool>false</bool>
              </attribute>
              <attribute name="verticalHeaderVisible">
-              <bool>false</bool>
+              <bool>true</bool>
              </attribute>
              <attribute name="verticalHeaderCascadingSectionResizes">
               <bool>false</bool>

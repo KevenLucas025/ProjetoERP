@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'novamaine.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.8.2
+## Created by: Qt User Interface Compiler version 6.9.0
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -3799,6 +3799,7 @@ class Ui_MainWindow(object):
         self.btn_editar_massa_usuario.setSizePolicy(sizePolicy)
         self.btn_editar_massa_usuario.setMinimumSize(QSize(0, 31))
         self.btn_editar_massa_usuario.setMaximumSize(QSize(16777215, 31))
+        self.btn_editar_massa_usuario.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.btn_editar_massa_usuario.setStyleSheet(u"QPushButton {\n"
 "    color: rgb(255, 255, 255);\n"
 "    border-radius: 8px;\n"
@@ -3834,6 +3835,7 @@ class Ui_MainWindow(object):
 "}\n"
 "\n"
 "")
+        self.line_edit_massa_usuarios.setAlignment(Qt.AlignCenter)
 
         self.gridLayout_26.addWidget(self.line_edit_massa_usuarios, 4, 0, 1, 1)
 
@@ -3954,7 +3956,7 @@ class Ui_MainWindow(object):
         self.table_massa_usuarios.horizontalHeader().setCascadingSectionResizes(False)
         self.table_massa_usuarios.horizontalHeader().setProperty(u"showSortIndicator", False)
         self.table_massa_usuarios.horizontalHeader().setStretchLastSection(False)
-        self.table_massa_usuarios.verticalHeader().setVisible(False)
+        self.table_massa_usuarios.verticalHeader().setVisible(True)
         self.table_massa_usuarios.verticalHeader().setCascadingSectionResizes(False)
         self.table_massa_usuarios.verticalHeader().setStretchLastSection(False)
 

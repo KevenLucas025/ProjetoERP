@@ -1073,8 +1073,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             detalhes_msg_detalhes.setText("O seu desconto não pode ser menor que 5%. \n Somente descontos maiores serão válidos para esta ação")
             detalhes_msg_detalhes.exec()
 #*********************************************************************************************************************
-    def subscribe_user(self):
-        print("Função subscribe_user chamada")
+    def subscribe_user(self,usuario_info,registrar_historico=True):
         # Verificar se a conexão com o banco de dados está ativa
         db = DataBase()
         db.connecta()
@@ -1150,28 +1149,26 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 return
             # Inserir o usuário no banco de dados
             db.insert_user(
-                nome=nome,
-                usuario=user,
-                senha=senha,
-                confirmar_senha=confirmar_senha,
-                acesso=acesso,
-                endereco=endereco,
-                cep=cep,
-                cpf=cpf,
-                numero=numero,
-                estado=estado,
-                email=email,
-                telefone=telefone,
-                rg=rg,
-                data_nascimento=data_nascimento,
-                complemento=complemento,
-                segredo=None,
-                usuario_logado=usuario_logado,
-                imagem=imagem
+                usuario_info,["Nome"],
+                usuario_info =["Usuário"],
+                usuario_info =["Senha"],
+                usuario_info =["Confirmar Senha"],
+                usuario_info =["Acesso"],
+                usuario_info =["Endereço"],
+                usuario_info =["CEP"],
+                usuario_info =["CPF"],
+                usuario_info =["Número"],
+                usuario_info =["Estado"],
+                usuario_info =["Email"],
+                usuario_info =["RG"],
+                usuari_info = ["Complemento"],
+                usuario_info =["Telefone"],
+                usuario_info =["Data de Nascimento"]
            )
-            # Registrar no histórico após a inserção do produto
-            descricao = f"Usuario {user} foi cadastrado no sistema."
-            self.registrar_historico_usuarios("Cadastro de Usuários", descricao)
+            if registrar_historico:
+                # Registrar no histórico após a inserção do produto
+                descricao = f"Usuario {user} foi cadastrado no sistema."
+                self.registrar_historico_usuarios("Cadastro de Usuários", descricao)
 
             # Exibir mensagem de sucesso
             msg = QMessageBox()
