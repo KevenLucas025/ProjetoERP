@@ -1148,6 +1148,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             data_nascimento = usuario_info.get("Data de Nascimento", "")
             complemento = usuario_info.get("Complemento", "")
             imagem = None  # Cadastro em massa normalmente não envia imagem
+            print(complemento)
 
         try:
             usuario_logado = self.config.obter_usuario_logado()
