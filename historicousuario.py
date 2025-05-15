@@ -67,6 +67,8 @@ class Pagina_Usuarios(QWidget):
         self.btn_historico_usuarios.clicked.connect(self.exibir_tabela_historico_usuario)
         self.btn_abrir_planilha_usuarios.clicked.connect(self.abrir_planilha_usuarios)
         self.btn_importar_usuarios.clicked.connect(self.importar_usuario)
+        self.btn_abrir_planilha_massa_usuarios.clicked.connect(self.abrir_panilha_usuarios_em_massa)
+        self.btn_fazer_cadastro_massa_usuarios.clicked.connect(self.cadastrar_usuarios_em_massa)
         self.main_window.table_ativos.viewport().installEventFilter(self)
         self.main_window.table_inativos.viewport().installEventFilter(self)
 
@@ -445,6 +447,9 @@ class Pagina_Usuarios(QWidget):
                 for col, value in enumerate(linha_data):
                     item = self.formatar_texto(str(value))
                     self.table_ativos.setItem(linha_index, col, item)
+                    
+            self.table_ativos.resizeColumnsToContents()  # Ajusta as colunas automaticamente
+            self.table_ativos.resizeRowsToContents()  # Ajusta as linhas automaticamente
 
             # Exibir uma mensagem de sucesso
             msg_box = QMessageBox()
@@ -465,6 +470,8 @@ class Pagina_Usuarios(QWidget):
 
         except Exception as e:
             print(f"Erro ao atualizar a tabela de ativos: {e}")
+            
+            
 
 
     def atualizar_inativos(self):
@@ -1549,35 +1556,111 @@ class Pagina_Usuarios(QWidget):
 
                 colunas_table_massa_usuarios = ["Nome", "Usuário", "Senha", "Confirmar Senha", "Acesso",
                     "Endereço", "CEP", "CPF", "Número", "Estado", "E-mail", "RG", "Complemento", "Telefone",
-                    "Data de Nascimento", "Última Troca de Senha", "Data da Senha Cadastrada",
-                    "Data da Inclusão do Usuário", "Segredo", "Usuário Logado"]
+                    "Data de Nascimento"]
 
                 # Verificar se o DataFrame está vazio
-                if df.empty:
+                if df.shape[1] != len(colunas_table_massa_usuarios):
+                    QMessageBox.warning(self, "Erro", "O número de colunas em massa no arquivo Excel não corresponde ao número esperado.")
+                    self.line_edit_massa_usuarios.clear()
+                    # Zerando a barra de progresso
+                    self.progress_massa_usuarios.setValue(0)
+                    self.progresso_massa = 0
+                    
+                    
+                if df.shape[0] == 0:
                     QMessageBox.warning(self, "Erro", "O arquivo Excel está vazio.")
                     self.line_edit_massa_usuarios.clear()
-                    self.resetar_progresso_massa_usuarios()
-                    return
-
+                    # Zerando a barra de progresso
+                    self.progress_massa_usuarios.setValue(0)
+                    self.progresso_massa = 0
+                    return  
                 # Adicionar os dados à tabela
                 self.table_massa_usuarios.setRowCount(0)
-
-                for row in df.itertuples(index=False):
+                
+        
+                for _, row in df.iterrows():
                     row_position = self.table_massa_usuarios.rowCount()
                     self.table_massa_usuarios.insertRow(row_position)
                     for column, value in enumerate(row):
-                        item = QTableWidgetItem(str(value))
-                        item.setFlags(item.flags() & ~Qt.ItemFlag.ItemIsEditable)  # Desabilitar edição
+                        item = self.formatar_texto_usuarios_em_massa(str(value))
                         self.table_massa_usuarios.setItem(row_position, column, item)
-
                 QMessageBox.information(self, "Sucesso", "Arquivo Excel importado com sucesso!")
 
             except Exception as e:
                 QMessageBox.critical(self, "Erro", f"Erro ao importar o arquivo Excel: {e}")
-
+             # Quando o arquivo for carregado, atualizar o texto da line_excel com o caminho do arquivo
             self.line_edit_massa_usuarios.setText(self.nome_arquivo_excel_massa)
-            self.resetar_progresso_massa_usuarios()
+            
+            self.progress_massa_usuarios.setValue(0)
+            self.progresso_massa = 0
+            self.table_massa_usuarios.resizeColumnsToContents()
+            self.table_massa_usuarios.resizeRowsToContents()
+            
+    def formatar_texto_usuarios_em_massa(self, texto):
+        item = QTableWidgetItem(texto)
+        item.setTextAlignment(Qt.AlignCenter)  # Centraliza o texto
+        item.setForeground(QBrush(QColor("white"))) 
+        return item
 
     def cadastrar_usuarios_em_massa(self):
-        pass
-    #Função que incrementarei depois que para ser ativada, terá que ser paga
+        try:
+            total_linhas = self.table_massa_usuarios.rowCount()
+            if total_linhas == 0:
+                QMessageBox.warning(self, "Erro", "Nenhum usuário encontrado para cadastrar.")
+                return
+
+            for linha in range(total_linhas):
+                nome = self.table_massa_usuarios.item(linha, 0).text().strip() if self.table_massa_usuarios.item(linha, 0) else ""
+                # Gerar código único para o usuário
+                usuario = self.main_window.gerar_codigo_usuarios()
+                senha = self.table_massa_usuarios.item(linha, 2).text().strip() if self.table_massa_usuarios.item(linha, 2) else ""
+                confirmar_senha = self.table_massa_usuarios.item(linha, 3).text().strip() if self.table_massa_usuarios.item(linha, 3) else ""
+                acesso = self.table_massa_usuarios.item(linha, 4).text().strip() if self.table_massa_usuarios.item(linha, 4) else ""
+                endereco = self.table_massa_usuarios.item(linha, 5).text().strip() if self.table_massa_usuarios.item(linha, 5) else ""
+                cep = self.table_massa_usuarios.item(linha, 6).text().strip() if self.table_massa_usuarios.item(linha, 6) else ""
+                cpf = self.table_massa_usuarios.item(linha, 7).text().strip() if self.table_massa_usuarios.item(linha, 7) else ""
+                numero = self.table_massa_usuarios.item(linha, 8).text().strip() if self.table_massa_usuarios.item(linha, 8) else ""
+                estado = self.table_massa_usuarios.item(linha, 9).text().strip() if self.table_massa_usuarios.item(linha, 9) else ""
+                email = self.table_massa_usuarios.item(linha, 10).text().strip() if self.table_massa_usuarios.item(linha, 10) else ""
+                rg = self.table_massa_usuarios.item(linha, 11).text().strip() if self.table_massa_usuarios.item(linha, 11) else ""
+                complemento = self.table_massa_usuarios.item(linha, 12).text().strip() if self.table_massa_usuarios.item(linha, 12) else ""
+                telefone = self.table_massa_usuarios.item(linha, 13).text().strip() if self.table_massa_usuarios.item(linha, 13) else ""
+                data_nascimento = self.table_massa_usuarios.item(linha, 14).text().strip() if self.table_massa_usuarios.item(linha, 14) else ""
+
+                dados_usuarios_massa = {
+                    "Nome": nome,
+                    "Usuário": usuario,
+                    "Senha": senha,
+                    "Confirmar Senha": confirmar_senha,
+                    "Acesso": acesso,
+                    "Endereço": endereco,
+                    "CEP": cep,
+                    "CPF": cpf,
+                    "Número": numero,
+                    "Estado": estado,
+                    "E-mail": email,
+                    "RG": rg,
+                    "Complemento": complemento,
+                    "Telefone": telefone,
+                    "Data de Nascimento": data_nascimento
+                }
+
+                self.main_window.subscribe_user(usuario_info=dados_usuarios_massa, registrar_historico=True)
+
+                # Registrar no histórico
+                descricao = f"Usuário {usuario} foi cadastrado no sistema!"
+                self.main_window.registrar_historico_usuarios("Cadastro em Massa", descricao)
+
+
+            QMessageBox.information(self, "Sucesso", "Usuários cadastrados em massa com sucesso!")
+            self.line_edit_massa_usuarios.clear()
+
+            # Limpar a tabela após a inserção
+            self.table_massa_usuarios.setRowCount(0)
+
+        except Exception as e:
+            QMessageBox.critical(self, "Erro", f"Erro ao cadastrar usuários em massa:\n{e}")
+
+                
+                
+        

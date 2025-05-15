@@ -6799,6 +6799,9 @@ QLineEdit::placeholderText {
 
 </string>
                 </property>
+                <property name="alignment">
+                 <set>Qt::AlignCenter</set>
+                </property>
                </widget>
               </item>
               <item row="3" column="0">
@@ -6984,11 +6987,6 @@ QTableWidget::item:selected {
              <column>
               <property name="text">
                <string>Confirmar Senha</string>
-              </property>
-             </column>
-             <column>
-              <property name="text">
-               <string>Acesso</string>
               </property>
              </column>
              <column>

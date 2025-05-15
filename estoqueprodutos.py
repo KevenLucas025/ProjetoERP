@@ -1770,7 +1770,7 @@ class EstoqueProduto(QWidget):
                     row_position = self.table_massa_produtos.rowCount()
                     self.table_massa_produtos.insertRow(row_position)
                     for column, value in enumerate(row):
-                        item = self.formatar_texto_usuarios_em_massa(str(value))
+                        item = self.formatar_texto_produtos_em_massa(str(value))
                         self.table_massa_produtos.setItem(row_position, column, item)
                 QMessageBox.information(self, "Sucesso", "Arquivo Excel importado com sucesso!")
             except Exception as e:
@@ -1784,7 +1784,7 @@ class EstoqueProduto(QWidget):
             self.table_massa_produtos.resizeColumnsToContents()  # Ajusta a largura das colunas para o conteúdo
             self.table_massa_produtos.resizeRowsToContents()
 
-    def formatar_texto_usuarios_em_massa(self, texto):
+    def formatar_texto_produtos_em_massa(self, texto):
         item = QTableWidgetItem(texto)
         item.setTextAlignment(Qt.AlignCenter)  # Centraliza o texto
         item.setForeground(QBrush(QColor("white"))) 
