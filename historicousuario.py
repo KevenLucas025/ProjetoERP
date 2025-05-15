@@ -447,6 +447,9 @@ class Pagina_Usuarios(QWidget):
                 for col, value in enumerate(linha_data):
                     item = self.formatar_texto(str(value))
                     self.table_ativos.setItem(linha_index, col, item)
+                    
+            self.table_ativos.resizeColumnsToContents()  # Ajusta as colunas automaticamente
+            self.table_ativos.resizeRowsToContents()  # Ajusta as linhas automaticamente
 
             # Exibir uma mensagem de sucesso
             msg_box = QMessageBox()
@@ -467,6 +470,8 @@ class Pagina_Usuarios(QWidget):
 
         except Exception as e:
             print(f"Erro ao atualizar a tabela de ativos: {e}")
+            
+            
 
 
     def atualizar_inativos(self):
@@ -1605,7 +1610,8 @@ class Pagina_Usuarios(QWidget):
                 return
             for linha in range(total_linhas):
                 nome = self.table_massa_usuarios.item(linha, 0).text()
-                usuario = self.table_massa_usuarios.item(linha, 1).text()
+                # Gerar código único para o usuário
+                usuario = self.main_window.gerar_codigo_usuarios()
                 senha = self.table_massa_usuarios.item(linha, 2).text()
                 confirmar_senha = self.table_massa_usuarios.item(linha, 3).text()
                 acesso = self.table_massa_usuarios.item(linha, 4).text()
@@ -1638,7 +1644,7 @@ class Pagina_Usuarios(QWidget):
                     "Data de Nascimento": data_nascimento
                 }
                 
-                self.main_window.subscribe_user(dados_usuarios_massa,registrar_historico=True)
+                self.main_window.subscribe_user(usuario_info=dados_usuarios_massa,registrar_historico=True)
                 
                 # Registrar no histórico para o cadastro em massa
                 descricao = f"Usuário {usuario} foi cadastrado no sistema!"

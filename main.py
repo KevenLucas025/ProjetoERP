@@ -1076,12 +1076,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def subscribe_user(self, usuario_info=None, registrar_historico=True):
         db = DataBase()
         db.connecta()
+        
+        user = self.gerar_codigo_usuarios()
 
         # Verificar se é cadastro manual (com widgets da interface) ou em massa (via dicionário)
         if usuario_info is None:
             # Cadastro manual - coleta os dados dos widgets
             nome = self.txt_nome.text()
-            user = self.txt_usuario.text()
             senha = self.txt_senha.text()
             confirmar_senha = self.txt_confirmar_senha.text()
             acesso = self.perfil_usuarios.currentText()
@@ -1132,8 +1133,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 return
         else:
             # Cadastro em massa - coleta os dados do dicionário
+            if not isinstance(usuario_info, dict):
+                 raise TypeError(f"Esperado dict para 'usuario_info', mas recebeu {type(usuario_info).__name__}")
             nome = usuario_info.get("Nome", "")
-            user = usuario_info.get("Usuário", "")
             senha = usuario_info.get("Senha", "")
             confirmar_senha = usuario_info.get("Confirmar Senha", "")
             acesso = usuario_info.get("Acesso", "")
@@ -1148,7 +1150,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             data_nascimento = usuario_info.get("Data de Nascimento", "")
             complemento = usuario_info.get("Complemento", "")
             imagem = None  # Cadastro em massa normalmente não envia imagem
-            print(complemento)
 
         try:
             usuario_logado = self.config.obter_usuario_logado()
@@ -1161,6 +1162,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                     self.exibir_asteriscos_usuarios([user_exists_result])
                     QMessageBox.critical(None, "Erro", f"Já existe um usuário com esse {user_exists_result}")
                 raise ValueError(f"Usuário duplicado: {user_exists_result}")
+
 
             # Inserir usuário no banco
             db.insert_user(
@@ -1631,6 +1633,22 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         caracteres = string.ascii_uppercase + string.digits
         codigo_aleatorio = ''.join(random.choice(caracteres) for _ in range(length))
         return codigo_aleatorio
+#*********************************************************************************************************************
+    def gerar_codigo_usuarios(self, length=7,prefixo="SIG"):
+        caracteres = string.ascii_uppercase + string.digits
+        tentativa_maxima = 1000  # Para evitar loop infinito
+        for _ in range(tentativa_maxima):
+            codigo_aleatorio = ''.join(random.choice(caracteres) for _ in range(length - len(prefixo)))
+            codigo_final = prefixo + codigo_aleatorio
+            
+            cursor = self.connection.cursor()
+            cursor.execute("SELECT * FROM users WHERE Usuário = ?", (codigo_final,))
+            resultado = cursor.fetchone()
+            
+            if not resultado:
+                # Se o código não existe, retornar
+                return codigo_final
+        raise Exception("Não foi possível gerar um código único após várias tentativas.")
 #*********************************************************************************************************************
     def selecionar_produto_tabela(self):
         produto = self.obter_produto_selecionado()

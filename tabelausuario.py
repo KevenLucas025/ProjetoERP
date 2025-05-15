@@ -155,6 +155,9 @@ class TabelaUsuario(QDialog):
             for usuario in usuarios:
                 row_position = self.table_widget.rowCount()
                 self.table_widget.insertRow(row_position)
+                
+                self.table_widget.resizeColumnsToContents()  # Ajustar o tamanho das colunas
+                self.table_widget.resizeRowsToContents()  # Ajustar o tamanho das linhas
 
                 # Preencher cada coluna com os dados do usuário
                 for col, data in enumerate(usuario):
@@ -171,7 +174,7 @@ class TabelaUsuario(QDialog):
             QMessageBox.critical(self, "Erro", f"Erro ao acessar o banco de dados: {str(e)}")
         finally:
             pass
-
+#*******************************************************************************************************
     def exibir_mensagem_sem_usuarios(self):
         # Verificar se a QLabel já existe
         if not hasattr(self, 'label_sem_usuario'):
@@ -447,8 +450,6 @@ class TabelaUsuario(QDialog):
                 for col in range(self.table_widget.columnCount()):
                     if col == 0:
                         self.table_widget.removeCellWidget(row, col)
-
-
 #*******************************************************************************************************
     def ordenar_usuario(self):
         # Implementação básica para ordenar produtos
