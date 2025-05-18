@@ -1903,6 +1903,8 @@ class Ui_MainWindow(object):
         self.verticalLayout_15.setObjectName(u"verticalLayout_15")
         self.frame_valor_total_produtos = QFrame(self.frame_6)
         self.frame_valor_total_produtos.setObjectName(u"frame_valor_total_produtos")
+        sizePolicy.setHeightForWidth(self.frame_valor_total_produtos.sizePolicy().hasHeightForWidth())
+        self.frame_valor_total_produtos.setSizePolicy(sizePolicy)
         self.frame_valor_total_produtos.setMinimumSize(QSize(321, 102))
         self.frame_valor_total_produtos.setMaximumSize(QSize(321, 102))
         self.frame_valor_total_produtos.setStyleSheet(u"background-color: rgb(100, 200, 100); /* Verde claro */\n"
@@ -1912,6 +1914,8 @@ class Ui_MainWindow(object):
         self.label_valor_total_produtos_2 = QLabel(self.frame_valor_total_produtos)
         self.label_valor_total_produtos_2.setObjectName(u"label_valor_total_produtos_2")
         self.label_valor_total_produtos_2.setGeometry(QRect(20, 10, 291, 20))
+        sizePolicy.setHeightForWidth(self.label_valor_total_produtos_2.sizePolicy().hasHeightForWidth())
+        self.label_valor_total_produtos_2.setSizePolicy(sizePolicy)
         self.label_valor_total_produtos_2.setStyleSheet(u"QLabel {\n"
 "    color: white;\n"
 "    text-align: center; /* Centraliza o texto horizontalmente */\n"
@@ -1923,6 +1927,8 @@ class Ui_MainWindow(object):
 
         self.frame_valor_do_desconto = QFrame(self.frame_6)
         self.frame_valor_do_desconto.setObjectName(u"frame_valor_do_desconto")
+        sizePolicy.setHeightForWidth(self.frame_valor_do_desconto.sizePolicy().hasHeightForWidth())
+        self.frame_valor_do_desconto.setSizePolicy(sizePolicy)
         self.frame_valor_do_desconto.setMinimumSize(QSize(0, 102))
         self.frame_valor_do_desconto.setMaximumSize(QSize(321, 102))
         self.frame_valor_do_desconto.setStyleSheet(u"background-color: rgb(100, 200, 100); /* Verde claro */\n"
@@ -1932,6 +1938,8 @@ class Ui_MainWindow(object):
         self.label_valor_do_desconto = QLabel(self.frame_valor_do_desconto)
         self.label_valor_do_desconto.setObjectName(u"label_valor_do_desconto")
         self.label_valor_do_desconto.setGeometry(QRect(83, 17, 161, 20))
+        sizePolicy.setHeightForWidth(self.label_valor_do_desconto.sizePolicy().hasHeightForWidth())
+        self.label_valor_do_desconto.setSizePolicy(sizePolicy)
         self.label_valor_do_desconto.setStyleSheet(u"QLabel {\n"
 "    color: white;\n"
 "    text-align: center; /* Centraliza o texto horizontalmente */\n"
@@ -1943,6 +1951,8 @@ class Ui_MainWindow(object):
 
         self.frame_valor_com_desconto1 = QFrame(self.frame_6)
         self.frame_valor_com_desconto1.setObjectName(u"frame_valor_com_desconto1")
+        sizePolicy.setHeightForWidth(self.frame_valor_com_desconto1.sizePolicy().hasHeightForWidth())
+        self.frame_valor_com_desconto1.setSizePolicy(sizePolicy)
         self.frame_valor_com_desconto1.setMinimumSize(QSize(0, 102))
         self.frame_valor_com_desconto1.setMaximumSize(QSize(321, 102))
         self.frame_valor_com_desconto1.setStyleSheet(u"background-color: rgb(100, 200, 100); /* Verde claro */\n"
@@ -1952,6 +1962,8 @@ class Ui_MainWindow(object):
         self.label_valor_com_desconto = QLabel(self.frame_valor_com_desconto1)
         self.label_valor_com_desconto.setObjectName(u"label_valor_com_desconto")
         self.label_valor_com_desconto.setGeometry(QRect(30, 10, 261, 20))
+        sizePolicy.setHeightForWidth(self.label_valor_com_desconto.sizePolicy().hasHeightForWidth())
+        self.label_valor_com_desconto.setSizePolicy(sizePolicy)
         self.label_valor_com_desconto.setStyleSheet(u"QLabel {\n"
 "    color: white;\n"
 "    text-align: center; /* Centraliza o texto horizontalmente */\n"
@@ -1963,6 +1975,8 @@ class Ui_MainWindow(object):
 
         self.frame_quantidade = QFrame(self.frame_6)
         self.frame_quantidade.setObjectName(u"frame_quantidade")
+        sizePolicy.setHeightForWidth(self.frame_quantidade.sizePolicy().hasHeightForWidth())
+        self.frame_quantidade.setSizePolicy(sizePolicy)
         self.frame_quantidade.setMinimumSize(QSize(0, 102))
         self.frame_quantidade.setMaximumSize(QSize(321, 102))
         self.frame_quantidade.setStyleSheet(u"background-color: rgb(100, 200, 100); /* Verde claro */\n"
@@ -1972,6 +1986,8 @@ class Ui_MainWindow(object):
         self.label_quantidade_2 = QLabel(self.frame_quantidade)
         self.label_quantidade_2.setObjectName(u"label_quantidade_2")
         self.label_quantidade_2.setGeometry(QRect(40, 10, 241, 20))
+        sizePolicy.setHeightForWidth(self.label_quantidade_2.sizePolicy().hasHeightForWidth())
+        self.label_quantidade_2.setSizePolicy(sizePolicy)
         self.label_quantidade_2.setStyleSheet(u"QLabel {\n"
 "    color: white;\n"
 "    text-align: center; /* Centraliza o texto horizontalmente */\n"

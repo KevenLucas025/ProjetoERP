@@ -40,6 +40,7 @@ import pandas as pd
 from openpyxl.utils import get_column_letter
 from openpyxl.styles import Alignment
 from openpyxl import load_workbook
+import requests
 
 
 
@@ -51,6 +52,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.setWindowTitle("Sistema de Gerenciamento")
         self.historico_pausado = False
         self.historico_usuario_pausado = False
+        self.imagem_removida_usuario = False
+        
 
 
 
@@ -389,6 +392,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.btn_carregar_imagem.clicked.connect(self.carregar_imagem_produto)
         self.btn_opcoes_navegacao.clicked.connect(self.abrir_menu_opcoes)
 
+        self.txt_cep.editingFinished.connect(self.on_cep_editing_finished)
+
         
         
         self.pagina_configuracoes = Pagina_Configuracoes(self.tool_tema,self.tool_atalhos,
@@ -632,37 +637,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
             # Adicionar o botão OK com o estilo padrão
             mensagem.setStandardButtons(QMessageBox.Ok)
-            
-            # Estilizar a mensagem (fundo branco e texto preto)
-            mensagem.setStyleSheet("""
-                QLabel { 
-                    color: black; 
-                    background-color: white;
-                }
-                QMessageBox { 
-                    background-color: white; 
-                    border: none;
-                }
-                QPushButton {
-                    background-color: #f0f0f0; 
-                    border: 1px solid #0078d7;
-                    padding: 3px 10px;
-                    border-radius: 5px;
-                    width: 55px;
-        
-                }
-                QPushButton:hover {
-                    background-color: #d0d0d0;
-                    border: 1px solid #0078d7;  /* Azul claro */
-                }
-                QPushButton:pressed {
-                    background-color: #a0a0a0;
-                    border: 1px solid #8f8f8f;
-                }
-            """)
 
             # Executar a mensagem
             mensagem.exec()
+            return
+        if not self.imagem_removida_usuario:
+            QMessageBox.warning(None,"Remoção de Imagem",
+                                "Remova a imagem do usuário e inclua novamente para seguir com a atualização")
             return
         try:        
             # Verificar se o usuário existe no banco de dados antes de tentar atualizar
@@ -690,76 +671,91 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         usuario_cpf = self.txt_cpf.text() or "Não Cadastrado"
         usuario_cep = self.txt_cep.text() or "Não Cadastrado"
         usuario_estado = self.perfil_estado.currentText()
+        usuario_perfil = self.perfil_usuarios.currentText()
         usuario_senha = self.txt_senha.text() or "Não Cadastrado"
         usuario_confirmar_senha = self.txt_confirmar_senha.text() or "Não Cadastrado"
         usuario_imagem = None
+        
+        campos_com_erro = []
+        # Validação de campos obrigatórios
+        campos_obrigatorios = {
+                'nome': usuario_nome,
+                'usuário': usuario_usuario,
+                'telefone': usuario_telefone,
+                'endereço': usuario_endereco,
+                'número': usuario_numero,
+                'email': usuario_email,
+                'data nascimento': usuario_data_nascimento,
+                'rg': usuario_rg,
+                'cpf': usuario_cpf,
+                'cep': usuario_cep,
+                'estado': usuario_estado,
+                'perfil': usuario_perfil,
+                'senha': usuario_senha,
+                'confirmar senha': usuario_confirmar_senha
+            }
 
-        # Verificar se todos os campos obrigatórios estão preenchidos
-        if (not usuario_nome or not usuario_usuario or not usuario_telefone or not usuario_endereco or
-                not usuario_numero or not usuario_complemento or not usuario_email or not usuario_data_nascimento or not usuario_rg or
-                not usuario_cpf or not usuario_cep or not usuario_estado or not usuario_senha or
-                not usuario_confirmar_senha):
-            QMessageBox.warning(self, "Aviso", "Todos os campos são obrigatórios!")
+        for campo, valor in campos_obrigatorios.items():
+            if not valor.strip():
+                campos_com_erro.append(campo)
+
+        if campos_com_erro:
+            self.exibir_asteriscos_usuarios(campos_com_erro)
+            QMessageBox.warning(self, "Erro", f"O campo {campos_com_erro[0]} é obrigatório.")
             return
 
         # Verificar se as senhas coincidem
         if usuario_senha != usuario_confirmar_senha:
+            self.exibir_asteriscos_usuarios(['senha', 'confirmar senha'])
             QMessageBox.warning(self, "Aviso", "As senhas não coincidem!")
             return
 
         # Verificar se o CPF é válido
         if not self.validar_cpf(usuario_cpf):
+            self.exibir_asteriscos_usuarios(['cpf'])
             QMessageBox.warning(self, "Aviso", "CPF inválido!")
             return
 
         # Verificar se o e-mail é válido
         if not self.validar_email(usuario_email):
+            self.exibir_asteriscos_usuarios(['email'])
             QMessageBox.warning(self, "Aviso", "E-mail inválido!")
             return
 
         # Verificar se o número de telefone é válido
         if not self.validar_telefone(usuario_telefone):
+            self.exibir_asteriscos_usuarios(['telefone'])
             QMessageBox.warning(self, "Aviso", "Número de telefone inválido!")
             return
 
-        # Obtendo a imagem em base64
-        usuario_imagem = None
-        pixmap = self.label_imagem_usuario.pixmap()
-        if (pixmap and not pixmap.isNull()):
-            byte_array = QByteArray()
-            buffer = QBuffer(byte_array)
-            buffer.open(QIODevice.WriteOnly)
-            pixmap.save(buffer, "PNG")
-            imagem_bytes = byte_array.toBase64()
-            usuario_imagem = str(imagem_bytes, encoding='utf-8')
 
         # Construir a consulta SQL
         sql = """
             UPDATE users 
-            SET Nome=?, Telefone=?, Endereço=?, Número=?, Complemento=?, 
+            SET Nome=?, Usuário=?,Telefone=?, Endereço=?, Número=?, Complemento=?, 
             Email=?, Data_Nascimento=?, RG=?, CPF=?, CEP=?, Estado=?, Senha=?,
-            "Confirmar Senha"=? 
+            "Confirmar Senha"=?,Acesso=?
             WHERE id=?
         """
 
         # Valores para substituir os placeholders
-        valores = (usuario_nome, usuario_telefone, usuario_endereco, usuario_numero, usuario_complemento,
+        valores = (usuario_nome, usuario_usuario,usuario_telefone, usuario_endereco, usuario_numero, usuario_complemento,
                 usuario_email, usuario_data_nascimento, usuario_rg, usuario_cpf, usuario_cep,
-                usuario_estado, usuario_senha, usuario_confirmar_senha, self.selected_user_id)
+                usuario_estado,  usuario_senha, usuario_confirmar_senha,usuario_perfil, self.selected_user_id)
 
         # Se uma nova imagem foi selecionada, inclua-a na consulta SQL
         if usuario_imagem:
             sql = """
                 UPDATE users 
-                SET Nome=?, Telefone=?, Endereço=?, Número=?, Complemento=?, 
+                SET Nome=?, Usuário=?,Telefone=?, Endereço=?, Número=?, Complemento=?, 
                 Email=?, Data_Nascimento=?, RG=?, CPF=?, CEP=?, Estado=?, Senha=?, Imagem=?,
-                "Confirmar Senha"=? 
+                "Confirmar Senha"=?, Acesso=?
                 WHERE id=?
             """
             # Adicione a imagem aos valores
-            valores = (usuario_nome, usuario_telefone, usuario_endereco, usuario_numero, usuario_complemento,
+            valores = (usuario_nome, usuario_usuario,usuario_telefone, usuario_endereco, usuario_numero, usuario_complemento,
                     usuario_email, usuario_data_nascimento, usuario_rg, usuario_cpf, usuario_cep,
-                    usuario_estado, usuario_senha, usuario_imagem, usuario_confirmar_senha, self.selected_user_id)
+                    usuario_estado,usuario_senha, usuario_imagem, usuario_confirmar_senha,usuario_perfil, self.selected_user_id)
 
         # Tentar executar a consulta SQL
         try:
@@ -771,6 +767,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             # Resetar o estado de edição
             self.is_editing = False
             self.selected_user_id = None
+            self.imagem_removida_usuario = False
         except Exception as e:
             QMessageBox.critical(self, "Erro", f"Erro ao atualizar o usuário: {str(e)}")
             
@@ -1079,6 +1076,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         user = 'Desconhecido'
 
+        #  Impedir cadastro se estiver no modo de edição
+        if self.is_editing:
+            QMessageBox.warning(None, "Modo de Edição Ativo", "Você está editando um usuário.\n " 
+            "É necessário atualizar o usuário ao invés de fazer cadastro.")
+            return
+
         try:
             # Dados básicos: manual ou massa
             if usuario_info is None:
@@ -1124,12 +1127,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                     return
 
             else:
-                # Cadastro em massa - pega do dicionário
-                if not isinstance(usuario_info, dict):
-                    raise TypeError(f"Esperado dict para 'usuario_info', mas recebeu {type(usuario_info).__name__}")
-                
-                user = self.gerar_codigo_usuarios()
                 nome = usuario_info.get("Nome", "").strip()
+                user = self.gerar_codigo_usuarios()
                 senha = usuario_info.get("Senha", "")
                 confirmar_senha = usuario_info.get("Confirmar Senha", "")
                 acesso = usuario_info.get("Acesso", "")
@@ -1231,7 +1230,46 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         except Exception as e:
             QMessageBox.critical(None, "Erro", f"Erro ao cadastrar/atualizar usuário {user}: {str(e)}")
 
+    def buscar_cep(self,cep:str):
+        cep = cep.replace("-", "").strip()
+        if len(cep) != 8 or not cep.isdigit():
+            QMessageBox.warning(None, "ERRO", "CEP inválido")
+            return
+        try:
+            url = f"https://viacep.com.br/ws/{cep}/json/"
+            resposta = requests.get(url)
+            if resposta.status_code == 200:
+                dados = resposta.json()
+                if "erro"  in dados:
+                    QMessageBox.warning(None, "ERRO", "CEP não encontrado")
+                    return None
+                return dados
+            else:
+                QMessageBox.warning(None,"Erro de conexão","Não foi possível consultar o CEP")
+                return None
+        except Exception as e:
+            QMessageBox.warning(None,"Erro ao consultar CEP",f"Erro: {str(e)}")
+            return None
 
+    def preencher_campos_cep(self, dados):
+        if dados is None:
+            return  # Não faz nada se não tem dados
+        
+        self.txt_endereco.setText(dados.get("logradouro", ""))
+        self.txt_complemento.setText(dados.get("complemento", ""))
+        
+        # Só ajustar o estado, já que é o único campo extra que você tem
+        estado = dados.get("uf", "")
+        index_estado = self.perfil_estado.findText(estado)
+        if index_estado != -1:
+            self.perfil_estado.setCurrentIndex(index_estado)
+
+
+    def on_cep_editing_finished(self):
+        cep_digitado = self.txt_cep.text()
+        dados_cep = self.buscar_cep(cep_digitado)
+        if dados_cep:
+            self.preencher_campos_cep(dados_cep)
 
     def eliminar_campos_usuarios(self):
         # Limpar campos de texto
@@ -1249,13 +1287,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.txt_senha.clear()
         self.txt_confirmar_senha.clear()
         self.label_imagem_usuario.clear()
-        
-        '''layout = self.frame_imagem_cadastro.layout()
-        if layout:
-            for i in reversed(range(layout.count())):
-                widget = layout.itemAt(i).widget()
-                if widget is not None:
-                    widget.deleteLater()'''
 
         # Limpar campos de combo box
         self.perfil_estado.setCurrentIndex(0)  # Se for um combo box, o índice padrão é 0 (ou o valor inicial)
@@ -1702,6 +1733,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                     widget.clear()
                     widget.setPixmap(QPixmap())
                     widget.hide()
+                    self.imagem_removida_usuario = True
                     print("Imagem removida do usuário com sucesso")
                     msg_box = QMessageBox(QMessageBox.Information, "Sucesso", "Imagem removida do usuário com sucesso")
                     msg_box.exec()
@@ -2017,7 +2049,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.produto_id = id_usuario
         
         # Atualizar os campos e a imagem com base no produto selecionado
-        self.atualizar_campos()
         self.atualizar_imagem()
 #*******************************************************************************************************
     def mostrar_erro_desconto(self):
@@ -2131,7 +2162,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.txt_cpf.clear()
         self.txt_senha.clear()
         self.txt_confirmar_senha.clear()
-        self.frame_imagem_cadastro.setText("")
+        self.perfil_estado.setCurrentIndex(0)
+        self.perfil_usuarios.setCurrentIndex(0)
+        self.label_imagem_usuario.clear()
+
+
+
 
     def cor_estado_produto(self):
         pass

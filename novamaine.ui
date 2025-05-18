@@ -3410,6 +3410,12 @@ QPushButton:hover {
              <layout class="QVBoxLayout" name="verticalLayout_15">
               <item>
                <widget class="QFrame" name="frame_valor_total_produtos">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
                 <property name="minimumSize">
                  <size>
                   <width>321</width>
@@ -3441,6 +3447,12 @@ QPushButton:hover {
                    <height>20</height>
                   </rect>
                  </property>
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
                  <property name="styleSheet">
                   <string notr="true">QLabel {
     color: white;
@@ -3457,6 +3469,12 @@ QPushButton:hover {
               </item>
               <item>
                <widget class="QFrame" name="frame_valor_do_desconto">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
                 <property name="minimumSize">
                  <size>
                   <width>0</width>
@@ -3488,6 +3506,12 @@ QPushButton:hover {
                    <height>20</height>
                   </rect>
                  </property>
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
                  <property name="styleSheet">
                   <string notr="true">QLabel {
     color: white;
@@ -3504,6 +3528,12 @@ QPushButton:hover {
               </item>
               <item>
                <widget class="QFrame" name="frame_valor_com_desconto1">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
                 <property name="minimumSize">
                  <size>
                   <width>0</width>
@@ -3535,6 +3565,12 @@ QPushButton:hover {
                    <height>20</height>
                   </rect>
                  </property>
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
                  <property name="styleSheet">
                   <string notr="true">QLabel {
     color: white;
@@ -3551,6 +3587,12 @@ QPushButton:hover {
               </item>
               <item>
                <widget class="QFrame" name="frame_quantidade">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
                 <property name="minimumSize">
                  <size>
                   <width>0</width>
@@ -3581,6 +3623,12 @@ QPushButton:hover {
                    <width>241</width>
                    <height>20</height>
                   </rect>
+                 </property>
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
                  </property>
                  <property name="styleSheet">
                   <string notr="true">QLabel {
