@@ -64,18 +64,21 @@ class DataBase:
                     Endereço TEXT,
                     CEP TEXT,
                     CPF TEXT,
+                    CNPJ TEXT,
                     Número TEXT,
+                    Cidade TEXT,
+                    Bairro TEXT,
                     Estado TEXT,
-                    Email TEXT ,
+                    Email TEXT,
                     Complemento TEXT,
-                    Telefone TEXT ,
-                    Data_nascimento TEXT ,
-                    RG TEXT ,
-                    Imagem BLOB ,
+                    Telefone TEXT,
+                    "Data de Nascimento" TEXT,
+                    RG TEXT,
+                    Imagem BLOB,
                     "Última Troca de Senha" TEXT,
                     "Data da Senha Cadastrada" TEXT,
                     "Data da Inclusão do Usuário" TEXT,
-                    Secret TEXT,
+                    Segredo TEXT,
                     "Usuário Logado" TEXT
                 )
             """)
@@ -99,19 +102,24 @@ class DataBase:
                     Endereço TEXT NOT NULL,
                     CEP TEXT NOT NULL,
                     CPF TEXT NOT NULL,
+                    CNPJ TEXT NOT NULL,
+                    Cidade TEXT NOT NULL,
+                    Bairro TEXT NOT NULL,
                     Número TEXT NOT NULL,
                     Estado TEXT NOT NULL,
                     Email TEXT NOT NULL,
                     Complemento TEXT,
                     Telefone TEXT NOT NULL,
-                    Data_nascimento TEXT NOT NULL,
+                    "Data de Nascimento" TEXT NOT NULL,
                     RG TEXT NOT NULL,
                     Imagem BLOB TEXT NOT NULL,
                     'Última Troca de Senha' TEXT,
                     'Data da Senha Cadastrada' TEXT,
                     'Data da Inclusão do Usuário' TEXT,
                     'Data da Inatividade do Usuário' TEXT,
-                    Secret TEXT                
+                    Segredo TEXT,
+                    'Usuário Logado' TEXT NOT NULL
+                                    
                 )
             """)
             print("Tabela de usuário inativos criada com sucesso! ")
@@ -494,49 +502,57 @@ class DataBase:
             print("Erro ao verificar se usuário existe:", e)
             return None
 #*********************************************************************************************************************
-    def insert_user(self, nome, usuario, senha, confirmar_senha, acesso, endereco, cep, cpf, numero, estado, email, 
-                telefone, rg, data_nascimento, complemento, segredo,usuario_logado, imagem=None):
+    def insert_user(self, nome, usuario, senha, confirmar_senha, cep, endereco, numero, cidade, bairro, estado,
+                complemento, telefone, email, data_nascimento, rg, cpf, cnpj, segredo, usuario_logado, acesso, imagem=None):
         try:
             cursor = self.connection.cursor()
-
-            # Definindo a data atual como a data de última troca de senha
             data_atual = datetime.now().strftime("%d/%m/%Y")
 
-            # Substituir None ou valores vazios por "Não Cadastrado"
-            nome = nome or "Não Cadastrado"
-            usuario = usuario or "Não Cadastrado"
-            senha = senha or "Não Cadastrado"
-            confirmar_senha = confirmar_senha or "Não Cadastrado"
-            acesso = acesso or "Não Cadastrado"
-            endereco = endereco or "Não Cadastrado"
-            cep = cep or "Não Cadastrado"
-            cpf = cpf or "Não Cadastrado"
-            numero = numero or "Não Cadastrado"
-            estado = estado or "Não Cadastrado"
-            email = email or "Não Cadastrado"
-            telefone = telefone or "Não Cadastrado"
-            rg = rg or "Não Cadastrado"
-            data_nascimento = data_nascimento or "Não Cadastrado"
-            complemento = complemento or "Não Cadastrado"
-            imagem = imagem or "Não Cadastrado"
-            segredo = segredo or "Não Cadastrado"
-            usuario_logado = usuario_logado or "Não Cadastrado"  # Certifique-se de que o valor está definido
-            
+            # Função auxiliar para padronizar valores
+            def padrao(valor):
+                return valor.strip() if isinstance(valor, str) else valor
+            def tratar(valor):
+                return padrao(valor) if padrao(valor) else "Não Cadastrado"
+
+            # Aplicar tratamento
+            nome = tratar(nome)
+            usuario = tratar(usuario)
+            senha = tratar(senha)
+            confirmar_senha = tratar(confirmar_senha)
+            cep = tratar(cep)
+            endereco = tratar(endereco)
+            numero = tratar(numero)
+            cidade = tratar(cidade)
+            bairro = tratar(bairro)
+            estado = tratar(estado)
+            complemento = tratar(complemento)
+            telefone = tratar(telefone)
+            email = tratar(email)
+            data_nascimento = tratar(data_nascimento)
+            rg = tratar(rg)
+            cpf = tratar(cpf)
+            cnpj = tratar(cnpj)
+            imagem = tratar(imagem)
+            segredo = tratar(segredo)
+            usuario_logado = tratar(usuario_logado)
+            acesso = tratar(acesso)
 
             cursor.execute("""
-                INSERT INTO users(Nome, Usuário, Senha, "Confirmar Senha", Acesso, Endereço, CEP, CPF, Número, Estado, 
-                                Email, Telefone, RG, Data_nascimento, Complemento, Imagem, "Última Troca de Senha",
-                                "Data da Senha Cadastrada", "Data da Inclusão do Usuário", Secret,"Usuário Logado") 
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?)
-            """, (nome, usuario, senha, confirmar_senha, acesso, endereco, cep, cpf, numero, estado, email, telefone, 
-                rg, data_nascimento, complemento, imagem, "Não Cadastrado", data_atual, data_atual, segredo,usuario_logado))
-
+                INSERT INTO users(Nome, Usuário, Senha, "Confirmar Senha", CEP, Endereço, Número, Cidade, Bairro, Estado, Complemento,
+                                Telefone, Email, "Data de Nascimento", RG, CPF, CNPJ, Imagem, "Última Troca de Senha",
+                                "Data da Senha Cadastrada", "Data da Inclusão do Usuário", Segredo, "Usuário Logado", Acesso)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """, (
+                nome, usuario, senha, confirmar_senha, cep, endereco, numero, cidade, bairro, estado, complemento,
+                telefone, email, data_nascimento, rg, cpf, cnpj, imagem,
+                "Não Cadastrado", data_atual, data_atual, segredo, usuario_logado, acesso
+            ))
 
             self.connection.commit()
             print("Usuário inserido com sucesso!")
+
         except Exception as e:
             print("Erro ao inserir usuário:", e)
-
 
 #*********************************************************************************************************************
     def obter_caminho_imagem_usuario(self):
@@ -555,80 +571,59 @@ class DataBase:
             print("Erro ao obter caminho da imagem:", e)
             return None
 #*********************************************************************************************************************        
-    def atualizar_usuario(self, nome=None, usuario=None, senha=None, confirmar_senha=None, acesso=None, endereco=None, 
-                      cep=None, cpf=None, numero=None, estado=None, email=None, 
-                      telefone=None, rg=None, data_nascimento=None, complemento=None, imagem=None):
+    def atualizar_usuario(self,nome=None, usuario=None, senha=None, confirmar_senha=None,
+                      cep=None, endereco=None, numero=None, cidade=None, bairro=None, estado=None,
+                      complemento=None, telefone=None, email=None, data_nascimento=None, rg=None,
+                    cpf=None, cnpj=None, imagem=None, segredo=None, usuario_logado=None, acesso=None):
         try:
-            # Monta a query SQL dinamicamente com base nos parâmetros fornecidos
+            campos = {
+                "Nome": nome,
+                "Usuário": usuario,
+                "Senha": senha,
+                "Confirmar Senha": confirmar_senha,
+                "CEP": cep,
+                "Endereço": endereco,
+                "Número": numero,
+                "Cidade": cidade,
+                "Bairro": bairro,
+                "Estado": estado,
+                "Complemento": complemento,
+                "Telefone": telefone,
+                "Email": email,
+                "Data_nascimento": data_nascimento,
+                "RG": rg,
+                "CPF": cpf,
+                "CNPJ": cnpj,
+                "Imagem": imagem,
+                "Segredo": segredo,
+                "Usuário Logado": usuario_logado,
+                "Acesso": acesso
+            }
+
             columns_to_update = []
             values_to_update = []
 
-            if nome is not None:
-                columns_to_update.append("Nome = ?")
-                values_to_update.append(nome if nome else "Não cadastrado")
-            if usuario is not None:
-                columns_to_update.append("Usuário = ?")
-                values_to_update.append(usuario if usuario else "Não cadastrado")
-            if senha is not None:
-                columns_to_update.append("Senha = ?")
-                values_to_update.append(senha if senha else "Não cadastrado")
-            if confirmar_senha is not None:
-                columns_to_update.append("Confirmar Senha = ?")
-                values_to_update.append(confirmar_senha if confirmar_senha else "Não cadastrado")
-            if acesso is not None:
-                columns_to_update.append("Acesso = ?")
-                values_to_update.append(acesso if acesso else "Não cadastrado")
-            if endereco is not None:
-                columns_to_update.append("Endereço = ?")
-                values_to_update.append(endereco if endereco else "Não cadastrado")
-            if cep is not None:
-                columns_to_update.append("CEP = ?")
-                values_to_update.append(cep if cep else "Não cadastrado")
-            if cpf is not None:
-                columns_to_update.append("CPF = ?")
-                values_to_update.append(cpf if cpf else "Não cadastrado")
-            if numero is not None:
-                columns_to_update.append("Número = ?")
-                values_to_update.append(numero if numero else "Não cadastrado")
-            if estado is not None:
-                columns_to_update.append("Estado = ?")
-                values_to_update.append(estado if estado else "Não cadastrado")
-            if email is not None:
-                columns_to_update.append("Email = ?")
-                values_to_update.append(email if email else "Não cadastrado")
-            if telefone is not None:
-                columns_to_update.append("Telefone = ?")
-                values_to_update.append(telefone if telefone else "Não cadastrado")
-            if rg is not None:
-                columns_to_update.append("RG = ?")
-                values_to_update.append(rg if rg else "Não cadastrado")
-            if data_nascimento is not None:
-                columns_to_update.append("Data_nascimento = ?")
-                values_to_update.append(data_nascimento if data_nascimento else "Não cadastrado")
-            if complemento is not None:
-                columns_to_update.append("Complemento = ?")
-                values_to_update.append(complemento if complemento else "Não cadastrado")
-            if imagem is not None:
-                columns_to_update.append("Imagem = ?")
-                values_to_update.append(imagem if imagem else "Não cadastrado")
+            for coluna, valor in campos.items():
+                if valor is not None:
+                    columns_to_update.append(f"{coluna} = ?")
+                    values_to_update.append(valor if valor else "Não Cadastrado")
 
-            # Converte as listas em strings separadas por vírgula
+            if not columns_to_update:
+                print("Nenhum campo para atualizar.")
+                return
+
             set_clause = ", ".join(columns_to_update)
-
-            query = f"""
-                UPDATE users
-                SET {set_clause}
-                WHERE id = ?
-            """
+            query = f"UPDATE users SET {set_clause} WHERE id = ?"
+            values_to_update.append(id)
 
             cursor = self.connection.cursor()
             cursor.execute(query, tuple(values_to_update))
             self.connection.commit()
 
             print("Usuário atualizado com sucesso!")
+
         except Exception as e:
             print("Erro ao atualizar usuário:", e)
-
 #*********************************************************************************************************************
     def update_password(self, id_usuario, nova_senha):
         dias_desde_ultima_troca = self.verificar_tempo_ultima_troca(id_usuario)
@@ -712,9 +707,9 @@ class DataBase:
     def obter_usuarios_ativos(self):
         cursor = self.connection.cursor()
         cursor.execute("""
-            SELECT Nome,Usuário,Senha,"Confirmar Senha",Acesso,Endereço,CEP,CPF,Número,Estado,Email,RG,Complemento,
-                       Telefone,Data_Nascimento,"Última Troca de Senha","Data da Senha Cadastrada","Data da Inclusão do Usuário",
-                       Secret,"Usuário Logado"
+            SELECT Nome,Usuário,Senha,"Confirmar Senha",CEP,Endereço,Número,Cidade,Bairro,Estado,Complemento,Telefone,Email,
+                       "Data de Nascimento",RG,CPF,CNPJ,"Última Troca de Senha","Data da Senha Cadastrada",
+                       "Data da Inclusão do Usuário",Segredo,"Usuário Logado",Acesso
             FROM users
         """)
         usuarios = cursor.fetchall()
@@ -723,9 +718,9 @@ class DataBase:
     def obter_usuarios_inativos(self):
         cursor = self.connection.cursor()
         cursor.execute("""
-            SELECT Nome,Usuário,Senha,"Confirmar Senha",Acesso,Endereço,CEP,CPF,Número,Estado,Email,RG,Complemento,
-                       Telefone,Data_nascimento,RG,"Última Troca de Senha","Data da Senha Cadastrada","Data da Inclusão do Usuário",
-                       "Data da Inatividade do Usuário",Secret,"Usuário Logado"
+            SELECT Nome,Usuário,Senha,"Confirmar Senha",CEP,Endereço,Número,Cidade,Bairro,Estado,Complemento,Telefone,Email,
+                       "Data de Nascimento",RG,CPF,CNPJ,"Última Troca de Senha","Data da Senha Cadastrada",
+                       "Data da Inclusão do Usuário","Data da Inatividade do Usuário",Segredo,"Usuário Logado",Acesso
             FROM users_inativos
         """)
         usuarios = cursor.fetchall()

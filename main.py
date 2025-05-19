@@ -68,6 +68,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.login_window = login_window
 
+        #Cria as tabelas no banco de dados sempre que executar o sistema em um novo ambiente
+        self.db.create_table_products()
+        self.db.create_table_products_saida()
+        self.db.create_table_users()
+        self.db.create_table_historico()
+        self.db.create_table_users_inativos()
+        self.db.create_table_historico_usuario()
+
         # Mapeia os campos com identificadores únicos
         self.campos_com_autocomplete = {
             "txt_nome": self.txt_nome,
@@ -91,13 +99,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             "line_clientes": self.line_clientes,
             "txt_usuario": self.txt_usuario
         }
-        #Cria as tabelas no banco de dados sempre que executar o sistema em um novo ambiente
-        self.db.create_table_products()
-        self.db.create_table_products_saida()
-        self.db.create_table_users()
-        self.db.create_table_historico()
-        self.db.create_table_users_inativos()
-        self.db.create_table_historico_usuario()
+        
 
         self.table_base.verticalHeader().setVisible(True)
         self.table_saida.verticalHeader().setVisible(True)
@@ -316,6 +318,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.txt_cep.textChanged.connect(self.formatar_cep)
         self.txt_cpf.textChanged.connect(self.formatar_cpf)
         self.txt_rg.textChanged.connect(self.formatar_rg)
+        self.txt_cnpj.textChanged.connect(self.formatar_cnpj)
         self.txt_data_nascimento.textChanged.connect(self.formatar_data_nascimento)
         self.txt_telefone.textChanged.connect(self.formatar_telefone)
    
@@ -827,16 +830,26 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             return False
 
         return True
-
+#*********************************************************************************************************************
     def validar_email(self, email):
         # Usando uma expressão regular para validar o formato do e-mail
         regex = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{3,}$'
         return bool(re.match(regex, email))
+#*********************************************************************************************************************
+    def validar_cnpj(self, cnpj):
+        # Remover caracteres não numéricos
+        cnpj = re.sub('[^0-9]', '', cnpj)
 
+        # Verificar se o CNPJ tem 14 dígitos
+        if len(cnpj) != 14:
+            return False
+
+        return True
+
+#*********************************************************************************************************************
     def validar_telefone(self, telefone):
         # Remover caracteres não numéricos
         telefone = re.sub('[^0-9]', '', telefone)
-        print("Número de digitos", len(telefone))
 
         # Verificar se o telefone tem o formato válido
         if len(telefone) != 11:
@@ -1086,22 +1099,26 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             # Dados básicos: manual ou massa
             if usuario_info is None:
                 # Cadastro manual - coleta dos widgets
-                user = self.gerar_codigo_usuarios()
                 nome = self.txt_nome.text().strip()
+                usuario = self.gerar_codigo_usuarios()
                 senha = self.txt_senha.text()
                 confirmar_senha = self.txt_confirmar_senha.text()
-                acesso = self.perfil_usuarios.currentText()
-                endereco = self.txt_endereco.text().strip()
                 cep = self.txt_cep.text().strip()
-                cpf = self.txt_cpf.text().strip()
+                endereco = self.txt_endereco.text().strip()
                 numero = self.txt_numero.text().strip()
+                cidade = self.txt_cidade.text().strip()
+                bairro = self.txt_bairro.text().strip()
                 estado = self.perfil_estado.currentText()
-                email = self.txt_email.text().strip()
-                telefone = self.txt_telefone.text().strip()
-                rg = self.txt_rg.text().strip()
-                data_nascimento = self.txt_data_nascimento.text().strip()
                 complemento = self.txt_complemento.text().strip()
+                telefone = self.txt_telefone.text().strip()
+                email = self.txt_email.text().strip()
+                data_nascimento = self.txt_data_nascimento.text().strip()
+                rg = self.txt_rg.text().strip()
+                cpf = self.txt_cpf.text().strip()
+                cnpj = self.txt_cnpj.text().strip()
                 imagem = self.converter_imagem_usuario()
+                usuario_logado = self.usuario_logado  # Supondo que esteja definido na classe
+                acesso = self.perfil_usuarios.currentText()
 
                 # Validação campos obrigatórios
                 campos_vazios = []
@@ -1128,50 +1145,62 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
             else:
                 nome = usuario_info.get("Nome", "").strip()
-                user = self.gerar_codigo_usuarios()
+                usuario = self.gerar_codigo_usuarios()
                 senha = usuario_info.get("Senha", "")
                 confirmar_senha = usuario_info.get("Confirmar Senha", "")
-                acesso = usuario_info.get("Acesso", "")
-                endereco = usuario_info.get("Endereço", "").strip()
                 cep = usuario_info.get("CEP", "").strip()
-                cpf = usuario_info.get("CPF", "").strip()
+                endereco = usuario_info.get("Endereço", "").strip()
                 numero = usuario_info.get("Número", "").strip()
+                cidade = usuario_info.get("Cidade", "").strip()
+                bairro = usuario_info.get("Bairro", "").strip()
                 estado = usuario_info.get("Estado", "")
-                email = usuario_info.get("E-mail", "").strip()
-                telefone = usuario_info.get("Telefone", "").strip()
-                rg = usuario_info.get("RG", "").strip()
-                data_nascimento = usuario_info.get("Data de Nascimento", "").strip()
                 complemento = usuario_info.get("Complemento", "").strip()
+                telefone = usuario_info.get("Telefone", "").strip()
+                email = usuario_info.get("E-mail", "").strip()
+                data_nascimento = usuario_info.get("Data de Nascimento", "").strip()
+                rg = usuario_info.get("RG", "").strip()
+                cpf = usuario_info.get("CPF", "").strip()
+                cnpj = usuario_info.get("CNPJ", "").strip()
                 imagem = None  # normalmente não tem imagem na massa
+                segredo = self.gerar_segredo_autenticacao()  # Supondo que exista essa função
+                usuario_logado = self.usuario_logado  # Supondo que esteja definido
+                acesso = usuario_info.get("Acesso", "")
+
 
 
             usuario_logado = self.config.obter_usuario_logado()
             db.salvar_usuario_logado(usuario_logado)
 
             # Verificar se usuário já existe pelo código ou por dados únicos (telefone, email, rg, cpf)
-            user_exists_result = db.user_exists(user, telefone, email, rg, cpf)
+            user_exists_result = db.user_exists(user, telefone, email, rg, cpf,cnpj)
 
             if user_exists_result:
                 # Se existir e for cadastro manual ou edição, atualize ao invés de inserir
                 # Aqui assumimos que você quer atualizar se usuário já existir
                 db.atualizar_usuario(
-                    usuario=user,
                     nome=nome,
+                    usuario=usuario,
                     senha=senha,
-                    acesso=acesso,
-                    endereco=endereco,
+                    confirmar_senha=confirmar_senha,
                     cep=cep,
-                    cpf=cpf,
+                    endereco=endereco,
                     numero=numero,
+                    cidade=cidade,
+                    bairro=bairro,
                     estado=estado,
-                    email=email,
-                    telefone=telefone,
-                    rg=rg,
-                    data_nascimento=data_nascimento,
                     complemento=complemento,
+                    telefone=telefone,
+                    email=email,
+                    data_nascimento=data_nascimento,
+                    rg=rg,
+                    cpf=cpf,
+                    cnpj=cnpj,
                     imagem=imagem,
-                    usuario_logado=usuario_logado
+                    segredo=segredo,
+                    usuario_logado=usuario_logado,
+                    acesso=acesso
                 )
+
 
                 if registrar_historico:
                     descricao = f"Usuário {user} foi atualizado no sistema."
@@ -1187,21 +1216,24 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 usuario=user,
                 senha=senha,
                 confirmar_senha=confirmar_senha,
-                acesso=acesso,
-                endereco=endereco,
                 cep=cep,
-                cpf=cpf,
+                endereco=endereco,
                 numero=numero,
+                cidade=cidade,
+                bairro=bairro,
                 estado=estado,
-                email=email,
-                telefone=telefone,
-                rg=rg,
-                data_nascimento=data_nascimento,
                 complemento=complemento,
+                telefone=telefone,
+                email=email,
+                data_nascimento=data_nascimento,
+                rg=rg,
+                cpf=cpf,
+                cnpj=cnpj,
                 imagem=imagem,
-                segredo=None,
-                usuario_logado=usuario_logado
+                usuario_logado=usuario_logado,
+                acesso=acesso
             )
+
 
             if registrar_historico:
                 descricao = f"Usuário {user} foi cadastrado no sistema."
@@ -1215,6 +1247,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 self.txt_senha.clear()
                 self.txt_confirmar_senha.clear()
                 self.txt_cpf.clear()
+                self.txt_cnpj.clear()
                 self.txt_email.clear()
                 self.txt_numero.clear()
                 self.txt_endereco.clear()
@@ -1256,8 +1289,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             return  # Não faz nada se não tem dados
         
         self.txt_endereco.setText(dados.get("logradouro", ""))
-        self.txt_complemento.setText(dados.get("complemento", ""))
-        
+        self.txt_bairro.setText(dados.get("bairro", ""))
+        self.txt_cidade.setText(dados.get("localidade", ""))
+
+
+        complemento = dados.get("complemento", "")
+        if any(char.isdigit() for char in complemento):
+            self.txt_numero.setText(complemento)
+        #self.txt_complemento.setText(complemento)
         # Só ajustar o estado, já que é o único campo extra que você tem
         estado = dados.get("uf", "")
         index_estado = self.perfil_estado.findText(estado)
@@ -1983,6 +2022,26 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             # Se o CPF não tiver pelo menos 9 dígitos, manter o texto original
             self.txt_cpf.setText(text[:14])
 #*********************************************************************************************************************
+    def formatar_cnpj(self, text):
+        # Remover caracteres não numéricos
+        numero_cnpj = ''.join(filter(str.isdigit, text))
+
+        # Verifica se há pelo menos 14 dígitos
+        if len(numero_cnpj) >= 14:
+            # Limita a 14 dígitos
+            numero_cnpj = numero_cnpj[:14]
+            # Formata para o padrão nacional: 11.111.111/1111-11
+            cnpj_formatado = "{}.{}.{}/{}-{}".format(
+                numero_cnpj[:2],
+                numero_cnpj[2:5],
+                numero_cnpj[5:8],
+                numero_cnpj[8:12],
+                numero_cnpj[12:]
+            )
+            self.txt_cnpj.setText(cnpj_formatado)
+        else:
+            self.txt_cnpj.setText(numero_cnpj)
+#*********************************************************************************************************************
     def formatar_rg(self, text):
         # Remover caracteres não numéricos
         numero_rg = ''.join(filter(str.isdigit, text))
@@ -2236,12 +2295,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             'usuario': self.frame_erro_usuario,
             'telefone': self.frame_erro_telefone,
             'endereco': self.frame_erro_endereco,
+            'cidade': self.frame_erro_cidade,
+            'bairro': self.frame_erro_bairro,
             'numero': self.frame_erro_numero,
             'complemento': self.frame_erro_complemento,
             'email': self.frame_erro_email,
             'data_nascimento': self.frame_data_nascimento,
             'rg': self.frame_erro_rg,
             'cpf': self.frame_erro_cpf,
+            'cnpj': self.frame_erro_cnpj,
             'cep': self.frame_erro_cep,
             'estado': self.frame_erro_estado,
             'senha': self.frame_senha,

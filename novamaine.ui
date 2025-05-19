@@ -3791,18 +3791,46 @@ QPushButton:hover {
           <property name="frameShadow">
            <enum>QFrame::Raised</enum>
           </property>
-          <layout class="QGridLayout" name="gridLayout_14">
-           <item row="2" column="0">
-            <widget class="QFrame" name="frame_3">
+          <layout class="QGridLayout" name="gridLayout_27">
+           <item row="0" column="1">
+            <widget class="QLabel" name="label_cadastramento">
              <property name="sizePolicy">
-              <sizepolicy hsizetype="Fixed" vsizetype="Expanding">
+              <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
                <horstretch>0</horstretch>
                <verstretch>0</verstretch>
               </sizepolicy>
              </property>
              <property name="maximumSize">
               <size>
-               <width>369</width>
+               <width>338</width>
+               <height>60</height>
+              </size>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">QLabel {
+    color: white;
+    text-align: center; /* Centraliza o texto horizontalmente */
+    vertical-align: middle; /* Centraliza o texto verticalmente */
+	border: 3px solid white;
+}
+</string>
+             </property>
+             <property name="text">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:14pt; font-weight:600; font-style:italic;&quot;&gt;CADASTRAMENTO DE USUÁRIO&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="0">
+            <widget class="QFrame" name="frame_3">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>400</width>
                <height>16777215</height>
               </size>
              </property>
@@ -3812,11 +3840,11 @@ QPushButton:hover {
              <property name="frameShadow">
               <enum>QFrame::Raised</enum>
              </property>
-             <layout class="QVBoxLayout" name="verticalLayout_14">
-              <item>
-               <layout class="QHBoxLayout" name="horizontalLayout_9">
+             <layout class="QGridLayout" name="gridLayout_14">
+              <item row="8" column="0">
+               <layout class="QHBoxLayout" name="horizontalLayout_27">
                 <item>
-                 <widget class="QLabel" name="label_nome">
+                 <widget class="QLabel" name="label_confirmar_senha_3">
                   <property name="styleSheet">
                    <string notr="true">QLabel {
     color: black;
@@ -3826,12 +3854,12 @@ QPushButton:hover {
 </string>
                   </property>
                   <property name="text">
-                   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Nome&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Bairro&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                   </property>
                  </widget>
                 </item>
                 <item>
-                 <widget class="QLineEdit" name="txt_nome">
+                 <widget class="QLineEdit" name="txt_bairro">
                   <property name="maximumSize">
                    <size>
                     <width>181</width>
@@ -3855,7 +3883,7 @@ QLineEdit::placeholderText {
                  </widget>
                 </item>
                 <item>
-                 <widget class="QFrame" name="frame_erro_nome">
+                 <widget class="QFrame" name="frame_erro_bairro">
                   <property name="sizePolicy">
                    <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
                     <horstretch>0</horstretch>
@@ -3878,7 +3906,143 @@ QLineEdit::placeholderText {
                 </item>
                </layout>
               </item>
-              <item>
+              <item row="16" column="0">
+               <layout class="QHBoxLayout" name="horizontalLayout_28">
+                <item>
+                 <widget class="QLabel" name="label_confirmar_senha_4">
+                  <property name="maximumSize">
+                   <size>
+                    <width>16777215</width>
+                    <height>20</height>
+                   </size>
+                  </property>
+                  <property name="styleSheet">
+                   <string notr="true">QLabel {
+    color: black;
+    text-align: center; /* Centraliza o texto horizontalmente */
+    vertical-align: middle; /* Centraliza o texto verticalmente */
+}
+</string>
+                  </property>
+                  <property name="text">
+                   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;CNPJ&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QLineEdit" name="txt_cnpj">
+                  <property name="maximumSize">
+                   <size>
+                    <width>181</width>
+                    <height>16777215</height>
+                   </size>
+                  </property>
+                  <property name="styleSheet">
+                   <string notr="true">QLineEdit {
+	color: black;
+    background-color: rgb(240, 240, 240); /* Cor de fundo cinza claro */
+    border: 2px solid rgb(50, 150,250); /* Borda azul */
+    border-radius: 6px; /* Cantos arredondados */
+    padding: 3px; /* Espaçamento interno */
+}
+
+QLineEdit::placeholderText {
+    color: black; /* Cor do texto do placeholder */
+}
+</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QFrame" name="frame_erro_cnpj">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="maximumSize">
+                   <size>
+                    <width>21</width>
+                    <height>21</height>
+                   </size>
+                  </property>
+                  <property name="frameShadow">
+                   <enum>QFrame::Raised</enum>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+              <item row="10" column="0">
+               <layout class="QHBoxLayout" name="horizontalLayout_15">
+                <item>
+                 <widget class="QLabel" name="label_complemento">
+                  <property name="styleSheet">
+                   <string notr="true">QLabel {
+    color: black;
+    text-align: center; /* Centraliza o texto horizontalmente */
+    vertical-align: middle; /* Centraliza o texto verticalmente */
+}
+</string>
+                  </property>
+                  <property name="text">
+                   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Complemento&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QLineEdit" name="txt_complemento">
+                  <property name="maximumSize">
+                   <size>
+                    <width>181</width>
+                    <height>30</height>
+                   </size>
+                  </property>
+                  <property name="styleSheet">
+                   <string notr="true">QLineEdit {
+	color: black;
+    background-color: rgb(240, 240, 240); /* Cor de fundo cinza claro */
+    border: 2px solid rgb(50, 150,250); /* Borda azul */
+    border-radius: 6px; /* Cantos arredondados */
+    padding: 3px; /* Espaçamento interno */
+}
+
+QLineEdit::placeholderText {
+    color: black; /* Cor do texto do placeholder */
+}
+</string>
+                  </property>
+                  <property name="placeholderText">
+                   <string>Opcional</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QFrame" name="frame_erro_complemento">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="maximumSize">
+                   <size>
+                    <width>21</width>
+                    <height>21</height>
+                   </size>
+                  </property>
+                  <property name="frameShape">
+                   <enum>QFrame::StyledPanel</enum>
+                  </property>
+                  <property name="frameShadow">
+                   <enum>QFrame::Raised</enum>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+              <item row="1" column="0">
                <layout class="QHBoxLayout" name="horizontalLayout_10">
                 <item>
                  <widget class="QLabel" name="label_usuario">
@@ -3943,7 +4107,643 @@ QLineEdit::placeholderText {
                 </item>
                </layout>
               </item>
-              <item>
+              <item row="14" column="0">
+               <layout class="QHBoxLayout" name="horizontalLayout_20">
+                <property name="topMargin">
+                 <number>0</number>
+                </property>
+                <item>
+                 <widget class="QLabel" name="label_2">
+                  <property name="text">
+                   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;RG&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QLineEdit" name="txt_rg">
+                  <property name="maximumSize">
+                   <size>
+                    <width>180</width>
+                    <height>16777215</height>
+                   </size>
+                  </property>
+                  <property name="styleSheet">
+                   <string notr="true">QLineEdit {
+	color: black;
+    background-color: rgb(240, 240, 240); /* Cor de fundo cinza claro */
+    border: 2px solid rgb(50, 150,250); /* Borda azul */
+    border-radius: 6px; /* Cantos arredondados */
+    padding: 3px; /* Espaçamento interno */
+}
+
+QLineEdit::placeholderText {
+    color: black; /* Cor do texto do placeholder */
+}
+</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QFrame" name="frame_erro_rg">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="maximumSize">
+                   <size>
+                    <width>21</width>
+                    <height>21</height>
+                   </size>
+                  </property>
+                  <property name="frameShape">
+                   <enum>QFrame::StyledPanel</enum>
+                  </property>
+                  <property name="frameShadow">
+                   <enum>QFrame::Raised</enum>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+              <item row="15" column="0">
+               <layout class="QHBoxLayout" name="horizontalLayout_17">
+                <item>
+                 <widget class="QLabel" name="label_cpf">
+                  <property name="styleSheet">
+                   <string notr="true">QLabel {
+    color: black;
+    text-align: center; /* Centraliza o texto horizontalmente */
+    vertical-align: middle; /* Centraliza o texto verticalmente */
+}
+</string>
+                  </property>
+                  <property name="text">
+                   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;CPF&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QLineEdit" name="txt_cpf">
+                  <property name="maximumSize">
+                   <size>
+                    <width>181</width>
+                    <height>16777215</height>
+                   </size>
+                  </property>
+                  <property name="styleSheet">
+                   <string notr="true">QLineEdit {
+	color: black;
+    background-color: rgb(240, 240, 240); /* Cor de fundo cinza claro */
+    border: 2px solid rgb(50, 150,250); /* Borda azul */
+    border-radius: 6px; /* Cantos arredondados */
+    padding: 3px; /* Espaçamento interno */
+}
+
+QLineEdit::placeholderText {
+    color: black; /* Cor do texto do placeholder */
+}
+</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QFrame" name="frame_erro_cpf">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="maximumSize">
+                   <size>
+                    <width>21</width>
+                    <height>21</height>
+                   </size>
+                  </property>
+                  <property name="frameShape">
+                   <enum>QFrame::StyledPanel</enum>
+                  </property>
+                  <property name="frameShadow">
+                   <enum>QFrame::Raised</enum>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+              <item row="0" column="0">
+               <layout class="QHBoxLayout" name="horizontalLayout_9">
+                <item>
+                 <widget class="QLabel" name="label_nome">
+                  <property name="styleSheet">
+                   <string notr="true">QLabel {
+    color: black;
+    text-align: center; /* Centraliza o texto horizontalmente */
+    vertical-align: middle; /* Centraliza o texto verticalmente */
+}
+</string>
+                  </property>
+                  <property name="text">
+                   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Nome&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QLineEdit" name="txt_nome">
+                  <property name="maximumSize">
+                   <size>
+                    <width>181</width>
+                    <height>16777215</height>
+                   </size>
+                  </property>
+                  <property name="styleSheet">
+                   <string notr="true">QLineEdit {
+	color: black;
+    background-color: rgb(240, 240, 240); /* Cor de fundo cinza claro */
+    border: 2px solid rgb(50, 150,250); /* Borda azul */
+    border-radius: 6px; /* Cantos arredondados */
+    padding: 3px; /* Espaçamento interno */
+}
+
+QLineEdit::placeholderText {
+    color: black; /* Cor do texto do placeholder */
+}
+</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QFrame" name="frame_erro_nome">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="maximumSize">
+                   <size>
+                    <width>21</width>
+                    <height>21</height>
+                   </size>
+                  </property>
+                  <property name="frameShape">
+                   <enum>QFrame::StyledPanel</enum>
+                  </property>
+                  <property name="frameShadow">
+                   <enum>QFrame::Raised</enum>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+              <item row="13" column="0">
+               <layout class="QHBoxLayout" name="horizontalLayout_14">
+                <item>
+                 <widget class="QLabel" name="label_data_nascimento">
+                  <property name="styleSheet">
+                   <string notr="true">QLabel {
+    color: black;
+    text-align: center; /* Centraliza o texto horizontalmente */
+    vertical-align: middle; /* Centraliza o texto verticalmente */
+}
+</string>
+                  </property>
+                  <property name="text">
+                   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Data de Nascimento&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QLineEdit" name="txt_data_nascimento">
+                  <property name="maximumSize">
+                   <size>
+                    <width>181</width>
+                    <height>16777215</height>
+                   </size>
+                  </property>
+                  <property name="styleSheet">
+                   <string notr="true">QLineEdit {
+	color: black;
+    background-color: rgb(240, 240, 240); /* Cor de fundo cinza claro */
+    border: 2px solid rgb(50, 150,250); /* Borda azul */
+    border-radius: 6px; /* Cantos arredondados */
+    padding: 3px; /* Espaçamento interno */
+}
+
+QLineEdit::placeholderText {
+    color: black; /* Cor do texto do placeholder */
+}
+</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QFrame" name="frame_data_nascimento">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="maximumSize">
+                   <size>
+                    <width>21</width>
+                    <height>21</height>
+                   </size>
+                  </property>
+                  <property name="frameShape">
+                   <enum>QFrame::StyledPanel</enum>
+                  </property>
+                  <property name="frameShadow">
+                   <enum>QFrame::Raised</enum>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+              <item row="21" column="0">
+               <layout class="QHBoxLayout" name="horizontalLayout_11">
+                <item>
+                 <widget class="QLabel" name="label_perfil">
+                  <property name="styleSheet">
+                   <string notr="true">QLabel {
+    color: black;
+    text-align: center; /* Centraliza o texto horizontalmente */
+    vertical-align: middle; /* Centraliza o texto verticalmente */
+}
+</string>
+                  </property>
+                  <property name="text">
+                   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Perfil&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QComboBox" name="perfil_usuarios">
+                  <property name="minimumSize">
+                   <size>
+                    <width>181</width>
+                    <height>0</height>
+                   </size>
+                  </property>
+                  <property name="maximumSize">
+                   <size>
+                    <width>181</width>
+                    <height>16777215</height>
+                   </size>
+                  </property>
+                  <property name="styleSheet">
+                   <string notr="true">
+    QComboBox { 
+        background-color: white; 
+        border: 3px solid rgb(50,150,250); 
+        border-radius: 5px; 
+        color: black; 
+        padding: 5px;
+    }
+    QComboBox QAbstractItemView {
+        background-color: white; 
+        color: black; 
+        border: 1px solid #ccc; 
+        selection-background-color: #e5e5e5; 
+        selection-color: black;
+    }
+    QComboBox QAbstractItemView QScrollBar:vertical {
+        background: #f5f5f5; 
+        width: 12px; 
+        border: none;
+    }
+    QComboBox QAbstractItemView QScrollBar::handle:vertical {
+        background: #cccccc; 
+        min-height: 20px; 
+        border-radius: 5px;
+    }
+    QComboBox QAbstractItemView QScrollBar::add-line:vertical, 
+    QComboBox QAbstractItemView QScrollBar::sub-line:vertical {
+        background: none;
+        height: 0px;  /* Remove os botões de linha (setas de cima e baixo) */
+    }
+    QComboBox QAbstractItemView QScrollBar::add-page:vertical, 
+    QComboBox QAbstractItemView QScrollBar::sub-page:vertical {
+        background: none;
+    }
+
+</string>
+                  </property>
+                  <property name="editable">
+                   <bool>false</bool>
+                  </property>
+                  <property name="maxCount">
+                   <number>5</number>
+                  </property>
+                  <item>
+                   <property name="text">
+                    <string>Selecione</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text">
+                    <string>Usuário</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text">
+                    <string>Convidado</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text">
+                    <string>Administrador</string>
+                   </property>
+                  </item>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QFrame" name="frame_erro_perfil">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="maximumSize">
+                   <size>
+                    <width>21</width>
+                    <height>21</height>
+                   </size>
+                  </property>
+                  <property name="frameShape">
+                   <enum>QFrame::StyledPanel</enum>
+                  </property>
+                  <property name="frameShadow">
+                   <enum>QFrame::Raised</enum>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+              <item row="12" column="0">
+               <layout class="QHBoxLayout" name="horizontalLayout_16">
+                <item>
+                 <widget class="QLabel" name="label_email">
+                  <property name="styleSheet">
+                   <string notr="true">QLabel {
+    color: black;
+    text-align: center; /* Centraliza o texto horizontalmente */
+    vertical-align: middle; /* Centraliza o texto verticalmente */
+}
+</string>
+                  </property>
+                  <property name="text">
+                   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;E-mail&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QLineEdit" name="txt_email">
+                  <property name="maximumSize">
+                   <size>
+                    <width>181</width>
+                    <height>16777215</height>
+                   </size>
+                  </property>
+                  <property name="styleSheet">
+                   <string notr="true">QLineEdit {
+	color: black;
+    background-color: rgb(240, 240, 240); /* Cor de fundo cinza claro */
+    border: 2px solid rgb(50, 150,250); /* Borda azul */
+    border-radius: 6px; /* Cantos arredondados */
+    padding: 3px; /* Espaçamento interno */
+}
+
+QLineEdit::placeholderText {
+    color: black; /* Cor do texto do placeholder */
+}
+</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QFrame" name="frame_erro_email">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="maximumSize">
+                   <size>
+                    <width>21</width>
+                    <height>21</height>
+                   </size>
+                  </property>
+                  <property name="frameShape">
+                   <enum>QFrame::StyledPanel</enum>
+                  </property>
+                  <property name="frameShadow">
+                   <enum>QFrame::Raised</enum>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+              <item row="5" column="0">
+               <layout class="QHBoxLayout" name="horizontalLayout_13">
+                <item>
+                 <widget class="QLabel" name="label_endereco">
+                  <property name="styleSheet">
+                   <string notr="true">QLabel {
+    color: black;
+    text-align: center; /* Centraliza o texto horizontalmente */
+    vertical-align: middle; /* Centraliza o texto verticalmente */
+}
+</string>
+                  </property>
+                  <property name="text">
+                   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Endereço&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QLineEdit" name="txt_endereco">
+                  <property name="maximumSize">
+                   <size>
+                    <width>181</width>
+                    <height>16777215</height>
+                   </size>
+                  </property>
+                  <property name="styleSheet">
+                   <string notr="true">QLineEdit {
+	color: black;
+    background-color: rgb(240, 240, 240); /* Cor de fundo cinza claro */
+    border: 2px solid rgb(50, 150,250); /* Borda azul */
+    border-radius: 6px; /* Cantos arredondados */
+    padding: 3px; /* Espaçamento interno */
+}
+
+QLineEdit::placeholderText {
+    color: black; /* Cor do texto do placeholder */
+}
+</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QFrame" name="frame_erro_endereco">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="maximumSize">
+                   <size>
+                    <width>21</width>
+                    <height>21</height>
+                   </size>
+                  </property>
+                  <property name="frameShape">
+                   <enum>QFrame::StyledPanel</enum>
+                  </property>
+                  <property name="frameShadow">
+                   <enum>QFrame::Raised</enum>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+              <item row="6" column="0">
+               <layout class="QHBoxLayout" name="horizontalLayout_19">
+                <item>
+                 <widget class="QLabel" name="label_numero">
+                  <property name="styleSheet">
+                   <string notr="true">QLabel {
+    color: black;
+    text-align: center; /* Centraliza o texto horizontalmente */
+    vertical-align: middle; /* Centraliza o texto verticalmente */
+}
+</string>
+                  </property>
+                  <property name="text">
+                   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Número&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QLineEdit" name="txt_numero">
+                  <property name="maximumSize">
+                   <size>
+                    <width>181</width>
+                    <height>16777215</height>
+                   </size>
+                  </property>
+                  <property name="styleSheet">
+                   <string notr="true">QLineEdit {
+	color: black;
+    background-color: rgb(240, 240, 240); /* Cor de fundo cinza claro */
+    border: 2px solid rgb(50, 150,250); /* Borda azul */
+    border-radius: 6px; /* Cantos arredondados */
+    padding: 3px; /* Espaçamento interno */
+}
+
+QLineEdit::placeholderText {
+    color: black; /* Cor do texto do placeholder */
+}
+</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QFrame" name="frame_erro_numero">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="maximumSize">
+                   <size>
+                    <width>21</width>
+                    <height>21</height>
+                   </size>
+                  </property>
+                  <property name="frameShape">
+                   <enum>QFrame::StyledPanel</enum>
+                  </property>
+                  <property name="frameShadow">
+                   <enum>QFrame::Raised</enum>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+              <item row="4" column="0">
+               <layout class="QHBoxLayout" name="horizontalLayout_22">
+                <item>
+                 <widget class="QLabel" name="label_cep">
+                  <property name="styleSheet">
+                   <string notr="true">QLabel {
+    color: black;
+    text-align: center; /* Centraliza o texto horizontalmente */
+    vertical-align: middle; /* Centraliza o texto verticalmente */
+}
+</string>
+                  </property>
+                  <property name="text">
+                   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;CEP&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QLineEdit" name="txt_cep">
+                  <property name="maximumSize">
+                   <size>
+                    <width>181</width>
+                    <height>16777215</height>
+                   </size>
+                  </property>
+                  <property name="styleSheet">
+                   <string notr="true">QLineEdit {
+	color: black;
+    background-color: rgb(240, 240, 240); /* Cor de fundo cinza claro */
+    border: 2px solid rgb(50, 150,250); /* Borda azul */
+    border-radius: 6px; /* Cantos arredondados */
+    padding: 3px; /* Espaçamento interno */
+}
+
+QLineEdit::placeholderText {
+    color: black; /* Cor do texto do placeholder */
+}
+</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QFrame" name="frame_erro_cep">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="maximumSize">
+                   <size>
+                    <width>21</width>
+                    <height>21</height>
+                   </size>
+                  </property>
+                  <property name="frameShape">
+                   <enum>QFrame::StyledPanel</enum>
+                  </property>
+                  <property name="frameShadow">
+                   <enum>QFrame::Raised</enum>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+              <item row="11" column="0">
                <layout class="QHBoxLayout" name="horizontalLayout_12">
                 <item>
                  <widget class="QLabel" name="label_telefone">
@@ -4011,10 +4811,10 @@ QLineEdit::placeholderText {
                 </item>
                </layout>
               </item>
-              <item>
-               <layout class="QHBoxLayout" name="horizontalLayout_13">
+              <item row="7" column="0">
+               <layout class="QHBoxLayout" name="horizontalLayout_26">
                 <item>
-                 <widget class="QLabel" name="label_endereco">
+                 <widget class="QLabel" name="label_confirmar_senha_2">
                   <property name="styleSheet">
                    <string notr="true">QLabel {
     color: black;
@@ -4024,12 +4824,12 @@ QLineEdit::placeholderText {
 </string>
                   </property>
                   <property name="text">
-                   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Endereço&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Cidade&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                   </property>
                  </widget>
                 </item>
                 <item>
-                 <widget class="QLineEdit" name="txt_endereco">
+                 <widget class="QLineEdit" name="txt_cidade">
                   <property name="maximumSize">
                    <size>
                     <width>181</width>
@@ -4053,7 +4853,7 @@ QLineEdit::placeholderText {
                  </widget>
                 </item>
                 <item>
-                 <widget class="QFrame" name="frame_erro_endereco">
+                 <widget class="QFrame" name="frame_erro_cidade">
                   <property name="sizePolicy">
                    <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
                     <horstretch>0</horstretch>
@@ -4076,10 +4876,10 @@ QLineEdit::placeholderText {
                 </item>
                </layout>
               </item>
-              <item>
-               <layout class="QHBoxLayout" name="horizontalLayout_19">
+              <item row="2" column="0">
+               <layout class="QHBoxLayout" name="horizontalLayout_21">
                 <item>
-                 <widget class="QLabel" name="label_numero">
+                 <widget class="QLabel" name="label_senha">
                   <property name="styleSheet">
                    <string notr="true">QLabel {
     color: black;
@@ -4089,12 +4889,12 @@ QLineEdit::placeholderText {
 </string>
                   </property>
                   <property name="text">
-                   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Número&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Senha&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                   </property>
                  </widget>
                 </item>
                 <item>
-                 <widget class="QLineEdit" name="txt_numero">
+                 <widget class="QLineEdit" name="txt_senha">
                   <property name="maximumSize">
                    <size>
                     <width>181</width>
@@ -4118,184 +4918,7 @@ QLineEdit::placeholderText {
                  </widget>
                 </item>
                 <item>
-                 <widget class="QFrame" name="frame_erro_numero">
-                  <property name="maximumSize">
-                   <size>
-                    <width>21</width>
-                    <height>21</height>
-                   </size>
-                  </property>
-                  <property name="frameShape">
-                   <enum>QFrame::StyledPanel</enum>
-                  </property>
-                  <property name="frameShadow">
-                   <enum>QFrame::Raised</enum>
-                  </property>
-                 </widget>
-                </item>
-               </layout>
-              </item>
-              <item>
-               <layout class="QHBoxLayout" name="horizontalLayout_15">
-                <item>
-                 <widget class="QLabel" name="label_complemento">
-                  <property name="styleSheet">
-                   <string notr="true">QLabel {
-    color: black;
-    text-align: center; /* Centraliza o texto horizontalmente */
-    vertical-align: middle; /* Centraliza o texto verticalmente */
-}
-</string>
-                  </property>
-                  <property name="text">
-                   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Complemento&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QLineEdit" name="txt_complemento">
-                  <property name="maximumSize">
-                   <size>
-                    <width>181</width>
-                    <height>16777215</height>
-                   </size>
-                  </property>
-                  <property name="styleSheet">
-                   <string notr="true">QLineEdit {
-	color: black;
-    background-color: rgb(240, 240, 240); /* Cor de fundo cinza claro */
-    border: 2px solid rgb(50, 150,250); /* Borda azul */
-    border-radius: 6px; /* Cantos arredondados */
-    padding: 3px; /* Espaçamento interno */
-}
-
-QLineEdit::placeholderText {
-    color: black; /* Cor do texto do placeholder */
-}
-</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QFrame" name="frame_erro_complemento">
-                  <property name="maximumSize">
-                   <size>
-                    <width>21</width>
-                    <height>21</height>
-                   </size>
-                  </property>
-                  <property name="frameShape">
-                   <enum>QFrame::StyledPanel</enum>
-                  </property>
-                  <property name="frameShadow">
-                   <enum>QFrame::Raised</enum>
-                  </property>
-                 </widget>
-                </item>
-               </layout>
-              </item>
-              <item>
-               <layout class="QHBoxLayout" name="horizontalLayout_16">
-                <item>
-                 <widget class="QLabel" name="label_email">
-                  <property name="styleSheet">
-                   <string notr="true">QLabel {
-    color: black;
-    text-align: center; /* Centraliza o texto horizontalmente */
-    vertical-align: middle; /* Centraliza o texto verticalmente */
-}
-</string>
-                  </property>
-                  <property name="text">
-                   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;E-mail&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QLineEdit" name="txt_email">
-                  <property name="maximumSize">
-                   <size>
-                    <width>181</width>
-                    <height>16777215</height>
-                   </size>
-                  </property>
-                  <property name="styleSheet">
-                   <string notr="true">QLineEdit {
-	color: black;
-    background-color: rgb(240, 240, 240); /* Cor de fundo cinza claro */
-    border: 2px solid rgb(50, 150,250); /* Borda azul */
-    border-radius: 6px; /* Cantos arredondados */
-    padding: 3px; /* Espaçamento interno */
-}
-
-QLineEdit::placeholderText {
-    color: black; /* Cor do texto do placeholder */
-}
-</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QFrame" name="frame_erro_email">
-                  <property name="maximumSize">
-                   <size>
-                    <width>21</width>
-                    <height>21</height>
-                   </size>
-                  </property>
-                  <property name="frameShape">
-                   <enum>QFrame::StyledPanel</enum>
-                  </property>
-                  <property name="frameShadow">
-                   <enum>QFrame::Raised</enum>
-                  </property>
-                 </widget>
-                </item>
-               </layout>
-              </item>
-              <item>
-               <layout class="QHBoxLayout" name="horizontalLayout_14">
-                <item>
-                 <widget class="QLabel" name="label_data_nascimento">
-                  <property name="styleSheet">
-                   <string notr="true">QLabel {
-    color: black;
-    text-align: center; /* Centraliza o texto horizontalmente */
-    vertical-align: middle; /* Centraliza o texto verticalmente */
-}
-</string>
-                  </property>
-                  <property name="text">
-                   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Data de Nascimento&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QLineEdit" name="txt_data_nascimento">
-                  <property name="maximumSize">
-                   <size>
-                    <width>181</width>
-                    <height>16777215</height>
-                   </size>
-                  </property>
-                  <property name="styleSheet">
-                   <string notr="true">QLineEdit {
-	color: black;
-    background-color: rgb(240, 240, 240); /* Cor de fundo cinza claro */
-    border: 2px solid rgb(50, 150,250); /* Borda azul */
-    border-radius: 6px; /* Cantos arredondados */
-    padding: 3px; /* Espaçamento interno */
-}
-
-QLineEdit::placeholderText {
-    color: black; /* Cor do texto do placeholder */
-}
-</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QFrame" name="frame_data_nascimento">
+                 <widget class="QFrame" name="frame_senha">
                   <property name="sizePolicy">
                    <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
                     <horstretch>0</horstretch>
@@ -4318,191 +4941,7 @@ QLineEdit::placeholderText {
                 </item>
                </layout>
               </item>
-              <item>
-               <layout class="QHBoxLayout" name="horizontalLayout_20">
-                <property name="topMargin">
-                 <number>0</number>
-                </property>
-                <item>
-                 <widget class="QLabel" name="label_2">
-                  <property name="text">
-                   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;RG&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QLineEdit" name="txt_rg">
-                  <property name="maximumSize">
-                   <size>
-                    <width>180</width>
-                    <height>16777215</height>
-                   </size>
-                  </property>
-                  <property name="styleSheet">
-                   <string notr="true">QLineEdit {
-	color: black;
-    background-color: rgb(240, 240, 240); /* Cor de fundo cinza claro */
-    border: 2px solid rgb(50, 150,250); /* Borda azul */
-    border-radius: 6px; /* Cantos arredondados */
-    padding: 3px; /* Espaçamento interno */
-}
-
-QLineEdit::placeholderText {
-    color: black; /* Cor do texto do placeholder */
-}
-</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QFrame" name="frame_erro_rg">
-                  <property name="maximumSize">
-                   <size>
-                    <width>21</width>
-                    <height>21</height>
-                   </size>
-                  </property>
-                  <property name="frameShape">
-                   <enum>QFrame::StyledPanel</enum>
-                  </property>
-                  <property name="frameShadow">
-                   <enum>QFrame::Raised</enum>
-                  </property>
-                 </widget>
-                </item>
-               </layout>
-              </item>
-              <item>
-               <layout class="QHBoxLayout" name="horizontalLayout_17">
-                <item>
-                 <widget class="QLabel" name="label_cpf">
-                  <property name="styleSheet">
-                   <string notr="true">QLabel {
-    color: black;
-    text-align: center; /* Centraliza o texto horizontalmente */
-    vertical-align: middle; /* Centraliza o texto verticalmente */
-}
-</string>
-                  </property>
-                  <property name="text">
-                   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;CPF&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QLineEdit" name="txt_cpf">
-                  <property name="maximumSize">
-                   <size>
-                    <width>181</width>
-                    <height>16777215</height>
-                   </size>
-                  </property>
-                  <property name="styleSheet">
-                   <string notr="true">QLineEdit {
-	color: black;
-    background-color: rgb(240, 240, 240); /* Cor de fundo cinza claro */
-    border: 2px solid rgb(50, 150,250); /* Borda azul */
-    border-radius: 6px; /* Cantos arredondados */
-    padding: 3px; /* Espaçamento interno */
-}
-
-QLineEdit::placeholderText {
-    color: black; /* Cor do texto do placeholder */
-}
-</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QFrame" name="frame_erro_cpf">
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
-                  <property name="maximumSize">
-                   <size>
-                    <width>21</width>
-                    <height>21</height>
-                   </size>
-                  </property>
-                  <property name="frameShape">
-                   <enum>QFrame::StyledPanel</enum>
-                  </property>
-                  <property name="frameShadow">
-                   <enum>QFrame::Raised</enum>
-                  </property>
-                 </widget>
-                </item>
-               </layout>
-              </item>
-              <item>
-               <layout class="QHBoxLayout" name="horizontalLayout_22">
-                <item>
-                 <widget class="QLabel" name="label_cep">
-                  <property name="styleSheet">
-                   <string notr="true">QLabel {
-    color: black;
-    text-align: center; /* Centraliza o texto horizontalmente */
-    vertical-align: middle; /* Centraliza o texto verticalmente */
-}
-</string>
-                  </property>
-                  <property name="text">
-                   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;CEP&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QLineEdit" name="txt_cep">
-                  <property name="maximumSize">
-                   <size>
-                    <width>181</width>
-                    <height>16777215</height>
-                   </size>
-                  </property>
-                  <property name="styleSheet">
-                   <string notr="true">QLineEdit {
-	color: black;
-    background-color: rgb(240, 240, 240); /* Cor de fundo cinza claro */
-    border: 2px solid rgb(50, 150,250); /* Borda azul */
-    border-radius: 6px; /* Cantos arredondados */
-    padding: 3px; /* Espaçamento interno */
-}
-
-QLineEdit::placeholderText {
-    color: black; /* Cor do texto do placeholder */
-}
-</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QFrame" name="frame_erro_cep">
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
-                  <property name="maximumSize">
-                   <size>
-                    <width>21</width>
-                    <height>21</height>
-                   </size>
-                  </property>
-                  <property name="frameShape">
-                   <enum>QFrame::StyledPanel</enum>
-                  </property>
-                  <property name="frameShadow">
-                   <enum>QFrame::Raised</enum>
-                  </property>
-                 </widget>
-                </item>
-               </layout>
-              </item>
-              <item>
+              <item row="9" column="0">
                <layout class="QHBoxLayout" name="horizontalLayout_23">
                 <item>
                  <widget class="QLabel" name="label_estado">
@@ -4743,72 +5182,7 @@ QLineEdit::placeholderText {
                 </item>
                </layout>
               </item>
-              <item>
-               <layout class="QHBoxLayout" name="horizontalLayout_21">
-                <item>
-                 <widget class="QLabel" name="label_senha">
-                  <property name="styleSheet">
-                   <string notr="true">QLabel {
-    color: black;
-    text-align: center; /* Centraliza o texto horizontalmente */
-    vertical-align: middle; /* Centraliza o texto verticalmente */
-}
-</string>
-                  </property>
-                  <property name="text">
-                   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Senha&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QLineEdit" name="txt_senha">
-                  <property name="maximumSize">
-                   <size>
-                    <width>181</width>
-                    <height>16777215</height>
-                   </size>
-                  </property>
-                  <property name="styleSheet">
-                   <string notr="true">QLineEdit {
-	color: black;
-    background-color: rgb(240, 240, 240); /* Cor de fundo cinza claro */
-    border: 2px solid rgb(50, 150,250); /* Borda azul */
-    border-radius: 6px; /* Cantos arredondados */
-    padding: 3px; /* Espaçamento interno */
-}
-
-QLineEdit::placeholderText {
-    color: black; /* Cor do texto do placeholder */
-}
-</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QFrame" name="frame_senha">
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
-                  <property name="maximumSize">
-                   <size>
-                    <width>21</width>
-                    <height>21</height>
-                   </size>
-                  </property>
-                  <property name="frameShape">
-                   <enum>QFrame::StyledPanel</enum>
-                  </property>
-                  <property name="frameShadow">
-                   <enum>QFrame::Raised</enum>
-                  </property>
-                 </widget>
-                </item>
-               </layout>
-              </item>
-              <item>
+              <item row="3" column="0">
                <layout class="QHBoxLayout" name="horizontalLayout_18">
                 <item>
                  <widget class="QLabel" name="label_confirmar_senha">
@@ -4873,131 +5247,10 @@ QLineEdit::placeholderText {
                 </item>
                </layout>
               </item>
-              <item>
-               <layout class="QHBoxLayout" name="horizontalLayout_11">
-                <item>
-                 <widget class="QLabel" name="label_perfil">
-                  <property name="styleSheet">
-                   <string notr="true">QLabel {
-    color: black;
-    text-align: center; /* Centraliza o texto horizontalmente */
-    vertical-align: middle; /* Centraliza o texto verticalmente */
-}
-</string>
-                  </property>
-                  <property name="text">
-                   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Perfil&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QComboBox" name="perfil_usuarios">
-                  <property name="minimumSize">
-                   <size>
-                    <width>181</width>
-                    <height>0</height>
-                   </size>
-                  </property>
-                  <property name="maximumSize">
-                   <size>
-                    <width>181</width>
-                    <height>16777215</height>
-                   </size>
-                  </property>
-                  <property name="styleSheet">
-                   <string notr="true">
-    QComboBox { 
-        background-color: white; 
-        border: 3px solid rgb(50,150,250); 
-        border-radius: 5px; 
-        color: black; 
-        padding: 5px;
-    }
-    QComboBox QAbstractItemView {
-        background-color: white; 
-        color: black; 
-        border: 1px solid #ccc; 
-        selection-background-color: #e5e5e5; 
-        selection-color: black;
-    }
-    QComboBox QAbstractItemView QScrollBar:vertical {
-        background: #f5f5f5; 
-        width: 12px; 
-        border: none;
-    }
-    QComboBox QAbstractItemView QScrollBar::handle:vertical {
-        background: #cccccc; 
-        min-height: 20px; 
-        border-radius: 5px;
-    }
-    QComboBox QAbstractItemView QScrollBar::add-line:vertical, 
-    QComboBox QAbstractItemView QScrollBar::sub-line:vertical {
-        background: none;
-        height: 0px;  /* Remove os botões de linha (setas de cima e baixo) */
-    }
-    QComboBox QAbstractItemView QScrollBar::add-page:vertical, 
-    QComboBox QAbstractItemView QScrollBar::sub-page:vertical {
-        background: none;
-    }
-
-</string>
-                  </property>
-                  <property name="editable">
-                   <bool>false</bool>
-                  </property>
-                  <property name="maxCount">
-                   <number>5</number>
-                  </property>
-                  <item>
-                   <property name="text">
-                    <string>Selecione</string>
-                   </property>
-                  </item>
-                  <item>
-                   <property name="text">
-                    <string>Usuário</string>
-                   </property>
-                  </item>
-                  <item>
-                   <property name="text">
-                    <string>Convidado</string>
-                   </property>
-                  </item>
-                  <item>
-                   <property name="text">
-                    <string>Administrador</string>
-                   </property>
-                  </item>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QFrame" name="frame_erro_perfil">
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
-                  <property name="maximumSize">
-                   <size>
-                    <width>21</width>
-                    <height>16777215</height>
-                   </size>
-                  </property>
-                  <property name="frameShape">
-                   <enum>QFrame::StyledPanel</enum>
-                  </property>
-                  <property name="frameShadow">
-                   <enum>QFrame::Raised</enum>
-                  </property>
-                 </widget>
-                </item>
-               </layout>
-              </item>
              </layout>
             </widget>
            </item>
-           <item row="2" column="1">
+           <item row="1" column="1">
             <widget class="QFrame" name="frame_20">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
@@ -5277,7 +5530,7 @@ QPushButton:hover {
              </layout>
             </widget>
            </item>
-           <item row="2" column="3">
+           <item row="1" column="2">
             <widget class="QFrame" name="frame_imagem_cadastro">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
@@ -5296,34 +5549,6 @@ QPushButton:hover {
              </property>
              <property name="frameShadow">
               <enum>QFrame::Raised</enum>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="1">
-            <widget class="QLabel" name="label_cadastramento">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="maximumSize">
-              <size>
-               <width>338</width>
-               <height>60</height>
-              </size>
-             </property>
-             <property name="styleSheet">
-              <string notr="true">QLabel {
-    color: white;
-    text-align: center; /* Centraliza o texto horizontalmente */
-    vertical-align: middle; /* Centraliza o texto verticalmente */
-	border: 3px solid white;
-}
-</string>
-             </property>
-             <property name="text">
-              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:14pt; font-weight:600; font-style:italic;&quot;&gt;CADASTRAMENTO DE USUÁRIO&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
              </property>
             </widget>
            </item>
