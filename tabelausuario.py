@@ -276,8 +276,6 @@ class TabelaUsuario(QDialog):
             pass
 #*******************************************************************************************************
     def editar_usuario(self):
-        print("Função editar_usuario chamada")
-
         if self.table_widget.currentRow() >= 0:
             row_index = self.table_widget.currentRow()
             id_usuario = int(self.table_widget.item(row_index, 0).text())
@@ -351,6 +349,7 @@ class TabelaUsuario(QDialog):
 
             self.main_window.is_editing = True  # Indica que um usuário está em edição
             self.main_window.selected_user_id = id_usuario  # Guarda o ID do usuário selecionado
+            self.main_window.imagem_removida_usuario = False  # Indica que a imagem não foi removida
 
             self.usuario_selecionado = True  # Indica que um usuário foi selecionado
 

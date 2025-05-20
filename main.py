@@ -40,6 +40,7 @@ import pandas as pd
 from openpyxl.utils import get_column_letter
 from openpyxl.styles import Alignment
 from openpyxl import load_workbook
+import requests
 
 
 
@@ -51,6 +52,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.setWindowTitle("Sistema de Gerenciamento")
         self.historico_pausado = False
         self.historico_usuario_pausado = False
+        self.imagem_removida_usuario = False
+        
 
 
 
@@ -64,6 +67,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.connection = connection
 
         self.login_window = login_window
+
+        #Cria as tabelas no banco de dados sempre que executar o sistema em um novo ambiente
+        self.db.create_table_products()
+        self.db.create_table_products_saida()
+        self.db.create_table_users()
+        self.db.create_table_historico()
+        self.db.create_table_users_inativos()
+        self.db.create_table_historico_usuario()
 
         # Mapeia os campos com identificadores únicos
         self.campos_com_autocomplete = {
@@ -88,13 +99,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             "line_clientes": self.line_clientes,
             "txt_usuario": self.txt_usuario
         }
-        #Cria as tabelas no banco de dados sempre que executar o sistema em um novo ambiente
-        self.db.create_table_products()
-        self.db.create_table_products_saida()
-        self.db.create_table_users()
-        self.db.create_table_historico()
-        self.db.create_table_users_inativos()
-        self.db.create_table_historico_usuario()
+        
 
         self.table_base.verticalHeader().setVisible(True)
         self.table_saida.verticalHeader().setVisible(True)
@@ -313,6 +318,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.txt_cep.textChanged.connect(self.formatar_cep)
         self.txt_cpf.textChanged.connect(self.formatar_cpf)
         self.txt_rg.textChanged.connect(self.formatar_rg)
+        self.txt_cnpj.textChanged.connect(self.formatar_cnpj)
         self.txt_data_nascimento.textChanged.connect(self.formatar_data_nascimento)
         self.txt_telefone.textChanged.connect(self.formatar_telefone)
    
@@ -388,6 +394,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.btn_atualizar_produto.clicked.connect(self.atualizar_produto)
         self.btn_carregar_imagem.clicked.connect(self.carregar_imagem_produto)
         self.btn_opcoes_navegacao.clicked.connect(self.abrir_menu_opcoes)
+
+        self.txt_cep.editingFinished.connect(self.on_cep_editing_finished)
 
         
         
@@ -632,37 +640,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
             # Adicionar o botão OK com o estilo padrão
             mensagem.setStandardButtons(QMessageBox.Ok)
-            
-            # Estilizar a mensagem (fundo branco e texto preto)
-            mensagem.setStyleSheet("""
-                QLabel { 
-                    color: black; 
-                    background-color: white;
-                }
-                QMessageBox { 
-                    background-color: white; 
-                    border: none;
-                }
-                QPushButton {
-                    background-color: #f0f0f0; 
-                    border: 1px solid #0078d7;
-                    padding: 3px 10px;
-                    border-radius: 5px;
-                    width: 55px;
-        
-                }
-                QPushButton:hover {
-                    background-color: #d0d0d0;
-                    border: 1px solid #0078d7;  /* Azul claro */
-                }
-                QPushButton:pressed {
-                    background-color: #a0a0a0;
-                    border: 1px solid #8f8f8f;
-                }
-            """)
 
             # Executar a mensagem
             mensagem.exec()
+            return
+        if not self.imagem_removida_usuario:
+            QMessageBox.warning(None,"Remoção de Imagem",
+                                "Remova a imagem do usuário e inclua novamente para seguir com a atualização")
             return
         try:        
             # Verificar se o usuário existe no banco de dados antes de tentar atualizar
@@ -690,76 +674,91 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         usuario_cpf = self.txt_cpf.text() or "Não Cadastrado"
         usuario_cep = self.txt_cep.text() or "Não Cadastrado"
         usuario_estado = self.perfil_estado.currentText()
+        usuario_perfil = self.perfil_usuarios.currentText()
         usuario_senha = self.txt_senha.text() or "Não Cadastrado"
         usuario_confirmar_senha = self.txt_confirmar_senha.text() or "Não Cadastrado"
         usuario_imagem = None
+        
+        campos_com_erro = []
+        # Validação de campos obrigatórios
+        campos_obrigatorios = {
+                'nome': usuario_nome,
+                'usuário': usuario_usuario,
+                'telefone': usuario_telefone,
+                'endereço': usuario_endereco,
+                'número': usuario_numero,
+                'email': usuario_email,
+                'data nascimento': usuario_data_nascimento,
+                'rg': usuario_rg,
+                'cpf': usuario_cpf,
+                'cep': usuario_cep,
+                'estado': usuario_estado,
+                'perfil': usuario_perfil,
+                'senha': usuario_senha,
+                'confirmar senha': usuario_confirmar_senha
+            }
 
-        # Verificar se todos os campos obrigatórios estão preenchidos
-        if (not usuario_nome or not usuario_usuario or not usuario_telefone or not usuario_endereco or
-                not usuario_numero or not usuario_complemento or not usuario_email or not usuario_data_nascimento or not usuario_rg or
-                not usuario_cpf or not usuario_cep or not usuario_estado or not usuario_senha or
-                not usuario_confirmar_senha):
-            QMessageBox.warning(self, "Aviso", "Todos os campos são obrigatórios!")
+        for campo, valor in campos_obrigatorios.items():
+            if not valor.strip():
+                campos_com_erro.append(campo)
+
+        if campos_com_erro:
+            self.exibir_asteriscos_usuarios(campos_com_erro)
+            QMessageBox.warning(self, "Erro", f"O campo {campos_com_erro[0]} é obrigatório.")
             return
 
         # Verificar se as senhas coincidem
         if usuario_senha != usuario_confirmar_senha:
+            self.exibir_asteriscos_usuarios(['senha', 'confirmar senha'])
             QMessageBox.warning(self, "Aviso", "As senhas não coincidem!")
             return
 
         # Verificar se o CPF é válido
         if not self.validar_cpf(usuario_cpf):
+            self.exibir_asteriscos_usuarios(['cpf'])
             QMessageBox.warning(self, "Aviso", "CPF inválido!")
             return
 
         # Verificar se o e-mail é válido
         if not self.validar_email(usuario_email):
+            self.exibir_asteriscos_usuarios(['email'])
             QMessageBox.warning(self, "Aviso", "E-mail inválido!")
             return
 
         # Verificar se o número de telefone é válido
         if not self.validar_telefone(usuario_telefone):
+            self.exibir_asteriscos_usuarios(['telefone'])
             QMessageBox.warning(self, "Aviso", "Número de telefone inválido!")
             return
 
-        # Obtendo a imagem em base64
-        usuario_imagem = None
-        pixmap = self.label_imagem_usuario.pixmap()
-        if (pixmap and not pixmap.isNull()):
-            byte_array = QByteArray()
-            buffer = QBuffer(byte_array)
-            buffer.open(QIODevice.WriteOnly)
-            pixmap.save(buffer, "PNG")
-            imagem_bytes = byte_array.toBase64()
-            usuario_imagem = str(imagem_bytes, encoding='utf-8')
 
         # Construir a consulta SQL
         sql = """
             UPDATE users 
-            SET Nome=?, Telefone=?, Endereço=?, Número=?, Complemento=?, 
+            SET Nome=?, Usuário=?,Telefone=?, Endereço=?, Número=?, Complemento=?, 
             Email=?, Data_Nascimento=?, RG=?, CPF=?, CEP=?, Estado=?, Senha=?,
-            "Confirmar Senha"=? 
+            "Confirmar Senha"=?,Acesso=?
             WHERE id=?
         """
 
         # Valores para substituir os placeholders
-        valores = (usuario_nome, usuario_telefone, usuario_endereco, usuario_numero, usuario_complemento,
+        valores = (usuario_nome, usuario_usuario,usuario_telefone, usuario_endereco, usuario_numero, usuario_complemento,
                 usuario_email, usuario_data_nascimento, usuario_rg, usuario_cpf, usuario_cep,
-                usuario_estado, usuario_senha, usuario_confirmar_senha, self.selected_user_id)
+                usuario_estado,  usuario_senha, usuario_confirmar_senha,usuario_perfil, self.selected_user_id)
 
         # Se uma nova imagem foi selecionada, inclua-a na consulta SQL
         if usuario_imagem:
             sql = """
                 UPDATE users 
-                SET Nome=?, Telefone=?, Endereço=?, Número=?, Complemento=?, 
+                SET Nome=?, Usuário=?,Telefone=?, Endereço=?, Número=?, Complemento=?, 
                 Email=?, Data_Nascimento=?, RG=?, CPF=?, CEP=?, Estado=?, Senha=?, Imagem=?,
-                "Confirmar Senha"=? 
+                "Confirmar Senha"=?, Acesso=?
                 WHERE id=?
             """
             # Adicione a imagem aos valores
-            valores = (usuario_nome, usuario_telefone, usuario_endereco, usuario_numero, usuario_complemento,
+            valores = (usuario_nome, usuario_usuario,usuario_telefone, usuario_endereco, usuario_numero, usuario_complemento,
                     usuario_email, usuario_data_nascimento, usuario_rg, usuario_cpf, usuario_cep,
-                    usuario_estado, usuario_senha, usuario_imagem, usuario_confirmar_senha, self.selected_user_id)
+                    usuario_estado,usuario_senha, usuario_imagem, usuario_confirmar_senha,usuario_perfil, self.selected_user_id)
 
         # Tentar executar a consulta SQL
         try:
@@ -771,6 +770,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             # Resetar o estado de edição
             self.is_editing = False
             self.selected_user_id = None
+            self.imagem_removida_usuario = False
         except Exception as e:
             QMessageBox.critical(self, "Erro", f"Erro ao atualizar o usuário: {str(e)}")
             
@@ -830,16 +830,26 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             return False
 
         return True
-
+#*********************************************************************************************************************
     def validar_email(self, email):
         # Usando uma expressão regular para validar o formato do e-mail
         regex = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{3,}$'
         return bool(re.match(regex, email))
+#*********************************************************************************************************************
+    def validar_cnpj(self, cnpj):
+        # Remover caracteres não numéricos
+        cnpj = re.sub('[^0-9]', '', cnpj)
 
+        # Verificar se o CNPJ tem 14 dígitos
+        if len(cnpj) != 14:
+            return False
+
+        return True
+
+#*********************************************************************************************************************
     def validar_telefone(self, telefone):
         # Remover caracteres não numéricos
         telefone = re.sub('[^0-9]', '', telefone)
-        print("Número de digitos", len(telefone))
 
         # Verificar se o telefone tem o formato válido
         if len(telefone) != 11:
@@ -1076,150 +1086,229 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def subscribe_user(self, usuario_info=None, registrar_historico=True):
         db = DataBase()
         db.connecta()
-        
-        user = self.gerar_codigo_usuarios()
 
-        # Verificar se é cadastro manual (com widgets da interface) ou em massa (via dicionário)
-        if usuario_info is None:
-            # Cadastro manual - coleta os dados dos widgets
-            nome = self.txt_nome.text()
-            senha = self.txt_senha.text()
-            confirmar_senha = self.txt_confirmar_senha.text()
-            acesso = self.perfil_usuarios.currentText()
-            endereco = self.txt_endereco.text()
-            cep = self.txt_cep.text()
-            cpf = self.txt_cpf.text()
-            numero = self.txt_numero.text()
-            estado = self.perfil_estado.currentText()
-            email = self.txt_email.text()
-            telefone = self.txt_telefone.text()
-            rg = self.txt_rg.text()
-            data_nascimento = self.txt_data_nascimento.text()
-            complemento = self.txt_complemento.text()
-            imagem = self.converter_imagem_usuario()
+        user = 'Desconhecido'
 
-            # Validações para o cadastro manual
-            campos_vazios = []
-            for campo, widget in self.campos_obrigatorios_usuarios.items():
-                valor = widget.currentText() if isinstance(widget, QComboBox) else widget.text()
-                if valor.strip() == "":
-                    campos_vazios.append(campo)
-
-            if campos_vazios:
-                self.exibir_asteriscos_usuarios(campos_vazios)
-                msg = QMessageBox()
-                msg.setIcon(QMessageBox.Warning)
-                msg.setWindowTitle("Erro")      
-                msg.setText(f"O campo {campos_vazios[0]} é obrigatório.")
-                msg.exec()
-                return
-
-            if senha != confirmar_senha:
-                self.exibir_asteriscos_usuarios(['senha', 'confirmar senha'])
-                msg = QMessageBox()
-                msg.setIcon(QMessageBox.Warning)
-                msg.setWindowTitle("Erro")
-                msg.setText("As senhas não são iguais")
-                msg.exec()
-                return
-
-            if not self.is_valid_email(email):
-                self.exibir_asteriscos_usuarios(['email'])
-                msg = QMessageBox()
-                msg.setIcon(QMessageBox.Warning)
-                msg.setWindowTitle('Erro')
-                msg.setText("Por favor, insira um e-mail correto")
-                msg.exec()
-                return
-        else:
-            # Cadastro em massa - coleta os dados do dicionário
-            if not isinstance(usuario_info, dict):
-                 raise TypeError(f"Esperado dict para 'usuario_info', mas recebeu {type(usuario_info).__name__}")
-            nome = usuario_info.get("Nome", "")
-            senha = usuario_info.get("Senha", "")
-            confirmar_senha = usuario_info.get("Confirmar Senha", "")
-            acesso = usuario_info.get("Acesso", "")
-            endereco = usuario_info.get("Endereço", "")
-            cep = usuario_info.get("CEP", "")
-            cpf = usuario_info.get("CPF", "")
-            numero = usuario_info.get("Número", "")
-            estado = usuario_info.get("Estado", "")
-            email = usuario_info.get("E-mail", "")
-            telefone = usuario_info.get("Telefone", "")
-            rg = usuario_info.get("RG", "")
-            data_nascimento = usuario_info.get("Data de Nascimento", "")
-            complemento = usuario_info.get("Complemento", "")
-            imagem = None  # Cadastro em massa normalmente não envia imagem
+        #  Impedir cadastro se estiver no modo de edição
+        if self.is_editing:
+            QMessageBox.warning(None, "Modo de Edição Ativo", "Você está editando um usuário.\n " 
+            "É necessário atualizar o usuário ao invés de fazer cadastro.")
+            return
 
         try:
+            # Dados básicos: manual ou massa
+            if usuario_info is None:
+                # Cadastro manual - coleta dos widgets
+                nome = self.txt_nome.text().strip()
+                usuario = self.gerar_codigo_usuarios()
+                senha = self.txt_senha.text()
+                confirmar_senha = self.txt_confirmar_senha.text()
+                cep = self.txt_cep.text().strip()
+                endereco = self.txt_endereco.text().strip()
+                numero = self.txt_numero.text().strip()
+                cidade = self.txt_cidade.text().strip()
+                bairro = self.txt_bairro.text().strip()
+                estado = self.perfil_estado.currentText()
+                complemento = self.txt_complemento.text().strip()
+                telefone = self.txt_telefone.text().strip()
+                email = self.txt_email.text().strip()
+                data_nascimento = self.txt_data_nascimento.text().strip()
+                rg = self.txt_rg.text().strip()
+                cpf = self.txt_cpf.text().strip()
+                cnpj = self.txt_cnpj.text().strip()
+                imagem = self.converter_imagem_usuario()
+                usuario_logado = self.usuario_logado  # Supondo que esteja definido na classe
+                acesso = self.perfil_usuarios.currentText()
+
+                # Validação campos obrigatórios
+                campos_vazios = []
+                for campo, widget in self.campos_obrigatorios_usuarios.items():
+                    valor = widget.currentText() if isinstance(widget, QComboBox) else widget.text()
+                    if valor.strip() == "":
+                        campos_vazios.append(campo)
+                if campos_vazios:
+                    self.exibir_asteriscos_usuarios(campos_vazios)
+                    QMessageBox.warning(None, "Erro", f"O campo {campos_vazios[0]} é obrigatório.")
+                    return
+
+                # Validação senha
+                if senha != confirmar_senha:
+                    self.exibir_asteriscos_usuarios(['senha', 'confirmar senha'])
+                    QMessageBox.warning(None, "Erro", "As senhas não são iguais")
+                    return
+
+                # Validação email
+                if not self.is_valid_email(email):
+                    self.exibir_asteriscos_usuarios(['email'])
+                    QMessageBox.warning(None, "Erro", "Por favor, insira um e-mail correto")
+                    return
+
+            else:
+                nome = usuario_info.get("Nome", "").strip()
+                usuario = self.gerar_codigo_usuarios()
+                senha = usuario_info.get("Senha", "")
+                confirmar_senha = usuario_info.get("Confirmar Senha", "")
+                cep = usuario_info.get("CEP", "").strip()
+                endereco = usuario_info.get("Endereço", "").strip()
+                numero = usuario_info.get("Número", "").strip()
+                cidade = usuario_info.get("Cidade", "").strip()
+                bairro = usuario_info.get("Bairro", "").strip()
+                estado = usuario_info.get("Estado", "")
+                complemento = usuario_info.get("Complemento", "").strip()
+                telefone = usuario_info.get("Telefone", "").strip()
+                email = usuario_info.get("E-mail", "").strip()
+                data_nascimento = usuario_info.get("Data de Nascimento", "").strip()
+                rg = usuario_info.get("RG", "").strip()
+                cpf = usuario_info.get("CPF", "").strip()
+                cnpj = usuario_info.get("CNPJ", "").strip()
+                imagem = None  # normalmente não tem imagem na massa
+                segredo = self.gerar_segredo_autenticacao()  # Supondo que exista essa função
+                usuario_logado = self.usuario_logado  # Supondo que esteja definido
+                acesso = usuario_info.get("Acesso", "")
+
+
+
             usuario_logado = self.config.obter_usuario_logado()
             db.salvar_usuario_logado(usuario_logado)
 
-            # Verificar se o usuário já está cadastrado
-            user_exists_result = db.user_exists(user, telefone, email, rg, cpf)
+            # Verificar se usuário já existe pelo código ou por dados únicos (telefone, email, rg, cpf)
+            user_exists_result = db.user_exists(user, telefone, email, rg, cpf,cnpj)
+
             if user_exists_result:
+                # Se existir e for cadastro manual ou edição, atualize ao invés de inserir
+                # Aqui assumimos que você quer atualizar se usuário já existir
+                db.atualizar_usuario(
+                    nome=nome,
+                    usuario=usuario,
+                    senha=senha,
+                    confirmar_senha=confirmar_senha,
+                    cep=cep,
+                    endereco=endereco,
+                    numero=numero,
+                    cidade=cidade,
+                    bairro=bairro,
+                    estado=estado,
+                    complemento=complemento,
+                    telefone=telefone,
+                    email=email,
+                    data_nascimento=data_nascimento,
+                    rg=rg,
+                    cpf=cpf,
+                    cnpj=cnpj,
+                    imagem=imagem,
+                    segredo=segredo,
+                    usuario_logado=usuario_logado,
+                    acesso=acesso
+                )
+
+
+                if registrar_historico:
+                    descricao = f"Usuário {user} foi atualizado no sistema."
+                    self.registrar_historico_usuarios("Atualização de Usuários", descricao)
+
                 if usuario_info is None:
-                    self.exibir_asteriscos_usuarios([user_exists_result])
-                    QMessageBox.critical(None, "Erro", f"Já existe um usuário com esse {user_exists_result}")
-                raise ValueError(f"Usuário duplicado: {user_exists_result}")
+                    QMessageBox.information(None, "Atualização de Usuário", "Usuário atualizado com sucesso")
+                return  # Atualização feita, sai da função
 
-
-            # Inserir usuário no banco
+            # Caso usuário não exista, insere novo
             db.insert_user(
                 nome=nome,
                 usuario=user,
                 senha=senha,
                 confirmar_senha=confirmar_senha,
-                acesso=acesso,
-                endereco=endereco,
                 cep=cep,
-                cpf=cpf,
+                endereco=endereco,
                 numero=numero,
+                cidade=cidade,
+                bairro=bairro,
                 estado=estado,
-                email=email,
-                telefone=telefone,
-                rg=rg,
-                data_nascimento=data_nascimento,
                 complemento=complemento,
+                telefone=telefone,
+                email=email,
+                data_nascimento=data_nascimento,
+                rg=rg,
+                cpf=cpf,
+                cnpj=cnpj,
                 imagem=imagem,
-                segredo=None,
-                usuario_logado=usuario_logado
+                usuario_logado=usuario_logado,
+                acesso=acesso
             )
+
 
             if registrar_historico:
                 descricao = f"Usuário {user} foi cadastrado no sistema."
                 self.registrar_historico_usuarios("Cadastro de Usuários", descricao)
 
             if usuario_info is None:
-                # Exibir mensagem de sucesso apenas no modo manual
-                msg = QMessageBox()
-                msg.setIcon(QMessageBox.Information)
-                msg.setWindowTitle("Cadastro de Usuário")
-                msg.setText("Cadastro realizado com sucesso")
-                msg.exec()
-
-                # Limpar campos do formulário
-                self.txt_nome.setText("")
-                self.txt_usuario.setText("")
-                self.txt_senha.setText("")
-                self.txt_confirmar_senha.setText("")
-                self.txt_cpf.setText("")
-                self.txt_email.setText("")
-                self.txt_numero.setText("")
-                self.txt_endereco.setText("")
-                self.txt_cep.setText("")
-                self.txt_complemento.setText("")
-                self.txt_rg.setText("")
-                self.txt_telefone.setText("")
-                self.txt_data_nascimento.setText("")
+                QMessageBox.information(None, "Cadastro de Usuário", "Cadastro realizado com sucesso")
+                # Limpar campos
+                self.txt_nome.clear()
+                self.txt_usuario.clear()
+                self.txt_senha.clear()
+                self.txt_confirmar_senha.clear()
+                self.txt_cpf.clear()
+                self.txt_cnpj.clear()
+                self.txt_email.clear()
+                self.txt_numero.clear()
+                self.txt_endereco.clear()
+                self.txt_cep.clear()
+                self.txt_complemento.clear()
+                self.txt_rg.clear()
+                self.txt_telefone.clear()
+                self.txt_data_nascimento.clear()
                 self.perfil_estado.setCurrentIndex(0)
                 self.perfil_usuarios.setCurrentIndex(0)
                 self.label_imagem_usuario.clear()
 
         except Exception as e:
-            error_message = f"Erro ao cadastrar usuário {user}: {str(e)}"
-            QMessageBox.critical(None, "Erro", error_message)
+            QMessageBox.critical(None, "Erro", f"Erro ao cadastrar/atualizar usuário {user}: {str(e)}")
 
+    def buscar_cep(self,cep:str):
+        cep = cep.replace("-", "").strip()
+        if len(cep) != 8 or not cep.isdigit():
+            QMessageBox.warning(None, "ERRO", "CEP inválido")
+            return
+        try:
+            url = f"https://viacep.com.br/ws/{cep}/json/"
+            resposta = requests.get(url)
+            if resposta.status_code == 200:
+                dados = resposta.json()
+                if "erro"  in dados:
+                    QMessageBox.warning(None, "ERRO", "CEP não encontrado")
+                    return None
+                return dados
+            else:
+                QMessageBox.warning(None,"Erro de conexão","Não foi possível consultar o CEP")
+                return None
+        except Exception as e:
+            QMessageBox.warning(None,"Erro ao consultar CEP",f"Erro: {str(e)}")
+            return None
+
+    def preencher_campos_cep(self, dados):
+        if dados is None:
+            return  # Não faz nada se não tem dados
+        
+        self.txt_endereco.setText(dados.get("logradouro", ""))
+        self.txt_bairro.setText(dados.get("bairro", ""))
+        self.txt_cidade.setText(dados.get("localidade", ""))
+
+
+        complemento = dados.get("complemento", "")
+        if any(char.isdigit() for char in complemento):
+            self.txt_numero.setText(complemento)
+        #self.txt_complemento.setText(complemento)
+        # Só ajustar o estado, já que é o único campo extra que você tem
+        estado = dados.get("uf", "")
+        index_estado = self.perfil_estado.findText(estado)
+        if index_estado != -1:
+            self.perfil_estado.setCurrentIndex(index_estado)
+
+
+    def on_cep_editing_finished(self):
+        cep_digitado = self.txt_cep.text()
+        dados_cep = self.buscar_cep(cep_digitado)
+        if dados_cep:
+            self.preencher_campos_cep(dados_cep)
 
     def eliminar_campos_usuarios(self):
         # Limpar campos de texto
@@ -1237,13 +1326,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.txt_senha.clear()
         self.txt_confirmar_senha.clear()
         self.label_imagem_usuario.clear()
-        
-        layout = self.frame_imagem_cadastro.layout()
-        if layout:
-            for i in reversed(range(layout.count())):
-                widget = layout.itemAt(i).widget()
-                if widget is not None:
-                    widget.deleteLater()
 
         # Limpar campos de combo box
         self.perfil_estado.setCurrentIndex(0)  # Se for um combo box, o índice padrão é 0 (ou o valor inicial)
@@ -1690,6 +1772,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                     widget.clear()
                     widget.setPixmap(QPixmap())
                     widget.hide()
+                    self.imagem_removida_usuario = True
                     print("Imagem removida do usuário com sucesso")
                     msg_box = QMessageBox(QMessageBox.Information, "Sucesso", "Imagem removida do usuário com sucesso")
                     msg_box.exec()
@@ -1939,6 +2022,26 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             # Se o CPF não tiver pelo menos 9 dígitos, manter o texto original
             self.txt_cpf.setText(text[:14])
 #*********************************************************************************************************************
+    def formatar_cnpj(self, text):
+        # Remover caracteres não numéricos
+        numero_cnpj = ''.join(filter(str.isdigit, text))
+
+        # Verifica se há pelo menos 14 dígitos
+        if len(numero_cnpj) >= 14:
+            # Limita a 14 dígitos
+            numero_cnpj = numero_cnpj[:14]
+            # Formata para o padrão nacional: 11.111.111/1111-11
+            cnpj_formatado = "{}.{}.{}/{}-{}".format(
+                numero_cnpj[:2],
+                numero_cnpj[2:5],
+                numero_cnpj[5:8],
+                numero_cnpj[8:12],
+                numero_cnpj[12:]
+            )
+            self.txt_cnpj.setText(cnpj_formatado)
+        else:
+            self.txt_cnpj.setText(numero_cnpj)
+#*********************************************************************************************************************
     def formatar_rg(self, text):
         # Remover caracteres não numéricos
         numero_rg = ''.join(filter(str.isdigit, text))
@@ -2005,7 +2108,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.produto_id = id_usuario
         
         # Atualizar os campos e a imagem com base no produto selecionado
-        self.atualizar_campos()
         self.atualizar_imagem()
 #*******************************************************************************************************
     def mostrar_erro_desconto(self):
@@ -2119,7 +2221,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.txt_cpf.clear()
         self.txt_senha.clear()
         self.txt_confirmar_senha.clear()
-        self.frame_imagem_cadastro.setText("")
+        self.perfil_estado.setCurrentIndex(0)
+        self.perfil_usuarios.setCurrentIndex(0)
+        self.label_imagem_usuario.clear()
+
+
+
 
     def cor_estado_produto(self):
         pass
@@ -2188,12 +2295,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             'usuario': self.frame_erro_usuario,
             'telefone': self.frame_erro_telefone,
             'endereco': self.frame_erro_endereco,
+            'cidade': self.frame_erro_cidade,
+            'bairro': self.frame_erro_bairro,
             'numero': self.frame_erro_numero,
             'complemento': self.frame_erro_complemento,
             'email': self.frame_erro_email,
             'data_nascimento': self.frame_data_nascimento,
             'rg': self.frame_erro_rg,
             'cpf': self.frame_erro_cpf,
+            'cnpj': self.frame_erro_cnpj,
             'cep': self.frame_erro_cep,
             'estado': self.frame_erro_estado,
             'senha': self.frame_senha,
@@ -2287,19 +2397,19 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             sheet_name = 'Usuários'
             dados = {
                 "Nome": ["Keven Lucas da Silva Jesus", "Maria Oliveira da Silva", "Pedro Santos Reis", "Carla Lima Medeiros"],
-                "Usuário": ["Ex: SIG2515", "Ex: SIG2514", "Ex: SIG2513", "Ex: SIG2513"],
+                "Usuário": ["Gerado automaticamente", "Gerado automaticamente", "Gerado automaticamente", "Gerado automaticamente"],
                 "Senha": ["senha123", "senha456", "senha789", "senha101"],
                 "Confirmar Senha": ["senha123", "senha456", "senha789", "senha101"],
                 "Acesso": ["Administrador", "Usuário", "Usuário", "Convidado"],
                 "Endereço": ["Rua A, 123", "Rua B, 456", "Rua C, 789", "Rua D, 101"],
                 "CEP": ["00000-0000", "00000-0000", "00000-0000", "00000-0000"],
-                "CPF": ["000.000.000-00", "000.000.000-00", "000.000.000-00", "000.000.000-00"],
+                "CPF": ["000.000.000-01", "000.000.000-02", "000.000.000-03", "000.000.000-04"],
                 "Número": [123, 456, 789, 101],
                 "Estado": ["SP", "RJ", "MG", "PR"],
                 "E-mail": ["keven.lucas00@dhdfge.com", "mariolieira1000@gmail.com","pedrosantos00123@gmail.com","carlalima14520@gmail.com"],
-                "RG": ["00.000.000-0", "00.000.000-0", "00.000.000-0", "00.000.000-0"],
+                "RG": ["00.000.000-1", "00.000.000-2", "00.000.000-3", "00.000.000-4"],
                 "Complemento": ["Apto 1", "", "", ""],
-                "Telefone": ["(11) 00000-0000", "(21) 00000-0000", "(31) 00000-0000", "(41) 00000-0000"],
+                "Telefone": ["(11) 00000-0001", "(21) 00000-0002", "(31) 00000-0003", "(41) 00000-0004"],
                 "Data de Nascimento": ["01/01/2000", "02/02/1995", "03/03/1990", "04/04/1985"]
             }
         # Gerar a planilha com os dados corretos
@@ -2373,5 +2483,3 @@ if __name__ == '__main__':
     login_window.show()
     sys.exit(app.exec())
 
-
-    

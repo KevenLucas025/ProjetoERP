@@ -1560,7 +1560,7 @@ class Pagina_Usuarios(QWidget):
 
                 # Verificar se o DataFrame está vazio
                 if df.shape[1] != len(colunas_table_massa_usuarios):
-                    QMessageBox.warning(self, "Erro", "O número de colunas no arquivo Excel não corresponde ao número esperado.")
+                    QMessageBox.warning(self, "Erro", "O número de colunas em massa no arquivo Excel não corresponde ao número esperado.")
                     self.line_edit_massa_usuarios.clear()
                     # Zerando a barra de progresso
                     self.progress_massa_usuarios.setValue(0)
@@ -1608,24 +1608,25 @@ class Pagina_Usuarios(QWidget):
             if total_linhas == 0:
                 QMessageBox.warning(self, "Erro", "Nenhum usuário encontrado para cadastrar.")
                 return
+
             for linha in range(total_linhas):
-                nome = self.table_massa_usuarios.item(linha, 0).text()
+                nome = self.table_massa_usuarios.item(linha, 0).text().strip() if self.table_massa_usuarios.item(linha, 0) else ""
                 # Gerar código único para o usuário
                 usuario = self.main_window.gerar_codigo_usuarios()
-                senha = self.table_massa_usuarios.item(linha, 2).text()
-                confirmar_senha = self.table_massa_usuarios.item(linha, 3).text()
-                acesso = self.table_massa_usuarios.item(linha, 4).text()
-                endereco = self.table_massa_usuarios.item(linha, 5).text()
-                cep = self.table_massa_usuarios.item(linha, 6).text()
-                cpf = self.table_massa_usuarios.item(linha, 7).text()
-                numero = self.table_massa_usuarios.item(linha, 8).text()
-                estado = self.table_massa_usuarios.item(linha, 9).text()
-                email = self.table_massa_usuarios.item(linha, 10).text()
-                rg = self.table_massa_usuarios.item(linha, 11).text()
-                complemento = self.table_massa_usuarios.item(linha, 12).text()
-                telefone = self.table_massa_usuarios.item(linha, 13).text()
-                data_nascimento = self.table_massa_usuarios.item(linha, 14).text()
-                
+                senha = self.table_massa_usuarios.item(linha, 2).text().strip() if self.table_massa_usuarios.item(linha, 2) else ""
+                confirmar_senha = self.table_massa_usuarios.item(linha, 3).text().strip() if self.table_massa_usuarios.item(linha, 3) else ""
+                acesso = self.table_massa_usuarios.item(linha, 4).text().strip() if self.table_massa_usuarios.item(linha, 4) else ""
+                endereco = self.table_massa_usuarios.item(linha, 5).text().strip() if self.table_massa_usuarios.item(linha, 5) else ""
+                cep = self.table_massa_usuarios.item(linha, 6).text().strip() if self.table_massa_usuarios.item(linha, 6) else ""
+                cpf = self.table_massa_usuarios.item(linha, 7).text().strip() if self.table_massa_usuarios.item(linha, 7) else ""
+                numero = self.table_massa_usuarios.item(linha, 8).text().strip() if self.table_massa_usuarios.item(linha, 8) else ""
+                estado = self.table_massa_usuarios.item(linha, 9).text().strip() if self.table_massa_usuarios.item(linha, 9) else ""
+                email = self.table_massa_usuarios.item(linha, 10).text().strip() if self.table_massa_usuarios.item(linha, 10) else ""
+                rg = self.table_massa_usuarios.item(linha, 11).text().strip() if self.table_massa_usuarios.item(linha, 11) else ""
+                complemento = self.table_massa_usuarios.item(linha, 12).text().strip() if self.table_massa_usuarios.item(linha, 12) else ""
+                telefone = self.table_massa_usuarios.item(linha, 13).text().strip() if self.table_massa_usuarios.item(linha, 13) else ""
+                data_nascimento = self.table_massa_usuarios.item(linha, 14).text().strip() if self.table_massa_usuarios.item(linha, 14) else ""
+
                 dados_usuarios_massa = {
                     "Nome": nome,
                     "Usuário": usuario,
@@ -1643,23 +1644,23 @@ class Pagina_Usuarios(QWidget):
                     "Telefone": telefone,
                     "Data de Nascimento": data_nascimento
                 }
-                
-                self.main_window.subscribe_user(usuario_info=dados_usuarios_massa,registrar_historico=True)
-                
-                # Registrar no histórico para o cadastro em massa
+
+                self.main_window.subscribe_user(usuario_info=dados_usuarios_massa, registrar_historico=True)
+
+                # Registrar no histórico
                 descricao = f"Usuário {usuario} foi cadastrado no sistema!"
                 self.main_window.registrar_historico_usuarios("Cadastro em Massa", descricao)
-                
-                
+
+
             QMessageBox.information(self, "Sucesso", "Usuários cadastrados em massa com sucesso!")
             self.line_edit_massa_usuarios.clear()
 
             # Limpar a tabela após a inserção
             self.table_massa_usuarios.setRowCount(0)
-            
-            
+
         except Exception as e:
             QMessageBox.critical(self, "Erro", f"Erro ao cadastrar usuários em massa:\n{e}")
+
                 
                 
         
