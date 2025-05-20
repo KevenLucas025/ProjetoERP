@@ -1907,7 +1907,22 @@ QTableWidget::item:selected {
              </column>
              <column>
               <property name="text">
+               <string>CNPJ</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
                <string>Número</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>Cidade</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>Bairro</string>
               </property>
              </column>
              <column>
@@ -2243,7 +2258,22 @@ QTableWidget::item:selected {
              </column>
              <column>
               <property name="text">
+               <string>CNPJ</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
                <string>Número</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>Cidade</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>Bairro</string>
               </property>
              </column>
              <column>

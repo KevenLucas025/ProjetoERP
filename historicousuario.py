@@ -87,7 +87,7 @@ class Pagina_Usuarios(QWidget):
         # Carregar dados da tabela users usando pandas
         query = """
         SELECT Nome,Usuário,Senha,"Confirmar Senha",Acesso,Endereço,CEP,CPF,Número,Estado,Email,RG,Complemento,
-        Telefone,Data_Nascimento,"Última Troca de Senha","Data da Senha Cadastrada","Data da Inclusão do Usuário",Secret
+        Telefone,"Data de Nascimento","Última Troca de Senha","Data da Senha Cadastrada","Data da Inclusão do Usuário",Segredo
         FROM users
         """
         df = pd.read_sql_query(query, cn)
@@ -265,7 +265,7 @@ class Pagina_Usuarios(QWidget):
             # Atualiza a coluna 18 com a data/hora da saída
             dados_usuario[18] = datetime.now().strftime("%d/%m/%Y %H:%M")
 
-            # Coluna 19: Secret
+            # Coluna 19: Segredo
             item_segredo = self.main_window.table_ativos.item(row, 18)
             dados_usuario[19] = item_segredo.text() if item_segredo else ""
 
@@ -283,9 +283,9 @@ class Pagina_Usuarios(QWidget):
             cursor.execute("""
                 INSERT INTO users_inativos (
                     Nome, Usuário, Senha, "Confirmar Senha", Acesso, Endereço, CEP, CPF, Número, Estado,
-                    Email, Complemento, Telefone, Data_nascimento, RG, Imagem, "Última Troca de Senha",
+                    Email, Complemento, Telefone, "Data de Nascimento", RG, Imagem, "Última Troca de Senha",
                     "Data da Senha Cadastrada", "Data da Inclusão do Usuário", "Data da Inatividade do Usuário",
-                    Secret, "Usuário Logado"
+                    Segredo, "Usuário Logado"
                 ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """, dados_com_imagem)
 
@@ -437,7 +437,7 @@ class Pagina_Usuarios(QWidget):
             # Consultar todos os usuarios
             query = """
             SELECT Nome,Usuário,Senha,"Confirmar Senha",Acesso,Endereço,CEP,CPF,Número,Estado,Email,RG,Complemento,
-            Telefone,Data_Nascimento,"Última Troca de Senha","Data da Senha Cadastrada","Data da Inclusão do Usuário",Secret,"Usuário Logado"
+            Telefone,"Data de Nascimento","Última Troca de Senha","Data da Senha Cadastrada","Data da Inclusão do Usuário",Segredo,"Usuário Logado"
             FROM users
             """
             usuarios = self.db.executar_query(query)
@@ -482,8 +482,8 @@ class Pagina_Usuarios(QWidget):
             # Consulta os dados da tabela de saída no banco de dados (somente usuarios que já tiveram saída gerada)
             query = """
             SELECT Nome,Usuário,Senha,"Confirmar Senha",Acesso,Endereço,CEP,CPF,Número,Estado,Email,RG,Complemento,
-            Telefone,Data_Nascimento,"Última Troca de Senha","Data da Senha Cadastrada","Data da Inclusão do Usuário",
-            "Data da Inatividade do Usuário",Secret,"Usuário Logado"
+            Telefone,"Data de Nascimento","Última Troca de Senha","Data da Senha Cadastrada","Data da Inclusão do Usuário",
+            "Data da Inatividade do Usuário",Segredo,"Usuário Logado"
             FROM users_inativos
             """
             saidas = self.db.executar_query(query)  # Método que executa a consulta e retorna os resultados

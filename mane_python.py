@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'novamaine.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.8.2
+## Created by: Qt User Interface Compiler version 6.9.0
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -1008,8 +1008,8 @@ class Ui_MainWindow(object):
         self.gridLayout_21.addLayout(self.verticalLayout_19, 0, 0, 1, 6)
 
         self.table_ativos = QTableWidget(self.frame_page_verificar_usuarios)
-        if (self.table_ativos.columnCount() < 20):
-            self.table_ativos.setColumnCount(20)
+        if (self.table_ativos.columnCount() < 23):
+            self.table_ativos.setColumnCount(23)
         __qtablewidgetitem19 = QTableWidgetItem()
         self.table_ativos.setHorizontalHeaderItem(0, __qtablewidgetitem19)
         __qtablewidgetitem20 = QTableWidgetItem()
@@ -1050,6 +1050,12 @@ class Ui_MainWindow(object):
         self.table_ativos.setHorizontalHeaderItem(18, __qtablewidgetitem37)
         __qtablewidgetitem38 = QTableWidgetItem()
         self.table_ativos.setHorizontalHeaderItem(19, __qtablewidgetitem38)
+        __qtablewidgetitem39 = QTableWidgetItem()
+        self.table_ativos.setHorizontalHeaderItem(20, __qtablewidgetitem39)
+        __qtablewidgetitem40 = QTableWidgetItem()
+        self.table_ativos.setHorizontalHeaderItem(21, __qtablewidgetitem40)
+        __qtablewidgetitem41 = QTableWidgetItem()
+        self.table_ativos.setHorizontalHeaderItem(22, __qtablewidgetitem41)
         self.table_ativos.setObjectName(u"table_ativos")
         self.table_ativos.setMinimumSize(QSize(0, 0))
         self.table_ativos.setMaximumSize(QSize(16777215, 16777215))
@@ -1176,50 +1182,56 @@ class Ui_MainWindow(object):
         self.gridLayout_21.addWidget(self.frame_4, 3, 0, 1, 1)
 
         self.table_inativos = QTableWidget(self.frame_page_verificar_usuarios)
-        if (self.table_inativos.columnCount() < 21):
-            self.table_inativos.setColumnCount(21)
-        __qtablewidgetitem39 = QTableWidgetItem()
-        self.table_inativos.setHorizontalHeaderItem(0, __qtablewidgetitem39)
-        __qtablewidgetitem40 = QTableWidgetItem()
-        self.table_inativos.setHorizontalHeaderItem(1, __qtablewidgetitem40)
-        __qtablewidgetitem41 = QTableWidgetItem()
-        self.table_inativos.setHorizontalHeaderItem(2, __qtablewidgetitem41)
+        if (self.table_inativos.columnCount() < 24):
+            self.table_inativos.setColumnCount(24)
         __qtablewidgetitem42 = QTableWidgetItem()
-        self.table_inativos.setHorizontalHeaderItem(3, __qtablewidgetitem42)
+        self.table_inativos.setHorizontalHeaderItem(0, __qtablewidgetitem42)
         __qtablewidgetitem43 = QTableWidgetItem()
-        self.table_inativos.setHorizontalHeaderItem(4, __qtablewidgetitem43)
+        self.table_inativos.setHorizontalHeaderItem(1, __qtablewidgetitem43)
         __qtablewidgetitem44 = QTableWidgetItem()
-        self.table_inativos.setHorizontalHeaderItem(5, __qtablewidgetitem44)
+        self.table_inativos.setHorizontalHeaderItem(2, __qtablewidgetitem44)
         __qtablewidgetitem45 = QTableWidgetItem()
-        self.table_inativos.setHorizontalHeaderItem(6, __qtablewidgetitem45)
+        self.table_inativos.setHorizontalHeaderItem(3, __qtablewidgetitem45)
         __qtablewidgetitem46 = QTableWidgetItem()
-        self.table_inativos.setHorizontalHeaderItem(7, __qtablewidgetitem46)
+        self.table_inativos.setHorizontalHeaderItem(4, __qtablewidgetitem46)
         __qtablewidgetitem47 = QTableWidgetItem()
-        self.table_inativos.setHorizontalHeaderItem(8, __qtablewidgetitem47)
+        self.table_inativos.setHorizontalHeaderItem(5, __qtablewidgetitem47)
         __qtablewidgetitem48 = QTableWidgetItem()
-        self.table_inativos.setHorizontalHeaderItem(9, __qtablewidgetitem48)
+        self.table_inativos.setHorizontalHeaderItem(6, __qtablewidgetitem48)
         __qtablewidgetitem49 = QTableWidgetItem()
-        self.table_inativos.setHorizontalHeaderItem(10, __qtablewidgetitem49)
+        self.table_inativos.setHorizontalHeaderItem(7, __qtablewidgetitem49)
         __qtablewidgetitem50 = QTableWidgetItem()
-        self.table_inativos.setHorizontalHeaderItem(11, __qtablewidgetitem50)
+        self.table_inativos.setHorizontalHeaderItem(8, __qtablewidgetitem50)
         __qtablewidgetitem51 = QTableWidgetItem()
-        self.table_inativos.setHorizontalHeaderItem(12, __qtablewidgetitem51)
+        self.table_inativos.setHorizontalHeaderItem(9, __qtablewidgetitem51)
         __qtablewidgetitem52 = QTableWidgetItem()
-        self.table_inativos.setHorizontalHeaderItem(13, __qtablewidgetitem52)
+        self.table_inativos.setHorizontalHeaderItem(10, __qtablewidgetitem52)
         __qtablewidgetitem53 = QTableWidgetItem()
-        self.table_inativos.setHorizontalHeaderItem(14, __qtablewidgetitem53)
+        self.table_inativos.setHorizontalHeaderItem(11, __qtablewidgetitem53)
         __qtablewidgetitem54 = QTableWidgetItem()
-        self.table_inativos.setHorizontalHeaderItem(15, __qtablewidgetitem54)
+        self.table_inativos.setHorizontalHeaderItem(12, __qtablewidgetitem54)
         __qtablewidgetitem55 = QTableWidgetItem()
-        self.table_inativos.setHorizontalHeaderItem(16, __qtablewidgetitem55)
+        self.table_inativos.setHorizontalHeaderItem(13, __qtablewidgetitem55)
         __qtablewidgetitem56 = QTableWidgetItem()
-        self.table_inativos.setHorizontalHeaderItem(17, __qtablewidgetitem56)
+        self.table_inativos.setHorizontalHeaderItem(14, __qtablewidgetitem56)
         __qtablewidgetitem57 = QTableWidgetItem()
-        self.table_inativos.setHorizontalHeaderItem(18, __qtablewidgetitem57)
+        self.table_inativos.setHorizontalHeaderItem(15, __qtablewidgetitem57)
         __qtablewidgetitem58 = QTableWidgetItem()
-        self.table_inativos.setHorizontalHeaderItem(19, __qtablewidgetitem58)
+        self.table_inativos.setHorizontalHeaderItem(16, __qtablewidgetitem58)
         __qtablewidgetitem59 = QTableWidgetItem()
-        self.table_inativos.setHorizontalHeaderItem(20, __qtablewidgetitem59)
+        self.table_inativos.setHorizontalHeaderItem(17, __qtablewidgetitem59)
+        __qtablewidgetitem60 = QTableWidgetItem()
+        self.table_inativos.setHorizontalHeaderItem(18, __qtablewidgetitem60)
+        __qtablewidgetitem61 = QTableWidgetItem()
+        self.table_inativos.setHorizontalHeaderItem(19, __qtablewidgetitem61)
+        __qtablewidgetitem62 = QTableWidgetItem()
+        self.table_inativos.setHorizontalHeaderItem(20, __qtablewidgetitem62)
+        __qtablewidgetitem63 = QTableWidgetItem()
+        self.table_inativos.setHorizontalHeaderItem(21, __qtablewidgetitem63)
+        __qtablewidgetitem64 = QTableWidgetItem()
+        self.table_inativos.setHorizontalHeaderItem(22, __qtablewidgetitem64)
+        __qtablewidgetitem65 = QTableWidgetItem()
+        self.table_inativos.setHorizontalHeaderItem(23, __qtablewidgetitem65)
         self.table_inativos.setObjectName(u"table_inativos")
         self.table_inativos.setStyleSheet(u"/* Estiliza apenas o QTableView com objectName \"table_ativos\" */\n"
 "QTableView{\n"
@@ -2150,7 +2162,7 @@ class Ui_MainWindow(object):
         self.horizontalLayout_27.addWidget(self.frame_erro_bairro)
 
 
-        self.gridLayout_14.addLayout(self.horizontalLayout_27, 7, 0, 1, 1)
+        self.gridLayout_14.addLayout(self.horizontalLayout_27, 8, 0, 1, 1)
 
         self.horizontalLayout_28 = QHBoxLayout()
         self.horizontalLayout_28.setObjectName(u"horizontalLayout_28")
@@ -2194,7 +2206,650 @@ class Ui_MainWindow(object):
         self.horizontalLayout_28.addWidget(self.frame_erro_cnpj)
 
 
-        self.gridLayout_14.addLayout(self.horizontalLayout_28, 13, 0, 1, 1)
+        self.gridLayout_14.addLayout(self.horizontalLayout_28, 16, 0, 1, 1)
+
+        self.horizontalLayout_15 = QHBoxLayout()
+        self.horizontalLayout_15.setObjectName(u"horizontalLayout_15")
+        self.label_complemento = QLabel(self.frame_3)
+        self.label_complemento.setObjectName(u"label_complemento")
+        self.label_complemento.setStyleSheet(u"QLabel {\n"
+"    color: black;\n"
+"    text-align: center; /* Centraliza o texto horizontalmente */\n"
+"    vertical-align: middle; /* Centraliza o texto verticalmente */\n"
+"}\n"
+"")
+
+        self.horizontalLayout_15.addWidget(self.label_complemento)
+
+        self.txt_complemento = QLineEdit(self.frame_3)
+        self.txt_complemento.setObjectName(u"txt_complemento")
+        self.txt_complemento.setMaximumSize(QSize(181, 30))
+        self.txt_complemento.setStyleSheet(u"QLineEdit {\n"
+"	color: black;\n"
+"    background-color: rgb(240, 240, 240); /* Cor de fundo cinza claro */\n"
+"    border: 2px solid rgb(50, 150,250); /* Borda azul */\n"
+"    border-radius: 6px; /* Cantos arredondados */\n"
+"    padding: 3px; /* Espa\u00e7amento interno */\n"
+"}\n"
+"\n"
+"QLineEdit::placeholderText {\n"
+"    color: black; /* Cor do texto do placeholder */\n"
+"}\n"
+"")
+
+        self.horizontalLayout_15.addWidget(self.txt_complemento)
+
+        self.frame_erro_complemento = QFrame(self.frame_3)
+        self.frame_erro_complemento.setObjectName(u"frame_erro_complemento")
+        sizePolicy2.setHeightForWidth(self.frame_erro_complemento.sizePolicy().hasHeightForWidth())
+        self.frame_erro_complemento.setSizePolicy(sizePolicy2)
+        self.frame_erro_complemento.setMaximumSize(QSize(21, 21))
+        self.frame_erro_complemento.setFrameShape(QFrame.StyledPanel)
+        self.frame_erro_complemento.setFrameShadow(QFrame.Raised)
+
+        self.horizontalLayout_15.addWidget(self.frame_erro_complemento)
+
+
+        self.gridLayout_14.addLayout(self.horizontalLayout_15, 10, 0, 1, 1)
+
+        self.horizontalLayout_10 = QHBoxLayout()
+        self.horizontalLayout_10.setObjectName(u"horizontalLayout_10")
+        self.label_usuario = QLabel(self.frame_3)
+        self.label_usuario.setObjectName(u"label_usuario")
+        self.label_usuario.setStyleSheet(u"QLabel {\n"
+"    color: black;\n"
+"    text-align: center; /* Centraliza o texto horizontalmente */\n"
+"    vertical-align: middle; /* Centraliza o texto verticalmente */\n"
+"}\n"
+"")
+
+        self.horizontalLayout_10.addWidget(self.label_usuario)
+
+        self.txt_usuario = QLineEdit(self.frame_3)
+        self.txt_usuario.setObjectName(u"txt_usuario")
+        self.txt_usuario.setMaximumSize(QSize(181, 16777215))
+        self.txt_usuario.setStyleSheet(u"QLineEdit {\n"
+"	color: black;\n"
+"    background-color: rgb(240, 240, 240); /* Cor de fundo cinza claro */\n"
+"    border: 2px solid rgb(50, 150,250); /* Borda azul */\n"
+"    border-radius: 6px; /* Cantos arredondados */\n"
+"    padding: 3px; /* Espa\u00e7amento interno */\n"
+"}\n"
+"\n"
+"QLineEdit::placeholderText {\n"
+"    color: black; /* Cor do texto do placeholder */\n"
+"}\n"
+"")
+
+        self.horizontalLayout_10.addWidget(self.txt_usuario)
+
+        self.frame_erro_usuario = QFrame(self.frame_3)
+        self.frame_erro_usuario.setObjectName(u"frame_erro_usuario")
+        sizePolicy2.setHeightForWidth(self.frame_erro_usuario.sizePolicy().hasHeightForWidth())
+        self.frame_erro_usuario.setSizePolicy(sizePolicy2)
+        self.frame_erro_usuario.setMaximumSize(QSize(21, 21))
+        self.frame_erro_usuario.setFrameShape(QFrame.StyledPanel)
+        self.frame_erro_usuario.setFrameShadow(QFrame.Raised)
+
+        self.horizontalLayout_10.addWidget(self.frame_erro_usuario)
+
+
+        self.gridLayout_14.addLayout(self.horizontalLayout_10, 1, 0, 1, 1)
+
+        self.horizontalLayout_20 = QHBoxLayout()
+        self.horizontalLayout_20.setObjectName(u"horizontalLayout_20")
+        self.horizontalLayout_20.setContentsMargins(-1, 0, -1, -1)
+        self.label_2 = QLabel(self.frame_3)
+        self.label_2.setObjectName(u"label_2")
+
+        self.horizontalLayout_20.addWidget(self.label_2)
+
+        self.txt_rg = QLineEdit(self.frame_3)
+        self.txt_rg.setObjectName(u"txt_rg")
+        self.txt_rg.setMaximumSize(QSize(180, 16777215))
+        self.txt_rg.setStyleSheet(u"QLineEdit {\n"
+"	color: black;\n"
+"    background-color: rgb(240, 240, 240); /* Cor de fundo cinza claro */\n"
+"    border: 2px solid rgb(50, 150,250); /* Borda azul */\n"
+"    border-radius: 6px; /* Cantos arredondados */\n"
+"    padding: 3px; /* Espa\u00e7amento interno */\n"
+"}\n"
+"\n"
+"QLineEdit::placeholderText {\n"
+"    color: black; /* Cor do texto do placeholder */\n"
+"}\n"
+"")
+
+        self.horizontalLayout_20.addWidget(self.txt_rg)
+
+        self.frame_erro_rg = QFrame(self.frame_3)
+        self.frame_erro_rg.setObjectName(u"frame_erro_rg")
+        sizePolicy2.setHeightForWidth(self.frame_erro_rg.sizePolicy().hasHeightForWidth())
+        self.frame_erro_rg.setSizePolicy(sizePolicy2)
+        self.frame_erro_rg.setMaximumSize(QSize(21, 21))
+        self.frame_erro_rg.setFrameShape(QFrame.StyledPanel)
+        self.frame_erro_rg.setFrameShadow(QFrame.Raised)
+
+        self.horizontalLayout_20.addWidget(self.frame_erro_rg)
+
+
+        self.gridLayout_14.addLayout(self.horizontalLayout_20, 14, 0, 1, 1)
+
+        self.horizontalLayout_17 = QHBoxLayout()
+        self.horizontalLayout_17.setObjectName(u"horizontalLayout_17")
+        self.label_cpf = QLabel(self.frame_3)
+        self.label_cpf.setObjectName(u"label_cpf")
+        self.label_cpf.setStyleSheet(u"QLabel {\n"
+"    color: black;\n"
+"    text-align: center; /* Centraliza o texto horizontalmente */\n"
+"    vertical-align: middle; /* Centraliza o texto verticalmente */\n"
+"}\n"
+"")
+
+        self.horizontalLayout_17.addWidget(self.label_cpf)
+
+        self.txt_cpf = QLineEdit(self.frame_3)
+        self.txt_cpf.setObjectName(u"txt_cpf")
+        self.txt_cpf.setMaximumSize(QSize(181, 16777215))
+        self.txt_cpf.setStyleSheet(u"QLineEdit {\n"
+"	color: black;\n"
+"    background-color: rgb(240, 240, 240); /* Cor de fundo cinza claro */\n"
+"    border: 2px solid rgb(50, 150,250); /* Borda azul */\n"
+"    border-radius: 6px; /* Cantos arredondados */\n"
+"    padding: 3px; /* Espa\u00e7amento interno */\n"
+"}\n"
+"\n"
+"QLineEdit::placeholderText {\n"
+"    color: black; /* Cor do texto do placeholder */\n"
+"}\n"
+"")
+
+        self.horizontalLayout_17.addWidget(self.txt_cpf)
+
+        self.frame_erro_cpf = QFrame(self.frame_3)
+        self.frame_erro_cpf.setObjectName(u"frame_erro_cpf")
+        sizePolicy2.setHeightForWidth(self.frame_erro_cpf.sizePolicy().hasHeightForWidth())
+        self.frame_erro_cpf.setSizePolicy(sizePolicy2)
+        self.frame_erro_cpf.setMaximumSize(QSize(21, 21))
+        self.frame_erro_cpf.setFrameShape(QFrame.StyledPanel)
+        self.frame_erro_cpf.setFrameShadow(QFrame.Raised)
+
+        self.horizontalLayout_17.addWidget(self.frame_erro_cpf)
+
+
+        self.gridLayout_14.addLayout(self.horizontalLayout_17, 15, 0, 1, 1)
+
+        self.horizontalLayout_9 = QHBoxLayout()
+        self.horizontalLayout_9.setObjectName(u"horizontalLayout_9")
+        self.label_nome = QLabel(self.frame_3)
+        self.label_nome.setObjectName(u"label_nome")
+        self.label_nome.setStyleSheet(u"QLabel {\n"
+"    color: black;\n"
+"    text-align: center; /* Centraliza o texto horizontalmente */\n"
+"    vertical-align: middle; /* Centraliza o texto verticalmente */\n"
+"}\n"
+"")
+
+        self.horizontalLayout_9.addWidget(self.label_nome)
+
+        self.txt_nome = QLineEdit(self.frame_3)
+        self.txt_nome.setObjectName(u"txt_nome")
+        self.txt_nome.setMaximumSize(QSize(181, 16777215))
+        self.txt_nome.setStyleSheet(u"QLineEdit {\n"
+"	color: black;\n"
+"    background-color: rgb(240, 240, 240); /* Cor de fundo cinza claro */\n"
+"    border: 2px solid rgb(50, 150,250); /* Borda azul */\n"
+"    border-radius: 6px; /* Cantos arredondados */\n"
+"    padding: 3px; /* Espa\u00e7amento interno */\n"
+"}\n"
+"\n"
+"QLineEdit::placeholderText {\n"
+"    color: black; /* Cor do texto do placeholder */\n"
+"}\n"
+"")
+
+        self.horizontalLayout_9.addWidget(self.txt_nome)
+
+        self.frame_erro_nome = QFrame(self.frame_3)
+        self.frame_erro_nome.setObjectName(u"frame_erro_nome")
+        sizePolicy2.setHeightForWidth(self.frame_erro_nome.sizePolicy().hasHeightForWidth())
+        self.frame_erro_nome.setSizePolicy(sizePolicy2)
+        self.frame_erro_nome.setMaximumSize(QSize(21, 21))
+        self.frame_erro_nome.setFrameShape(QFrame.StyledPanel)
+        self.frame_erro_nome.setFrameShadow(QFrame.Raised)
+
+        self.horizontalLayout_9.addWidget(self.frame_erro_nome)
+
+
+        self.gridLayout_14.addLayout(self.horizontalLayout_9, 0, 0, 1, 1)
+
+        self.horizontalLayout_14 = QHBoxLayout()
+        self.horizontalLayout_14.setObjectName(u"horizontalLayout_14")
+        self.label_data_nascimento = QLabel(self.frame_3)
+        self.label_data_nascimento.setObjectName(u"label_data_nascimento")
+        self.label_data_nascimento.setStyleSheet(u"QLabel {\n"
+"    color: black;\n"
+"    text-align: center; /* Centraliza o texto horizontalmente */\n"
+"    vertical-align: middle; /* Centraliza o texto verticalmente */\n"
+"}\n"
+"")
+
+        self.horizontalLayout_14.addWidget(self.label_data_nascimento)
+
+        self.txt_data_nascimento = QLineEdit(self.frame_3)
+        self.txt_data_nascimento.setObjectName(u"txt_data_nascimento")
+        self.txt_data_nascimento.setMaximumSize(QSize(181, 16777215))
+        self.txt_data_nascimento.setStyleSheet(u"QLineEdit {\n"
+"	color: black;\n"
+"    background-color: rgb(240, 240, 240); /* Cor de fundo cinza claro */\n"
+"    border: 2px solid rgb(50, 150,250); /* Borda azul */\n"
+"    border-radius: 6px; /* Cantos arredondados */\n"
+"    padding: 3px; /* Espa\u00e7amento interno */\n"
+"}\n"
+"\n"
+"QLineEdit::placeholderText {\n"
+"    color: black; /* Cor do texto do placeholder */\n"
+"}\n"
+"")
+
+        self.horizontalLayout_14.addWidget(self.txt_data_nascimento)
+
+        self.frame_data_nascimento = QFrame(self.frame_3)
+        self.frame_data_nascimento.setObjectName(u"frame_data_nascimento")
+        sizePolicy2.setHeightForWidth(self.frame_data_nascimento.sizePolicy().hasHeightForWidth())
+        self.frame_data_nascimento.setSizePolicy(sizePolicy2)
+        self.frame_data_nascimento.setMaximumSize(QSize(21, 21))
+        self.frame_data_nascimento.setFrameShape(QFrame.StyledPanel)
+        self.frame_data_nascimento.setFrameShadow(QFrame.Raised)
+
+        self.horizontalLayout_14.addWidget(self.frame_data_nascimento)
+
+
+        self.gridLayout_14.addLayout(self.horizontalLayout_14, 13, 0, 1, 1)
+
+        self.horizontalLayout_11 = QHBoxLayout()
+        self.horizontalLayout_11.setObjectName(u"horizontalLayout_11")
+        self.label_perfil = QLabel(self.frame_3)
+        self.label_perfil.setObjectName(u"label_perfil")
+        self.label_perfil.setStyleSheet(u"QLabel {\n"
+"    color: black;\n"
+"    text-align: center; /* Centraliza o texto horizontalmente */\n"
+"    vertical-align: middle; /* Centraliza o texto verticalmente */\n"
+"}\n"
+"")
+
+        self.horizontalLayout_11.addWidget(self.label_perfil)
+
+        self.perfil_usuarios = QComboBox(self.frame_3)
+        self.perfil_usuarios.addItem("")
+        self.perfil_usuarios.addItem("")
+        self.perfil_usuarios.addItem("")
+        self.perfil_usuarios.addItem("")
+        self.perfil_usuarios.setObjectName(u"perfil_usuarios")
+        self.perfil_usuarios.setMinimumSize(QSize(181, 0))
+        self.perfil_usuarios.setMaximumSize(QSize(181, 16777215))
+        self.perfil_usuarios.setStyleSheet(u"\n"
+"    QComboBox { \n"
+"        background-color: white; \n"
+"        border: 3px solid rgb(50,150,250); \n"
+"        border-radius: 5px; \n"
+"        color: black; \n"
+"        padding: 5px;\n"
+"    }\n"
+"    QComboBox QAbstractItemView {\n"
+"        background-color: white; \n"
+"        color: black; \n"
+"        border: 1px solid #ccc; \n"
+"        selection-background-color: #e5e5e5; \n"
+"        selection-color: black;\n"
+"    }\n"
+"    QComboBox QAbstractItemView QScrollBar:vertical {\n"
+"        background: #f5f5f5; \n"
+"        width: 12px; \n"
+"        border: none;\n"
+"    }\n"
+"    QComboBox QAbstractItemView QScrollBar::handle:vertical {\n"
+"        background: #cccccc; \n"
+"        min-height: 20px; \n"
+"        border-radius: 5px;\n"
+"    }\n"
+"    QComboBox QAbstractItemView QScrollBar::add-line:vertical, \n"
+"    QComboBox QAbstractItemView QScrollBar::sub-line:vertical {\n"
+"        background: none;\n"
+"        height: 0px;  /* Remove os bot\u00f5es de linha (setas de cima e baixo) */\n"
+" "
+                        "   }\n"
+"    QComboBox QAbstractItemView QScrollBar::add-page:vertical, \n"
+"    QComboBox QAbstractItemView QScrollBar::sub-page:vertical {\n"
+"        background: none;\n"
+"    }\n"
+"\n"
+"")
+        self.perfil_usuarios.setEditable(False)
+        self.perfil_usuarios.setMaxCount(5)
+
+        self.horizontalLayout_11.addWidget(self.perfil_usuarios)
+
+        self.frame_erro_perfil = QFrame(self.frame_3)
+        self.frame_erro_perfil.setObjectName(u"frame_erro_perfil")
+        sizePolicy2.setHeightForWidth(self.frame_erro_perfil.sizePolicy().hasHeightForWidth())
+        self.frame_erro_perfil.setSizePolicy(sizePolicy2)
+        self.frame_erro_perfil.setMaximumSize(QSize(21, 21))
+        self.frame_erro_perfil.setFrameShape(QFrame.StyledPanel)
+        self.frame_erro_perfil.setFrameShadow(QFrame.Raised)
+
+        self.horizontalLayout_11.addWidget(self.frame_erro_perfil)
+
+
+        self.gridLayout_14.addLayout(self.horizontalLayout_11, 21, 0, 1, 1)
+
+        self.horizontalLayout_16 = QHBoxLayout()
+        self.horizontalLayout_16.setObjectName(u"horizontalLayout_16")
+        self.label_email = QLabel(self.frame_3)
+        self.label_email.setObjectName(u"label_email")
+        self.label_email.setStyleSheet(u"QLabel {\n"
+"    color: black;\n"
+"    text-align: center; /* Centraliza o texto horizontalmente */\n"
+"    vertical-align: middle; /* Centraliza o texto verticalmente */\n"
+"}\n"
+"")
+
+        self.horizontalLayout_16.addWidget(self.label_email)
+
+        self.txt_email = QLineEdit(self.frame_3)
+        self.txt_email.setObjectName(u"txt_email")
+        self.txt_email.setMaximumSize(QSize(181, 16777215))
+        self.txt_email.setStyleSheet(u"QLineEdit {\n"
+"	color: black;\n"
+"    background-color: rgb(240, 240, 240); /* Cor de fundo cinza claro */\n"
+"    border: 2px solid rgb(50, 150,250); /* Borda azul */\n"
+"    border-radius: 6px; /* Cantos arredondados */\n"
+"    padding: 3px; /* Espa\u00e7amento interno */\n"
+"}\n"
+"\n"
+"QLineEdit::placeholderText {\n"
+"    color: black; /* Cor do texto do placeholder */\n"
+"}\n"
+"")
+
+        self.horizontalLayout_16.addWidget(self.txt_email)
+
+        self.frame_erro_email = QFrame(self.frame_3)
+        self.frame_erro_email.setObjectName(u"frame_erro_email")
+        sizePolicy2.setHeightForWidth(self.frame_erro_email.sizePolicy().hasHeightForWidth())
+        self.frame_erro_email.setSizePolicy(sizePolicy2)
+        self.frame_erro_email.setMaximumSize(QSize(21, 21))
+        self.frame_erro_email.setFrameShape(QFrame.StyledPanel)
+        self.frame_erro_email.setFrameShadow(QFrame.Raised)
+
+        self.horizontalLayout_16.addWidget(self.frame_erro_email)
+
+
+        self.gridLayout_14.addLayout(self.horizontalLayout_16, 12, 0, 1, 1)
+
+        self.horizontalLayout_13 = QHBoxLayout()
+        self.horizontalLayout_13.setObjectName(u"horizontalLayout_13")
+        self.label_endereco = QLabel(self.frame_3)
+        self.label_endereco.setObjectName(u"label_endereco")
+        self.label_endereco.setStyleSheet(u"QLabel {\n"
+"    color: black;\n"
+"    text-align: center; /* Centraliza o texto horizontalmente */\n"
+"    vertical-align: middle; /* Centraliza o texto verticalmente */\n"
+"}\n"
+"")
+
+        self.horizontalLayout_13.addWidget(self.label_endereco)
+
+        self.txt_endereco = QLineEdit(self.frame_3)
+        self.txt_endereco.setObjectName(u"txt_endereco")
+        self.txt_endereco.setMaximumSize(QSize(181, 16777215))
+        self.txt_endereco.setStyleSheet(u"QLineEdit {\n"
+"	color: black;\n"
+"    background-color: rgb(240, 240, 240); /* Cor de fundo cinza claro */\n"
+"    border: 2px solid rgb(50, 150,250); /* Borda azul */\n"
+"    border-radius: 6px; /* Cantos arredondados */\n"
+"    padding: 3px; /* Espa\u00e7amento interno */\n"
+"}\n"
+"\n"
+"QLineEdit::placeholderText {\n"
+"    color: black; /* Cor do texto do placeholder */\n"
+"}\n"
+"")
+
+        self.horizontalLayout_13.addWidget(self.txt_endereco)
+
+        self.frame_erro_endereco = QFrame(self.frame_3)
+        self.frame_erro_endereco.setObjectName(u"frame_erro_endereco")
+        sizePolicy2.setHeightForWidth(self.frame_erro_endereco.sizePolicy().hasHeightForWidth())
+        self.frame_erro_endereco.setSizePolicy(sizePolicy2)
+        self.frame_erro_endereco.setMaximumSize(QSize(21, 21))
+        self.frame_erro_endereco.setFrameShape(QFrame.StyledPanel)
+        self.frame_erro_endereco.setFrameShadow(QFrame.Raised)
+
+        self.horizontalLayout_13.addWidget(self.frame_erro_endereco)
+
+
+        self.gridLayout_14.addLayout(self.horizontalLayout_13, 5, 0, 1, 1)
+
+        self.horizontalLayout_19 = QHBoxLayout()
+        self.horizontalLayout_19.setObjectName(u"horizontalLayout_19")
+        self.label_numero = QLabel(self.frame_3)
+        self.label_numero.setObjectName(u"label_numero")
+        self.label_numero.setStyleSheet(u"QLabel {\n"
+"    color: black;\n"
+"    text-align: center; /* Centraliza o texto horizontalmente */\n"
+"    vertical-align: middle; /* Centraliza o texto verticalmente */\n"
+"}\n"
+"")
+
+        self.horizontalLayout_19.addWidget(self.label_numero)
+
+        self.txt_numero = QLineEdit(self.frame_3)
+        self.txt_numero.setObjectName(u"txt_numero")
+        self.txt_numero.setMaximumSize(QSize(181, 16777215))
+        self.txt_numero.setStyleSheet(u"QLineEdit {\n"
+"	color: black;\n"
+"    background-color: rgb(240, 240, 240); /* Cor de fundo cinza claro */\n"
+"    border: 2px solid rgb(50, 150,250); /* Borda azul */\n"
+"    border-radius: 6px; /* Cantos arredondados */\n"
+"    padding: 3px; /* Espa\u00e7amento interno */\n"
+"}\n"
+"\n"
+"QLineEdit::placeholderText {\n"
+"    color: black; /* Cor do texto do placeholder */\n"
+"}\n"
+"")
+
+        self.horizontalLayout_19.addWidget(self.txt_numero)
+
+        self.frame_erro_numero = QFrame(self.frame_3)
+        self.frame_erro_numero.setObjectName(u"frame_erro_numero")
+        sizePolicy2.setHeightForWidth(self.frame_erro_numero.sizePolicy().hasHeightForWidth())
+        self.frame_erro_numero.setSizePolicy(sizePolicy2)
+        self.frame_erro_numero.setMaximumSize(QSize(21, 21))
+        self.frame_erro_numero.setFrameShape(QFrame.StyledPanel)
+        self.frame_erro_numero.setFrameShadow(QFrame.Raised)
+
+        self.horizontalLayout_19.addWidget(self.frame_erro_numero)
+
+
+        self.gridLayout_14.addLayout(self.horizontalLayout_19, 6, 0, 1, 1)
+
+        self.horizontalLayout_22 = QHBoxLayout()
+        self.horizontalLayout_22.setObjectName(u"horizontalLayout_22")
+        self.label_cep = QLabel(self.frame_3)
+        self.label_cep.setObjectName(u"label_cep")
+        self.label_cep.setStyleSheet(u"QLabel {\n"
+"    color: black;\n"
+"    text-align: center; /* Centraliza o texto horizontalmente */\n"
+"    vertical-align: middle; /* Centraliza o texto verticalmente */\n"
+"}\n"
+"")
+
+        self.horizontalLayout_22.addWidget(self.label_cep)
+
+        self.txt_cep = QLineEdit(self.frame_3)
+        self.txt_cep.setObjectName(u"txt_cep")
+        self.txt_cep.setMaximumSize(QSize(181, 16777215))
+        self.txt_cep.setStyleSheet(u"QLineEdit {\n"
+"	color: black;\n"
+"    background-color: rgb(240, 240, 240); /* Cor de fundo cinza claro */\n"
+"    border: 2px solid rgb(50, 150,250); /* Borda azul */\n"
+"    border-radius: 6px; /* Cantos arredondados */\n"
+"    padding: 3px; /* Espa\u00e7amento interno */\n"
+"}\n"
+"\n"
+"QLineEdit::placeholderText {\n"
+"    color: black; /* Cor do texto do placeholder */\n"
+"}\n"
+"")
+
+        self.horizontalLayout_22.addWidget(self.txt_cep)
+
+        self.frame_erro_cep = QFrame(self.frame_3)
+        self.frame_erro_cep.setObjectName(u"frame_erro_cep")
+        sizePolicy2.setHeightForWidth(self.frame_erro_cep.sizePolicy().hasHeightForWidth())
+        self.frame_erro_cep.setSizePolicy(sizePolicy2)
+        self.frame_erro_cep.setMaximumSize(QSize(21, 21))
+        self.frame_erro_cep.setFrameShape(QFrame.StyledPanel)
+        self.frame_erro_cep.setFrameShadow(QFrame.Raised)
+
+        self.horizontalLayout_22.addWidget(self.frame_erro_cep)
+
+
+        self.gridLayout_14.addLayout(self.horizontalLayout_22, 4, 0, 1, 1)
+
+        self.horizontalLayout_12 = QHBoxLayout()
+        self.horizontalLayout_12.setObjectName(u"horizontalLayout_12")
+        self.label_telefone = QLabel(self.frame_3)
+        self.label_telefone.setObjectName(u"label_telefone")
+        self.label_telefone.setStyleSheet(u"QLabel {\n"
+"    color: black;\n"
+"    text-align: center; /* Centraliza o texto horizontalmente */\n"
+"    vertical-align: middle; /* Centraliza o texto verticalmente */\n"
+"}\n"
+"")
+
+        self.horizontalLayout_12.addWidget(self.label_telefone)
+
+        self.txt_telefone = QLineEdit(self.frame_3)
+        self.txt_telefone.setObjectName(u"txt_telefone")
+        self.txt_telefone.setMaximumSize(QSize(181, 16777215))
+        self.txt_telefone.setStyleSheet(u"QLineEdit {\n"
+"	color: black;\n"
+"    background-color: rgb(240, 240, 240); /* Cor de fundo cinza claro */\n"
+"    border: 2px solid rgb(50, 150,250); /* Borda azul */\n"
+"    border-radius: 6px; /* Cantos arredondados */\n"
+"    padding: 3px; /* Espa\u00e7amento interno */\n"
+"}\n"
+"\n"
+"QLineEdit::placeholderText {\n"
+"    color: black; /* Cor do texto do placeholder */\n"
+"}\n"
+"")
+
+        self.horizontalLayout_12.addWidget(self.txt_telefone)
+
+        self.frame_erro_telefone = QFrame(self.frame_3)
+        self.frame_erro_telefone.setObjectName(u"frame_erro_telefone")
+        sizePolicy2.setHeightForWidth(self.frame_erro_telefone.sizePolicy().hasHeightForWidth())
+        self.frame_erro_telefone.setSizePolicy(sizePolicy2)
+        self.frame_erro_telefone.setMaximumSize(QSize(21, 21))
+        self.frame_erro_telefone.setFrameShape(QFrame.StyledPanel)
+        self.frame_erro_telefone.setFrameShadow(QFrame.Raised)
+
+        self.horizontalLayout_12.addWidget(self.frame_erro_telefone)
+
+
+        self.gridLayout_14.addLayout(self.horizontalLayout_12, 11, 0, 1, 1)
+
+        self.horizontalLayout_26 = QHBoxLayout()
+        self.horizontalLayout_26.setObjectName(u"horizontalLayout_26")
+        self.label_confirmar_senha_2 = QLabel(self.frame_3)
+        self.label_confirmar_senha_2.setObjectName(u"label_confirmar_senha_2")
+        self.label_confirmar_senha_2.setStyleSheet(u"QLabel {\n"
+"    color: black;\n"
+"    text-align: center; /* Centraliza o texto horizontalmente */\n"
+"    vertical-align: middle; /* Centraliza o texto verticalmente */\n"
+"}\n"
+"")
+
+        self.horizontalLayout_26.addWidget(self.label_confirmar_senha_2)
+
+        self.txt_cidade = QLineEdit(self.frame_3)
+        self.txt_cidade.setObjectName(u"txt_cidade")
+        self.txt_cidade.setMaximumSize(QSize(181, 16777215))
+        self.txt_cidade.setStyleSheet(u"QLineEdit {\n"
+"	color: black;\n"
+"    background-color: rgb(240, 240, 240); /* Cor de fundo cinza claro */\n"
+"    border: 2px solid rgb(50, 150,250); /* Borda azul */\n"
+"    border-radius: 6px; /* Cantos arredondados */\n"
+"    padding: 3px; /* Espa\u00e7amento interno */\n"
+"}\n"
+"\n"
+"QLineEdit::placeholderText {\n"
+"    color: black; /* Cor do texto do placeholder */\n"
+"}\n"
+"")
+
+        self.horizontalLayout_26.addWidget(self.txt_cidade)
+
+        self.frame_erro_cidade = QFrame(self.frame_3)
+        self.frame_erro_cidade.setObjectName(u"frame_erro_cidade")
+        sizePolicy2.setHeightForWidth(self.frame_erro_cidade.sizePolicy().hasHeightForWidth())
+        self.frame_erro_cidade.setSizePolicy(sizePolicy2)
+        self.frame_erro_cidade.setMaximumSize(QSize(21, 21))
+        self.frame_erro_cidade.setFrameShape(QFrame.StyledPanel)
+        self.frame_erro_cidade.setFrameShadow(QFrame.Raised)
+
+        self.horizontalLayout_26.addWidget(self.frame_erro_cidade)
+
+
+        self.gridLayout_14.addLayout(self.horizontalLayout_26, 7, 0, 1, 1)
+
+        self.horizontalLayout_21 = QHBoxLayout()
+        self.horizontalLayout_21.setObjectName(u"horizontalLayout_21")
+        self.label_senha = QLabel(self.frame_3)
+        self.label_senha.setObjectName(u"label_senha")
+        self.label_senha.setStyleSheet(u"QLabel {\n"
+"    color: black;\n"
+"    text-align: center; /* Centraliza o texto horizontalmente */\n"
+"    vertical-align: middle; /* Centraliza o texto verticalmente */\n"
+"}\n"
+"")
+
+        self.horizontalLayout_21.addWidget(self.label_senha)
+
+        self.txt_senha = QLineEdit(self.frame_3)
+        self.txt_senha.setObjectName(u"txt_senha")
+        self.txt_senha.setMaximumSize(QSize(181, 16777215))
+        self.txt_senha.setStyleSheet(u"QLineEdit {\n"
+"	color: black;\n"
+"    background-color: rgb(240, 240, 240); /* Cor de fundo cinza claro */\n"
+"    border: 2px solid rgb(50, 150,250); /* Borda azul */\n"
+"    border-radius: 6px; /* Cantos arredondados */\n"
+"    padding: 3px; /* Espa\u00e7amento interno */\n"
+"}\n"
+"\n"
+"QLineEdit::placeholderText {\n"
+"    color: black; /* Cor do texto do placeholder */\n"
+"}\n"
+"")
+
+        self.horizontalLayout_21.addWidget(self.txt_senha)
+
+        self.frame_senha = QFrame(self.frame_3)
+        self.frame_senha.setObjectName(u"frame_senha")
+        sizePolicy2.setHeightForWidth(self.frame_senha.sizePolicy().hasHeightForWidth())
+        self.frame_senha.setSizePolicy(sizePolicy2)
+        self.frame_senha.setMaximumSize(QSize(21, 21))
+        self.frame_senha.setFrameShape(QFrame.StyledPanel)
+        self.frame_senha.setFrameShadow(QFrame.Raised)
+
+        self.horizontalLayout_21.addWidget(self.frame_senha)
+
+
+        self.gridLayout_14.addLayout(self.horizontalLayout_21, 2, 0, 1, 1)
 
         self.horizontalLayout_23 = QHBoxLayout()
         self.horizontalLayout_23.setObjectName(u"horizontalLayout_23")
@@ -2295,95 +2950,7 @@ class Ui_MainWindow(object):
         self.horizontalLayout_23.addWidget(self.frame_erro_estado)
 
 
-        self.gridLayout_14.addLayout(self.horizontalLayout_23, 15, 0, 1, 1)
-
-        self.horizontalLayout_15 = QHBoxLayout()
-        self.horizontalLayout_15.setObjectName(u"horizontalLayout_15")
-        self.label_complemento = QLabel(self.frame_3)
-        self.label_complemento.setObjectName(u"label_complemento")
-        self.label_complemento.setStyleSheet(u"QLabel {\n"
-"    color: black;\n"
-"    text-align: center; /* Centraliza o texto horizontalmente */\n"
-"    vertical-align: middle; /* Centraliza o texto verticalmente */\n"
-"}\n"
-"")
-
-        self.horizontalLayout_15.addWidget(self.label_complemento)
-
-        self.txt_complemento = QLineEdit(self.frame_3)
-        self.txt_complemento.setObjectName(u"txt_complemento")
-        self.txt_complemento.setMaximumSize(QSize(181, 16777215))
-        self.txt_complemento.setStyleSheet(u"QLineEdit {\n"
-"	color: black;\n"
-"    background-color: rgb(240, 240, 240); /* Cor de fundo cinza claro */\n"
-"    border: 2px solid rgb(50, 150,250); /* Borda azul */\n"
-"    border-radius: 6px; /* Cantos arredondados */\n"
-"    padding: 3px; /* Espa\u00e7amento interno */\n"
-"}\n"
-"\n"
-"QLineEdit::placeholderText {\n"
-"    color: black; /* Cor do texto do placeholder */\n"
-"}\n"
-"")
-
-        self.horizontalLayout_15.addWidget(self.txt_complemento)
-
-        self.frame_erro_complemento = QFrame(self.frame_3)
-        self.frame_erro_complemento.setObjectName(u"frame_erro_complemento")
-        sizePolicy2.setHeightForWidth(self.frame_erro_complemento.sizePolicy().hasHeightForWidth())
-        self.frame_erro_complemento.setSizePolicy(sizePolicy2)
-        self.frame_erro_complemento.setMaximumSize(QSize(21, 21))
-        self.frame_erro_complemento.setFrameShape(QFrame.StyledPanel)
-        self.frame_erro_complemento.setFrameShadow(QFrame.Raised)
-
-        self.horizontalLayout_15.addWidget(self.frame_erro_complemento)
-
-
-        self.gridLayout_14.addLayout(self.horizontalLayout_15, 8, 0, 1, 1)
-
-        self.horizontalLayout_10 = QHBoxLayout()
-        self.horizontalLayout_10.setObjectName(u"horizontalLayout_10")
-        self.label_usuario = QLabel(self.frame_3)
-        self.label_usuario.setObjectName(u"label_usuario")
-        self.label_usuario.setStyleSheet(u"QLabel {\n"
-"    color: black;\n"
-"    text-align: center; /* Centraliza o texto horizontalmente */\n"
-"    vertical-align: middle; /* Centraliza o texto verticalmente */\n"
-"}\n"
-"")
-
-        self.horizontalLayout_10.addWidget(self.label_usuario)
-
-        self.txt_usuario = QLineEdit(self.frame_3)
-        self.txt_usuario.setObjectName(u"txt_usuario")
-        self.txt_usuario.setMaximumSize(QSize(181, 16777215))
-        self.txt_usuario.setStyleSheet(u"QLineEdit {\n"
-"	color: black;\n"
-"    background-color: rgb(240, 240, 240); /* Cor de fundo cinza claro */\n"
-"    border: 2px solid rgb(50, 150,250); /* Borda azul */\n"
-"    border-radius: 6px; /* Cantos arredondados */\n"
-"    padding: 3px; /* Espa\u00e7amento interno */\n"
-"}\n"
-"\n"
-"QLineEdit::placeholderText {\n"
-"    color: black; /* Cor do texto do placeholder */\n"
-"}\n"
-"")
-
-        self.horizontalLayout_10.addWidget(self.txt_usuario)
-
-        self.frame_erro_usuario = QFrame(self.frame_3)
-        self.frame_erro_usuario.setObjectName(u"frame_erro_usuario")
-        sizePolicy2.setHeightForWidth(self.frame_erro_usuario.sizePolicy().hasHeightForWidth())
-        self.frame_erro_usuario.setSizePolicy(sizePolicy2)
-        self.frame_erro_usuario.setMaximumSize(QSize(21, 21))
-        self.frame_erro_usuario.setFrameShape(QFrame.StyledPanel)
-        self.frame_erro_usuario.setFrameShadow(QFrame.Raised)
-
-        self.horizontalLayout_10.addWidget(self.frame_erro_usuario)
-
-
-        self.gridLayout_14.addLayout(self.horizontalLayout_10, 1, 0, 1, 1)
+        self.gridLayout_14.addLayout(self.horizontalLayout_23, 9, 0, 1, 1)
 
         self.horizontalLayout_18 = QHBoxLayout()
         self.horizontalLayout_18.setObjectName(u"horizontalLayout_18")
@@ -2427,562 +2994,7 @@ class Ui_MainWindow(object):
         self.horizontalLayout_18.addWidget(self.frame_confirmar_senha)
 
 
-        self.gridLayout_14.addLayout(self.horizontalLayout_18, 17, 0, 1, 1)
-
-        self.horizontalLayout_20 = QHBoxLayout()
-        self.horizontalLayout_20.setObjectName(u"horizontalLayout_20")
-        self.horizontalLayout_20.setContentsMargins(-1, 0, -1, -1)
-        self.label_2 = QLabel(self.frame_3)
-        self.label_2.setObjectName(u"label_2")
-
-        self.horizontalLayout_20.addWidget(self.label_2)
-
-        self.txt_rg = QLineEdit(self.frame_3)
-        self.txt_rg.setObjectName(u"txt_rg")
-        self.txt_rg.setMaximumSize(QSize(180, 16777215))
-        self.txt_rg.setStyleSheet(u"QLineEdit {\n"
-"	color: black;\n"
-"    background-color: rgb(240, 240, 240); /* Cor de fundo cinza claro */\n"
-"    border: 2px solid rgb(50, 150,250); /* Borda azul */\n"
-"    border-radius: 6px; /* Cantos arredondados */\n"
-"    padding: 3px; /* Espa\u00e7amento interno */\n"
-"}\n"
-"\n"
-"QLineEdit::placeholderText {\n"
-"    color: black; /* Cor do texto do placeholder */\n"
-"}\n"
-"")
-
-        self.horizontalLayout_20.addWidget(self.txt_rg)
-
-        self.frame_erro_rg = QFrame(self.frame_3)
-        self.frame_erro_rg.setObjectName(u"frame_erro_rg")
-        sizePolicy2.setHeightForWidth(self.frame_erro_rg.sizePolicy().hasHeightForWidth())
-        self.frame_erro_rg.setSizePolicy(sizePolicy2)
-        self.frame_erro_rg.setMaximumSize(QSize(21, 21))
-        self.frame_erro_rg.setFrameShape(QFrame.StyledPanel)
-        self.frame_erro_rg.setFrameShadow(QFrame.Raised)
-
-        self.horizontalLayout_20.addWidget(self.frame_erro_rg)
-
-
-        self.gridLayout_14.addLayout(self.horizontalLayout_20, 11, 0, 1, 1)
-
-        self.horizontalLayout_17 = QHBoxLayout()
-        self.horizontalLayout_17.setObjectName(u"horizontalLayout_17")
-        self.label_cpf = QLabel(self.frame_3)
-        self.label_cpf.setObjectName(u"label_cpf")
-        self.label_cpf.setStyleSheet(u"QLabel {\n"
-"    color: black;\n"
-"    text-align: center; /* Centraliza o texto horizontalmente */\n"
-"    vertical-align: middle; /* Centraliza o texto verticalmente */\n"
-"}\n"
-"")
-
-        self.horizontalLayout_17.addWidget(self.label_cpf)
-
-        self.txt_cpf = QLineEdit(self.frame_3)
-        self.txt_cpf.setObjectName(u"txt_cpf")
-        self.txt_cpf.setMaximumSize(QSize(181, 16777215))
-        self.txt_cpf.setStyleSheet(u"QLineEdit {\n"
-"	color: black;\n"
-"    background-color: rgb(240, 240, 240); /* Cor de fundo cinza claro */\n"
-"    border: 2px solid rgb(50, 150,250); /* Borda azul */\n"
-"    border-radius: 6px; /* Cantos arredondados */\n"
-"    padding: 3px; /* Espa\u00e7amento interno */\n"
-"}\n"
-"\n"
-"QLineEdit::placeholderText {\n"
-"    color: black; /* Cor do texto do placeholder */\n"
-"}\n"
-"")
-
-        self.horizontalLayout_17.addWidget(self.txt_cpf)
-
-        self.frame_erro_cpf = QFrame(self.frame_3)
-        self.frame_erro_cpf.setObjectName(u"frame_erro_cpf")
-        sizePolicy2.setHeightForWidth(self.frame_erro_cpf.sizePolicy().hasHeightForWidth())
-        self.frame_erro_cpf.setSizePolicy(sizePolicy2)
-        self.frame_erro_cpf.setMaximumSize(QSize(21, 21))
-        self.frame_erro_cpf.setFrameShape(QFrame.StyledPanel)
-        self.frame_erro_cpf.setFrameShadow(QFrame.Raised)
-
-        self.horizontalLayout_17.addWidget(self.frame_erro_cpf)
-
-
-        self.gridLayout_14.addLayout(self.horizontalLayout_17, 12, 0, 1, 1)
-
-        self.horizontalLayout_9 = QHBoxLayout()
-        self.horizontalLayout_9.setObjectName(u"horizontalLayout_9")
-        self.label_nome = QLabel(self.frame_3)
-        self.label_nome.setObjectName(u"label_nome")
-        self.label_nome.setStyleSheet(u"QLabel {\n"
-"    color: black;\n"
-"    text-align: center; /* Centraliza o texto horizontalmente */\n"
-"    vertical-align: middle; /* Centraliza o texto verticalmente */\n"
-"}\n"
-"")
-
-        self.horizontalLayout_9.addWidget(self.label_nome)
-
-        self.txt_nome = QLineEdit(self.frame_3)
-        self.txt_nome.setObjectName(u"txt_nome")
-        self.txt_nome.setMaximumSize(QSize(181, 16777215))
-        self.txt_nome.setStyleSheet(u"QLineEdit {\n"
-"	color: black;\n"
-"    background-color: rgb(240, 240, 240); /* Cor de fundo cinza claro */\n"
-"    border: 2px solid rgb(50, 150,250); /* Borda azul */\n"
-"    border-radius: 6px; /* Cantos arredondados */\n"
-"    padding: 3px; /* Espa\u00e7amento interno */\n"
-"}\n"
-"\n"
-"QLineEdit::placeholderText {\n"
-"    color: black; /* Cor do texto do placeholder */\n"
-"}\n"
-"")
-
-        self.horizontalLayout_9.addWidget(self.txt_nome)
-
-        self.frame_erro_nome = QFrame(self.frame_3)
-        self.frame_erro_nome.setObjectName(u"frame_erro_nome")
-        sizePolicy2.setHeightForWidth(self.frame_erro_nome.sizePolicy().hasHeightForWidth())
-        self.frame_erro_nome.setSizePolicy(sizePolicy2)
-        self.frame_erro_nome.setMaximumSize(QSize(21, 21))
-        self.frame_erro_nome.setFrameShape(QFrame.StyledPanel)
-        self.frame_erro_nome.setFrameShadow(QFrame.Raised)
-
-        self.horizontalLayout_9.addWidget(self.frame_erro_nome)
-
-
-        self.gridLayout_14.addLayout(self.horizontalLayout_9, 0, 0, 1, 1)
-
-        self.horizontalLayout_12 = QHBoxLayout()
-        self.horizontalLayout_12.setObjectName(u"horizontalLayout_12")
-        self.label_telefone = QLabel(self.frame_3)
-        self.label_telefone.setObjectName(u"label_telefone")
-        self.label_telefone.setStyleSheet(u"QLabel {\n"
-"    color: black;\n"
-"    text-align: center; /* Centraliza o texto horizontalmente */\n"
-"    vertical-align: middle; /* Centraliza o texto verticalmente */\n"
-"}\n"
-"")
-
-        self.horizontalLayout_12.addWidget(self.label_telefone)
-
-        self.txt_telefone = QLineEdit(self.frame_3)
-        self.txt_telefone.setObjectName(u"txt_telefone")
-        self.txt_telefone.setMaximumSize(QSize(181, 16777215))
-        self.txt_telefone.setStyleSheet(u"QLineEdit {\n"
-"	color: black;\n"
-"    background-color: rgb(240, 240, 240); /* Cor de fundo cinza claro */\n"
-"    border: 2px solid rgb(50, 150,250); /* Borda azul */\n"
-"    border-radius: 6px; /* Cantos arredondados */\n"
-"    padding: 3px; /* Espa\u00e7amento interno */\n"
-"}\n"
-"\n"
-"QLineEdit::placeholderText {\n"
-"    color: black; /* Cor do texto do placeholder */\n"
-"}\n"
-"")
-
-        self.horizontalLayout_12.addWidget(self.txt_telefone)
-
-        self.frame_erro_telefone = QFrame(self.frame_3)
-        self.frame_erro_telefone.setObjectName(u"frame_erro_telefone")
-        sizePolicy2.setHeightForWidth(self.frame_erro_telefone.sizePolicy().hasHeightForWidth())
-        self.frame_erro_telefone.setSizePolicy(sizePolicy2)
-        self.frame_erro_telefone.setMaximumSize(QSize(21, 21))
-        self.frame_erro_telefone.setFrameShape(QFrame.StyledPanel)
-        self.frame_erro_telefone.setFrameShadow(QFrame.Raised)
-
-        self.horizontalLayout_12.addWidget(self.frame_erro_telefone)
-
-
-        self.gridLayout_14.addLayout(self.horizontalLayout_12, 2, 0, 1, 1)
-
-        self.horizontalLayout_14 = QHBoxLayout()
-        self.horizontalLayout_14.setObjectName(u"horizontalLayout_14")
-        self.label_data_nascimento = QLabel(self.frame_3)
-        self.label_data_nascimento.setObjectName(u"label_data_nascimento")
-        self.label_data_nascimento.setStyleSheet(u"QLabel {\n"
-"    color: black;\n"
-"    text-align: center; /* Centraliza o texto horizontalmente */\n"
-"    vertical-align: middle; /* Centraliza o texto verticalmente */\n"
-"}\n"
-"")
-
-        self.horizontalLayout_14.addWidget(self.label_data_nascimento)
-
-        self.txt_data_nascimento = QLineEdit(self.frame_3)
-        self.txt_data_nascimento.setObjectName(u"txt_data_nascimento")
-        self.txt_data_nascimento.setMaximumSize(QSize(181, 16777215))
-        self.txt_data_nascimento.setStyleSheet(u"QLineEdit {\n"
-"	color: black;\n"
-"    background-color: rgb(240, 240, 240); /* Cor de fundo cinza claro */\n"
-"    border: 2px solid rgb(50, 150,250); /* Borda azul */\n"
-"    border-radius: 6px; /* Cantos arredondados */\n"
-"    padding: 3px; /* Espa\u00e7amento interno */\n"
-"}\n"
-"\n"
-"QLineEdit::placeholderText {\n"
-"    color: black; /* Cor do texto do placeholder */\n"
-"}\n"
-"")
-
-        self.horizontalLayout_14.addWidget(self.txt_data_nascimento)
-
-        self.frame_data_nascimento = QFrame(self.frame_3)
-        self.frame_data_nascimento.setObjectName(u"frame_data_nascimento")
-        sizePolicy2.setHeightForWidth(self.frame_data_nascimento.sizePolicy().hasHeightForWidth())
-        self.frame_data_nascimento.setSizePolicy(sizePolicy2)
-        self.frame_data_nascimento.setMaximumSize(QSize(21, 21))
-        self.frame_data_nascimento.setFrameShape(QFrame.StyledPanel)
-        self.frame_data_nascimento.setFrameShadow(QFrame.Raised)
-
-        self.horizontalLayout_14.addWidget(self.frame_data_nascimento)
-
-
-        self.gridLayout_14.addLayout(self.horizontalLayout_14, 10, 0, 1, 1)
-
-        self.horizontalLayout_11 = QHBoxLayout()
-        self.horizontalLayout_11.setObjectName(u"horizontalLayout_11")
-        self.label_perfil = QLabel(self.frame_3)
-        self.label_perfil.setObjectName(u"label_perfil")
-        self.label_perfil.setStyleSheet(u"QLabel {\n"
-"    color: black;\n"
-"    text-align: center; /* Centraliza o texto horizontalmente */\n"
-"    vertical-align: middle; /* Centraliza o texto verticalmente */\n"
-"}\n"
-"")
-
-        self.horizontalLayout_11.addWidget(self.label_perfil)
-
-        self.perfil_usuarios = QComboBox(self.frame_3)
-        self.perfil_usuarios.addItem("")
-        self.perfil_usuarios.addItem("")
-        self.perfil_usuarios.addItem("")
-        self.perfil_usuarios.addItem("")
-        self.perfil_usuarios.setObjectName(u"perfil_usuarios")
-        self.perfil_usuarios.setMinimumSize(QSize(181, 0))
-        self.perfil_usuarios.setMaximumSize(QSize(181, 16777215))
-        self.perfil_usuarios.setStyleSheet(u"\n"
-"    QComboBox { \n"
-"        background-color: white; \n"
-"        border: 3px solid rgb(50,150,250); \n"
-"        border-radius: 5px; \n"
-"        color: black; \n"
-"        padding: 5px;\n"
-"    }\n"
-"    QComboBox QAbstractItemView {\n"
-"        background-color: white; \n"
-"        color: black; \n"
-"        border: 1px solid #ccc; \n"
-"        selection-background-color: #e5e5e5; \n"
-"        selection-color: black;\n"
-"    }\n"
-"    QComboBox QAbstractItemView QScrollBar:vertical {\n"
-"        background: #f5f5f5; \n"
-"        width: 12px; \n"
-"        border: none;\n"
-"    }\n"
-"    QComboBox QAbstractItemView QScrollBar::handle:vertical {\n"
-"        background: #cccccc; \n"
-"        min-height: 20px; \n"
-"        border-radius: 5px;\n"
-"    }\n"
-"    QComboBox QAbstractItemView QScrollBar::add-line:vertical, \n"
-"    QComboBox QAbstractItemView QScrollBar::sub-line:vertical {\n"
-"        background: none;\n"
-"        height: 0px;  /* Remove os bot\u00f5es de linha (setas de cima e baixo) */\n"
-" "
-                        "   }\n"
-"    QComboBox QAbstractItemView QScrollBar::add-page:vertical, \n"
-"    QComboBox QAbstractItemView QScrollBar::sub-page:vertical {\n"
-"        background: none;\n"
-"    }\n"
-"\n"
-"")
-        self.perfil_usuarios.setEditable(False)
-        self.perfil_usuarios.setMaxCount(5)
-
-        self.horizontalLayout_11.addWidget(self.perfil_usuarios)
-
-        self.frame_erro_perfil = QFrame(self.frame_3)
-        self.frame_erro_perfil.setObjectName(u"frame_erro_perfil")
-        sizePolicy2.setHeightForWidth(self.frame_erro_perfil.sizePolicy().hasHeightForWidth())
-        self.frame_erro_perfil.setSizePolicy(sizePolicy2)
-        self.frame_erro_perfil.setMaximumSize(QSize(21, 21))
-        self.frame_erro_perfil.setFrameShape(QFrame.StyledPanel)
-        self.frame_erro_perfil.setFrameShadow(QFrame.Raised)
-
-        self.horizontalLayout_11.addWidget(self.frame_erro_perfil)
-
-
-        self.gridLayout_14.addLayout(self.horizontalLayout_11, 18, 0, 1, 1)
-
-        self.horizontalLayout_16 = QHBoxLayout()
-        self.horizontalLayout_16.setObjectName(u"horizontalLayout_16")
-        self.label_email = QLabel(self.frame_3)
-        self.label_email.setObjectName(u"label_email")
-        self.label_email.setStyleSheet(u"QLabel {\n"
-"    color: black;\n"
-"    text-align: center; /* Centraliza o texto horizontalmente */\n"
-"    vertical-align: middle; /* Centraliza o texto verticalmente */\n"
-"}\n"
-"")
-
-        self.horizontalLayout_16.addWidget(self.label_email)
-
-        self.txt_email = QLineEdit(self.frame_3)
-        self.txt_email.setObjectName(u"txt_email")
-        self.txt_email.setMaximumSize(QSize(181, 16777215))
-        self.txt_email.setStyleSheet(u"QLineEdit {\n"
-"	color: black;\n"
-"    background-color: rgb(240, 240, 240); /* Cor de fundo cinza claro */\n"
-"    border: 2px solid rgb(50, 150,250); /* Borda azul */\n"
-"    border-radius: 6px; /* Cantos arredondados */\n"
-"    padding: 3px; /* Espa\u00e7amento interno */\n"
-"}\n"
-"\n"
-"QLineEdit::placeholderText {\n"
-"    color: black; /* Cor do texto do placeholder */\n"
-"}\n"
-"")
-
-        self.horizontalLayout_16.addWidget(self.txt_email)
-
-        self.frame_erro_email = QFrame(self.frame_3)
-        self.frame_erro_email.setObjectName(u"frame_erro_email")
-        sizePolicy2.setHeightForWidth(self.frame_erro_email.sizePolicy().hasHeightForWidth())
-        self.frame_erro_email.setSizePolicy(sizePolicy2)
-        self.frame_erro_email.setMaximumSize(QSize(21, 21))
-        self.frame_erro_email.setFrameShape(QFrame.StyledPanel)
-        self.frame_erro_email.setFrameShadow(QFrame.Raised)
-
-        self.horizontalLayout_16.addWidget(self.frame_erro_email)
-
-
-        self.gridLayout_14.addLayout(self.horizontalLayout_16, 9, 0, 1, 1)
-
-        self.horizontalLayout_21 = QHBoxLayout()
-        self.horizontalLayout_21.setObjectName(u"horizontalLayout_21")
-        self.label_senha = QLabel(self.frame_3)
-        self.label_senha.setObjectName(u"label_senha")
-        self.label_senha.setStyleSheet(u"QLabel {\n"
-"    color: black;\n"
-"    text-align: center; /* Centraliza o texto horizontalmente */\n"
-"    vertical-align: middle; /* Centraliza o texto verticalmente */\n"
-"}\n"
-"")
-
-        self.horizontalLayout_21.addWidget(self.label_senha)
-
-        self.txt_senha = QLineEdit(self.frame_3)
-        self.txt_senha.setObjectName(u"txt_senha")
-        self.txt_senha.setMaximumSize(QSize(181, 16777215))
-        self.txt_senha.setStyleSheet(u"QLineEdit {\n"
-"	color: black;\n"
-"    background-color: rgb(240, 240, 240); /* Cor de fundo cinza claro */\n"
-"    border: 2px solid rgb(50, 150,250); /* Borda azul */\n"
-"    border-radius: 6px; /* Cantos arredondados */\n"
-"    padding: 3px; /* Espa\u00e7amento interno */\n"
-"}\n"
-"\n"
-"QLineEdit::placeholderText {\n"
-"    color: black; /* Cor do texto do placeholder */\n"
-"}\n"
-"")
-
-        self.horizontalLayout_21.addWidget(self.txt_senha)
-
-        self.frame_senha = QFrame(self.frame_3)
-        self.frame_senha.setObjectName(u"frame_senha")
-        sizePolicy2.setHeightForWidth(self.frame_senha.sizePolicy().hasHeightForWidth())
-        self.frame_senha.setSizePolicy(sizePolicy2)
-        self.frame_senha.setMaximumSize(QSize(21, 21))
-        self.frame_senha.setFrameShape(QFrame.StyledPanel)
-        self.frame_senha.setFrameShadow(QFrame.Raised)
-
-        self.horizontalLayout_21.addWidget(self.frame_senha)
-
-
-        self.gridLayout_14.addLayout(self.horizontalLayout_21, 16, 0, 1, 1)
-
-        self.horizontalLayout_13 = QHBoxLayout()
-        self.horizontalLayout_13.setObjectName(u"horizontalLayout_13")
-        self.label_endereco = QLabel(self.frame_3)
-        self.label_endereco.setObjectName(u"label_endereco")
-        self.label_endereco.setStyleSheet(u"QLabel {\n"
-"    color: black;\n"
-"    text-align: center; /* Centraliza o texto horizontalmente */\n"
-"    vertical-align: middle; /* Centraliza o texto verticalmente */\n"
-"}\n"
-"")
-
-        self.horizontalLayout_13.addWidget(self.label_endereco)
-
-        self.txt_endereco = QLineEdit(self.frame_3)
-        self.txt_endereco.setObjectName(u"txt_endereco")
-        self.txt_endereco.setMaximumSize(QSize(181, 16777215))
-        self.txt_endereco.setStyleSheet(u"QLineEdit {\n"
-"	color: black;\n"
-"    background-color: rgb(240, 240, 240); /* Cor de fundo cinza claro */\n"
-"    border: 2px solid rgb(50, 150,250); /* Borda azul */\n"
-"    border-radius: 6px; /* Cantos arredondados */\n"
-"    padding: 3px; /* Espa\u00e7amento interno */\n"
-"}\n"
-"\n"
-"QLineEdit::placeholderText {\n"
-"    color: black; /* Cor do texto do placeholder */\n"
-"}\n"
-"")
-
-        self.horizontalLayout_13.addWidget(self.txt_endereco)
-
-        self.frame_erro_endereco = QFrame(self.frame_3)
-        self.frame_erro_endereco.setObjectName(u"frame_erro_endereco")
-        sizePolicy2.setHeightForWidth(self.frame_erro_endereco.sizePolicy().hasHeightForWidth())
-        self.frame_erro_endereco.setSizePolicy(sizePolicy2)
-        self.frame_erro_endereco.setMaximumSize(QSize(21, 21))
-        self.frame_erro_endereco.setFrameShape(QFrame.StyledPanel)
-        self.frame_erro_endereco.setFrameShadow(QFrame.Raised)
-
-        self.horizontalLayout_13.addWidget(self.frame_erro_endereco)
-
-
-        self.gridLayout_14.addLayout(self.horizontalLayout_13, 4, 0, 1, 1)
-
-        self.horizontalLayout_19 = QHBoxLayout()
-        self.horizontalLayout_19.setObjectName(u"horizontalLayout_19")
-        self.label_numero = QLabel(self.frame_3)
-        self.label_numero.setObjectName(u"label_numero")
-        self.label_numero.setStyleSheet(u"QLabel {\n"
-"    color: black;\n"
-"    text-align: center; /* Centraliza o texto horizontalmente */\n"
-"    vertical-align: middle; /* Centraliza o texto verticalmente */\n"
-"}\n"
-"")
-
-        self.horizontalLayout_19.addWidget(self.label_numero)
-
-        self.txt_numero = QLineEdit(self.frame_3)
-        self.txt_numero.setObjectName(u"txt_numero")
-        self.txt_numero.setMaximumSize(QSize(181, 16777215))
-        self.txt_numero.setStyleSheet(u"QLineEdit {\n"
-"	color: black;\n"
-"    background-color: rgb(240, 240, 240); /* Cor de fundo cinza claro */\n"
-"    border: 2px solid rgb(50, 150,250); /* Borda azul */\n"
-"    border-radius: 6px; /* Cantos arredondados */\n"
-"    padding: 3px; /* Espa\u00e7amento interno */\n"
-"}\n"
-"\n"
-"QLineEdit::placeholderText {\n"
-"    color: black; /* Cor do texto do placeholder */\n"
-"}\n"
-"")
-
-        self.horizontalLayout_19.addWidget(self.txt_numero)
-
-        self.frame_erro_numero = QFrame(self.frame_3)
-        self.frame_erro_numero.setObjectName(u"frame_erro_numero")
-        sizePolicy2.setHeightForWidth(self.frame_erro_numero.sizePolicy().hasHeightForWidth())
-        self.frame_erro_numero.setSizePolicy(sizePolicy2)
-        self.frame_erro_numero.setMaximumSize(QSize(21, 21))
-        self.frame_erro_numero.setFrameShape(QFrame.StyledPanel)
-        self.frame_erro_numero.setFrameShadow(QFrame.Raised)
-
-        self.horizontalLayout_19.addWidget(self.frame_erro_numero)
-
-
-        self.gridLayout_14.addLayout(self.horizontalLayout_19, 5, 0, 1, 1)
-
-        self.horizontalLayout_22 = QHBoxLayout()
-        self.horizontalLayout_22.setObjectName(u"horizontalLayout_22")
-        self.label_cep = QLabel(self.frame_3)
-        self.label_cep.setObjectName(u"label_cep")
-        self.label_cep.setStyleSheet(u"QLabel {\n"
-"    color: black;\n"
-"    text-align: center; /* Centraliza o texto horizontalmente */\n"
-"    vertical-align: middle; /* Centraliza o texto verticalmente */\n"
-"}\n"
-"")
-
-        self.horizontalLayout_22.addWidget(self.label_cep)
-
-        self.txt_cep = QLineEdit(self.frame_3)
-        self.txt_cep.setObjectName(u"txt_cep")
-        self.txt_cep.setMaximumSize(QSize(181, 16777215))
-        self.txt_cep.setStyleSheet(u"QLineEdit {\n"
-"	color: black;\n"
-"    background-color: rgb(240, 240, 240); /* Cor de fundo cinza claro */\n"
-"    border: 2px solid rgb(50, 150,250); /* Borda azul */\n"
-"    border-radius: 6px; /* Cantos arredondados */\n"
-"    padding: 3px; /* Espa\u00e7amento interno */\n"
-"}\n"
-"\n"
-"QLineEdit::placeholderText {\n"
-"    color: black; /* Cor do texto do placeholder */\n"
-"}\n"
-"")
-
-        self.horizontalLayout_22.addWidget(self.txt_cep)
-
-        self.frame_erro_cep = QFrame(self.frame_3)
-        self.frame_erro_cep.setObjectName(u"frame_erro_cep")
-        sizePolicy2.setHeightForWidth(self.frame_erro_cep.sizePolicy().hasHeightForWidth())
-        self.frame_erro_cep.setSizePolicy(sizePolicy2)
-        self.frame_erro_cep.setMaximumSize(QSize(21, 21))
-        self.frame_erro_cep.setFrameShape(QFrame.StyledPanel)
-        self.frame_erro_cep.setFrameShadow(QFrame.Raised)
-
-        self.horizontalLayout_22.addWidget(self.frame_erro_cep)
-
-
-        self.gridLayout_14.addLayout(self.horizontalLayout_22, 3, 0, 1, 1)
-
-        self.horizontalLayout_26 = QHBoxLayout()
-        self.horizontalLayout_26.setObjectName(u"horizontalLayout_26")
-        self.label_confirmar_senha_2 = QLabel(self.frame_3)
-        self.label_confirmar_senha_2.setObjectName(u"label_confirmar_senha_2")
-        self.label_confirmar_senha_2.setStyleSheet(u"QLabel {\n"
-"    color: black;\n"
-"    text-align: center; /* Centraliza o texto horizontalmente */\n"
-"    vertical-align: middle; /* Centraliza o texto verticalmente */\n"
-"}\n"
-"")
-
-        self.horizontalLayout_26.addWidget(self.label_confirmar_senha_2)
-
-        self.txt_cidade = QLineEdit(self.frame_3)
-        self.txt_cidade.setObjectName(u"txt_cidade")
-        self.txt_cidade.setMaximumSize(QSize(181, 16777215))
-        self.txt_cidade.setStyleSheet(u"QLineEdit {\n"
-"	color: black;\n"
-"    background-color: rgb(240, 240, 240); /* Cor de fundo cinza claro */\n"
-"    border: 2px solid rgb(50, 150,250); /* Borda azul */\n"
-"    border-radius: 6px; /* Cantos arredondados */\n"
-"    padding: 3px; /* Espa\u00e7amento interno */\n"
-"}\n"
-"\n"
-"QLineEdit::placeholderText {\n"
-"    color: black; /* Cor do texto do placeholder */\n"
-"}\n"
-"")
-
-        self.horizontalLayout_26.addWidget(self.txt_cidade)
-
-        self.frame_erro_cidade = QFrame(self.frame_3)
-        self.frame_erro_cidade.setObjectName(u"frame_erro_cidade")
-        sizePolicy2.setHeightForWidth(self.frame_erro_cidade.sizePolicy().hasHeightForWidth())
-        self.frame_erro_cidade.setSizePolicy(sizePolicy2)
-        self.frame_erro_cidade.setMaximumSize(QSize(21, 21))
-        self.frame_erro_cidade.setFrameShape(QFrame.StyledPanel)
-        self.frame_erro_cidade.setFrameShadow(QFrame.Raised)
-
-        self.horizontalLayout_26.addWidget(self.frame_erro_cidade)
-
-
-        self.gridLayout_14.addLayout(self.horizontalLayout_26, 6, 0, 1, 1)
+        self.gridLayout_14.addLayout(self.horizontalLayout_18, 3, 0, 1, 1)
 
 
         self.gridLayout_27.addWidget(self.frame_3, 1, 0, 1, 1)
@@ -3382,30 +3394,30 @@ class Ui_MainWindow(object):
         self.table_clientes = QTableWidget(self.tab_clientes)
         if (self.table_clientes.columnCount() < 12):
             self.table_clientes.setColumnCount(12)
-        __qtablewidgetitem60 = QTableWidgetItem()
-        self.table_clientes.setHorizontalHeaderItem(0, __qtablewidgetitem60)
-        __qtablewidgetitem61 = QTableWidgetItem()
-        self.table_clientes.setHorizontalHeaderItem(1, __qtablewidgetitem61)
-        __qtablewidgetitem62 = QTableWidgetItem()
-        self.table_clientes.setHorizontalHeaderItem(2, __qtablewidgetitem62)
-        __qtablewidgetitem63 = QTableWidgetItem()
-        self.table_clientes.setHorizontalHeaderItem(3, __qtablewidgetitem63)
-        __qtablewidgetitem64 = QTableWidgetItem()
-        self.table_clientes.setHorizontalHeaderItem(4, __qtablewidgetitem64)
-        __qtablewidgetitem65 = QTableWidgetItem()
-        self.table_clientes.setHorizontalHeaderItem(5, __qtablewidgetitem65)
         __qtablewidgetitem66 = QTableWidgetItem()
-        self.table_clientes.setHorizontalHeaderItem(6, __qtablewidgetitem66)
+        self.table_clientes.setHorizontalHeaderItem(0, __qtablewidgetitem66)
         __qtablewidgetitem67 = QTableWidgetItem()
-        self.table_clientes.setHorizontalHeaderItem(7, __qtablewidgetitem67)
+        self.table_clientes.setHorizontalHeaderItem(1, __qtablewidgetitem67)
         __qtablewidgetitem68 = QTableWidgetItem()
-        self.table_clientes.setHorizontalHeaderItem(8, __qtablewidgetitem68)
+        self.table_clientes.setHorizontalHeaderItem(2, __qtablewidgetitem68)
         __qtablewidgetitem69 = QTableWidgetItem()
-        self.table_clientes.setHorizontalHeaderItem(9, __qtablewidgetitem69)
+        self.table_clientes.setHorizontalHeaderItem(3, __qtablewidgetitem69)
         __qtablewidgetitem70 = QTableWidgetItem()
-        self.table_clientes.setHorizontalHeaderItem(10, __qtablewidgetitem70)
+        self.table_clientes.setHorizontalHeaderItem(4, __qtablewidgetitem70)
         __qtablewidgetitem71 = QTableWidgetItem()
-        self.table_clientes.setHorizontalHeaderItem(11, __qtablewidgetitem71)
+        self.table_clientes.setHorizontalHeaderItem(5, __qtablewidgetitem71)
+        __qtablewidgetitem72 = QTableWidgetItem()
+        self.table_clientes.setHorizontalHeaderItem(6, __qtablewidgetitem72)
+        __qtablewidgetitem73 = QTableWidgetItem()
+        self.table_clientes.setHorizontalHeaderItem(7, __qtablewidgetitem73)
+        __qtablewidgetitem74 = QTableWidgetItem()
+        self.table_clientes.setHorizontalHeaderItem(8, __qtablewidgetitem74)
+        __qtablewidgetitem75 = QTableWidgetItem()
+        self.table_clientes.setHorizontalHeaderItem(9, __qtablewidgetitem75)
+        __qtablewidgetitem76 = QTableWidgetItem()
+        self.table_clientes.setHorizontalHeaderItem(10, __qtablewidgetitem76)
+        __qtablewidgetitem77 = QTableWidgetItem()
+        self.table_clientes.setHorizontalHeaderItem(11, __qtablewidgetitem77)
         self.table_clientes.setObjectName(u"table_clientes")
         self.table_clientes.setStyleSheet(u"/* Estiliza apenas o QTableView com objectName \"table_ativos\" */\n"
 "QTableView{\n"
@@ -3838,22 +3850,22 @@ class Ui_MainWindow(object):
         self.table_massa_produtos = QTableWidget(self.frame_8)
         if (self.table_massa_produtos.columnCount() < 8):
             self.table_massa_produtos.setColumnCount(8)
-        __qtablewidgetitem72 = QTableWidgetItem()
-        self.table_massa_produtos.setHorizontalHeaderItem(0, __qtablewidgetitem72)
-        __qtablewidgetitem73 = QTableWidgetItem()
-        self.table_massa_produtos.setHorizontalHeaderItem(1, __qtablewidgetitem73)
-        __qtablewidgetitem74 = QTableWidgetItem()
-        self.table_massa_produtos.setHorizontalHeaderItem(2, __qtablewidgetitem74)
-        __qtablewidgetitem75 = QTableWidgetItem()
-        self.table_massa_produtos.setHorizontalHeaderItem(3, __qtablewidgetitem75)
-        __qtablewidgetitem76 = QTableWidgetItem()
-        self.table_massa_produtos.setHorizontalHeaderItem(4, __qtablewidgetitem76)
-        __qtablewidgetitem77 = QTableWidgetItem()
-        self.table_massa_produtos.setHorizontalHeaderItem(5, __qtablewidgetitem77)
         __qtablewidgetitem78 = QTableWidgetItem()
-        self.table_massa_produtos.setHorizontalHeaderItem(6, __qtablewidgetitem78)
+        self.table_massa_produtos.setHorizontalHeaderItem(0, __qtablewidgetitem78)
         __qtablewidgetitem79 = QTableWidgetItem()
-        self.table_massa_produtos.setHorizontalHeaderItem(7, __qtablewidgetitem79)
+        self.table_massa_produtos.setHorizontalHeaderItem(1, __qtablewidgetitem79)
+        __qtablewidgetitem80 = QTableWidgetItem()
+        self.table_massa_produtos.setHorizontalHeaderItem(2, __qtablewidgetitem80)
+        __qtablewidgetitem81 = QTableWidgetItem()
+        self.table_massa_produtos.setHorizontalHeaderItem(3, __qtablewidgetitem81)
+        __qtablewidgetitem82 = QTableWidgetItem()
+        self.table_massa_produtos.setHorizontalHeaderItem(4, __qtablewidgetitem82)
+        __qtablewidgetitem83 = QTableWidgetItem()
+        self.table_massa_produtos.setHorizontalHeaderItem(5, __qtablewidgetitem83)
+        __qtablewidgetitem84 = QTableWidgetItem()
+        self.table_massa_produtos.setHorizontalHeaderItem(6, __qtablewidgetitem84)
+        __qtablewidgetitem85 = QTableWidgetItem()
+        self.table_massa_produtos.setHorizontalHeaderItem(7, __qtablewidgetitem85)
         self.table_massa_produtos.setObjectName(u"table_massa_produtos")
         self.table_massa_produtos.setMinimumSize(QSize(0, 0))
         self.table_massa_produtos.setMaximumSize(QSize(16777215, 16777215))
@@ -4045,34 +4057,34 @@ class Ui_MainWindow(object):
         self.table_massa_usuarios = QTableWidget(self.frame_10)
         if (self.table_massa_usuarios.columnCount() < 14):
             self.table_massa_usuarios.setColumnCount(14)
-        __qtablewidgetitem80 = QTableWidgetItem()
-        self.table_massa_usuarios.setHorizontalHeaderItem(0, __qtablewidgetitem80)
-        __qtablewidgetitem81 = QTableWidgetItem()
-        self.table_massa_usuarios.setHorizontalHeaderItem(1, __qtablewidgetitem81)
-        __qtablewidgetitem82 = QTableWidgetItem()
-        self.table_massa_usuarios.setHorizontalHeaderItem(2, __qtablewidgetitem82)
-        __qtablewidgetitem83 = QTableWidgetItem()
-        self.table_massa_usuarios.setHorizontalHeaderItem(3, __qtablewidgetitem83)
-        __qtablewidgetitem84 = QTableWidgetItem()
-        self.table_massa_usuarios.setHorizontalHeaderItem(4, __qtablewidgetitem84)
-        __qtablewidgetitem85 = QTableWidgetItem()
-        self.table_massa_usuarios.setHorizontalHeaderItem(5, __qtablewidgetitem85)
         __qtablewidgetitem86 = QTableWidgetItem()
-        self.table_massa_usuarios.setHorizontalHeaderItem(6, __qtablewidgetitem86)
+        self.table_massa_usuarios.setHorizontalHeaderItem(0, __qtablewidgetitem86)
         __qtablewidgetitem87 = QTableWidgetItem()
-        self.table_massa_usuarios.setHorizontalHeaderItem(7, __qtablewidgetitem87)
+        self.table_massa_usuarios.setHorizontalHeaderItem(1, __qtablewidgetitem87)
         __qtablewidgetitem88 = QTableWidgetItem()
-        self.table_massa_usuarios.setHorizontalHeaderItem(8, __qtablewidgetitem88)
+        self.table_massa_usuarios.setHorizontalHeaderItem(2, __qtablewidgetitem88)
         __qtablewidgetitem89 = QTableWidgetItem()
-        self.table_massa_usuarios.setHorizontalHeaderItem(9, __qtablewidgetitem89)
+        self.table_massa_usuarios.setHorizontalHeaderItem(3, __qtablewidgetitem89)
         __qtablewidgetitem90 = QTableWidgetItem()
-        self.table_massa_usuarios.setHorizontalHeaderItem(10, __qtablewidgetitem90)
+        self.table_massa_usuarios.setHorizontalHeaderItem(4, __qtablewidgetitem90)
         __qtablewidgetitem91 = QTableWidgetItem()
-        self.table_massa_usuarios.setHorizontalHeaderItem(11, __qtablewidgetitem91)
+        self.table_massa_usuarios.setHorizontalHeaderItem(5, __qtablewidgetitem91)
         __qtablewidgetitem92 = QTableWidgetItem()
-        self.table_massa_usuarios.setHorizontalHeaderItem(12, __qtablewidgetitem92)
+        self.table_massa_usuarios.setHorizontalHeaderItem(6, __qtablewidgetitem92)
         __qtablewidgetitem93 = QTableWidgetItem()
-        self.table_massa_usuarios.setHorizontalHeaderItem(13, __qtablewidgetitem93)
+        self.table_massa_usuarios.setHorizontalHeaderItem(7, __qtablewidgetitem93)
+        __qtablewidgetitem94 = QTableWidgetItem()
+        self.table_massa_usuarios.setHorizontalHeaderItem(8, __qtablewidgetitem94)
+        __qtablewidgetitem95 = QTableWidgetItem()
+        self.table_massa_usuarios.setHorizontalHeaderItem(9, __qtablewidgetitem95)
+        __qtablewidgetitem96 = QTableWidgetItem()
+        self.table_massa_usuarios.setHorizontalHeaderItem(10, __qtablewidgetitem96)
+        __qtablewidgetitem97 = QTableWidgetItem()
+        self.table_massa_usuarios.setHorizontalHeaderItem(11, __qtablewidgetitem97)
+        __qtablewidgetitem98 = QTableWidgetItem()
+        self.table_massa_usuarios.setHorizontalHeaderItem(12, __qtablewidgetitem98)
+        __qtablewidgetitem99 = QTableWidgetItem()
+        self.table_massa_usuarios.setHorizontalHeaderItem(13, __qtablewidgetitem99)
         self.table_massa_usuarios.setObjectName(u"table_massa_usuarios")
         self.table_massa_usuarios.setMinimumSize(QSize(0, 0))
         self.table_massa_usuarios.setMaximumSize(QSize(16777215, 16777215))
@@ -4228,77 +4240,89 @@ class Ui_MainWindow(object):
         ___qtablewidgetitem26 = self.table_ativos.horizontalHeaderItem(7)
         ___qtablewidgetitem26.setText(QCoreApplication.translate("MainWindow", u"CPF", None));
         ___qtablewidgetitem27 = self.table_ativos.horizontalHeaderItem(8)
-        ___qtablewidgetitem27.setText(QCoreApplication.translate("MainWindow", u"N\u00famero", None));
+        ___qtablewidgetitem27.setText(QCoreApplication.translate("MainWindow", u"CNPJ", None));
         ___qtablewidgetitem28 = self.table_ativos.horizontalHeaderItem(9)
-        ___qtablewidgetitem28.setText(QCoreApplication.translate("MainWindow", u"Estado", None));
+        ___qtablewidgetitem28.setText(QCoreApplication.translate("MainWindow", u"N\u00famero", None));
         ___qtablewidgetitem29 = self.table_ativos.horizontalHeaderItem(10)
-        ___qtablewidgetitem29.setText(QCoreApplication.translate("MainWindow", u"E-mail", None));
+        ___qtablewidgetitem29.setText(QCoreApplication.translate("MainWindow", u"Cidade", None));
         ___qtablewidgetitem30 = self.table_ativos.horizontalHeaderItem(11)
-        ___qtablewidgetitem30.setText(QCoreApplication.translate("MainWindow", u"RG", None));
+        ___qtablewidgetitem30.setText(QCoreApplication.translate("MainWindow", u"Bairro", None));
         ___qtablewidgetitem31 = self.table_ativos.horizontalHeaderItem(12)
-        ___qtablewidgetitem31.setText(QCoreApplication.translate("MainWindow", u"Complemento", None));
+        ___qtablewidgetitem31.setText(QCoreApplication.translate("MainWindow", u"Estado", None));
         ___qtablewidgetitem32 = self.table_ativos.horizontalHeaderItem(13)
-        ___qtablewidgetitem32.setText(QCoreApplication.translate("MainWindow", u"Telefone", None));
+        ___qtablewidgetitem32.setText(QCoreApplication.translate("MainWindow", u"E-mail", None));
         ___qtablewidgetitem33 = self.table_ativos.horizontalHeaderItem(14)
-        ___qtablewidgetitem33.setText(QCoreApplication.translate("MainWindow", u"Data de Nascimento", None));
+        ___qtablewidgetitem33.setText(QCoreApplication.translate("MainWindow", u"RG", None));
         ___qtablewidgetitem34 = self.table_ativos.horizontalHeaderItem(15)
-        ___qtablewidgetitem34.setText(QCoreApplication.translate("MainWindow", u"\u00daltima Troca de Senha", None));
+        ___qtablewidgetitem34.setText(QCoreApplication.translate("MainWindow", u"Complemento", None));
         ___qtablewidgetitem35 = self.table_ativos.horizontalHeaderItem(16)
-        ___qtablewidgetitem35.setText(QCoreApplication.translate("MainWindow", u"Data da Senha Cadastrada ", None));
+        ___qtablewidgetitem35.setText(QCoreApplication.translate("MainWindow", u"Telefone", None));
         ___qtablewidgetitem36 = self.table_ativos.horizontalHeaderItem(17)
-        ___qtablewidgetitem36.setText(QCoreApplication.translate("MainWindow", u"Data da Inclus\u00e3o do Usu\u00e1rio", None));
+        ___qtablewidgetitem36.setText(QCoreApplication.translate("MainWindow", u"Data de Nascimento", None));
         ___qtablewidgetitem37 = self.table_ativos.horizontalHeaderItem(18)
-        ___qtablewidgetitem37.setText(QCoreApplication.translate("MainWindow", u"Segredo", None));
+        ___qtablewidgetitem37.setText(QCoreApplication.translate("MainWindow", u"\u00daltima Troca de Senha", None));
         ___qtablewidgetitem38 = self.table_ativos.horizontalHeaderItem(19)
-        ___qtablewidgetitem38.setText(QCoreApplication.translate("MainWindow", u"Usu\u00e1rio Logado", None));
+        ___qtablewidgetitem38.setText(QCoreApplication.translate("MainWindow", u"Data da Senha Cadastrada ", None));
+        ___qtablewidgetitem39 = self.table_ativos.horizontalHeaderItem(20)
+        ___qtablewidgetitem39.setText(QCoreApplication.translate("MainWindow", u"Data da Inclus\u00e3o do Usu\u00e1rio", None));
+        ___qtablewidgetitem40 = self.table_ativos.horizontalHeaderItem(21)
+        ___qtablewidgetitem40.setText(QCoreApplication.translate("MainWindow", u"Segredo", None));
+        ___qtablewidgetitem41 = self.table_ativos.horizontalHeaderItem(22)
+        ___qtablewidgetitem41.setText(QCoreApplication.translate("MainWindow", u"Usu\u00e1rio Logado", None));
         self.btn_gerar_saida_usuarios.setText(QCoreApplication.translate("MainWindow", u"Gerar Sa\u00edda", None))
         self.btn_importar_usuarios.setText(QCoreApplication.translate("MainWindow", u"Importar", None))
 #if QT_CONFIG(whatsthis)
         self.label_inativos.setWhatsThis(QCoreApplication.translate("MainWindow", u"<html><head/><body><p><span style=\" font-size:18pt; font-weight:600; font-style:italic;\">ESTOQUE</span></p></body></html>", None))
 #endif // QT_CONFIG(whatsthis)
         self.label_inativos.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p><span style=\" font-size:18pt; font-weight:600; font-style:italic;\">INATIVOS</span><br/></p></body></html>", None))
-        ___qtablewidgetitem39 = self.table_inativos.horizontalHeaderItem(0)
-        ___qtablewidgetitem39.setText(QCoreApplication.translate("MainWindow", u"Nome", None));
-        ___qtablewidgetitem40 = self.table_inativos.horizontalHeaderItem(1)
-        ___qtablewidgetitem40.setText(QCoreApplication.translate("MainWindow", u"Usu\u00e1rio", None));
-        ___qtablewidgetitem41 = self.table_inativos.horizontalHeaderItem(2)
-        ___qtablewidgetitem41.setText(QCoreApplication.translate("MainWindow", u"Senha", None));
-        ___qtablewidgetitem42 = self.table_inativos.horizontalHeaderItem(3)
-        ___qtablewidgetitem42.setText(QCoreApplication.translate("MainWindow", u"Confirmar Senha", None));
-        ___qtablewidgetitem43 = self.table_inativos.horizontalHeaderItem(4)
-        ___qtablewidgetitem43.setText(QCoreApplication.translate("MainWindow", u"Acesso", None));
-        ___qtablewidgetitem44 = self.table_inativos.horizontalHeaderItem(5)
-        ___qtablewidgetitem44.setText(QCoreApplication.translate("MainWindow", u"Endere\u00e7o", None));
-        ___qtablewidgetitem45 = self.table_inativos.horizontalHeaderItem(6)
-        ___qtablewidgetitem45.setText(QCoreApplication.translate("MainWindow", u"CEP", None));
-        ___qtablewidgetitem46 = self.table_inativos.horizontalHeaderItem(7)
-        ___qtablewidgetitem46.setText(QCoreApplication.translate("MainWindow", u"CPF", None));
-        ___qtablewidgetitem47 = self.table_inativos.horizontalHeaderItem(8)
-        ___qtablewidgetitem47.setText(QCoreApplication.translate("MainWindow", u"N\u00famero", None));
-        ___qtablewidgetitem48 = self.table_inativos.horizontalHeaderItem(9)
-        ___qtablewidgetitem48.setText(QCoreApplication.translate("MainWindow", u"Estado", None));
-        ___qtablewidgetitem49 = self.table_inativos.horizontalHeaderItem(10)
-        ___qtablewidgetitem49.setText(QCoreApplication.translate("MainWindow", u"E-mail", None));
-        ___qtablewidgetitem50 = self.table_inativos.horizontalHeaderItem(11)
-        ___qtablewidgetitem50.setText(QCoreApplication.translate("MainWindow", u"RG", None));
-        ___qtablewidgetitem51 = self.table_inativos.horizontalHeaderItem(12)
-        ___qtablewidgetitem51.setText(QCoreApplication.translate("MainWindow", u"Complemento", None));
-        ___qtablewidgetitem52 = self.table_inativos.horizontalHeaderItem(13)
-        ___qtablewidgetitem52.setText(QCoreApplication.translate("MainWindow", u"Telefone", None));
-        ___qtablewidgetitem53 = self.table_inativos.horizontalHeaderItem(14)
-        ___qtablewidgetitem53.setText(QCoreApplication.translate("MainWindow", u"Data de Nascimento", None));
-        ___qtablewidgetitem54 = self.table_inativos.horizontalHeaderItem(15)
-        ___qtablewidgetitem54.setText(QCoreApplication.translate("MainWindow", u"\u00daltima Troca de Senha", None));
-        ___qtablewidgetitem55 = self.table_inativos.horizontalHeaderItem(16)
-        ___qtablewidgetitem55.setText(QCoreApplication.translate("MainWindow", u"Data da Senha Cadastrada", None));
-        ___qtablewidgetitem56 = self.table_inativos.horizontalHeaderItem(17)
-        ___qtablewidgetitem56.setText(QCoreApplication.translate("MainWindow", u"Data da Inclus\u00e3o do Usu\u00e1rio", None));
-        ___qtablewidgetitem57 = self.table_inativos.horizontalHeaderItem(18)
-        ___qtablewidgetitem57.setText(QCoreApplication.translate("MainWindow", u"Data da Inatividade do Usu\u00e1rio", None));
-        ___qtablewidgetitem58 = self.table_inativos.horizontalHeaderItem(19)
-        ___qtablewidgetitem58.setText(QCoreApplication.translate("MainWindow", u"Segredo", None));
-        ___qtablewidgetitem59 = self.table_inativos.horizontalHeaderItem(20)
-        ___qtablewidgetitem59.setText(QCoreApplication.translate("MainWindow", u"Usu\u00e1rio Logado", None));
+        ___qtablewidgetitem42 = self.table_inativos.horizontalHeaderItem(0)
+        ___qtablewidgetitem42.setText(QCoreApplication.translate("MainWindow", u"Nome", None));
+        ___qtablewidgetitem43 = self.table_inativos.horizontalHeaderItem(1)
+        ___qtablewidgetitem43.setText(QCoreApplication.translate("MainWindow", u"Usu\u00e1rio", None));
+        ___qtablewidgetitem44 = self.table_inativos.horizontalHeaderItem(2)
+        ___qtablewidgetitem44.setText(QCoreApplication.translate("MainWindow", u"Senha", None));
+        ___qtablewidgetitem45 = self.table_inativos.horizontalHeaderItem(3)
+        ___qtablewidgetitem45.setText(QCoreApplication.translate("MainWindow", u"Confirmar Senha", None));
+        ___qtablewidgetitem46 = self.table_inativos.horizontalHeaderItem(4)
+        ___qtablewidgetitem46.setText(QCoreApplication.translate("MainWindow", u"Acesso", None));
+        ___qtablewidgetitem47 = self.table_inativos.horizontalHeaderItem(5)
+        ___qtablewidgetitem47.setText(QCoreApplication.translate("MainWindow", u"Endere\u00e7o", None));
+        ___qtablewidgetitem48 = self.table_inativos.horizontalHeaderItem(6)
+        ___qtablewidgetitem48.setText(QCoreApplication.translate("MainWindow", u"CEP", None));
+        ___qtablewidgetitem49 = self.table_inativos.horizontalHeaderItem(7)
+        ___qtablewidgetitem49.setText(QCoreApplication.translate("MainWindow", u"CPF", None));
+        ___qtablewidgetitem50 = self.table_inativos.horizontalHeaderItem(8)
+        ___qtablewidgetitem50.setText(QCoreApplication.translate("MainWindow", u"CNPJ", None));
+        ___qtablewidgetitem51 = self.table_inativos.horizontalHeaderItem(9)
+        ___qtablewidgetitem51.setText(QCoreApplication.translate("MainWindow", u"N\u00famero", None));
+        ___qtablewidgetitem52 = self.table_inativos.horizontalHeaderItem(10)
+        ___qtablewidgetitem52.setText(QCoreApplication.translate("MainWindow", u"Cidade", None));
+        ___qtablewidgetitem53 = self.table_inativos.horizontalHeaderItem(11)
+        ___qtablewidgetitem53.setText(QCoreApplication.translate("MainWindow", u"Bairro", None));
+        ___qtablewidgetitem54 = self.table_inativos.horizontalHeaderItem(12)
+        ___qtablewidgetitem54.setText(QCoreApplication.translate("MainWindow", u"Estado", None));
+        ___qtablewidgetitem55 = self.table_inativos.horizontalHeaderItem(13)
+        ___qtablewidgetitem55.setText(QCoreApplication.translate("MainWindow", u"E-mail", None));
+        ___qtablewidgetitem56 = self.table_inativos.horizontalHeaderItem(14)
+        ___qtablewidgetitem56.setText(QCoreApplication.translate("MainWindow", u"RG", None));
+        ___qtablewidgetitem57 = self.table_inativos.horizontalHeaderItem(15)
+        ___qtablewidgetitem57.setText(QCoreApplication.translate("MainWindow", u"Complemento", None));
+        ___qtablewidgetitem58 = self.table_inativos.horizontalHeaderItem(16)
+        ___qtablewidgetitem58.setText(QCoreApplication.translate("MainWindow", u"Telefone", None));
+        ___qtablewidgetitem59 = self.table_inativos.horizontalHeaderItem(17)
+        ___qtablewidgetitem59.setText(QCoreApplication.translate("MainWindow", u"Data de Nascimento", None));
+        ___qtablewidgetitem60 = self.table_inativos.horizontalHeaderItem(18)
+        ___qtablewidgetitem60.setText(QCoreApplication.translate("MainWindow", u"\u00daltima Troca de Senha", None));
+        ___qtablewidgetitem61 = self.table_inativos.horizontalHeaderItem(19)
+        ___qtablewidgetitem61.setText(QCoreApplication.translate("MainWindow", u"Data da Senha Cadastrada", None));
+        ___qtablewidgetitem62 = self.table_inativos.horizontalHeaderItem(20)
+        ___qtablewidgetitem62.setText(QCoreApplication.translate("MainWindow", u"Data da Inclus\u00e3o do Usu\u00e1rio", None));
+        ___qtablewidgetitem63 = self.table_inativos.horizontalHeaderItem(21)
+        ___qtablewidgetitem63.setText(QCoreApplication.translate("MainWindow", u"Data da Inatividade do Usu\u00e1rio", None));
+        ___qtablewidgetitem64 = self.table_inativos.horizontalHeaderItem(22)
+        ___qtablewidgetitem64.setText(QCoreApplication.translate("MainWindow", u"Segredo", None));
+        ___qtablewidgetitem65 = self.table_inativos.horizontalHeaderItem(23)
+        ___qtablewidgetitem65.setText(QCoreApplication.translate("MainWindow", u"Usu\u00e1rio Logado", None));
         self.btn_adicionar_produto.setText(QCoreApplication.translate("MainWindow", u"ADICIONAR", None))
         self.btn_editar.setText(QCoreApplication.translate("MainWindow", u"EDITAR ", None))
         self.btn_atualizar_produto.setText(QCoreApplication.translate("MainWindow", u"ATUALIZAR", None))
@@ -4324,6 +4348,27 @@ class Ui_MainWindow(object):
         self.label_cadastramento.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p align=\"center\"><span style=\" font-size:14pt; font-weight:600; font-style:italic;\">CADASTRAMENTO DE USU\u00c1RIO</span></p></body></html>", None))
         self.label_confirmar_senha_3.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p><span style=\" font-weight:600;\">Bairro</span></p></body></html>", None))
         self.label_confirmar_senha_4.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p><span style=\" font-weight:600;\">CNPJ</span></p></body></html>", None))
+        self.label_complemento.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p><span style=\" font-weight:600;\">Complemento</span></p></body></html>", None))
+        self.txt_complemento.setPlaceholderText(QCoreApplication.translate("MainWindow", u"Opcional", None))
+        self.label_usuario.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p><span style=\" font-weight:600;\">Usu\u00e1rio</span></p></body></html>", None))
+        self.label_2.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p><span style=\" font-weight:600;\">RG</span></p></body></html>", None))
+        self.label_cpf.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p><span style=\" font-weight:600;\">CPF</span></p></body></html>", None))
+        self.label_nome.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p><span style=\" font-weight:600;\">Nome</span></p></body></html>", None))
+        self.label_data_nascimento.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p><span style=\" font-weight:600;\">Data de Nascimento</span></p></body></html>", None))
+        self.label_perfil.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p><span style=\" font-weight:600;\">Perfil</span></p></body></html>", None))
+        self.perfil_usuarios.setItemText(0, QCoreApplication.translate("MainWindow", u"Selecione", None))
+        self.perfil_usuarios.setItemText(1, QCoreApplication.translate("MainWindow", u"Usu\u00e1rio", None))
+        self.perfil_usuarios.setItemText(2, QCoreApplication.translate("MainWindow", u"Convidado", None))
+        self.perfil_usuarios.setItemText(3, QCoreApplication.translate("MainWindow", u"Administrador", None))
+
+        self.label_email.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p><span style=\" font-weight:600;\">E-mail</span></p></body></html>", None))
+        self.label_endereco.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p><span style=\" font-weight:600;\">Endere\u00e7o</span></p></body></html>", None))
+        self.label_numero.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p><span style=\" font-weight:600;\">N\u00famero</span></p></body></html>", None))
+        self.label_cep.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p><span style=\" font-weight:600;\">CEP</span></p></body></html>", None))
+        self.label_telefone.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p><span style=\" font-weight:600;\">Telefone</span></p></body></html>", None))
+        self.txt_telefone.setPlaceholderText("")
+        self.label_confirmar_senha_2.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p><span style=\" font-weight:600;\">Cidade</span></p></body></html>", None))
+        self.label_senha.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p><span style=\" font-weight:600;\">Senha</span></p></body></html>", None))
         self.label_estado.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p><span style=\" font-weight:600;\">Estado</span></p></body></html>", None))
         self.perfil_estado.setItemText(0, QCoreApplication.translate("MainWindow", u"Selecione", None))
         self.perfil_estado.setItemText(1, QCoreApplication.translate("MainWindow", u"AC", None))
@@ -4354,28 +4399,7 @@ class Ui_MainWindow(object):
         self.perfil_estado.setItemText(26, QCoreApplication.translate("MainWindow", u"SE", None))
         self.perfil_estado.setItemText(27, QCoreApplication.translate("MainWindow", u"TO", None))
 
-        self.label_complemento.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p><span style=\" font-weight:600;\">Complemento</span></p></body></html>", None))
-        self.txt_complemento.setPlaceholderText(QCoreApplication.translate("MainWindow", u"Opcional", None))
-        self.label_usuario.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p><span style=\" font-weight:600;\">Usu\u00e1rio</span></p></body></html>", None))
         self.label_confirmar_senha.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p><span style=\" font-weight:600;\">Confirmar Senha</span></p></body></html>", None))
-        self.label_2.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p><span style=\" font-weight:600;\">RG</span></p></body></html>", None))
-        self.label_cpf.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p><span style=\" font-weight:600;\">CPF</span></p></body></html>", None))
-        self.label_nome.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p><span style=\" font-weight:600;\">Nome</span></p></body></html>", None))
-        self.label_telefone.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p><span style=\" font-weight:600;\">Telefone</span></p></body></html>", None))
-        self.txt_telefone.setPlaceholderText("")
-        self.label_data_nascimento.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p><span style=\" font-weight:600;\">Data de Nascimento</span></p></body></html>", None))
-        self.label_perfil.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p><span style=\" font-weight:600;\">Perfil</span></p></body></html>", None))
-        self.perfil_usuarios.setItemText(0, QCoreApplication.translate("MainWindow", u"Selecione", None))
-        self.perfil_usuarios.setItemText(1, QCoreApplication.translate("MainWindow", u"Usu\u00e1rio", None))
-        self.perfil_usuarios.setItemText(2, QCoreApplication.translate("MainWindow", u"Convidado", None))
-        self.perfil_usuarios.setItemText(3, QCoreApplication.translate("MainWindow", u"Administrador", None))
-
-        self.label_email.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p><span style=\" font-weight:600;\">E-mail</span></p></body></html>", None))
-        self.label_senha.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p><span style=\" font-weight:600;\">Senha</span></p></body></html>", None))
-        self.label_endereco.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p><span style=\" font-weight:600;\">Endere\u00e7o</span></p></body></html>", None))
-        self.label_numero.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p><span style=\" font-weight:600;\">N\u00famero</span></p></body></html>", None))
-        self.label_cep.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p><span style=\" font-weight:600;\">CEP</span></p></body></html>", None))
-        self.label_confirmar_senha_2.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p><span style=\" font-weight:600;\">Cidade</span></p></body></html>", None))
         self.btn_editar_cadastro.setText(QCoreApplication.translate("MainWindow", u"EDITAR", None))
         self.btn_atualizar_cadastro.setText(QCoreApplication.translate("MainWindow", u"ATUALIZAR", None))
         self.btn_apagar_cadastro.setText(QCoreApplication.translate("MainWindow", u"APAGAR", None))
@@ -4391,30 +4415,30 @@ class Ui_MainWindow(object):
         self.btn_gerar_relatorio_clientes.setText(QCoreApplication.translate("MainWindow", u"Gerar Relat\u00f3rio", None))
         self.btn_marcar_como_clientes.setText(QCoreApplication.translate("MainWindow", u"Marcar como", None))
         self.btn_historico_clientes.setText(QCoreApplication.translate("MainWindow", u"Hist\u00f3rico", None))
-        ___qtablewidgetitem60 = self.table_clientes.horizontalHeaderItem(0)
-        ___qtablewidgetitem60.setText(QCoreApplication.translate("MainWindow", u"Nome do Cliente", None));
-        ___qtablewidgetitem61 = self.table_clientes.horizontalHeaderItem(1)
-        ___qtablewidgetitem61.setText(QCoreApplication.translate("MainWindow", u"Data da Inclus\u00e3o", None));
-        ___qtablewidgetitem62 = self.table_clientes.horizontalHeaderItem(2)
-        ___qtablewidgetitem62.setText(QCoreApplication.translate("MainWindow", u"CNPJ", None));
-        ___qtablewidgetitem63 = self.table_clientes.horizontalHeaderItem(3)
-        ___qtablewidgetitem63.setText(QCoreApplication.translate("MainWindow", u"CPF", None));
-        ___qtablewidgetitem64 = self.table_clientes.horizontalHeaderItem(4)
-        ___qtablewidgetitem64.setText(QCoreApplication.translate("MainWindow", u"Telefone", None));
-        ___qtablewidgetitem65 = self.table_clientes.horizontalHeaderItem(5)
-        ___qtablewidgetitem65.setText(QCoreApplication.translate("MainWindow", u"Endere\u00e7o", None));
-        ___qtablewidgetitem66 = self.table_clientes.horizontalHeaderItem(6)
-        ___qtablewidgetitem66.setText(QCoreApplication.translate("MainWindow", u"Status do Cliente", None));
-        ___qtablewidgetitem67 = self.table_clientes.horizontalHeaderItem(7)
-        ___qtablewidgetitem67.setText(QCoreApplication.translate("MainWindow", u"Categoria do Cliente", None));
-        ___qtablewidgetitem68 = self.table_clientes.horizontalHeaderItem(8)
-        ___qtablewidgetitem68.setText(QCoreApplication.translate("MainWindow", u"\u00daltima Atualiza\u00e7\u00e3o", None));
-        ___qtablewidgetitem69 = self.table_clientes.horizontalHeaderItem(9)
-        ___qtablewidgetitem69.setText(QCoreApplication.translate("MainWindow", u"Origem do Cliente", None));
-        ___qtablewidgetitem70 = self.table_clientes.horizontalHeaderItem(10)
-        ___qtablewidgetitem70.setText(QCoreApplication.translate("MainWindow", u"Valor Gasto Total", None));
-        ___qtablewidgetitem71 = self.table_clientes.horizontalHeaderItem(11)
-        ___qtablewidgetitem71.setText(QCoreApplication.translate("MainWindow", u"\u00daltima Compra", None));
+        ___qtablewidgetitem66 = self.table_clientes.horizontalHeaderItem(0)
+        ___qtablewidgetitem66.setText(QCoreApplication.translate("MainWindow", u"Nome do Cliente", None));
+        ___qtablewidgetitem67 = self.table_clientes.horizontalHeaderItem(1)
+        ___qtablewidgetitem67.setText(QCoreApplication.translate("MainWindow", u"Data da Inclus\u00e3o", None));
+        ___qtablewidgetitem68 = self.table_clientes.horizontalHeaderItem(2)
+        ___qtablewidgetitem68.setText(QCoreApplication.translate("MainWindow", u"CNPJ", None));
+        ___qtablewidgetitem69 = self.table_clientes.horizontalHeaderItem(3)
+        ___qtablewidgetitem69.setText(QCoreApplication.translate("MainWindow", u"CPF", None));
+        ___qtablewidgetitem70 = self.table_clientes.horizontalHeaderItem(4)
+        ___qtablewidgetitem70.setText(QCoreApplication.translate("MainWindow", u"Telefone", None));
+        ___qtablewidgetitem71 = self.table_clientes.horizontalHeaderItem(5)
+        ___qtablewidgetitem71.setText(QCoreApplication.translate("MainWindow", u"Endere\u00e7o", None));
+        ___qtablewidgetitem72 = self.table_clientes.horizontalHeaderItem(6)
+        ___qtablewidgetitem72.setText(QCoreApplication.translate("MainWindow", u"Status do Cliente", None));
+        ___qtablewidgetitem73 = self.table_clientes.horizontalHeaderItem(7)
+        ___qtablewidgetitem73.setText(QCoreApplication.translate("MainWindow", u"Categoria do Cliente", None));
+        ___qtablewidgetitem74 = self.table_clientes.horizontalHeaderItem(8)
+        ___qtablewidgetitem74.setText(QCoreApplication.translate("MainWindow", u"\u00daltima Atualiza\u00e7\u00e3o", None));
+        ___qtablewidgetitem75 = self.table_clientes.horizontalHeaderItem(9)
+        ___qtablewidgetitem75.setText(QCoreApplication.translate("MainWindow", u"Origem do Cliente", None));
+        ___qtablewidgetitem76 = self.table_clientes.horizontalHeaderItem(10)
+        ___qtablewidgetitem76.setText(QCoreApplication.translate("MainWindow", u"Valor Gasto Total", None));
+        ___qtablewidgetitem77 = self.table_clientes.horizontalHeaderItem(11)
+        ___qtablewidgetitem77.setText(QCoreApplication.translate("MainWindow", u"\u00daltima Compra", None));
         self.tab_clientes_todos.setTabText(self.tab_clientes_todos.indexOf(self.tab_clientes), QCoreApplication.translate("MainWindow", u"Base de Clientes", None))
         self.label_configuracoes.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p align=\"center\"><span style=\" font-size:14pt; font-weight:600; font-style:italic;\">CONFIGURA\u00c7\u00d5ES</span></p></body></html>", None))
         self.tool_tema.setText(QCoreApplication.translate("MainWindow", u"Tema do Sistema", None))
@@ -4427,52 +4451,52 @@ class Ui_MainWindow(object):
         self.btn_fazer_cadastro_massa_produtos.setText(QCoreApplication.translate("MainWindow", u"Fazer o cadastro em massa", None))
         self.btn_abrir_planilha_massa_produtos.setText(QCoreApplication.translate("MainWindow", u"Abrir planilha", None))
         self.btn_editar_massa_produtos.setText(QCoreApplication.translate("MainWindow", u"Editar produto", None))
-        ___qtablewidgetitem72 = self.table_massa_produtos.horizontalHeaderItem(0)
-        ___qtablewidgetitem72.setText(QCoreApplication.translate("MainWindow", u"Produto", None));
-        ___qtablewidgetitem73 = self.table_massa_produtos.horizontalHeaderItem(1)
-        ___qtablewidgetitem73.setText(QCoreApplication.translate("MainWindow", u"Quantidade", None));
-        ___qtablewidgetitem74 = self.table_massa_produtos.horizontalHeaderItem(2)
-        ___qtablewidgetitem74.setText(QCoreApplication.translate("MainWindow", u"Valor do Produto", None));
-        ___qtablewidgetitem75 = self.table_massa_produtos.horizontalHeaderItem(3)
-        ___qtablewidgetitem75.setText(QCoreApplication.translate("MainWindow", u"Desconto", None));
-        ___qtablewidgetitem76 = self.table_massa_produtos.horizontalHeaderItem(4)
-        ___qtablewidgetitem76.setText(QCoreApplication.translate("MainWindow", u"Data da Compra", None));
-        ___qtablewidgetitem77 = self.table_massa_produtos.horizontalHeaderItem(5)
-        ___qtablewidgetitem77.setText(QCoreApplication.translate("MainWindow", u"C\u00f3digo do Item", None));
-        ___qtablewidgetitem78 = self.table_massa_produtos.horizontalHeaderItem(6)
-        ___qtablewidgetitem78.setText(QCoreApplication.translate("MainWindow", u"Cliente", None));
-        ___qtablewidgetitem79 = self.table_massa_produtos.horizontalHeaderItem(7)
-        ___qtablewidgetitem79.setText(QCoreApplication.translate("MainWindow", u"Descri\u00e7\u00e3o do Produto", None));
+        ___qtablewidgetitem78 = self.table_massa_produtos.horizontalHeaderItem(0)
+        ___qtablewidgetitem78.setText(QCoreApplication.translate("MainWindow", u"Produto", None));
+        ___qtablewidgetitem79 = self.table_massa_produtos.horizontalHeaderItem(1)
+        ___qtablewidgetitem79.setText(QCoreApplication.translate("MainWindow", u"Quantidade", None));
+        ___qtablewidgetitem80 = self.table_massa_produtos.horizontalHeaderItem(2)
+        ___qtablewidgetitem80.setText(QCoreApplication.translate("MainWindow", u"Valor do Produto", None));
+        ___qtablewidgetitem81 = self.table_massa_produtos.horizontalHeaderItem(3)
+        ___qtablewidgetitem81.setText(QCoreApplication.translate("MainWindow", u"Desconto", None));
+        ___qtablewidgetitem82 = self.table_massa_produtos.horizontalHeaderItem(4)
+        ___qtablewidgetitem82.setText(QCoreApplication.translate("MainWindow", u"Data da Compra", None));
+        ___qtablewidgetitem83 = self.table_massa_produtos.horizontalHeaderItem(5)
+        ___qtablewidgetitem83.setText(QCoreApplication.translate("MainWindow", u"C\u00f3digo do Item", None));
+        ___qtablewidgetitem84 = self.table_massa_produtos.horizontalHeaderItem(6)
+        ___qtablewidgetitem84.setText(QCoreApplication.translate("MainWindow", u"Cliente", None));
+        ___qtablewidgetitem85 = self.table_massa_produtos.horizontalHeaderItem(7)
+        ___qtablewidgetitem85.setText(QCoreApplication.translate("MainWindow", u"Descri\u00e7\u00e3o do Produto", None));
         self.btn_abrir_planilha_massa_usuarios.setText(QCoreApplication.translate("MainWindow", u"Abrir planilha", None))
         self.btn_editar_massa_usuario.setText(QCoreApplication.translate("MainWindow", u"Editar usu\u00e1rio", None))
         self.btn_fazer_cadastro_massa_usuarios.setText(QCoreApplication.translate("MainWindow", u"Fazer o cadastro em massa", None))
-        ___qtablewidgetitem80 = self.table_massa_usuarios.horizontalHeaderItem(0)
-        ___qtablewidgetitem80.setText(QCoreApplication.translate("MainWindow", u"Nome", None));
-        ___qtablewidgetitem81 = self.table_massa_usuarios.horizontalHeaderItem(1)
-        ___qtablewidgetitem81.setText(QCoreApplication.translate("MainWindow", u"Usu\u00e1rio", None));
-        ___qtablewidgetitem82 = self.table_massa_usuarios.horizontalHeaderItem(2)
-        ___qtablewidgetitem82.setText(QCoreApplication.translate("MainWindow", u"Senha", None));
-        ___qtablewidgetitem83 = self.table_massa_usuarios.horizontalHeaderItem(3)
-        ___qtablewidgetitem83.setText(QCoreApplication.translate("MainWindow", u"Confirmar Senha", None));
-        ___qtablewidgetitem84 = self.table_massa_usuarios.horizontalHeaderItem(4)
-        ___qtablewidgetitem84.setText(QCoreApplication.translate("MainWindow", u"Endere\u00e7o", None));
-        ___qtablewidgetitem85 = self.table_massa_usuarios.horizontalHeaderItem(5)
-        ___qtablewidgetitem85.setText(QCoreApplication.translate("MainWindow", u"CEP", None));
-        ___qtablewidgetitem86 = self.table_massa_usuarios.horizontalHeaderItem(6)
-        ___qtablewidgetitem86.setText(QCoreApplication.translate("MainWindow", u"CPF", None));
-        ___qtablewidgetitem87 = self.table_massa_usuarios.horizontalHeaderItem(7)
-        ___qtablewidgetitem87.setText(QCoreApplication.translate("MainWindow", u"N\u00famero", None));
-        ___qtablewidgetitem88 = self.table_massa_usuarios.horizontalHeaderItem(8)
-        ___qtablewidgetitem88.setText(QCoreApplication.translate("MainWindow", u"Estado", None));
-        ___qtablewidgetitem89 = self.table_massa_usuarios.horizontalHeaderItem(9)
-        ___qtablewidgetitem89.setText(QCoreApplication.translate("MainWindow", u"E-mail", None));
-        ___qtablewidgetitem90 = self.table_massa_usuarios.horizontalHeaderItem(10)
-        ___qtablewidgetitem90.setText(QCoreApplication.translate("MainWindow", u"RG", None));
-        ___qtablewidgetitem91 = self.table_massa_usuarios.horizontalHeaderItem(11)
-        ___qtablewidgetitem91.setText(QCoreApplication.translate("MainWindow", u"Complemento", None));
-        ___qtablewidgetitem92 = self.table_massa_usuarios.horizontalHeaderItem(12)
-        ___qtablewidgetitem92.setText(QCoreApplication.translate("MainWindow", u"Telefone", None));
-        ___qtablewidgetitem93 = self.table_massa_usuarios.horizontalHeaderItem(13)
-        ___qtablewidgetitem93.setText(QCoreApplication.translate("MainWindow", u"Data de Nascimento", None));
+        ___qtablewidgetitem86 = self.table_massa_usuarios.horizontalHeaderItem(0)
+        ___qtablewidgetitem86.setText(QCoreApplication.translate("MainWindow", u"Nome", None));
+        ___qtablewidgetitem87 = self.table_massa_usuarios.horizontalHeaderItem(1)
+        ___qtablewidgetitem87.setText(QCoreApplication.translate("MainWindow", u"Usu\u00e1rio", None));
+        ___qtablewidgetitem88 = self.table_massa_usuarios.horizontalHeaderItem(2)
+        ___qtablewidgetitem88.setText(QCoreApplication.translate("MainWindow", u"Senha", None));
+        ___qtablewidgetitem89 = self.table_massa_usuarios.horizontalHeaderItem(3)
+        ___qtablewidgetitem89.setText(QCoreApplication.translate("MainWindow", u"Confirmar Senha", None));
+        ___qtablewidgetitem90 = self.table_massa_usuarios.horizontalHeaderItem(4)
+        ___qtablewidgetitem90.setText(QCoreApplication.translate("MainWindow", u"Endere\u00e7o", None));
+        ___qtablewidgetitem91 = self.table_massa_usuarios.horizontalHeaderItem(5)
+        ___qtablewidgetitem91.setText(QCoreApplication.translate("MainWindow", u"CEP", None));
+        ___qtablewidgetitem92 = self.table_massa_usuarios.horizontalHeaderItem(6)
+        ___qtablewidgetitem92.setText(QCoreApplication.translate("MainWindow", u"CPF", None));
+        ___qtablewidgetitem93 = self.table_massa_usuarios.horizontalHeaderItem(7)
+        ___qtablewidgetitem93.setText(QCoreApplication.translate("MainWindow", u"N\u00famero", None));
+        ___qtablewidgetitem94 = self.table_massa_usuarios.horizontalHeaderItem(8)
+        ___qtablewidgetitem94.setText(QCoreApplication.translate("MainWindow", u"Estado", None));
+        ___qtablewidgetitem95 = self.table_massa_usuarios.horizontalHeaderItem(9)
+        ___qtablewidgetitem95.setText(QCoreApplication.translate("MainWindow", u"E-mail", None));
+        ___qtablewidgetitem96 = self.table_massa_usuarios.horizontalHeaderItem(10)
+        ___qtablewidgetitem96.setText(QCoreApplication.translate("MainWindow", u"RG", None));
+        ___qtablewidgetitem97 = self.table_massa_usuarios.horizontalHeaderItem(11)
+        ___qtablewidgetitem97.setText(QCoreApplication.translate("MainWindow", u"Complemento", None));
+        ___qtablewidgetitem98 = self.table_massa_usuarios.horizontalHeaderItem(12)
+        ___qtablewidgetitem98.setText(QCoreApplication.translate("MainWindow", u"Telefone", None));
+        ___qtablewidgetitem99 = self.table_massa_usuarios.horizontalHeaderItem(13)
+        ___qtablewidgetitem99.setText(QCoreApplication.translate("MainWindow", u"Data de Nascimento", None));
     # retranslateUi
 
