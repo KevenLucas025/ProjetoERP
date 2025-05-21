@@ -1887,27 +1887,12 @@ QTableWidget::item:selected {
              </column>
              <column>
               <property name="text">
-               <string>Acesso</string>
-              </property>
-             </column>
-             <column>
-              <property name="text">
-               <string>Endereço</string>
-              </property>
-             </column>
-             <column>
-              <property name="text">
                <string>CEP</string>
               </property>
              </column>
              <column>
               <property name="text">
-               <string>CPF</string>
-              </property>
-             </column>
-             <column>
-              <property name="text">
-               <string>CNPJ</string>
+               <string>Endereço</string>
               </property>
              </column>
              <column>
@@ -1932,16 +1917,6 @@ QTableWidget::item:selected {
              </column>
              <column>
               <property name="text">
-               <string>E-mail</string>
-              </property>
-             </column>
-             <column>
-              <property name="text">
-               <string>RG</string>
-              </property>
-             </column>
-             <column>
-              <property name="text">
                <string>Complemento</string>
               </property>
              </column>
@@ -1952,7 +1927,27 @@ QTableWidget::item:selected {
              </column>
              <column>
               <property name="text">
+               <string>E-mail</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
                <string>Data de Nascimento</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>RG</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>CPF</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>CNPJ</string>
               </property>
              </column>
              <column>
@@ -1978,6 +1973,11 @@ QTableWidget::item:selected {
              <column>
               <property name="text">
                <string>Usuário Logado</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>Acesso</string>
               </property>
              </column>
             </widget>
@@ -2238,27 +2238,12 @@ QTableWidget::item:selected {
              </column>
              <column>
               <property name="text">
-               <string>Acesso</string>
-              </property>
-             </column>
-             <column>
-              <property name="text">
-               <string>Endereço</string>
-              </property>
-             </column>
-             <column>
-              <property name="text">
                <string>CEP</string>
               </property>
              </column>
              <column>
               <property name="text">
-               <string>CPF</string>
-              </property>
-             </column>
-             <column>
-              <property name="text">
-               <string>CNPJ</string>
+               <string>Endereço</string>
               </property>
              </column>
              <column>
@@ -2283,16 +2268,6 @@ QTableWidget::item:selected {
              </column>
              <column>
               <property name="text">
-               <string>E-mail</string>
-              </property>
-             </column>
-             <column>
-              <property name="text">
-               <string>RG</string>
-              </property>
-             </column>
-             <column>
-              <property name="text">
                <string>Complemento</string>
               </property>
              </column>
@@ -2303,7 +2278,27 @@ QTableWidget::item:selected {
              </column>
              <column>
               <property name="text">
+               <string>E-mail</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
                <string>Data de Nascimento</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>RG</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>CPF</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>CNPJ</string>
               </property>
              </column>
              <column>
@@ -2334,6 +2329,11 @@ QTableWidget::item:selected {
              <column>
               <property name="text">
                <string>Usuário Logado</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>Acesso</string>
               </property>
              </column>
             </widget>

@@ -60,26 +60,26 @@ class DataBase:
                     Usuário TEXT UNIQUE NOT NULL,
                     Senha TEXT NOT NULL,
                     "Confirmar Senha" TEXT NOT NULL,
-                    Acesso TEXT NOT NULL,
-                    Endereço TEXT,
                     CEP TEXT,
-                    CPF TEXT,
-                    CNPJ TEXT,
+                    Endereço TEXT,
                     Número TEXT,
                     Cidade TEXT,
-                    Bairro TEXT,
-                    Estado TEXT,
-                    Email TEXT,
+                    Bairro TEXT, 
+                    Estado TEXT, 
                     Complemento TEXT,
                     Telefone TEXT,
-                    "Data de Nascimento" TEXT,
+                    Email TEXT,
+                    "Data de Nascimento" TEXT,          
                     RG TEXT,
+                    CPF TEXT,
+                    CNPJ TEXT,
                     Imagem BLOB,
                     "Última Troca de Senha" TEXT,
                     "Data da Senha Cadastrada" TEXT,
                     "Data da Inclusão do Usuário" TEXT,
                     Segredo TEXT,
-                    "Usuário Logado" TEXT
+                    "Usuário Logado" TEXT,
+                    Acesso TEXT NOT NULL
                 )
             """)
             print("Tabela de usuários criada com sucesso!")
@@ -98,27 +98,27 @@ class DataBase:
                     Usuário TEXT UNIQUE NOT NULL,
                     Senha TEXT NOT NULL,
                     'Confirmar Senha' TEXT NOT NULL,
-                    Acesso TEXT NOT NULL,
-                    Endereço TEXT NOT NULL,
                     CEP TEXT NOT NULL,
-                    CPF TEXT NOT NULL,
-                    CNPJ TEXT NOT NULL,
+                    Endereço TEXT NOT NULL,
+                    Número TEXT NOT NULL,
                     Cidade TEXT NOT NULL,
                     Bairro TEXT NOT NULL,
-                    Número TEXT NOT NULL,
-                    Estado TEXT NOT NULL,
-                    Email TEXT NOT NULL,
+                    Estado TEXT NOT NULL,  
                     Complemento TEXT,
                     Telefone TEXT NOT NULL,
+                    Email TEXT NOT NULL,
                     "Data de Nascimento" TEXT NOT NULL,
-                    RG TEXT NOT NULL,
+                    RG TEXT NOT NULL,   
+                    CPF TEXT NOT NULL,
+                    CNPJ TEXT NOT NULL,
                     Imagem BLOB TEXT NOT NULL,
                     'Última Troca de Senha' TEXT,
                     'Data da Senha Cadastrada' TEXT,
                     'Data da Inclusão do Usuário' TEXT,
                     'Data da Inatividade do Usuário' TEXT,
                     Segredo TEXT,
-                    'Usuário Logado' TEXT NOT NULL
+                    'Usuário Logado' TEXT NOT NULL,
+                    Acesso TEXT NOT NULL
                                     
                 )
             """)
@@ -313,18 +313,7 @@ class DataBase:
             return result[0] if result else None
         except Exception as e:
             print(f"Erro ao verificar usuário: {e}")
-            return False
-#*********************************************************************************************************************
-    def user_exists_usuario(self, usuario):
-        try:
-            cursor = self.connection.cursor()
-            cursor.execute("SELECT 1 FROM users WHERE Usuário = ?", (usuario,))
-            result = cursor.fetchone()
-            return bool(result)  # Retorna True se o usuário existir, False caso contrário
-        except Exception as e:
-            print("Erro ao verificar se usuário existe:", e)
-            return False
-        
+            return False  
 #*********************************************************************************************************************
     def get_products(self):
         try:
@@ -465,7 +454,7 @@ class DataBase:
             print("Erro ao obter caminho da imagem:", e)
             return None
 #*********************************************************************************************************************        
-    def user_exists(self, Usuario, Telefone, Email, RG, CPF):
+    def user_exists(self, Usuario, Telefone, Email, RG, CPF,CNPJ):
         try:
             if not self.connection:
                 self.connecta()
@@ -485,6 +474,9 @@ class DataBase:
 
             cursor.execute("SELECT 1 FROM users WHERE CPF = ?", (CPF,))
             cpf_result = cursor.fetchone()
+            
+            cursor.execute("SELECT 1 FROM users WHERE CNPJ = ?", (CNPJ,))
+            cnpj_result = cursor.fetchone()
 
             if user_result:
                 return 'usuario'
@@ -496,6 +488,8 @@ class DataBase:
                 return 'rg'
             elif cpf_result:
                 return 'cpf'
+            elif cnpj_result:
+                return 'cnpj'
             else:
                 return None
         except Exception as e:
@@ -571,7 +565,7 @@ class DataBase:
             print("Erro ao obter caminho da imagem:", e)
             return None
 #*********************************************************************************************************************        
-    def atualizar_usuario(self,nome=None, usuario=None, senha=None, confirmar_senha=None,
+    def atualizar_usuario(self,id,nome=None, usuario=None, senha=None, confirmar_senha=None,
                       cep=None, endereco=None, numero=None, cidade=None, bairro=None, estado=None,
                       complemento=None, telefone=None, email=None, data_nascimento=None, rg=None,
                     cpf=None, cnpj=None, imagem=None, segredo=None, usuario_logado=None, acesso=None):
@@ -605,7 +599,7 @@ class DataBase:
 
             for coluna, valor in campos.items():
                 if valor is not None:
-                    columns_to_update.append(f"{coluna} = ?")
+                    columns_to_update.append(f'"{coluna}" = ?')
                     values_to_update.append(valor if valor else "Não Cadastrado")
 
             if not columns_to_update:

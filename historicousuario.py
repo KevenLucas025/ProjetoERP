@@ -282,11 +282,10 @@ class Pagina_Usuarios(QWidget):
             # Inserção no banco de dados users_inativos
             cursor.execute("""
                 INSERT INTO users_inativos (
-                    Nome, Usuário, Senha, "Confirmar Senha", Acesso, Endereço, CEP, CPF, Número, Estado,
-                    Email, Complemento, Telefone, "Data de Nascimento", RG, Imagem, "Última Troca de Senha",
-                    "Data da Senha Cadastrada", "Data da Inclusão do Usuário", "Data da Inatividade do Usuário",
-                    Segredo, "Usuário Logado"
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    Nome, Usuário, Senha, "Confirmar Senha",CEP,  Endereço,Número,Cidade,Bairro,Estado,Complemento,Telefone, 
+                    Email,"Data de Nascimento",RG, CPF,CNPJ, Imagem, "Última Troca de Senha","Data da Senha Cadastrada", 
+                    "Data da Inclusão do Usuário", "Data da Inatividade do Usuário",Segredo, "Usuário Logado",Acesso
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?,?,?)
             """, dados_com_imagem)
 
             # Exclui o usuário da tabela users usando o CPF
@@ -436,8 +435,8 @@ class Pagina_Usuarios(QWidget):
 
             # Consultar todos os usuarios
             query = """
-            SELECT Nome,Usuário,Senha,"Confirmar Senha",Acesso,Endereço,CEP,CPF,Número,Estado,Email,RG,Complemento,
-            Telefone,"Data de Nascimento","Última Troca de Senha","Data da Senha Cadastrada","Data da Inclusão do Usuário",Segredo,"Usuário Logado"
+            SELECT Nome,Usuário,Senha,"Confirmar Senha",CEP,Endereço,Número,Cidade,Bairro,Estado,Complemento,Telefone,Email,"Data de Nascimento",
+            RG,CPF,CNPJ,"Última Troca de Senha","Data da Senha Cadastrada","Data da Inclusão do Usuário",Segredo,"Usuário Logado",Acesso
             FROM users
             """
             usuarios = self.db.executar_query(query)
@@ -467,13 +466,9 @@ class Pagina_Usuarios(QWidget):
             msg_box.setText("Tabela ativos atualizada com sucesso!")       
             msg_box.exec()
 
-
         except Exception as e:
             print(f"Erro ao atualizar a tabela de ativos: {e}")
             
-            
-
-
     def atualizar_inativos(self):
         try:
             # Limpa a tabela antes de carregar os novos dados
@@ -481,9 +476,9 @@ class Pagina_Usuarios(QWidget):
             
             # Consulta os dados da tabela de saída no banco de dados (somente usuarios que já tiveram saída gerada)
             query = """
-            SELECT Nome,Usuário,Senha,"Confirmar Senha",Acesso,Endereço,CEP,CPF,Número,Estado,Email,RG,Complemento,
+            SELECT Nome,Usuário,Senha,"Confirmar Senha",CEP,Endereço,CPF,Número,Estado,Email,RG,Complemento,
             Telefone,"Data de Nascimento","Última Troca de Senha","Data da Senha Cadastrada","Data da Inclusão do Usuário",
-            "Data da Inatividade do Usuário",Segredo,"Usuário Logado"
+            "Data da Inatividade do Usuário",Segredo,"Usuário Logado",Acesso
             FROM users_inativos
             """
             saidas = self.db.executar_query(query)  # Método que executa a consulta e retorna os resultados
