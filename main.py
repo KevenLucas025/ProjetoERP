@@ -1114,6 +1114,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             cpf = self.txt_cpf.text().strip()
             cnpj = self.txt_cnpj.text().strip()
             imagem = self.converter_imagem_usuario()
+            segredo = "Não Cadastrado"
             acesso = self.perfil_usuarios.currentText()
 
             usuario_logado = self.config.obter_usuario_logado()
@@ -1144,33 +1145,22 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 return
 
             # Verificar se usuário já existe
-            if db.user_exists(usuario, telefone, email, rg, cpf, cnpj):
-                db.atualizar_usuario(
-                    nome=nome,
-                    usuario=usuario,
-                    senha=senha,
-                    confirmar_senha=confirmar_senha,
-                    cep=cep,
-                    endereco=endereco,
-                    numero=numero,
-                    cidade=cidade,
-                    bairro=bairro,
-                    estado=estado,
-                    complemento=complemento,
-                    telefone=telefone,
-                    email=email,
-                    data_nascimento=data_nascimento,
-                    rg=rg,
-                    cpf=cpf,
-                    cnpj=cnpj,
-                    imagem=imagem,
-                    usuario_logado=usuario_logado,
-                    acesso=acesso
-                )
-
-                self.registrar_historico_usuarios("Atualização de Usuários", f"Usuário {usuario} atualizado no sistema.")
-                QMessageBox.information(None, "Atualização de Usuário", "Usuário atualizado com sucesso.")
+            campo_duplicado = db.user_exists(usuario,telefone,email,rg,cpf,cnpj)
+            if campo_duplicado:
+                mensagens = {
+                    'usuario': f"Já existe um usuário cadastrado com o login {usuario}.",
+                    'telefone': f"Já existe um usuário cadastrado com o telefone {telefone}.",
+                    'email': f"Já existe um usuário cadastrado com o e-mail {email}.",
+                    'rg': f"Já existe um usuário cadastrado com o RG {rg}.",
+                    'cpf': f"Já existe um usuário cadastrado com o CPF {cpf}.",
+                    'cnpj': f"Já existe um usuário cadastrado com o CNPJ {cnpj}.",
+                }
+                # Exibe o asterisco no campo duplicado
+                self.exibir_asteriscos_usuarios([campo_duplicado])
+                # Exibe a mensagem de erro
+                QMessageBox.warning(None, "Erro de Cadastro", mensagens[campo_duplicado])
                 return
+                
 
             # Inserir novo usuário
             db.insert_user(
@@ -1191,6 +1181,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 rg=rg,
                 cpf=cpf,
                 cnpj=cnpj,
+                segredo=segredo,
                 imagem=imagem,
                 usuario_logado=usuario_logado,
                 acesso=acesso,
@@ -1209,6 +1200,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.txt_email.clear()
             self.txt_numero.clear()
             self.txt_endereco.clear()
+            self.txt_bairro.clear()
+            self.txt_cidade.clear()
+            self.txt_cnpj.clear()
             self.txt_cep.clear()
             self.txt_complemento.clear()
             self.txt_rg.clear()
@@ -2276,21 +2270,31 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 print(f"[ERRO] Campo '{campo}' não tem frame correspondente!")
                 continue
 
-            if not hasattr(self, f'label_asterisco_usuarios{campo}'):
+            name_label_asterisco = f'label_asterisco_usuarios_{campo}'
+
+            if not hasattr(self,name_label_asterisco):
+                # Define o QLabel para o asterisco
                 label = QLabel(frame)
+                # Carregar a imagem do asterisco, redimensionando para 12x12, mantendo a proporção original
                 asterisco_pixmap = QPixmap("imagens/Imagem1.png").scaled(12, 12, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+                # Definir o tamanho do QLabel para ser o mesmo que o QFrame
                 label.setPixmap(asterisco_pixmap)
+                # Alinhar o QLabel ao centro do frame
                 label.setAlignment(Qt.AlignCenter)
+                # Aplicar um layout ao frame
                 layout = QVBoxLayout(frame)
                 layout.setContentsMargins(0, 0, 0, 0)  # Remove margens
+                # Adicionar o QLabel ao layout
                 layout.addWidget(label)
-                setattr(self, f'label_asterisco_usuarios{campo}', label)
-                
+                setattr(self, name_label_asterisco, label)  # Armazena a referência do QLabel
                 # Adiciona o print para verificar se o asterisco foi realmente adicionado
                 print(f"Asterisco adicionado ao frame de: {campo}")
-
+            else:
+                label = getattr(self, name_label_asterisco)
+                label.show()  # Exibir o QLabel do asterisco
+            
+            # Exibir o frame de erro
             frame.show()
-            getattr(self, f'label_asterisco_usuarios{campo}', label)
 
 
     def esconder_asteriscos_usuarios(self):

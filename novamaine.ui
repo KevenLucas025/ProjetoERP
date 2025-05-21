@@ -3890,10 +3890,16 @@ QPushButton:hover {
                 </item>
                 <item>
                  <widget class="QLineEdit" name="txt_bairro">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
                   <property name="maximumSize">
                    <size>
                     <width>181</width>
-                    <height>16777215</height>
+                    <height>30</height>
                    </size>
                   </property>
                   <property name="styleSheet">
@@ -3961,10 +3967,16 @@ QLineEdit::placeholderText {
                 </item>
                 <item>
                  <widget class="QLineEdit" name="txt_cnpj">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
                   <property name="maximumSize">
                    <size>
                     <width>181</width>
-                    <height>16777215</height>
+                    <height>30</height>
                    </size>
                   </property>
                   <property name="styleSheet">
@@ -4023,6 +4035,12 @@ QLineEdit::placeholderText {
                 </item>
                 <item>
                  <widget class="QLineEdit" name="txt_complemento">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
                   <property name="maximumSize">
                    <size>
                     <width>181</width>
@@ -4091,10 +4109,16 @@ QLineEdit::placeholderText {
                 </item>
                 <item>
                  <widget class="QLineEdit" name="txt_usuario">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
                   <property name="maximumSize">
                    <size>
                     <width>181</width>
-                    <height>16777215</height>
+                    <height>30</height>
                    </size>
                   </property>
                   <property name="styleSheet">
@@ -4151,10 +4175,16 @@ QLineEdit::placeholderText {
                 </item>
                 <item>
                  <widget class="QLineEdit" name="txt_rg">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
                   <property name="maximumSize">
                    <size>
                     <width>180</width>
-                    <height>16777215</height>
+                    <height>30</height>
                    </size>
                   </property>
                   <property name="styleSheet">
@@ -4216,10 +4246,16 @@ QLineEdit::placeholderText {
                 </item>
                 <item>
                  <widget class="QLineEdit" name="txt_cpf">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
                   <property name="maximumSize">
                    <size>
                     <width>181</width>
-                    <height>16777215</height>
+                    <height>30</height>
                    </size>
                   </property>
                   <property name="styleSheet">
@@ -4281,10 +4317,16 @@ QLineEdit::placeholderText {
                 </item>
                 <item>
                  <widget class="QLineEdit" name="txt_nome">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
                   <property name="maximumSize">
                    <size>
                     <width>181</width>
-                    <height>16777215</height>
+                    <height>30</height>
                    </size>
                   </property>
                   <property name="styleSheet">
@@ -4346,10 +4388,16 @@ QLineEdit::placeholderText {
                 </item>
                 <item>
                  <widget class="QLineEdit" name="txt_data_nascimento">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
                   <property name="maximumSize">
                    <size>
                     <width>181</width>
-                    <height>16777215</height>
+                    <height>30</height>
                    </size>
                   </property>
                   <property name="styleSheet">
@@ -4411,16 +4459,22 @@ QLineEdit::placeholderText {
                 </item>
                 <item>
                  <widget class="QComboBox" name="perfil_usuarios">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
                   <property name="minimumSize">
                    <size>
-                    <width>181</width>
+                    <width>0</width>
                     <height>0</height>
                    </size>
                   </property>
                   <property name="maximumSize">
                    <size>
                     <width>181</width>
-                    <height>16777215</height>
+                    <height>30</height>
                    </size>
                   </property>
                   <property name="styleSheet">
@@ -4532,10 +4586,16 @@ QLineEdit::placeholderText {
                 </item>
                 <item>
                  <widget class="QLineEdit" name="txt_email">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
                   <property name="maximumSize">
                    <size>
                     <width>181</width>
-                    <height>16777215</height>
+                    <height>30</height>
                    </size>
                   </property>
                   <property name="styleSheet">
@@ -4597,10 +4657,16 @@ QLineEdit::placeholderText {
                 </item>
                 <item>
                  <widget class="QLineEdit" name="txt_endereco">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
                   <property name="maximumSize">
                    <size>
                     <width>181</width>
-                    <height>16777215</height>
+                    <height>30</height>
                    </size>
                   </property>
                   <property name="styleSheet">
@@ -4662,10 +4728,16 @@ QLineEdit::placeholderText {
                 </item>
                 <item>
                  <widget class="QLineEdit" name="txt_numero">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
                   <property name="maximumSize">
                    <size>
                     <width>181</width>
-                    <height>16777215</height>
+                    <height>30</height>
                    </size>
                   </property>
                   <property name="styleSheet">
@@ -4727,10 +4799,16 @@ QLineEdit::placeholderText {
                 </item>
                 <item>
                  <widget class="QLineEdit" name="txt_cep">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
                   <property name="maximumSize">
                    <size>
                     <width>181</width>
-                    <height>16777215</height>
+                    <height>30</height>
                    </size>
                   </property>
                   <property name="styleSheet">
@@ -4792,10 +4870,16 @@ QLineEdit::placeholderText {
                 </item>
                 <item>
                  <widget class="QLineEdit" name="txt_telefone">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
                   <property name="maximumSize">
                    <size>
                     <width>181</width>
-                    <height>16777215</height>
+                    <height>30</height>
                    </size>
                   </property>
                   <property name="styleSheet">
@@ -4860,10 +4944,16 @@ QLineEdit::placeholderText {
                 </item>
                 <item>
                  <widget class="QLineEdit" name="txt_cidade">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
                   <property name="maximumSize">
                    <size>
                     <width>181</width>
-                    <height>16777215</height>
+                    <height>30</height>
                    </size>
                   </property>
                   <property name="styleSheet">
@@ -4925,10 +5015,16 @@ QLineEdit::placeholderText {
                 </item>
                 <item>
                  <widget class="QLineEdit" name="txt_senha">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
                   <property name="maximumSize">
                    <size>
                     <width>181</width>
-                    <height>16777215</height>
+                    <height>30</height>
                    </size>
                   </property>
                   <property name="styleSheet">
@@ -4944,6 +5040,9 @@ QLineEdit::placeholderText {
     color: black; /* Cor do texto do placeholder */
 }
 </string>
+                  </property>
+                  <property name="echoMode">
+                   <enum>QLineEdit::Password</enum>
                   </property>
                  </widget>
                 </item>
@@ -4991,7 +5090,7 @@ QLineEdit::placeholderText {
                 <item>
                  <widget class="QComboBox" name="perfil_estado">
                   <property name="sizePolicy">
-                   <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                   <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
                     <horstretch>0</horstretch>
                     <verstretch>0</verstretch>
                    </sizepolicy>
@@ -4999,7 +5098,7 @@ QLineEdit::placeholderText {
                   <property name="maximumSize">
                    <size>
                     <width>181</width>
-                    <height>16777215</height>
+                    <height>30</height>
                    </size>
                   </property>
                   <property name="styleSheet">
@@ -5231,10 +5330,16 @@ QLineEdit::placeholderText {
                 </item>
                 <item>
                  <widget class="QLineEdit" name="txt_confirmar_senha">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
                   <property name="maximumSize">
                    <size>
                     <width>181</width>
-                    <height>16777215</height>
+                    <height>30</height>
                    </size>
                   </property>
                   <property name="styleSheet">
@@ -5250,6 +5355,9 @@ QLineEdit::placeholderText {
     color: black; /* Cor do texto do placeholder */
 }
 </string>
+                  </property>
+                  <property name="echoMode">
+                   <enum>QLineEdit::Password</enum>
                   </property>
                  </widget>
                 </item>

@@ -454,7 +454,7 @@ class DataBase:
             print("Erro ao obter caminho da imagem:", e)
             return None
 #*********************************************************************************************************************        
-    def user_exists(self, Usuario, Telefone, Email, RG, CPF):
+    def user_exists(self, Usuario, Telefone, Email, RG, CPF,CNPJ):
         try:
             if not self.connection:
                 self.connecta()
@@ -474,6 +474,9 @@ class DataBase:
 
             cursor.execute("SELECT 1 FROM users WHERE CPF = ?", (CPF,))
             cpf_result = cursor.fetchone()
+            
+            cursor.execute("SELECT 1 FROM users WHERE CNPJ = ?", (CNPJ,))
+            cnpj_result = cursor.fetchone()
 
             if user_result:
                 return 'usuario'
@@ -485,6 +488,8 @@ class DataBase:
                 return 'rg'
             elif cpf_result:
                 return 'cpf'
+            elif cnpj_result:
+                return 'cnpj'
             else:
                 return None
         except Exception as e:
@@ -560,7 +565,7 @@ class DataBase:
             print("Erro ao obter caminho da imagem:", e)
             return None
 #*********************************************************************************************************************        
-    def atualizar_usuario(self,nome=None, usuario=None, senha=None, confirmar_senha=None,
+    def atualizar_usuario(self,id,nome=None, usuario=None, senha=None, confirmar_senha=None,
                       cep=None, endereco=None, numero=None, cidade=None, bairro=None, estado=None,
                       complemento=None, telefone=None, email=None, data_nascimento=None, rg=None,
                     cpf=None, cnpj=None, imagem=None, segredo=None, usuario_logado=None, acesso=None):
@@ -594,7 +599,7 @@ class DataBase:
 
             for coluna, valor in campos.items():
                 if valor is not None:
-                    columns_to_update.append(f"{coluna} = ?")
+                    columns_to_update.append(f'"{coluna}" = ?')
                     values_to_update.append(valor if valor else "Não Cadastrado")
 
             if not columns_to_update:
