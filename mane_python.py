@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'novamaine.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.9.0
+## Created by: Qt User Interface Compiler version 6.8.2
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -4232,43 +4232,43 @@ class Ui_MainWindow(object):
         ___qtablewidgetitem22 = self.table_ativos.horizontalHeaderItem(3)
         ___qtablewidgetitem22.setText(QCoreApplication.translate("MainWindow", u"Confirmar Senha", None));
         ___qtablewidgetitem23 = self.table_ativos.horizontalHeaderItem(4)
-        ___qtablewidgetitem23.setText(QCoreApplication.translate("MainWindow", u"Acesso", None));
+        ___qtablewidgetitem23.setText(QCoreApplication.translate("MainWindow", u"CEP", None));
         ___qtablewidgetitem24 = self.table_ativos.horizontalHeaderItem(5)
         ___qtablewidgetitem24.setText(QCoreApplication.translate("MainWindow", u"Endere\u00e7o", None));
         ___qtablewidgetitem25 = self.table_ativos.horizontalHeaderItem(6)
-        ___qtablewidgetitem25.setText(QCoreApplication.translate("MainWindow", u"CEP", None));
+        ___qtablewidgetitem25.setText(QCoreApplication.translate("MainWindow", u"N\u00famero", None));
         ___qtablewidgetitem26 = self.table_ativos.horizontalHeaderItem(7)
-        ___qtablewidgetitem26.setText(QCoreApplication.translate("MainWindow", u"CPF", None));
+        ___qtablewidgetitem26.setText(QCoreApplication.translate("MainWindow", u"Cidade", None));
         ___qtablewidgetitem27 = self.table_ativos.horizontalHeaderItem(8)
-        ___qtablewidgetitem27.setText(QCoreApplication.translate("MainWindow", u"CNPJ", None));
+        ___qtablewidgetitem27.setText(QCoreApplication.translate("MainWindow", u"Bairro", None));
         ___qtablewidgetitem28 = self.table_ativos.horizontalHeaderItem(9)
-        ___qtablewidgetitem28.setText(QCoreApplication.translate("MainWindow", u"N\u00famero", None));
+        ___qtablewidgetitem28.setText(QCoreApplication.translate("MainWindow", u"Estado", None));
         ___qtablewidgetitem29 = self.table_ativos.horizontalHeaderItem(10)
-        ___qtablewidgetitem29.setText(QCoreApplication.translate("MainWindow", u"Cidade", None));
+        ___qtablewidgetitem29.setText(QCoreApplication.translate("MainWindow", u"Complemento", None));
         ___qtablewidgetitem30 = self.table_ativos.horizontalHeaderItem(11)
-        ___qtablewidgetitem30.setText(QCoreApplication.translate("MainWindow", u"Bairro", None));
+        ___qtablewidgetitem30.setText(QCoreApplication.translate("MainWindow", u"Telefone", None));
         ___qtablewidgetitem31 = self.table_ativos.horizontalHeaderItem(12)
-        ___qtablewidgetitem31.setText(QCoreApplication.translate("MainWindow", u"Estado", None));
+        ___qtablewidgetitem31.setText(QCoreApplication.translate("MainWindow", u"E-mail", None));
         ___qtablewidgetitem32 = self.table_ativos.horizontalHeaderItem(13)
-        ___qtablewidgetitem32.setText(QCoreApplication.translate("MainWindow", u"E-mail", None));
+        ___qtablewidgetitem32.setText(QCoreApplication.translate("MainWindow", u"Data de Nascimento", None));
         ___qtablewidgetitem33 = self.table_ativos.horizontalHeaderItem(14)
         ___qtablewidgetitem33.setText(QCoreApplication.translate("MainWindow", u"RG", None));
         ___qtablewidgetitem34 = self.table_ativos.horizontalHeaderItem(15)
-        ___qtablewidgetitem34.setText(QCoreApplication.translate("MainWindow", u"Complemento", None));
+        ___qtablewidgetitem34.setText(QCoreApplication.translate("MainWindow", u"CPF", None));
         ___qtablewidgetitem35 = self.table_ativos.horizontalHeaderItem(16)
-        ___qtablewidgetitem35.setText(QCoreApplication.translate("MainWindow", u"Telefone", None));
+        ___qtablewidgetitem35.setText(QCoreApplication.translate("MainWindow", u"CNPJ", None));
         ___qtablewidgetitem36 = self.table_ativos.horizontalHeaderItem(17)
-        ___qtablewidgetitem36.setText(QCoreApplication.translate("MainWindow", u"Data de Nascimento", None));
+        ___qtablewidgetitem36.setText(QCoreApplication.translate("MainWindow", u"\u00daltima Troca de Senha", None));
         ___qtablewidgetitem37 = self.table_ativos.horizontalHeaderItem(18)
-        ___qtablewidgetitem37.setText(QCoreApplication.translate("MainWindow", u"\u00daltima Troca de Senha", None));
+        ___qtablewidgetitem37.setText(QCoreApplication.translate("MainWindow", u"Data da Senha Cadastrada ", None));
         ___qtablewidgetitem38 = self.table_ativos.horizontalHeaderItem(19)
-        ___qtablewidgetitem38.setText(QCoreApplication.translate("MainWindow", u"Data da Senha Cadastrada ", None));
+        ___qtablewidgetitem38.setText(QCoreApplication.translate("MainWindow", u"Data da Inclus\u00e3o do Usu\u00e1rio", None));
         ___qtablewidgetitem39 = self.table_ativos.horizontalHeaderItem(20)
-        ___qtablewidgetitem39.setText(QCoreApplication.translate("MainWindow", u"Data da Inclus\u00e3o do Usu\u00e1rio", None));
+        ___qtablewidgetitem39.setText(QCoreApplication.translate("MainWindow", u"Segredo", None));
         ___qtablewidgetitem40 = self.table_ativos.horizontalHeaderItem(21)
-        ___qtablewidgetitem40.setText(QCoreApplication.translate("MainWindow", u"Segredo", None));
+        ___qtablewidgetitem40.setText(QCoreApplication.translate("MainWindow", u"Usu\u00e1rio Logado", None));
         ___qtablewidgetitem41 = self.table_ativos.horizontalHeaderItem(22)
-        ___qtablewidgetitem41.setText(QCoreApplication.translate("MainWindow", u"Usu\u00e1rio Logado", None));
+        ___qtablewidgetitem41.setText(QCoreApplication.translate("MainWindow", u"Acesso", None));
         self.btn_gerar_saida_usuarios.setText(QCoreApplication.translate("MainWindow", u"Gerar Sa\u00edda", None))
         self.btn_importar_usuarios.setText(QCoreApplication.translate("MainWindow", u"Importar", None))
 #if QT_CONFIG(whatsthis)
@@ -4284,45 +4284,45 @@ class Ui_MainWindow(object):
         ___qtablewidgetitem45 = self.table_inativos.horizontalHeaderItem(3)
         ___qtablewidgetitem45.setText(QCoreApplication.translate("MainWindow", u"Confirmar Senha", None));
         ___qtablewidgetitem46 = self.table_inativos.horizontalHeaderItem(4)
-        ___qtablewidgetitem46.setText(QCoreApplication.translate("MainWindow", u"Acesso", None));
+        ___qtablewidgetitem46.setText(QCoreApplication.translate("MainWindow", u"CEP", None));
         ___qtablewidgetitem47 = self.table_inativos.horizontalHeaderItem(5)
         ___qtablewidgetitem47.setText(QCoreApplication.translate("MainWindow", u"Endere\u00e7o", None));
         ___qtablewidgetitem48 = self.table_inativos.horizontalHeaderItem(6)
-        ___qtablewidgetitem48.setText(QCoreApplication.translate("MainWindow", u"CEP", None));
+        ___qtablewidgetitem48.setText(QCoreApplication.translate("MainWindow", u"N\u00famero", None));
         ___qtablewidgetitem49 = self.table_inativos.horizontalHeaderItem(7)
-        ___qtablewidgetitem49.setText(QCoreApplication.translate("MainWindow", u"CPF", None));
+        ___qtablewidgetitem49.setText(QCoreApplication.translate("MainWindow", u"Cidade", None));
         ___qtablewidgetitem50 = self.table_inativos.horizontalHeaderItem(8)
-        ___qtablewidgetitem50.setText(QCoreApplication.translate("MainWindow", u"CNPJ", None));
+        ___qtablewidgetitem50.setText(QCoreApplication.translate("MainWindow", u"Bairro", None));
         ___qtablewidgetitem51 = self.table_inativos.horizontalHeaderItem(9)
-        ___qtablewidgetitem51.setText(QCoreApplication.translate("MainWindow", u"N\u00famero", None));
+        ___qtablewidgetitem51.setText(QCoreApplication.translate("MainWindow", u"Estado", None));
         ___qtablewidgetitem52 = self.table_inativos.horizontalHeaderItem(10)
-        ___qtablewidgetitem52.setText(QCoreApplication.translate("MainWindow", u"Cidade", None));
+        ___qtablewidgetitem52.setText(QCoreApplication.translate("MainWindow", u"Complemento", None));
         ___qtablewidgetitem53 = self.table_inativos.horizontalHeaderItem(11)
-        ___qtablewidgetitem53.setText(QCoreApplication.translate("MainWindow", u"Bairro", None));
+        ___qtablewidgetitem53.setText(QCoreApplication.translate("MainWindow", u"Telefone", None));
         ___qtablewidgetitem54 = self.table_inativos.horizontalHeaderItem(12)
-        ___qtablewidgetitem54.setText(QCoreApplication.translate("MainWindow", u"Estado", None));
+        ___qtablewidgetitem54.setText(QCoreApplication.translate("MainWindow", u"E-mail", None));
         ___qtablewidgetitem55 = self.table_inativos.horizontalHeaderItem(13)
-        ___qtablewidgetitem55.setText(QCoreApplication.translate("MainWindow", u"E-mail", None));
+        ___qtablewidgetitem55.setText(QCoreApplication.translate("MainWindow", u"Data de Nascimento", None));
         ___qtablewidgetitem56 = self.table_inativos.horizontalHeaderItem(14)
         ___qtablewidgetitem56.setText(QCoreApplication.translate("MainWindow", u"RG", None));
         ___qtablewidgetitem57 = self.table_inativos.horizontalHeaderItem(15)
-        ___qtablewidgetitem57.setText(QCoreApplication.translate("MainWindow", u"Complemento", None));
+        ___qtablewidgetitem57.setText(QCoreApplication.translate("MainWindow", u"CPF", None));
         ___qtablewidgetitem58 = self.table_inativos.horizontalHeaderItem(16)
-        ___qtablewidgetitem58.setText(QCoreApplication.translate("MainWindow", u"Telefone", None));
+        ___qtablewidgetitem58.setText(QCoreApplication.translate("MainWindow", u"CNPJ", None));
         ___qtablewidgetitem59 = self.table_inativos.horizontalHeaderItem(17)
-        ___qtablewidgetitem59.setText(QCoreApplication.translate("MainWindow", u"Data de Nascimento", None));
+        ___qtablewidgetitem59.setText(QCoreApplication.translate("MainWindow", u"\u00daltima Troca de Senha", None));
         ___qtablewidgetitem60 = self.table_inativos.horizontalHeaderItem(18)
-        ___qtablewidgetitem60.setText(QCoreApplication.translate("MainWindow", u"\u00daltima Troca de Senha", None));
+        ___qtablewidgetitem60.setText(QCoreApplication.translate("MainWindow", u"Data da Senha Cadastrada", None));
         ___qtablewidgetitem61 = self.table_inativos.horizontalHeaderItem(19)
-        ___qtablewidgetitem61.setText(QCoreApplication.translate("MainWindow", u"Data da Senha Cadastrada", None));
+        ___qtablewidgetitem61.setText(QCoreApplication.translate("MainWindow", u"Data da Inclus\u00e3o do Usu\u00e1rio", None));
         ___qtablewidgetitem62 = self.table_inativos.horizontalHeaderItem(20)
-        ___qtablewidgetitem62.setText(QCoreApplication.translate("MainWindow", u"Data da Inclus\u00e3o do Usu\u00e1rio", None));
+        ___qtablewidgetitem62.setText(QCoreApplication.translate("MainWindow", u"Data da Inatividade do Usu\u00e1rio", None));
         ___qtablewidgetitem63 = self.table_inativos.horizontalHeaderItem(21)
-        ___qtablewidgetitem63.setText(QCoreApplication.translate("MainWindow", u"Data da Inatividade do Usu\u00e1rio", None));
+        ___qtablewidgetitem63.setText(QCoreApplication.translate("MainWindow", u"Segredo", None));
         ___qtablewidgetitem64 = self.table_inativos.horizontalHeaderItem(22)
-        ___qtablewidgetitem64.setText(QCoreApplication.translate("MainWindow", u"Segredo", None));
+        ___qtablewidgetitem64.setText(QCoreApplication.translate("MainWindow", u"Usu\u00e1rio Logado", None));
         ___qtablewidgetitem65 = self.table_inativos.horizontalHeaderItem(23)
-        ___qtablewidgetitem65.setText(QCoreApplication.translate("MainWindow", u"Usu\u00e1rio Logado", None));
+        ___qtablewidgetitem65.setText(QCoreApplication.translate("MainWindow", u"Acesso", None));
         self.btn_adicionar_produto.setText(QCoreApplication.translate("MainWindow", u"ADICIONAR", None))
         self.btn_editar.setText(QCoreApplication.translate("MainWindow", u"EDITAR ", None))
         self.btn_atualizar_produto.setText(QCoreApplication.translate("MainWindow", u"ATUALIZAR", None))
