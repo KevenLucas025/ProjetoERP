@@ -13,9 +13,9 @@ from PySide6 import QtWidgets
 from login import Login
 from mane_python import Ui_MainWindow
 from database import DataBase
-from config_senha import TrocarSenha
 import sys
 import locale
+from config_senha import TrocarSenha, BotaoAjuda
 from atualizarprodutos import AtualizarProduto
 from tabelaprodutos import TabelaProdutos
 from configuracoes import Configuracoes_Login
@@ -41,7 +41,7 @@ from openpyxl.utils import get_column_letter
 from openpyxl.styles import Alignment
 from openpyxl import load_workbook
 import requests
-import traceback
+
 
 
 
@@ -98,7 +98,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             "txt_rg": self.txt_rg,
             "txt_quantidade": self.txt_quantidade,
             "line_clientes": self.line_clientes,
-            "txt_usuario": self.txt_usuario
+            "txt_usuario": self.txt_usuario,
+            "txt_cnpj": self.txt_cnpj
         }
         
 
@@ -285,6 +286,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.btn_clientes.setVisible(False)
 
         self.carregar_configuracoes()
+        
+        self.configracao_senha = TrocarSenha(self)
 
         self.pagina_usuarios = Pagina_Usuarios(self, self.btn_abrir_planilha_usuarios,self.btn_cadastrar_novo_usuario,
                                                self.btn_gerar_pdf_usuarios,self.btn_historico_usuarios,self.btn_atualizar_ativos,
@@ -1137,41 +1140,39 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 self.exibir_asteriscos_usuarios(["senha", "confirmar senha"])
                 QMessageBox.warning(None, "Erro", "As senhas não coincidem.")
                 return
+            
+            # Verifica se a senha é válida
+            if not self.validar_senha(senha) or not self.validar_senha(confirmar_senha):
+                self.exibir_asteriscos_usuarios(["senha", "confirmar senha"])
+                QMessageBox.warning(None, "Erro", "A senha deve conter pelo menos 8 caracteres, incluindo letras e números.")
+                return
+                
 
             # Validação de e-mail
-            if not self.is_valid_email(email):
+            if not self.email_valido(email):
                 self.exibir_asteriscos_usuarios(["email"])
                 QMessageBox.warning(None, "Erro", "E-mail inválido.")
                 return
+            
+            
 
             # Verificar se usuário já existe
-            if db.user_exists(usuario, telefone, email, rg, cpf, cnpj):
-                db.atualizar_usuario(
-                    nome=nome,
-                    usuario=usuario,
-                    senha=senha,
-                    confirmar_senha=confirmar_senha,
-                    cep=cep,
-                    endereco=endereco,
-                    numero=numero,
-                    cidade=cidade,
-                    bairro=bairro,
-                    estado=estado,
-                    complemento=complemento,
-                    telefone=telefone,
-                    email=email,
-                    data_nascimento=data_nascimento,
-                    rg=rg,
-                    cpf=cpf,
-                    cnpj=cnpj,
-                    imagem=imagem,
-                    usuario_logado=usuario_logado,
-                    acesso=acesso
-                )
-
-                self.registrar_historico_usuarios("Atualização de Usuários", f"Usuário {usuario} atualizado no sistema.")
-                QMessageBox.information(None, "Atualização de Usuário", "Usuário atualizado com sucesso.")
+            campo_duplicado = db.user_exists(usuario,telefone,email,rg,cpf,cnpj)
+            if campo_duplicado:
+                mensagens = {
+                    'usuario': f"Já existe um usuário cadastrado com o login {usuario}.",
+                    'telefone': f"Já existe um usuário cadastrado com o telefone {telefone}.",
+                    'email': f"Já existe um usuário cadastrado com o e-mail {email}.",
+                    'rg': f"Já existe um usuário cadastrado com o RG {rg}.",
+                    'cpf': f"Já existe um usuário cadastrado com o CPF {cpf}.",
+                    'cnpj': f"Já existe um usuário cadastrado com o CNPJ {cnpj}.",
+                }
+                # Exibe o asterisco no campo duplicado
+                self.exibir_asteriscos_usuarios([campo_duplicado])
+                # Exibe a mensagem de erro
+                QMessageBox.warning(None, "Erro de Cadastro", mensagens[campo_duplicado])
                 return
+                
 
             # Inserir novo usuário
             db.insert_user(
@@ -1211,6 +1212,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.txt_email.clear()
             self.txt_numero.clear()
             self.txt_endereco.clear()
+            self.txt_bairro.clear()
+            self.txt_cidade.clear()
+            self.txt_cnpj.clear()
             self.txt_cep.clear()
             self.txt_complemento.clear()
             self.txt_rg.clear()
@@ -2127,7 +2131,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                     widget.clear()  # Limpar o QLabel
                     widget.setPixmap(QPixmap())  # Definir um pixmap vazio ou padrão
 #*******************************************************************************************************
-    def is_valid_email(self, email):
+    def email_valido(self, email):
         email = email.strip()
         email_pattern = re.compile(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$')
         return bool(email_pattern.match(email))
@@ -2235,6 +2239,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         'data_nascimento': self.txt_data_nascimento,  # <--- corrigido
         'rg': self.txt_rg,
         'cpf': self.txt_cpf,
+        'cnpj': self.txt_cnpj,
         'cep': self.txt_cep,
         'estado': self.perfil_estado,
         'senha': self.txt_senha,
@@ -2278,21 +2283,31 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 print(f"[ERRO] Campo '{campo}' não tem frame correspondente!")
                 continue
 
-            if not hasattr(self, f'label_asterisco_usuarios{campo}'):
+            name_label_asterisco = f'label_asterisco_usuarios_{campo}'
+
+            if not hasattr(self,name_label_asterisco):
+                # Define o QLabel para o asterisco
                 label = QLabel(frame)
+                # Carregar a imagem do asterisco, redimensionando para 12x12, mantendo a proporção original
                 asterisco_pixmap = QPixmap("imagens/Imagem1.png").scaled(12, 12, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+                # Definir o tamanho do QLabel para ser o mesmo que o QFrame
                 label.setPixmap(asterisco_pixmap)
+                # Alinhar o QLabel ao centro do frame
                 label.setAlignment(Qt.AlignCenter)
+                # Aplicar um layout ao frame
                 layout = QVBoxLayout(frame)
                 layout.setContentsMargins(0, 0, 0, 0)  # Remove margens
+                # Adicionar o QLabel ao layout
                 layout.addWidget(label)
-                setattr(self, f'label_asterisco_usuarios{campo}', label)
-                
+                setattr(self, name_label_asterisco, label)  # Armazena a referência do QLabel
                 # Adiciona o print para verificar se o asterisco foi realmente adicionado
                 print(f"Asterisco adicionado ao frame de: {campo}")
-
+            else:
+                label = getattr(self, name_label_asterisco)
+                label.show()  # Exibir o QLabel do asterisco
+            
+            # Exibir o frame de erro
             frame.show()
-            getattr(self, f'label_asterisco_usuarios{campo}', label)
 
 
     def esconder_asteriscos_usuarios(self):

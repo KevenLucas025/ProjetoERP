@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'novamaine.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.8.2
+## Created by: Qt User Interface Compiler version 6.9.0
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -2132,7 +2132,9 @@ class Ui_MainWindow(object):
 
         self.txt_bairro = QLineEdit(self.frame_3)
         self.txt_bairro.setObjectName(u"txt_bairro")
-        self.txt_bairro.setMaximumSize(QSize(181, 16777215))
+        sizePolicy.setHeightForWidth(self.txt_bairro.sizePolicy().hasHeightForWidth())
+        self.txt_bairro.setSizePolicy(sizePolicy)
+        self.txt_bairro.setMaximumSize(QSize(181, 30))
         self.txt_bairro.setStyleSheet(u"QLineEdit {\n"
 "	color: black;\n"
 "    background-color: rgb(240, 240, 240); /* Cor de fundo cinza claro */\n"
@@ -2180,7 +2182,9 @@ class Ui_MainWindow(object):
 
         self.txt_cnpj = QLineEdit(self.frame_3)
         self.txt_cnpj.setObjectName(u"txt_cnpj")
-        self.txt_cnpj.setMaximumSize(QSize(181, 16777215))
+        sizePolicy.setHeightForWidth(self.txt_cnpj.sizePolicy().hasHeightForWidth())
+        self.txt_cnpj.setSizePolicy(sizePolicy)
+        self.txt_cnpj.setMaximumSize(QSize(181, 30))
         self.txt_cnpj.setStyleSheet(u"QLineEdit {\n"
 "	color: black;\n"
 "    background-color: rgb(240, 240, 240); /* Cor de fundo cinza claro */\n"
@@ -2223,6 +2227,8 @@ class Ui_MainWindow(object):
 
         self.txt_complemento = QLineEdit(self.frame_3)
         self.txt_complemento.setObjectName(u"txt_complemento")
+        sizePolicy.setHeightForWidth(self.txt_complemento.sizePolicy().hasHeightForWidth())
+        self.txt_complemento.setSizePolicy(sizePolicy)
         self.txt_complemento.setMaximumSize(QSize(181, 30))
         self.txt_complemento.setStyleSheet(u"QLineEdit {\n"
 "	color: black;\n"
@@ -2267,7 +2273,9 @@ class Ui_MainWindow(object):
 
         self.txt_usuario = QLineEdit(self.frame_3)
         self.txt_usuario.setObjectName(u"txt_usuario")
-        self.txt_usuario.setMaximumSize(QSize(181, 16777215))
+        sizePolicy.setHeightForWidth(self.txt_usuario.sizePolicy().hasHeightForWidth())
+        self.txt_usuario.setSizePolicy(sizePolicy)
+        self.txt_usuario.setMaximumSize(QSize(181, 30))
         self.txt_usuario.setStyleSheet(u"QLineEdit {\n"
 "	color: black;\n"
 "    background-color: rgb(240, 240, 240); /* Cor de fundo cinza claro */\n"
@@ -2306,7 +2314,9 @@ class Ui_MainWindow(object):
 
         self.txt_rg = QLineEdit(self.frame_3)
         self.txt_rg.setObjectName(u"txt_rg")
-        self.txt_rg.setMaximumSize(QSize(180, 16777215))
+        sizePolicy.setHeightForWidth(self.txt_rg.sizePolicy().hasHeightForWidth())
+        self.txt_rg.setSizePolicy(sizePolicy)
+        self.txt_rg.setMaximumSize(QSize(180, 30))
         self.txt_rg.setStyleSheet(u"QLineEdit {\n"
 "	color: black;\n"
 "    background-color: rgb(240, 240, 240); /* Cor de fundo cinza claro */\n"
@@ -2350,7 +2360,9 @@ class Ui_MainWindow(object):
 
         self.txt_cpf = QLineEdit(self.frame_3)
         self.txt_cpf.setObjectName(u"txt_cpf")
-        self.txt_cpf.setMaximumSize(QSize(181, 16777215))
+        sizePolicy.setHeightForWidth(self.txt_cpf.sizePolicy().hasHeightForWidth())
+        self.txt_cpf.setSizePolicy(sizePolicy)
+        self.txt_cpf.setMaximumSize(QSize(181, 30))
         self.txt_cpf.setStyleSheet(u"QLineEdit {\n"
 "	color: black;\n"
 "    background-color: rgb(240, 240, 240); /* Cor de fundo cinza claro */\n"
@@ -2394,7 +2406,9 @@ class Ui_MainWindow(object):
 
         self.txt_nome = QLineEdit(self.frame_3)
         self.txt_nome.setObjectName(u"txt_nome")
-        self.txt_nome.setMaximumSize(QSize(181, 16777215))
+        sizePolicy.setHeightForWidth(self.txt_nome.sizePolicy().hasHeightForWidth())
+        self.txt_nome.setSizePolicy(sizePolicy)
+        self.txt_nome.setMaximumSize(QSize(181, 30))
         self.txt_nome.setStyleSheet(u"QLineEdit {\n"
 "	color: black;\n"
 "    background-color: rgb(240, 240, 240); /* Cor de fundo cinza claro */\n"
@@ -2438,7 +2452,9 @@ class Ui_MainWindow(object):
 
         self.txt_data_nascimento = QLineEdit(self.frame_3)
         self.txt_data_nascimento.setObjectName(u"txt_data_nascimento")
-        self.txt_data_nascimento.setMaximumSize(QSize(181, 16777215))
+        sizePolicy.setHeightForWidth(self.txt_data_nascimento.sizePolicy().hasHeightForWidth())
+        self.txt_data_nascimento.setSizePolicy(sizePolicy)
+        self.txt_data_nascimento.setMaximumSize(QSize(181, 30))
         self.txt_data_nascimento.setStyleSheet(u"QLineEdit {\n"
 "	color: black;\n"
 "    background-color: rgb(240, 240, 240); /* Cor de fundo cinza claro */\n"
@@ -2486,8 +2502,10 @@ class Ui_MainWindow(object):
         self.perfil_usuarios.addItem("")
         self.perfil_usuarios.addItem("")
         self.perfil_usuarios.setObjectName(u"perfil_usuarios")
-        self.perfil_usuarios.setMinimumSize(QSize(181, 0))
-        self.perfil_usuarios.setMaximumSize(QSize(181, 16777215))
+        sizePolicy.setHeightForWidth(self.perfil_usuarios.sizePolicy().hasHeightForWidth())
+        self.perfil_usuarios.setSizePolicy(sizePolicy)
+        self.perfil_usuarios.setMinimumSize(QSize(0, 0))
+        self.perfil_usuarios.setMaximumSize(QSize(181, 30))
         self.perfil_usuarios.setStyleSheet(u"\n"
 "    QComboBox { \n"
 "        background-color: white; \n"
@@ -2558,7 +2576,9 @@ class Ui_MainWindow(object):
 
         self.txt_email = QLineEdit(self.frame_3)
         self.txt_email.setObjectName(u"txt_email")
-        self.txt_email.setMaximumSize(QSize(181, 16777215))
+        sizePolicy.setHeightForWidth(self.txt_email.sizePolicy().hasHeightForWidth())
+        self.txt_email.setSizePolicy(sizePolicy)
+        self.txt_email.setMaximumSize(QSize(181, 30))
         self.txt_email.setStyleSheet(u"QLineEdit {\n"
 "	color: black;\n"
 "    background-color: rgb(240, 240, 240); /* Cor de fundo cinza claro */\n"
@@ -2602,7 +2622,9 @@ class Ui_MainWindow(object):
 
         self.txt_endereco = QLineEdit(self.frame_3)
         self.txt_endereco.setObjectName(u"txt_endereco")
-        self.txt_endereco.setMaximumSize(QSize(181, 16777215))
+        sizePolicy.setHeightForWidth(self.txt_endereco.sizePolicy().hasHeightForWidth())
+        self.txt_endereco.setSizePolicy(sizePolicy)
+        self.txt_endereco.setMaximumSize(QSize(181, 30))
         self.txt_endereco.setStyleSheet(u"QLineEdit {\n"
 "	color: black;\n"
 "    background-color: rgb(240, 240, 240); /* Cor de fundo cinza claro */\n"
@@ -2646,7 +2668,9 @@ class Ui_MainWindow(object):
 
         self.txt_numero = QLineEdit(self.frame_3)
         self.txt_numero.setObjectName(u"txt_numero")
-        self.txt_numero.setMaximumSize(QSize(181, 16777215))
+        sizePolicy.setHeightForWidth(self.txt_numero.sizePolicy().hasHeightForWidth())
+        self.txt_numero.setSizePolicy(sizePolicy)
+        self.txt_numero.setMaximumSize(QSize(181, 30))
         self.txt_numero.setStyleSheet(u"QLineEdit {\n"
 "	color: black;\n"
 "    background-color: rgb(240, 240, 240); /* Cor de fundo cinza claro */\n"
@@ -2690,7 +2714,9 @@ class Ui_MainWindow(object):
 
         self.txt_cep = QLineEdit(self.frame_3)
         self.txt_cep.setObjectName(u"txt_cep")
-        self.txt_cep.setMaximumSize(QSize(181, 16777215))
+        sizePolicy.setHeightForWidth(self.txt_cep.sizePolicy().hasHeightForWidth())
+        self.txt_cep.setSizePolicy(sizePolicy)
+        self.txt_cep.setMaximumSize(QSize(181, 30))
         self.txt_cep.setStyleSheet(u"QLineEdit {\n"
 "	color: black;\n"
 "    background-color: rgb(240, 240, 240); /* Cor de fundo cinza claro */\n"
@@ -2734,7 +2760,9 @@ class Ui_MainWindow(object):
 
         self.txt_telefone = QLineEdit(self.frame_3)
         self.txt_telefone.setObjectName(u"txt_telefone")
-        self.txt_telefone.setMaximumSize(QSize(181, 16777215))
+        sizePolicy.setHeightForWidth(self.txt_telefone.sizePolicy().hasHeightForWidth())
+        self.txt_telefone.setSizePolicy(sizePolicy)
+        self.txt_telefone.setMaximumSize(QSize(181, 30))
         self.txt_telefone.setStyleSheet(u"QLineEdit {\n"
 "	color: black;\n"
 "    background-color: rgb(240, 240, 240); /* Cor de fundo cinza claro */\n"
@@ -2778,7 +2806,9 @@ class Ui_MainWindow(object):
 
         self.txt_cidade = QLineEdit(self.frame_3)
         self.txt_cidade.setObjectName(u"txt_cidade")
-        self.txt_cidade.setMaximumSize(QSize(181, 16777215))
+        sizePolicy.setHeightForWidth(self.txt_cidade.sizePolicy().hasHeightForWidth())
+        self.txt_cidade.setSizePolicy(sizePolicy)
+        self.txt_cidade.setMaximumSize(QSize(181, 30))
         self.txt_cidade.setStyleSheet(u"QLineEdit {\n"
 "	color: black;\n"
 "    background-color: rgb(240, 240, 240); /* Cor de fundo cinza claro */\n"
@@ -2822,7 +2852,9 @@ class Ui_MainWindow(object):
 
         self.txt_senha = QLineEdit(self.frame_3)
         self.txt_senha.setObjectName(u"txt_senha")
-        self.txt_senha.setMaximumSize(QSize(181, 16777215))
+        sizePolicy.setHeightForWidth(self.txt_senha.sizePolicy().hasHeightForWidth())
+        self.txt_senha.setSizePolicy(sizePolicy)
+        self.txt_senha.setMaximumSize(QSize(181, 30))
         self.txt_senha.setStyleSheet(u"QLineEdit {\n"
 "	color: black;\n"
 "    background-color: rgb(240, 240, 240); /* Cor de fundo cinza claro */\n"
@@ -2835,6 +2867,7 @@ class Ui_MainWindow(object):
 "    color: black; /* Cor do texto do placeholder */\n"
 "}\n"
 "")
+        self.txt_senha.setEchoMode(QLineEdit.Password)
 
         self.horizontalLayout_21.addWidget(self.txt_senha)
 
@@ -2894,9 +2927,9 @@ class Ui_MainWindow(object):
         self.perfil_estado.addItem("")
         self.perfil_estado.addItem("")
         self.perfil_estado.setObjectName(u"perfil_estado")
-        sizePolicy1.setHeightForWidth(self.perfil_estado.sizePolicy().hasHeightForWidth())
-        self.perfil_estado.setSizePolicy(sizePolicy1)
-        self.perfil_estado.setMaximumSize(QSize(181, 16777215))
+        sizePolicy.setHeightForWidth(self.perfil_estado.sizePolicy().hasHeightForWidth())
+        self.perfil_estado.setSizePolicy(sizePolicy)
+        self.perfil_estado.setMaximumSize(QSize(181, 30))
         self.perfil_estado.setStyleSheet(u"\n"
 "    QComboBox { \n"
 "        background-color: white; \n"
@@ -2967,7 +3000,9 @@ class Ui_MainWindow(object):
 
         self.txt_confirmar_senha = QLineEdit(self.frame_3)
         self.txt_confirmar_senha.setObjectName(u"txt_confirmar_senha")
-        self.txt_confirmar_senha.setMaximumSize(QSize(181, 16777215))
+        sizePolicy.setHeightForWidth(self.txt_confirmar_senha.sizePolicy().hasHeightForWidth())
+        self.txt_confirmar_senha.setSizePolicy(sizePolicy)
+        self.txt_confirmar_senha.setMaximumSize(QSize(181, 30))
         self.txt_confirmar_senha.setStyleSheet(u"QLineEdit {\n"
 "	color: black;\n"
 "    background-color: rgb(240, 240, 240); /* Cor de fundo cinza claro */\n"
@@ -2980,6 +3015,7 @@ class Ui_MainWindow(object):
 "    color: black; /* Cor do texto do placeholder */\n"
 "}\n"
 "")
+        self.txt_confirmar_senha.setEchoMode(QLineEdit.Password)
 
         self.horizontalLayout_18.addWidget(self.txt_confirmar_senha)
 
