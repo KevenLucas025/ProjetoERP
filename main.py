@@ -13,9 +13,9 @@ from PySide6 import QtWidgets
 from login import Login
 from mane_python import Ui_MainWindow
 from database import DataBase
-from config_senha import TrocarSenha
 import sys
 import locale
+from config_senha import TrocarSenha
 from atualizarprodutos import AtualizarProduto
 from tabelaprodutos import TabelaProdutos
 from configuracoes import Configuracoes_Login
@@ -24,6 +24,7 @@ from atualizarusuario import AtualizarUsuario
 from pg_configuracoes import Pagina_Configuracoes
 from estoqueprodutos import EstoqueProduto
 from historicousuario import Pagina_Usuarios
+from utils import MostrarSenha
 from clientes import Clientes
 import json
 import sqlite3
@@ -41,7 +42,7 @@ from openpyxl.utils import get_column_letter
 from openpyxl.styles import Alignment
 from openpyxl import load_workbook
 import requests
-import traceback
+
 
 
 
@@ -68,6 +69,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.connection = connection
 
         self.login_window = login_window
+
+        self.exibir_senha = MostrarSenha(self.txt_senha)
+        self.exibir_senha_usuario = MostrarSenha(self.txt_confirmar_senha)
 
         #Cria as tabelas no banco de dados sempre que executar o sistema em um novo ambiente
         self.db.create_table_products()
@@ -98,7 +102,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             "txt_rg": self.txt_rg,
             "txt_quantidade": self.txt_quantidade,
             "line_clientes": self.line_clientes,
-            "txt_usuario": self.txt_usuario
+            "txt_usuario": self.txt_usuario,
+            "txt_cnpj": self.txt_cnpj
         }
         
 
@@ -298,8 +303,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                                                self.btn_atualizar_saida,self.btn_atualizar_estoque,self.btn_historico,
                                                self.btn_abrir_planilha,self.line_excel,self.progress_excel,
                                                self.btn_incluir_produto_sistema,self.btn_fazer_cadastro_massa_produtos,
-                                               self.btn_abrir_planilha_massa_produtos,self.progress_massa_produtos,self.line_edit_massa_produtos,)
+                                               self.btn_abrir_planilha_massa_produtos,self.progress_massa_produtos,self.line_edit_massa_produtos)
         
+        self.configuracoes_senha = TrocarSenha(self)  
 
         # Criar instância de TabelaProdutos passando uma referência à MainWindow
         self.atualizar_produto_dialog = AtualizarProduto(self)
@@ -1137,12 +1143,21 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 self.exibir_asteriscos_usuarios(["senha", "confirmar senha"])
                 QMessageBox.warning(None, "Erro", "As senhas não coincidem.")
                 return
+            
+            # Verifica se a senha é válida
+            if not self.configuracoes_senha.validar_senha(senha,confirmar_senha):
+                self.exibir_asteriscos_usuarios(["senha", "confirmar senha"])
+                QMessageBox.warning(None, "Erro", "A senha deve conter pelo menos 8 caracteres, incluindo letras e números.")
+                return
+                
 
             # Validação de e-mail
-            if not self.is_valid_email(email):
+            if not self.email_valido(email):
                 self.exibir_asteriscos_usuarios(["email"])
                 QMessageBox.warning(None, "Erro", "E-mail inválido.")
                 return
+            
+            
 
             # Verificar se usuário já existe
             campo_duplicado = db.user_exists(usuario,telefone,email,rg,cpf,cnpj)
@@ -2119,7 +2134,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                     widget.clear()  # Limpar o QLabel
                     widget.setPixmap(QPixmap())  # Definir um pixmap vazio ou padrão
 #*******************************************************************************************************
-    def is_valid_email(self, email):
+    def email_valido(self, email):
         email = email.strip()
         email_pattern = re.compile(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$')
         return bool(email_pattern.match(email))
@@ -2227,6 +2242,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         'data_nascimento': self.txt_data_nascimento,  # <--- corrigido
         'rg': self.txt_rg,
         'cpf': self.txt_cpf,
+        'cnpj': self.txt_cnpj,
         'cep': self.txt_cep,
         'estado': self.perfil_estado,
         'senha': self.txt_senha,
