@@ -290,6 +290,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.btn_clientes.setVisible(False)
 
         self.carregar_configuracoes()
+        
+        self.configracao_senha = TrocarSenha(self)
 
         self.pagina_usuarios = Pagina_Usuarios(self, self.btn_abrir_planilha_usuarios,self.btn_cadastrar_novo_usuario,
                                                self.btn_gerar_pdf_usuarios,self.btn_historico_usuarios,self.btn_atualizar_ativos,
