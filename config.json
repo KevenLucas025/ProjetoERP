@@ -1,48 +1,74 @@
 {
-    "usuario": "Keven",
+    "usuario": "PT91",
     "senha": "123",
     "mantem_conectado": false,
     "nao_mostrar_mensagem_boas_vindas": true,
     "nao_mostrar_aviso_irreversivel": false,
     "historico_autocompletes": {
         "txt_nome": [
-            "Keven"
+            "Keven",
+            "Lucas"
         ],
         "txt_usuario": [
             "Keven"
         ],
         "txt_senha": [
-            "123"
+            "123",
+            "Python@1426!",
+            "122121212",
+            "reyrfbd34"
         ],
         "txt_confirmar_senha": [
-            "123"
+            "123",
+            "Python@1426!",
+            "1234",
+            "reyrfbd34"
         ],
         "txt_cep": [
-            "13179-905"
+            "13179-905",
+            "Não Cadas"
         ],
         "txt_complemento": [
             "Bloco A AP 31"
         ],
         "txt_telefone": [
-            "(19) 98201-8869"
+            "(19) 98201-8869",
+            "(11) 11111-1111",
+            "(11) 11111-1",
+            "(43) 53434-5435",
+            "(31) 61694-6196"
         ],
         "txt_email": [
-            "keven.lucas00@hotmail.com"
+            "keven.lucas00@hotmail.com",
+            "keven.lucas00@dsdsd.com",
+            "keven.lucas00@dfddf.com",
+            "keven.lucas00@dsad.com"
         ],
         "txt_data_nascimento": [
             "26/01/2000"
         ],
         "txt_rg": [
-            "52.991.559-5"
+            "52.991.559-5",
+            "53.453.453-4",
+            "46.549.641-3"
         ],
         "txt_cpf": [
-            "506.796.778-10"
+            "506.796.778-10",
+            "123.243.242-34",
+            "453.453.454-35",
+            "316.310.346-10"
         ],
         "txt_cnpj": [
-            "11.111.111/1111-11"
+            "11.111.111/1111-11",
+            "23.423.423/4232-34",
+            "34.534.534/5345-34",
+            "32.196.431/6946-13"
         ],
         "txt_endereco": [
             "Rua José Vieira da Silva"
+        ],
+        "txt_numero": [
+            "Loteamento Jardim das Estâncias"
         ]
     }
 }

@@ -813,6 +813,28 @@ class DataBase:
         except Exception as e:
             print(f"Erro ao salvar saída: {e}")   
 
+    def obter_usuarios_sem_imagem(self):
+        query = """
+            SELECT "Nome", "Usuário", "Senha", "Confirmar Senha", "CEP", "Endereço",
+                "Número", "Cidade", "Bairro", "Estado", "Complemento", "Telefone", "Email",
+                "Data de Nascimento", "RG", "CPF", "CNPJ",
+                "Última Troca de Senha", "Data da Senha Cadastrada",
+                "Data da Inclusão do Usuário", "Segredo", "Usuário Logado", "Acesso"
+            FROM users
+        """
+        try:
+            conn = self.connecta()
+            cursor = conn.cursor()
+            cursor.execute(query)
+            return cursor.fetchall()
+        except Exception as e:
+            print("Erro ao obter usuários:", e)
+            return []
+        finally:
+            if cursor:
+                cursor.close()
+
+
 if __name__ == "__main__":
     db = DataBase()
     db.connecta()

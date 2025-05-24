@@ -70,8 +70,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.login_window = login_window
 
-        self.exibir_senha = MostrarSenha(self.txt_senha)
-        self.exibir_senha_usuario = MostrarSenha(self.txt_confirmar_senha)
+        self.exibir_senha = MostrarSenha(self,self.txt_senha)
+        self.exibir_senha_usuario = MostrarSenha(self,self.txt_confirmar_senha)
 
         #Cria as tabelas no banco de dados sempre que executar o sistema em um novo ambiente
         self.db.create_table_products()
@@ -307,6 +307,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         
         self.configuracoes_senha = TrocarSenha(self)  
 
+        
+
         # Criar instância de TabelaProdutos passando uma referência à MainWindow
         self.atualizar_produto_dialog = AtualizarProduto(self)
 
@@ -395,6 +397,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.btn_verificar_estoque.clicked.connect(self.mostrar_page_estoque)
         self.btn_apagar_cadastro.clicked.connect(self.eliminar_campos_usuarios)
         self.btn_remover_imagem_usuario.clicked.connect(self.retirar_imagem_usuario)
+        self.btn_sair_modo_edicao.clicked.connect(self.sair_modo_edicao)
         
         self.btn_fazer_cadastro.clicked.connect(self.subscribe_user)
         self.btn_editar.clicked.connect(self.exibir_tabela_produtos)
@@ -743,7 +746,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         sql = """
             UPDATE users 
             SET Nome=?, Usuário=?,Telefone=?, Endereço=?, Número=?, Complemento=?, 
-            Email=?, Data_Nascimento=?, RG=?, CPF=?, CEP=?, Estado=?, Senha=?,
+            Email=?, Data de Nascimento=?, RG=?, CPF=?, CEP=?, Estado=?, Senha=?,
             "Confirmar Senha"=?,Acesso=?
             WHERE id=?
         """
@@ -758,7 +761,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             sql = """
                 UPDATE users 
                 SET Nome=?, Usuário=?,Telefone=?, Endereço=?, Número=?, Complemento=?, 
-                Email=?, Data_Nascimento=?, RG=?, CPF=?, CEP=?, Estado=?, Senha=?, Imagem=?,
+                Email=?, Data de Nascimento=?, RG=?, CPF=?, CEP=?, Estado=?, Senha=?, Imagem=?,
                 "Confirmar Senha"=?, Acesso=?
                 WHERE id=?
             """
@@ -2439,6 +2442,37 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if selected_action == self.action_em_massa_usuarios:
             self.paginas_sistemas.setCurrentWidget(self.page_cadastrar_massa_usuarios)
 
+    # Sair do modo edição na página de cadastrar usuários
+    def sair_modo_edicao(self):
+        if not self.is_editing:
+            QMessageBox.warning(None, "Aviso", "Você não está no modo de edição.")
+            return
+
+        self.is_editing = False
+        self.selected_user = None
+         # Limpa todos os campos (pode reaproveitar o trecho do subscribe_user)
+        self.txt_nome.clear()
+        self.txt_usuario.clear()
+        self.txt_senha.clear()
+        self.txt_confirmar_senha.clear()
+        self.txt_cpf.clear()
+        self.txt_cnpj.clear()
+        self.txt_email.clear()
+        self.txt_numero.clear()
+        self.txt_endereco.clear()
+        self.txt_bairro.clear()
+        self.txt_cidade.clear()
+        self.txt_cep.clear()
+        self.txt_complemento.clear()
+        self.txt_rg.clear()
+        self.txt_telefone.clear()
+        self.txt_data_nascimento.clear()
+        self.perfil_estado.setCurrentIndex(0)
+        self.perfil_usuarios.setCurrentIndex(0)
+        self.label_imagem_usuario.clear()
+
+        # Se quiser mostrar visualmente que saiu do modo edição (opcional)
+        QMessageBox.information(None, "Edição cancelada", "Você saiu do modo de edição.")
 
 # Função principal
 if __name__ == '__main__':
@@ -2449,6 +2483,7 @@ if __name__ == '__main__':
     # Usa estilo nativo do Windows explicitamente
     app.setStyle("WindowsVista")
     app.setWindowIcon(QIcon("imagens/ícone_sistema_provisório.png"))
+    
     
     login_window.show()
     sys.exit(app.exec())

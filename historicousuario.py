@@ -459,15 +459,6 @@ class Pagina_Usuarios(QWidget):
 
         except Exception as e:
             print(f"Erro ao atualizar a tabela de ativos: {e}")
-
-            msg_box = QMessageBox()
-            msg_box.setIcon(QMessageBox.Information)
-            msg_box.setWindowTitle("Informação")
-            msg_box.setText("Tabela ativos atualizada com sucesso!")       
-            msg_box.exec()
-
-        except Exception as e:
-            print(f"Erro ao atualizar a tabela de ativos: {e}")
             
     def atualizar_inativos(self):
         try:
