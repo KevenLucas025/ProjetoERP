@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'novamaine.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.9.0
+## Created by: Qt User Interface Compiler version 6.8.2
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -4135,8 +4135,8 @@ class Ui_MainWindow(object):
         self.gridLayout_25.addWidget(self.frame_11, 0, 0, 1, 1)
 
         self.table_massa_usuarios = QTableWidget(self.frame_10)
-        if (self.table_massa_usuarios.columnCount() < 14):
-            self.table_massa_usuarios.setColumnCount(14)
+        if (self.table_massa_usuarios.columnCount() < 17):
+            self.table_massa_usuarios.setColumnCount(17)
         __qtablewidgetitem86 = QTableWidgetItem()
         self.table_massa_usuarios.setHorizontalHeaderItem(0, __qtablewidgetitem86)
         __qtablewidgetitem87 = QTableWidgetItem()
@@ -4165,6 +4165,12 @@ class Ui_MainWindow(object):
         self.table_massa_usuarios.setHorizontalHeaderItem(12, __qtablewidgetitem98)
         __qtablewidgetitem99 = QTableWidgetItem()
         self.table_massa_usuarios.setHorizontalHeaderItem(13, __qtablewidgetitem99)
+        __qtablewidgetitem100 = QTableWidgetItem()
+        self.table_massa_usuarios.setHorizontalHeaderItem(14, __qtablewidgetitem100)
+        __qtablewidgetitem101 = QTableWidgetItem()
+        self.table_massa_usuarios.setHorizontalHeaderItem(15, __qtablewidgetitem101)
+        __qtablewidgetitem102 = QTableWidgetItem()
+        self.table_massa_usuarios.setHorizontalHeaderItem(16, __qtablewidgetitem102)
         self.table_massa_usuarios.setObjectName(u"table_massa_usuarios")
         self.table_massa_usuarios.setMinimumSize(QSize(0, 0))
         self.table_massa_usuarios.setMaximumSize(QSize(16777215, 16777215))
@@ -4560,24 +4566,30 @@ class Ui_MainWindow(object):
         ___qtablewidgetitem89 = self.table_massa_usuarios.horizontalHeaderItem(3)
         ___qtablewidgetitem89.setText(QCoreApplication.translate("MainWindow", u"Confirmar Senha", None));
         ___qtablewidgetitem90 = self.table_massa_usuarios.horizontalHeaderItem(4)
-        ___qtablewidgetitem90.setText(QCoreApplication.translate("MainWindow", u"Endere\u00e7o", None));
+        ___qtablewidgetitem90.setText(QCoreApplication.translate("MainWindow", u"CEP", None));
         ___qtablewidgetitem91 = self.table_massa_usuarios.horizontalHeaderItem(5)
-        ___qtablewidgetitem91.setText(QCoreApplication.translate("MainWindow", u"CEP", None));
+        ___qtablewidgetitem91.setText(QCoreApplication.translate("MainWindow", u"Endere\u00e7o", None));
         ___qtablewidgetitem92 = self.table_massa_usuarios.horizontalHeaderItem(6)
-        ___qtablewidgetitem92.setText(QCoreApplication.translate("MainWindow", u"CPF", None));
+        ___qtablewidgetitem92.setText(QCoreApplication.translate("MainWindow", u"N\u00famero", None));
         ___qtablewidgetitem93 = self.table_massa_usuarios.horizontalHeaderItem(7)
-        ___qtablewidgetitem93.setText(QCoreApplication.translate("MainWindow", u"N\u00famero", None));
+        ___qtablewidgetitem93.setText(QCoreApplication.translate("MainWindow", u"Cidade", None));
         ___qtablewidgetitem94 = self.table_massa_usuarios.horizontalHeaderItem(8)
-        ___qtablewidgetitem94.setText(QCoreApplication.translate("MainWindow", u"Estado", None));
+        ___qtablewidgetitem94.setText(QCoreApplication.translate("MainWindow", u"Bairro", None));
         ___qtablewidgetitem95 = self.table_massa_usuarios.horizontalHeaderItem(9)
-        ___qtablewidgetitem95.setText(QCoreApplication.translate("MainWindow", u"E-mail", None));
+        ___qtablewidgetitem95.setText(QCoreApplication.translate("MainWindow", u"Estado", None));
         ___qtablewidgetitem96 = self.table_massa_usuarios.horizontalHeaderItem(10)
-        ___qtablewidgetitem96.setText(QCoreApplication.translate("MainWindow", u"RG", None));
+        ___qtablewidgetitem96.setText(QCoreApplication.translate("MainWindow", u"Complemento", None));
         ___qtablewidgetitem97 = self.table_massa_usuarios.horizontalHeaderItem(11)
-        ___qtablewidgetitem97.setText(QCoreApplication.translate("MainWindow", u"Complemento", None));
+        ___qtablewidgetitem97.setText(QCoreApplication.translate("MainWindow", u"Telefone", None));
         ___qtablewidgetitem98 = self.table_massa_usuarios.horizontalHeaderItem(12)
-        ___qtablewidgetitem98.setText(QCoreApplication.translate("MainWindow", u"Telefone", None));
+        ___qtablewidgetitem98.setText(QCoreApplication.translate("MainWindow", u"E-mail", None));
         ___qtablewidgetitem99 = self.table_massa_usuarios.horizontalHeaderItem(13)
         ___qtablewidgetitem99.setText(QCoreApplication.translate("MainWindow", u"Data de Nascimento", None));
+        ___qtablewidgetitem100 = self.table_massa_usuarios.horizontalHeaderItem(14)
+        ___qtablewidgetitem100.setText(QCoreApplication.translate("MainWindow", u"RG", None));
+        ___qtablewidgetitem101 = self.table_massa_usuarios.horizontalHeaderItem(15)
+        ___qtablewidgetitem101.setText(QCoreApplication.translate("MainWindow", u"CPF", None));
+        ___qtablewidgetitem102 = self.table_massa_usuarios.horizontalHeaderItem(16)
+        ___qtablewidgetitem102.setText(QCoreApplication.translate("MainWindow", u"CNPJ", None));
     # retranslateUi
 

@@ -7562,17 +7562,12 @@ QTableWidget::item:selected {
              </column>
              <column>
               <property name="text">
-               <string>Endereço</string>
-              </property>
-             </column>
-             <column>
-              <property name="text">
                <string>CEP</string>
               </property>
              </column>
              <column>
               <property name="text">
-               <string>CPF</string>
+               <string>Endereço</string>
               </property>
              </column>
              <column>
@@ -7582,17 +7577,17 @@ QTableWidget::item:selected {
              </column>
              <column>
               <property name="text">
+               <string>Cidade</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>Bairro</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
                <string>Estado</string>
-              </property>
-             </column>
-             <column>
-              <property name="text">
-               <string>E-mail</string>
-              </property>
-             </column>
-             <column>
-              <property name="text">
-               <string>RG</string>
               </property>
              </column>
              <column>
@@ -7607,7 +7602,27 @@ QTableWidget::item:selected {
              </column>
              <column>
               <property name="text">
+               <string>E-mail</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
                <string>Data de Nascimento</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>RG</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>CPF</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>CNPJ</string>
               </property>
              </column>
             </widget>

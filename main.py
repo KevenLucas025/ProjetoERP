@@ -1095,7 +1095,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             detalhes_msg_detalhes.setText("O seu desconto não pode ser menor que 5%. \n Somente descontos maiores serão válidos para esta ação")
             detalhes_msg_detalhes.exec()
 #*********************************************************************************************************************
-    def subscribe_user(self):
+    def subscribe_user(self,registrar_historico_usuarios=False):
         # Verificar se está no modo de edição
         if self.is_editing:
             QMessageBox.warning(None, "Modo de Edição Ativo", 
@@ -2350,7 +2350,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         # Agora, a escolha é diretamente mapeada
         if escolha == "Planilha de Exemplo 1":
-            nome_sugestao = "produtos_exemplos1.xlsx"
+            nome_sugestao = "Produtos Exemplo.xlsx"
             sheet_name = 'Produtos'
             dados = {
                 "Produto": ["Exemplo 1", "Exemplo 2", "Exemplo 3", "Exemplo 4"],
@@ -2368,24 +2368,27 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 ]
             }
         else:
-            nome_sugestao = "produtos_exemplos2.xlsx"
+            nome_sugestao = "Usuários Exemplos.xlsx"
             sheet_name = 'Usuários'
             dados = {
                 "Nome": ["Keven Lucas da Silva Jesus", "Maria Oliveira da Silva", "Pedro Santos Reis", "Carla Lima Medeiros"],
                 "Usuário": ["Gerado automaticamente", "Gerado automaticamente", "Gerado automaticamente", "Gerado automaticamente"],
                 "Senha": ["senha123", "senha456", "senha789", "senha101"],
                 "Confirmar Senha": ["senha123", "senha456", "senha789", "senha101"],
-                "Acesso": ["Administrador", "Usuário", "Usuário", "Convidado"],
+                "CEP": ["00000-0001", "00000-0002", "00000-0003", "00000-0004"],
                 "Endereço": ["Rua A, 123", "Rua B, 456", "Rua C, 789", "Rua D, 101"],
-                "CEP": ["00000-0000", "00000-0000", "00000-0000", "00000-0000"],
-                "CPF": ["000.000.000-01", "000.000.000-02", "000.000.000-03", "000.000.000-04"],
                 "Número": [123, 456, 789, 101],
+                "Cidade": ["Vila Madalena", "Sumaré", "Campinas", "Monte Mor"],
+                "Bairro": ["Centro", "Zona Sul", "Zona Norte", "Zona Leste"],
                 "Estado": ["SP", "RJ", "MG", "PR"],
-                "E-mail": ["keven.lucas00@dhdfge.com", "mariolieira1000@gmail.com","pedrosantos00123@gmail.com","carlalima14520@gmail.com"],
-                "RG": ["00.000.000-1", "00.000.000-2", "00.000.000-3", "00.000.000-4"],
-                "Complemento": ["Apto 1", "", "", ""],
+                "Complemento": ["Apto 1", "Opcional", "Opcional", "465"],
                 "Telefone": ["(11) 00000-0001", "(21) 00000-0002", "(31) 00000-0003", "(41) 00000-0004"],
-                "Data de Nascimento": ["01/01/2000", "02/02/1995", "03/03/1990", "04/04/1985"]
+                "E-mail": ["keven.lucas00@dhdfge.com", "mariolieira1000@gmail.com","pedrosantos00123@gmail.com","carlalima14520@gmail.com"],
+                "Data de Nascimento": ["01/01/2000", "02/02/1995", "03/03/1990", "04/04/1985"],
+                "RG": ["00.000.000-1", "00.000.000-2", "00.000.000-3", "00.000.000-4"],
+                "CPF": ["000.000.000-01", "000.000.000-02", "000.000.000-03", "000.000.000-04"],
+                "CNPJ": ["00.000.000/0001-01", "00.000.000/0001-02", "00.000.000/0001-03", "00.000.000/0001-04"],   
+                "Acesso": ["Convidado", "Usuário", "Usuário", "Convidado"]
             }
         # Gerar a planilha com os dados corretos
         df = pd.DataFrame(dados)
