@@ -91,7 +91,6 @@ class TabelaUsuario(QMainWindow):
         self.limpar_campos_de_texto()
         self.preencher_tabela_usuario()
 
-        self.table_widget.viewport().installEventFilter(self)
 
         # Conectar sinais dos botões
         self.btn_apagar_usuario.clicked.connect(self.confirmar_apagar_usuario)
@@ -102,14 +101,6 @@ class TabelaUsuario(QMainWindow):
         self.btn_selecionar_todos.clicked.connect(self.selecionar_todos)
         self.btn_atualizar_tabela.clicked.connect(self.atualizar_tabela_usuario)
 
-
-#*******************************************************************************************************
-
-    def eventFilter(self, source, event):
-        if event.type() == QEvent.Wheel and source == self.table_widget.viewport():
-            QApplication.sendEvent(self.table_widget, event)
-            return True
-        return super().eventFilter(source, event)
     
     def preencher_tabela_usuario(self):
         self.table_widget.setRowCount(0)
@@ -357,10 +348,8 @@ class TabelaUsuario(QMainWindow):
             dados = list(usuario)
             if len(dados) >= 24:
                 del dados[18]  # Remove "Imagem"
+                dados[21] = usuario_logado
 
-            # Adiciona manualmente "Usuário Logado" e "Acesso"
-            dados.append(usuario_logado)
-            dados.append(usuario[23] if len(usuario) > 23 else "Não Cadastrado")
 
             row_position = self.table_widget.rowCount()
             self.table_widget.insertRow(row_position)
@@ -372,33 +361,30 @@ class TabelaUsuario(QMainWindow):
         self.table_widget.resizeColumnsToContents()
         self.table_widget.resizeRowsToContents()
 #*******************************************************************************************************
-    def obter_usuario_por_nome(self, nome):
-        query = """
-            SELECT "Nome", "Usuário", "Senha", "Confirmar Senha", "CEP", "Endereço",
+    def obter_usuarios_por_filtro(self, campo, valor):
+        query = f"""
+            SELECT "ID","Nome", "Usuário", "Senha", "Confirmar Senha", "CEP", "Endereço",
             "Número", "Cidade", "Bairro", "Estado", "Complemento", "Telefone", "Email",
             "Data de Nascimento", "RG", "CPF", "CNPJ",
             "Última Troca de Senha", "Data da Senha Cadastrada",
             "Data da Inclusão do Usuário", "Segredo", "Usuário Logado", "Acesso"
             FROM users
-            WHERE Nome LIKE ?"""
+            WHERE "{campo}" LIKE ?
+        """
+        parameters = (f"%{valor}%",)
         
-        parameters = (f"%{nome}%",)
-
-        cursor = None
         try:
             db = DataBase()
             connection = db.connecta()
             cursor = connection.cursor()
             cursor.execute(query, parameters)
-            produtos = cursor.fetchall()
-            return produtos
+            return cursor.fetchall()
         except Exception as e:
-            print("Erro ao consultar usuários:", e)
+            print(f"Erro ao filtrar usuários por {campo}:", e)
             return []
         finally:
             if cursor:
                 cursor.close()
-
 #*******************************************************************************************************
     def filtrar_usuario(self):
         msg_box = QMessageBox()
@@ -458,20 +444,33 @@ class TabelaUsuario(QMainWindow):
             def aplicar_filtro():
                 criterio = combo.currentText()
                 valor = txt_entrada.text()
-                print(f"{criterio}: {valor}")
-                usuarios = self.obter_usuario_por_nome(valor)  # você pode mudar conforme o filtro
-                self.atualizar_tabela_usuario_filtrada(usuarios)
-                dialog.close()
+                print(f"Filtro selecionado: {criterio}")
+                print(f"Valor digitado: {valor}")
 
+                mapeamento_campo = {
+                    "Filtrar por Nome": "Nome",
+                    "Filtrar Por Usuário": "Usuário",
+                    "Filtrar Por Acesso": "Acesso",
+                    "Filtrar Por Telefone": "Telefone",
+                    "Filtrar Por Email": "Email",
+                    "Filtrar Por RG": "RG",
+                    "Filtrar Por CPF": "CPF",
+                    "Filtrar Por CNPJ": "CNPJ"
+                }
+
+                campo_bd = mapeamento_campo.get(criterio)
+                if campo_bd:
+                    usuarios = self.obter_usuarios_por_filtro(campo_bd, valor)
+                    print(f"Usuários encontrados: {len(usuarios)}")  # <-- debug
+                    self.atualizar_tabela_usuario_filtrada(usuarios)
+                    dialog.close()
+            
             btn_filtrar.clicked.connect(aplicar_filtro)
-
-            dialog.setLayout(layout)
-            dialog.exec()
-
 
             
 
-
+            dialog.setLayout(layout)
+            dialog.exec()
 #*******************************************************************************************************
     def selecionar_todos(self):
         # Verificar se os checkboxes já estão visíveis na primeira coluna antes da coluna ID
