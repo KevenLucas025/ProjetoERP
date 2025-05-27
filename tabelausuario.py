@@ -35,7 +35,7 @@ class TabelaUsuario(QMainWindow):
 
         # Criar tabela
         self.table_widget = QTableWidget()
-        self.table_widget.setColumnCount(23)
+        self.table_widget.setColumnCount(24)
         self.table_widget.setFocusPolicy(Qt.StrongFocus)
         self.table_widget.setHorizontalScrollMode(QAbstractItemView.ScrollPerPixel)
         self.table_widget.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
@@ -105,10 +105,8 @@ class TabelaUsuario(QMainWindow):
     def preencher_tabela_usuario(self):
         self.table_widget.setRowCount(0)
 
-        usuario_logado = self.config.obter_usuario_logado()
-
         column_titles = [
-            "Nome", "Usuário", "Senha", "Confirmar Senha", "CEP", "Endereço",
+            "ID","Nome", "Usuário", "Senha", "Confirmar Senha", "CEP", "Endereço",
             "Número", "Cidade", "Bairro", "Estado", "Complemento", "Telefone", "Email",
             "Data de Nascimento", "RG", "CPF", "CNPJ",
             "Última Troca de Senha", "Data da Senha Cadastrada",
@@ -346,9 +344,9 @@ class TabelaUsuario(QMainWindow):
         for usuario in usuarios:
             # Remover a coluna "Imagem" (índice 18) de uma cópia da tupla
             dados = list(usuario)
-            if len(dados) >= 24:
+            if len(dados) >= 25:
                 del dados[18]  # Remove "Imagem"
-                dados[21] = usuario_logado
+                dados[23] = usuario_logado
 
 
             row_position = self.table_widget.rowCount()
@@ -441,6 +439,58 @@ class TabelaUsuario(QMainWindow):
             btn_filtrar = QPushButton("Filtrar")
             layout.addWidget(btn_filtrar)
 
+            def on_text_edited(text):
+                cursor_pos = txt_entrada.cursorPosition()
+                criterio = combo.currentText()
+                numero = ''.join(filter(str.isdigit, text))
+
+                formatado = numero  # valor padrão
+
+                if criterio == "Filtrar Por CPF":
+                    if len(numero) > 9:
+                        partes = [numero[:3], numero[3:6], numero[6:9], numero[9:]]
+                        formatado = ".".join(partes[:3]) + ("-" + partes[3] if partes[3] else "") if numero else ""
+
+                elif criterio == "Filtrar Por CNPJ":
+                    if len(numero) > 14:
+                        numero = numero[:14]
+                    if len(numero) >= 8:
+                        formatado = "{}.{}.{}/{}-{}".format(
+                            numero[:2], numero[2:5], numero[5:8],
+                            numero[8:12], numero[12:14]
+                        ).rstrip("-/")
+                    else:
+                        formatado = numero
+
+                elif criterio == "Filtrar Por RG":
+                    if len(numero) > 9:
+                        numero = numero[:9]
+                    if len(numero) == 9:
+                        formatado = "{}.{}.{}-{}".format(numero[:2], numero[2:5], numero[5:8], numero[8])
+                    else:
+                        formatado = numero
+
+                elif criterio == "Filtrar Por Telefone":
+                    if len(numero) > 11:
+                        numero = numero[:11]
+                    if len(numero) >= 10:
+                        formatado = "({}) {}-{}".format(numero[:2], numero[2:7], numero[7:])
+                    elif len(numero) >= 6:
+                        formatado = "({}) {}-{}".format(numero[:2], numero[2:6], numero[6:])
+                    elif len(numero) >= 2:
+                        formatado = "({}) {}".format(numero[:2], numero[2:])
+                    else:
+                        formatado = numero
+
+                # Evita loop de evento
+                if txt_entrada.text() != formatado:
+                    txt_entrada.blockSignals(True)
+                    txt_entrada.setText(formatado)
+                    txt_entrada.setCursorPosition(len(formatado))
+                    txt_entrada.blockSignals(False)
+
+            txt_entrada.textEdited.connect(on_text_edited)
+
             def aplicar_filtro():
                 criterio = combo.currentText()
                 valor = txt_entrada.text()
@@ -471,6 +521,8 @@ class TabelaUsuario(QMainWindow):
 
             dialog.setLayout(layout)
             dialog.exec()
+
+
 #*******************************************************************************************************
     def selecionar_todos(self):
         # Verificar se os checkboxes já estão visíveis na primeira coluna antes da coluna ID

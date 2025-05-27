@@ -815,7 +815,7 @@ class DataBase:
 
     def obter_usuarios_sem_imagem(self):
         query = """
-            SELECT "Nome", "Usuário", "Senha", "Confirmar Senha", "CEP", "Endereço",
+            SELECT "ID","Nome", "Usuário", "Senha", "Confirmar Senha", "CEP", "Endereço",
                 "Número", "Cidade", "Bairro", "Estado", "Complemento", "Telefone", "Email",
                 "Data de Nascimento", "RG", "CPF", "CNPJ",
                 "Última Troca de Senha", "Data da Senha Cadastrada",
