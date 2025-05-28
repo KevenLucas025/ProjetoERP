@@ -246,8 +246,6 @@ class TabelaUsuario(QMainWindow):
             row_index = self.table_widget.currentRow()
             id_usuario = int(self.table_widget.item(row_index, 0).text())
 
-            print("ID do usuário selecionado:", id_usuario)
-
             # Obter a imagem do banco de dados
             imagem_data = self.recuperar_imagem_do_banco(id_usuario)
 
@@ -276,37 +274,44 @@ class TabelaUsuario(QMainWindow):
                 print("Imagem não encontrada no banco de dados.")
 
             # Obter os dados do usuário selecionado
-            usuario_nome = self.table_widget.item(row_index, 1).text()
-            usuario_usuario = self.table_widget.item(row_index, 2).text()
-            usuario_senha = self.table_widget.item(row_index, 3).text()
-            usuario_confirmar_senha = self.table_widget.item(row_index, 4).text()
-            usuario_acesso = self.table_widget.item(row_index, 5).text()
-            usuario_endereco = self.table_widget.item(row_index, 6).text()
-            usuario_cep = self.table_widget.item(row_index, 7).text()
-            usuario_cpf = self.table_widget.item(row_index, 8).text()
-            usuario_numero = self.table_widget.item(row_index, 9).text()
-            usuario_estado = self.table_widget.item(row_index, 10).text()
-            usuario_email = self.table_widget.item(row_index, 11).text()
-            usuario_complemento = self.table_widget.item(row_index, 12).text()
-            usuario_telefone = self.table_widget.item(row_index, 13).text()
-            usuario_data_nascimento = self.table_widget.item(row_index, 14).text()
-            usuario_rg = self.table_widget.item(row_index, 15).text()
+            usuario_nome = self.pegar_linha_do_texto(self.table_widget, row_index, 1)
+            usuario_usuario = self.pegar_linha_do_texto(self.table_widget, row_index, 2)
+            usuario_senha = self.pegar_linha_do_texto(self.table_widget, row_index, 3)
+            usuario_confirmar_senha = self.pegar_linha_do_texto(self.table_widget, row_index, 4)
+            usuario_cep = self.pegar_linha_do_texto(self.table_widget, row_index, 5)
+            usuario_endereco = self.pegar_linha_do_texto(self.table_widget, row_index, 6)
+            usuario_numero = self.pegar_linha_do_texto(self.table_widget, row_index, 7)
+            usuario_cidade = self.pegar_linha_do_texto(self.table_widget, row_index, 8)
+            ususario_bairro = self.pegar_linha_do_texto(self.table_widget, row_index, 9)
+            usuario_estado = self.pegar_linha_do_texto(self.table_widget, row_index, 10)
+            usuario_complemento = self.pegar_linha_do_texto(self.table_widget, row_index, 11)
+            usuario_telefone = self.pegar_linha_do_texto(self.table_widget, row_index, 12)
+            usuario_email = self.pegar_linha_do_texto(self.table_widget, row_index, 13)
+            usuario_data_nascimento = self.pegar_linha_do_texto(self.table_widget, row_index, 14)
+            usuario_rg = self.pegar_linha_do_texto(self.table_widget, row_index, 15)
+            usuario_cpf = self.pegar_linha_do_texto(self.table_widget, row_index, 16)
+            usuario_cnpj = self.pegar_linha_do_texto(self.table_widget, row_index, 17)
+            usuario_acesso = self.pegar_linha_do_texto(self.table_widget, row_index, 18)
+
 
             # Preencher os campos da MainWindow com os dados do usuário selecionado
             self.main_window.txt_nome.setText(usuario_nome)
             self.main_window.txt_usuario.setText(usuario_usuario)
             self.main_window.txt_senha.setText(usuario_senha)
             self.main_window.txt_confirmar_senha.setText(usuario_confirmar_senha)
-            self.main_window.txt_telefone.setText(usuario_telefone)
+            self.main_window.txt_cep.setText(usuario_cep)
             self.main_window.txt_endereco.setText(usuario_endereco)
             self.main_window.txt_numero.setText(usuario_numero)
+            self.main_window.txt_cidade.setText(usuario_cidade)
+            self.main_window.txt_bairro.setText(ususario_bairro)
+            self.main_window.perfil_estado.setCurrentText(usuario_estado)
             self.main_window.txt_complemento.setText(usuario_complemento)
+            self.main_window.txt_telefone.setText(usuario_telefone)
             self.main_window.txt_email.setText(usuario_email)
             self.main_window.txt_data_nascimento.setText(usuario_data_nascimento)
             self.main_window.txt_rg.setText(usuario_rg)
             self.main_window.txt_cpf.setText(usuario_cpf)
-            self.main_window.txt_cep.setText(usuario_cep)
-            self.main_window.perfil_estado.setCurrentText(usuario_estado)
+            self.main_window.txt_cnpj.setText(usuario_cnpj)
             self.main_window.perfil_usuarios.setCurrentText(usuario_acesso)
 
             # Atualizar o layout do frame_imagem_cadastro com o QLabel
@@ -318,6 +323,12 @@ class TabelaUsuario(QMainWindow):
             self.main_window.imagem_removida_usuario = False  # Indica que a imagem não foi removida
 
             self.usuario_selecionado = True  # Indica que um usuário foi selecionado
+
+            self.close()
+    
+    def pegar_linha_do_texto(self, tabela,linha,coluna,padrao="Não Cadastrado"):
+        item = tabela.item(linha,coluna)
+        return item.text() if item and item.text().strip() else padrao
 
     def usuario_foi_selecionado(self):
         return self.usuario_selecionado     
@@ -439,63 +450,71 @@ class TabelaUsuario(QMainWindow):
             btn_filtrar = QPushButton("Filtrar")
             layout.addWidget(btn_filtrar)
 
-            def on_text_edited(text):
+            def formatar_texto(text):
                 cursor_pos = txt_entrada.cursorPosition()
                 criterio = combo.currentText()
-                numero = ''.join(filter(str.isdigit, text))
-
-                formatado = numero  # valor padrão
+                formatado = text  # valor padrão
+                numero = ''.join(filter(str.isdigit, text))  # agora sempre existe
 
                 if criterio == "Filtrar Por CPF":
-                    if len(numero) > 9:
-                        partes = [numero[:3], numero[3:6], numero[6:9], numero[9:]]
-                        formatado = ".".join(partes[:3]) + ("-" + partes[3] if partes[3] else "") if numero else ""
+                    numero = numero[:11]
+                    if len(numero) <= 3:
+                        formatado = numero
+                    elif len(numero) <= 6:
+                        formatado = "{}.{}".format(numero[:3], numero[3:])
+                    elif len(numero) <= 9:
+                        formatado = "{}.{}.{}".format(numero[:3], numero[3:6], numero[6:])
+                    else:
+                        formatado = "{}.{}.{}-{}".format(numero[:3], numero[3:6], numero[6:9], numero[9:])
 
                 elif criterio == "Filtrar Por CNPJ":
-                    if len(numero) > 14:
-                        numero = numero[:14]
-                    if len(numero) >= 8:
-                        formatado = "{}.{}.{}/{}-{}".format(
-                            numero[:2], numero[2:5], numero[5:8],
-                            numero[8:12], numero[12:14]
-                        ).rstrip("-/")
-                    else:
+                    numero = numero[:14]
+                    if len(numero) <= 2:
                         formatado = numero
+                    elif len(numero) <= 5:
+                        formatado = "{}.{}".format(numero[:2], numero[2:])
+                    elif len(numero) <= 8:
+                        formatado = "{}.{}.{}".format(numero[:2], numero[2:5], numero[5:])
+                    elif len(numero) <= 12:
+                        formatado = "{}.{}.{}/{}".format(numero[:2], numero[2:5], numero[5:8], numero[8:])
+                    else:
+                        formatado = "{}.{}.{}/{}-{}".format(numero[:2], numero[2:5], numero[5:8], numero[8:12], numero[12:14])
 
                 elif criterio == "Filtrar Por RG":
-                    if len(numero) > 9:
-                        numero = numero[:9]
-                    if len(numero) == 9:
-                        formatado = "{}.{}.{}-{}".format(numero[:2], numero[2:5], numero[5:8], numero[8])
-                    else:
+                    numero = numero[:9]
+                    if len(numero) <= 2:
                         formatado = numero
+                    elif len(numero) <= 5:
+                        formatado = "{}.{}".format(numero[:2], numero[2:])
+                    elif len(numero) <= 8:
+                        formatado = "{}.{}.{}".format(numero[:2], numero[2:5], numero[5:])
+                    else:
+                        formatado = "{}.{}.{}-{}".format(numero[:2], numero[2:5], numero[5:8], numero[8:])
 
                 elif criterio == "Filtrar Por Telefone":
-                    if len(numero) > 11:
-                        numero = numero[:11]
-                    if len(numero) >= 10:
-                        formatado = "({}) {}-{}".format(numero[:2], numero[2:7], numero[7:])
-                    elif len(numero) >= 6:
-                        formatado = "({}) {}-{}".format(numero[:2], numero[2:6], numero[6:])
-                    elif len(numero) >= 2:
+                    numero = numero[:11]
+                    if len(numero) <= 2:
+                        formatado = "({})".format(numero)
+                    elif len(numero) <= 6:
                         formatado = "({}) {}".format(numero[:2], numero[2:])
+                    elif len(numero) <= 10:
+                        formatado = "({}) {}-{}".format(numero[:2], numero[2:6], numero[6:])
                     else:
-                        formatado = numero
+                        formatado = "({}) {}-{}".format(numero[:2], numero[2:7], numero[7:])
 
                 # Evita loop de evento
                 if txt_entrada.text() != formatado:
                     txt_entrada.blockSignals(True)
                     txt_entrada.setText(formatado)
-                    txt_entrada.setCursorPosition(len(formatado))
+                    nova_pos = min(cursor_pos + 1, len(formatado))
+                    txt_entrada.setCursorPosition(nova_pos)
                     txt_entrada.blockSignals(False)
 
-            txt_entrada.textEdited.connect(on_text_edited)
+            txt_entrada.textEdited.connect(formatar_texto)
 
             def aplicar_filtro():
                 criterio = combo.currentText()
                 valor = txt_entrada.text()
-                print(f"Filtro selecionado: {criterio}")
-                print(f"Valor digitado: {valor}")
 
                 mapeamento_campo = {
                     "Filtrar por Nome": "Nome",
@@ -511,18 +530,20 @@ class TabelaUsuario(QMainWindow):
                 campo_bd = mapeamento_campo.get(criterio)
                 if campo_bd:
                     usuarios = self.obter_usuarios_por_filtro(campo_bd, valor)
-                    print(f"Usuários encontrados: {len(usuarios)}")  # <-- debug
-                    self.atualizar_tabela_usuario_filtrada(usuarios)
                     dialog.close()
-            
+
+                    if not usuarios:
+                        QMessageBox.warning(
+                            dialog,
+                            "Nenhum resultado encontrado",
+                            f"Nenhum usuário com {campo_bd} '{valor}' foi encontrado no sistema"
+                        )
+                    else:
+                        self.atualizar_tabela_usuario_filtrada(usuarios)
+
             btn_filtrar.clicked.connect(aplicar_filtro)
-
-            
-
             dialog.setLayout(layout)
             dialog.exec()
-
-
 #*******************************************************************************************************
     def selecionar_todos(self):
         # Verificar se os checkboxes já estão visíveis na primeira coluna antes da coluna ID

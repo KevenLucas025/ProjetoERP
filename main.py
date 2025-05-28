@@ -1289,6 +1289,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.txt_usuario.clear()
         self.txt_telefone.clear()
         self.txt_endereco.clear()
+        self.txt_cidade.clear()
+        self.txt_bairro.clear()
         self.txt_numero.clear()
         self.txt_complemento.clear()
         self.txt_email.clear()
