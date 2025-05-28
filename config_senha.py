@@ -8,9 +8,9 @@ import re
 
 
 class BotaoAjuda(QHBoxLayout):
-    def __init__(self, label_text="", help_text="", parent=None):
+    def __init__(self, main_window,label_text="", help_text="", parent=None):
         super().__init__(parent)
-
+        self.main_window = main_window
         self.label = QLabel(label_text)
         self.line_edit = QLineEdit()
         self.help_button = QPushButton("?")
@@ -278,10 +278,23 @@ class TrocarSenha(QDialog):
             print(f"Erro ao obter a senha atual: {e}")
             return None
         
-    def validar_senha(self, senha):
-        if re.search(r'[A-Z]', senha) and re.search(r'[/*\-+@#$%&!]', senha):
-            return True
-        return False
+    
+    def validar_senha(self, senha, confirmar_senha):
+        """
+        Valida se a senha tem pelo menos 8 caracteres, letras, números
+        e se a confirmação de senha é igual à senha.
+        """
+        if senha != confirmar_senha:
+            return False  # As senhas não coincidem
+
+        if (
+            len(senha) >= 8 and
+            re.search(r'[A-Za-z]', senha) and
+            re.search(r'[0-9]', senha)
+        ):
+            return True  # Senha válida e confirmação correta
+
+        return False  # Senha fraca
     
     def verificar_email(self, email):
         query = "SELECT 1 FROM users WHERE Email = ?"
