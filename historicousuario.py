@@ -1640,7 +1640,7 @@ class Pagina_Usuarios(QWidget):
                     "Data de Nascimento": data_nascimento
                 }
 
-                self.main_window.subscribe_user(usuario_info=dados_usuarios_massa, registrar_historico=True)
+                self.main_window.subscribe_user(dados_usuarios_massa, registrar_historico=True)
 
                 # Registrar no histórico
                 descricao = f"Usuário {usuario} foi cadastrado no sistema!"
