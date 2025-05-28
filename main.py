@@ -15,7 +15,7 @@ from mane_python import Ui_MainWindow
 from database import DataBase
 import sys
 import locale
-from config_senha import TrocarSenha, BotaoAjuda
+from config_senha import TrocarSenha
 from atualizarprodutos import AtualizarProduto
 from tabelaprodutos import TabelaProdutos
 from configuracoes import Configuracoes_Login
@@ -24,6 +24,7 @@ from atualizarusuario import AtualizarUsuario
 from pg_configuracoes import Pagina_Configuracoes
 from estoqueprodutos import EstoqueProduto
 from historicousuario import Pagina_Usuarios
+from utils import MostrarSenha
 from clientes import Clientes
 import json
 import sqlite3
@@ -68,6 +69,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.connection = connection
 
         self.login_window = login_window
+
+        self.exibir_senha = MostrarSenha(self,self.txt_senha)
+        self.exibir_senha_usuario = MostrarSenha(self,self.txt_confirmar_senha)
 
         #Cria as tabelas no banco de dados sempre que executar o sistema em um novo ambiente
         self.db.create_table_products()
@@ -301,7 +305,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                                                self.btn_atualizar_saida,self.btn_atualizar_estoque,self.btn_historico,
                                                self.btn_abrir_planilha,self.line_excel,self.progress_excel,
                                                self.btn_incluir_produto_sistema,self.btn_fazer_cadastro_massa_produtos,
-                                               self.btn_abrir_planilha_massa_produtos,self.progress_massa_produtos,self.line_edit_massa_produtos,)
+                                               self.btn_abrir_planilha_massa_produtos,self.progress_massa_produtos,self.line_edit_massa_produtos)
+        
+        self.configuracoes_senha = TrocarSenha(self)  
+
         
 
         # Criar instância de TabelaProdutos passando uma referência à MainWindow
@@ -392,6 +399,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.btn_verificar_estoque.clicked.connect(self.mostrar_page_estoque)
         self.btn_apagar_cadastro.clicked.connect(self.eliminar_campos_usuarios)
         self.btn_remover_imagem_usuario.clicked.connect(self.retirar_imagem_usuario)
+        self.btn_sair_modo_edicao.clicked.connect(self.sair_modo_edicao)
         
         self.btn_fazer_cadastro.clicked.connect(self.subscribe_user)
         self.btn_editar.clicked.connect(self.exibir_tabela_produtos)
@@ -740,7 +748,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         sql = """
             UPDATE users 
             SET Nome=?, Usuário=?,Telefone=?, Endereço=?, Número=?, Complemento=?, 
-            Email=?, Data_Nascimento=?, RG=?, CPF=?, CEP=?, Estado=?, Senha=?,
+            Email=?, Data de Nascimento=?, RG=?, CPF=?, CEP=?, Estado=?, Senha=?,
             "Confirmar Senha"=?,Acesso=?
             WHERE id=?
         """
@@ -755,7 +763,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             sql = """
                 UPDATE users 
                 SET Nome=?, Usuário=?,Telefone=?, Endereço=?, Número=?, Complemento=?, 
-                Email=?, Data_Nascimento=?, RG=?, CPF=?, CEP=?, Estado=?, Senha=?, Imagem=?,
+                Email=?, Data de Nascimento=?, RG=?, CPF=?, CEP=?, Estado=?, Senha=?, Imagem=?,
                 "Confirmar Senha"=?, Acesso=?
                 WHERE id=?
             """
@@ -1087,7 +1095,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             detalhes_msg_detalhes.setText("O seu desconto não pode ser menor que 5%. \n Somente descontos maiores serão válidos para esta ação")
             detalhes_msg_detalhes.exec()
 #*********************************************************************************************************************
-    def subscribe_user(self):
+    def subscribe_user(self,registrar_historico_usuarios=False):
         # Verificar se está no modo de edição
         if self.is_editing:
             QMessageBox.warning(None, "Modo de Edição Ativo", 
@@ -1142,7 +1150,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 return
             
             # Verifica se a senha é válida
-            if not self.validar_senha(senha) or not self.validar_senha(confirmar_senha):
+            if not self.configuracoes_senha.validar_senha(senha,confirmar_senha):
                 self.exibir_asteriscos_usuarios(["senha", "confirmar senha"])
                 QMessageBox.warning(None, "Erro", "A senha deve conter pelo menos 8 caracteres, incluindo letras e números.")
                 return
@@ -2342,7 +2350,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         # Agora, a escolha é diretamente mapeada
         if escolha == "Planilha de Exemplo 1":
-            nome_sugestao = "produtos_exemplos1.xlsx"
+            nome_sugestao = "Produtos Exemplo.xlsx"
             sheet_name = 'Produtos'
             dados = {
                 "Produto": ["Exemplo 1", "Exemplo 2", "Exemplo 3", "Exemplo 4"],
@@ -2360,24 +2368,27 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 ]
             }
         else:
-            nome_sugestao = "produtos_exemplos2.xlsx"
+            nome_sugestao = "Usuários Exemplos.xlsx"
             sheet_name = 'Usuários'
             dados = {
                 "Nome": ["Keven Lucas da Silva Jesus", "Maria Oliveira da Silva", "Pedro Santos Reis", "Carla Lima Medeiros"],
                 "Usuário": ["Gerado automaticamente", "Gerado automaticamente", "Gerado automaticamente", "Gerado automaticamente"],
                 "Senha": ["senha123", "senha456", "senha789", "senha101"],
                 "Confirmar Senha": ["senha123", "senha456", "senha789", "senha101"],
-                "Acesso": ["Administrador", "Usuário", "Usuário", "Convidado"],
+                "CEP": ["00000-0001", "00000-0002", "00000-0003", "00000-0004"],
                 "Endereço": ["Rua A, 123", "Rua B, 456", "Rua C, 789", "Rua D, 101"],
-                "CEP": ["00000-0000", "00000-0000", "00000-0000", "00000-0000"],
-                "CPF": ["000.000.000-01", "000.000.000-02", "000.000.000-03", "000.000.000-04"],
                 "Número": [123, 456, 789, 101],
+                "Cidade": ["Vila Madalena", "Sumaré", "Campinas", "Monte Mor"],
+                "Bairro": ["Centro", "Zona Sul", "Zona Norte", "Zona Leste"],
                 "Estado": ["SP", "RJ", "MG", "PR"],
-                "E-mail": ["keven.lucas00@dhdfge.com", "mariolieira1000@gmail.com","pedrosantos00123@gmail.com","carlalima14520@gmail.com"],
-                "RG": ["00.000.000-1", "00.000.000-2", "00.000.000-3", "00.000.000-4"],
-                "Complemento": ["Apto 1", "", "", ""],
+                "Complemento": ["Apto 1", "Opcional", "Opcional", "465"],
                 "Telefone": ["(11) 00000-0001", "(21) 00000-0002", "(31) 00000-0003", "(41) 00000-0004"],
-                "Data de Nascimento": ["01/01/2000", "02/02/1995", "03/03/1990", "04/04/1985"]
+                "E-mail": ["keven.lucas00@dhdfge.com", "mariolieira1000@gmail.com","pedrosantos00123@gmail.com","carlalima14520@gmail.com"],
+                "Data de Nascimento": ["01/01/2000", "02/02/1995", "03/03/1990", "04/04/1985"],
+                "RG": ["00.000.000-1", "00.000.000-2", "00.000.000-3", "00.000.000-4"],
+                "CPF": ["000.000.000-01", "000.000.000-02", "000.000.000-03", "000.000.000-04"],
+                "CNPJ": ["00.000.000/0001-01", "00.000.000/0001-02", "00.000.000/0001-03", "00.000.000/0001-04"],   
+                "Acesso": ["Convidado", "Usuário", "Usuário", "Convidado"]
             }
         # Gerar a planilha com os dados corretos
         df = pd.DataFrame(dados)
@@ -2436,6 +2447,37 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if selected_action == self.action_em_massa_usuarios:
             self.paginas_sistemas.setCurrentWidget(self.page_cadastrar_massa_usuarios)
 
+    # Sair do modo edição na página de cadastrar usuários
+    def sair_modo_edicao(self):
+        if not self.is_editing:
+            QMessageBox.warning(None, "Aviso", "Você não está no modo de edição.")
+            return
+
+        self.is_editing = False
+        self.selected_user = None
+         # Limpa todos os campos (pode reaproveitar o trecho do subscribe_user)
+        self.txt_nome.clear()
+        self.txt_usuario.clear()
+        self.txt_senha.clear()
+        self.txt_confirmar_senha.clear()
+        self.txt_cpf.clear()
+        self.txt_cnpj.clear()
+        self.txt_email.clear()
+        self.txt_numero.clear()
+        self.txt_endereco.clear()
+        self.txt_bairro.clear()
+        self.txt_cidade.clear()
+        self.txt_cep.clear()
+        self.txt_complemento.clear()
+        self.txt_rg.clear()
+        self.txt_telefone.clear()
+        self.txt_data_nascimento.clear()
+        self.perfil_estado.setCurrentIndex(0)
+        self.perfil_usuarios.setCurrentIndex(0)
+        self.label_imagem_usuario.clear()
+
+        # Se quiser mostrar visualmente que saiu do modo edição (opcional)
+        QMessageBox.information(None, "Edição cancelada", "Você saiu do modo de edição.")
 
 # Função principal
 if __name__ == '__main__':
@@ -2446,6 +2488,7 @@ if __name__ == '__main__':
     # Usa estilo nativo do Windows explicitamente
     app.setStyle("WindowsVista")
     app.setWindowIcon(QIcon("imagens/ícone_sistema_provisório.png"))
+    
     
     login_window.show()
     sys.exit(app.exec())

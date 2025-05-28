@@ -1,170 +1,138 @@
 from PySide6.QtWidgets import (QDialog, QPushButton, QVBoxLayout, QTableWidget, 
                                QTableWidgetItem, QMessageBox, QCheckBox, QLabel, QLineEdit, 
-                               QLabel, QFrame,QGridLayout,QFileDialog)
+                               QLabel, QFrame,QAbstractItemView,QApplication,QMainWindow,QWidget,QComboBox)
 from PySide6 import QtWidgets
-from PySide6.QtGui import QPixmap, Qt, QImage
-from PySide6.QtCore import  Qt,QRect
+from PySide6.QtGui import QPixmap, Qt, QImage,QBrush, QColor
+from PySide6.QtCore import  Qt,QEvent
 from PySide6 import QtCore
 from database import DataBase, sqlite3
 import base64
 import re
 import os
+from configuracoes import Configuracoes_Login
 
-
-class TabelaUsuario(QDialog):
+class TabelaUsuario(QMainWindow):
     def __init__(self, main_window, parent=None):
         super().__init__(parent)
         self.main_window = main_window
-        self.frame_imagem_cadastro = QFrame()  # Adicionar o atributo frame_imagem_cadastro
-        self.db = DataBase()  # Inicializando o atributo db
+        self.frame_imagem_cadastro = QFrame()
+        self.db = DataBase()
         self.setWindowTitle("Tabela de Usuários")
         self.setMinimumWidth(800)
         self.setMinimumHeight(600)
 
-        self.usuario_selecionado = False  # Adiciona um atributo para verificar se um usuário foi selecionado
+        self.config = Configuracoes_Login(self)
+        self.config.carregar()
 
-        cursor = None
+        self.usuarios = self.db.get_users()
+        self.usuario_selecionado = False
 
-        self.limpar_campos_de_texto() 
+        # Widget central e layout principal vertical
+        widget_central = QWidget()
+        self.layout_tabela = QVBoxLayout(widget_central)
 
-        # Inicializar a tabela
+        self.limpar_campos_de_texto()
+
+        # Criar tabela
         self.table_widget = QTableWidget()
-        self.table_widget.setColumnCount(20)  # Definir o número de colunas
-        
-        # Definir os cabeçalhos das colunas
-        headers = [
-            "ID", "Nome", "Usuário", "Senha","Confirmar Senha", "Acesso", "Endereço", "CEP", "CPF", 
-            "Número", "Estado", "Email", "Complemento", "Telefone", "Data de Nascimento", "RG", "Imagem"]
-        self.table_widget.setHorizontalHeaderLabels(headers)
-        
-        # Layout para a janela da tabela
-        layout_tabela = QVBoxLayout()
-        layout_tabela.addWidget(self.table_widget)
-        self.setLayout(layout_tabela)
-        
-        # Preencher a tabela com os dados dos usuários
-        self.preencher_tabela_usuario()
-
-        
-        # Personalizar o estilo dos cabeçalhos de linha e coluna
+        self.table_widget.setColumnCount(24)
+        self.table_widget.setFocusPolicy(Qt.StrongFocus)
+        self.table_widget.setHorizontalScrollMode(QAbstractItemView.ScrollPerPixel)
+        self.table_widget.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
         font = self.table_widget.horizontalHeader().font()
         font.setBold(True)
         self.table_widget.horizontalHeader().setFont(font)
         self.table_widget.verticalHeader().setFont(font)
 
-        # Criar o QLabel para exibir a imagem do usuário
+        # Criar QLabel para imagem
         self.label_imagem_usuario = QLabel()
-        self.label_imagem_usuario.setScaledContents(True)  # Redimensiona a imagem para o tamanho do QLabel
-
-        #self.configure_frame_imagem_cadastro() # Configurar o layout do frame_imagem_cadastro
-
-        # Criar o layout para o frame_imagem_cadastro e adicionar o QLabel
+        self.label_imagem_usuario.setScaledContents(True)
         layout_usuario = QVBoxLayout()
         layout_usuario.addWidget(self.label_imagem_usuario)
         self.main_window.frame_imagem_cadastro.setLayout(layout_usuario)
 
-        # Botão para apagar usuário, dentro da tabela usuário
+        # Botões (verticais para ficar empilhados e largos)
         self.btn_apagar_usuario = QPushButton("Apagar Usuários")
-        layout_tabela.addWidget(self.btn_apagar_usuario)  # Corrigido aqui
-
-        self.btn_apagar_usuario.clicked.connect(self.fechar_janela_tabela)
-
         self.btn_editar_usuario = QPushButton("Atualizar Usuário")
-        layout_tabela.addWidget(self.btn_editar_usuario)
-
-        self.btn_editar_usuario.clicked.connect(self.fechar_janela_tabela)
-
         self.btn_filtrar_usuario = QPushButton("Filtrar Usuários")
-        layout_tabela.addWidget(self.btn_filtrar_usuario)
-
-        #self.btn_apagar_usuario.clicked.connect(self.fechar_janela_tabela) fechar janela ao clicar no botão filtrar
-
         self.btn_selecionar_todos = QPushButton("Selecionar Usuários")
-        layout_tabela.addWidget(self.btn_selecionar_todos)
-
-        #self.btn_apagar_usuario.clicked.connect(self.fechar_janela_tabela)
-        
         self.btn_ordenar_usuario = QPushButton("Ordenar Usuários")
-        layout_tabela.addWidget(self.btn_ordenar_usuario)
-
-
         self.btn_visualizar_imagem = QPushButton("Visualizar Imagem")
-        layout_tabela.addWidget(self.btn_visualizar_imagem)
-        
         self.btn_atualizar_tabela = QPushButton("Atualizar Tabela")
-        layout_tabela.addWidget(self.btn_atualizar_tabela)
 
-        # Adicionar a tabela ao layout
-        layout_tabela.addWidget(self.table_widget)
-        
-        # Definir o layout da janela
-        self.setLayout(layout_tabela)
+        layout_botoes = QVBoxLayout()
+        layout_botoes.addWidget(self.btn_apagar_usuario)
+        layout_botoes.addWidget(self.btn_editar_usuario)
+        layout_botoes.addWidget(self.btn_filtrar_usuario)
+        layout_botoes.addWidget(self.btn_selecionar_todos)
+        layout_botoes.addWidget(self.btn_ordenar_usuario)
+        layout_botoes.addWidget(self.btn_visualizar_imagem)
+        layout_botoes.addWidget(self.btn_atualizar_tabela)
+
+        # Faz os botões ficarem do tamanho da largura da janela
+        for btn in [self.btn_apagar_usuario, self.btn_editar_usuario, self.btn_filtrar_usuario,
+                    self.btn_selecionar_todos, self.btn_ordenar_usuario, self.btn_visualizar_imagem,
+                    self.btn_atualizar_tabela]:
+            btn.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed)
+
+        # Adicionar layout dos botões em cima
+        self.layout_tabela.addLayout(layout_botoes)
+
+        # Depois adicionar a tabela (ocupando o restante)
+        self.layout_tabela.addWidget(self.table_widget)
+
+        # Adicionar o frame de imagem (se quiser que fique embaixo da tabela)
+        self.layout_tabela.addWidget(self.frame_imagem_cadastro)
+
+        # Definir widget central
+        self.setCentralWidget(widget_central)
+
+        # Inicializar a tabela e limpar campos
+        self.limpar_campos_de_texto()
+        self.preencher_tabela_usuario()
 
 
+        # Conectar sinais dos botões
         self.btn_apagar_usuario.clicked.connect(self.confirmar_apagar_usuario)
         self.btn_editar_usuario.clicked.connect(self.editar_usuario)
         self.btn_filtrar_usuario.clicked.connect(self.filtrar_usuario)
         self.btn_ordenar_usuario.clicked.connect(self.ordenar_usuario)
         self.btn_visualizar_imagem.clicked.connect(self.visualizar_imagem_usuario)
         self.btn_selecionar_todos.clicked.connect(self.selecionar_todos)
-        self.btn_filtrar_usuario.clicked.connect(self.filtrar_usuario)
-#******************************************************************************************************* 
-    
+        self.btn_atualizar_tabela.clicked.connect(self.atualizar_tabela_usuario)
 
-#*******************************************************************************************************
+    
     def preencher_tabela_usuario(self):
-        # Limpar a tabela antes de preencher
         self.table_widget.setRowCount(0)
 
-        # Definir os títulos das colunas
         column_titles = [
-            "ID",
-            "Nome",
-            "Usuário",
-            "Senha",
-            "Confirmar Senha",
-            "Acesso",
-            "Endereço",
-            "CEP",
-            "CPF",
-            "Número",
-            "Estado",
-            "Email",
-            "RG",
-            "Complemento",
-            "Telefone",
-            "Data de Nascimento",
-            "Imagem",
-            "Última Troca de Senha",
-            "Data da Senha Cadastrada",
-            "Data da Inclusão do Usuário"
+            "ID","Nome", "Usuário", "Senha", "Confirmar Senha", "CEP", "Endereço",
+            "Número", "Cidade", "Bairro", "Estado", "Complemento", "Telefone", "Email",
+            "Data de Nascimento", "RG", "CPF", "CNPJ",
+            "Última Troca de Senha", "Data da Senha Cadastrada",
+            "Data da Inclusão do Usuário", "Segredo", "Usuário Logado", "Acesso"
         ]
 
         for col, title in enumerate(column_titles):
-            header = QTableWidgetItem(title)
-            self.table_widget.setHorizontalHeaderItem(col, header)
+            self.table_widget.setHorizontalHeaderItem(col, QTableWidgetItem(title))
 
-        # Conectar ao banco de dados
         try:
             self.db.connecta()
+            usuarios = self.db.obter_usuarios_sem_imagem()
 
-            # Obter os usuários do banco de dados
-            usuarios = self.db.get_users()
-
-            # Preencher a tabela com os dados dos usuários
             for usuario in usuarios:
                 row_position = self.table_widget.rowCount()
                 self.table_widget.insertRow(row_position)
-                
-                self.table_widget.resizeColumnsToContents()  # Ajustar o tamanho das colunas
-                self.table_widget.resizeRowsToContents()  # Ajustar o tamanho das linhas
 
-                # Preencher cada coluna com os dados do usuário
-                for col, data in enumerate(usuario):
-                    item = QTableWidgetItem(str(data))
-                    self.table_widget.setItem(row_position, col, item)
 
-            # Verificar se a tabela está vazia
+                for i, dado in enumerate(usuario):
+                    item = QTableWidgetItem(str(dado))
+                    self.table_widget.setItem(row_position, i, item)
+         
+
+            self.table_widget.resizeColumnsToContents()
+            self.table_widget.resizeRowsToContents()
+
             if self.table_widget.rowCount() == 0:
                 self.exibir_mensagem_sem_usuarios()
             else:
@@ -172,8 +140,6 @@ class TabelaUsuario(QDialog):
 
         except Exception as e:
             QMessageBox.critical(self, "Erro", f"Erro ao acessar o banco de dados: {str(e)}")
-        finally:
-            pass
 #*******************************************************************************************************
     def exibir_mensagem_sem_usuarios(self):
         # Verificar se a QLabel já existe
@@ -357,78 +323,211 @@ class TabelaUsuario(QDialog):
         return self.usuario_selecionado     
 
 #*******************************************************************************************************
-    def atualizar_tabela_usuario_filtrada(self, usuario):
-    # Limpar a tabela antes de preencher com os usuários filtrados
+    def atualizar_tabela_usuario_filtrada(self, usuarios):
         self.table_widget.setRowCount(0)
 
-        # Preencher a tabela com os produtos filtrados
-        for produto in usuario:
+        # Cabeçalhos: sem a coluna "Imagem"
+        column_titles = [
+            "ID","Nome", "Usuário", "Senha", "Confirmar Senha", "CEP", "Endereço",
+            "Número", "Cidade", "Bairro", "Estado", "Complemento", "Telefone", "Email",
+            "Data de Nascimento", "RG", "CPF", "CNPJ",
+            "Última Troca de Senha", "Data da Senha Cadastrada",
+            "Data da Inclusão do Usuário", "Segredo", "Usuário Logado", "Acesso"
+        ]
+
+        self.table_widget.setColumnCount(len(column_titles))
+        for col, title in enumerate(column_titles):
+            self.table_widget.setHorizontalHeaderItem(col, QTableWidgetItem(title))
+
+        usuario_logado = self.config.obter_usuario_logado()
+
+        for usuario in usuarios:
+            # Remover a coluna "Imagem" (índice 18) de uma cópia da tupla
+            dados = list(usuario)
+            if len(dados) >= 25:
+                del dados[18]  # Remove "Imagem"
+                dados[23] = usuario_logado
+
+
             row_position = self.table_widget.rowCount()
             self.table_widget.insertRow(row_position)
-            for col, data in enumerate(produto):
-                item = QTableWidgetItem(str(data))
-                self.table_widget.setItem(row_position, col, item)
-#*******************************************************************************************************
-    def obter_usuario_por_nome(self, nome):
-        query = "SELECT * FROM users WHERE Nome LIKE ?"
-        parameters = (f"%{nome}%",)  # Usamos LIKE com % para fazer a consulta parcial
 
-        cursor = None  # Inicialize o cursor como None
+            for col, data in enumerate(dados):
+                item = self.formatar_texto(str(data))
+                self.table_widget.setItem(row_position, col, item)
+
+        self.table_widget.resizeColumnsToContents()
+        self.table_widget.resizeRowsToContents()
+#*******************************************************************************************************
+    def obter_usuarios_por_filtro(self, campo, valor):
+        query = f"""
+            SELECT "ID","Nome", "Usuário", "Senha", "Confirmar Senha", "CEP", "Endereço",
+            "Número", "Cidade", "Bairro", "Estado", "Complemento", "Telefone", "Email",
+            "Data de Nascimento", "RG", "CPF", "CNPJ",
+            "Última Troca de Senha", "Data da Senha Cadastrada",
+            "Data da Inclusão do Usuário", "Segredo", "Usuário Logado", "Acesso"
+            FROM users
+            WHERE "{campo}" LIKE ?
+        """
+        parameters = (f"%{valor}%",)
         
         try:
-            db = DataBase()  # Cria uma instância da classe DataBase
-            connection = db.connecta()  # Obtemos uma conexão
-            cursor = connection.cursor()  # Criamos um cursor a partir da conexão
+            db = DataBase()
+            connection = db.connecta()
+            cursor = connection.cursor()
             cursor.execute(query, parameters)
-            
-            produtos = cursor.fetchall()
-            
-            return produtos
+            return cursor.fetchall()
         except Exception as e:
-            print("Erro ao consultar produtos:", e)
+            print(f"Erro ao filtrar usuários por {campo}:", e)
             return []
         finally:
             if cursor:
-                cursor.close()  # Fechamos o cursor apenas se ele não for None
-            pass
-
+                cursor.close()
 #*******************************************************************************************************
     def filtrar_usuario(self):
-    # Perguntar ao usuário se ele deseja filtrar os produtos
-        filtro = QMessageBox.question(self, "Filtrar Usuários", "Deseja filtrar os usuários?", QMessageBox.Yes | QMessageBox.No)
+        msg_box = QMessageBox()
+        msg_box.setWindowTitle("Filtrar Usuários")
+        msg_box.setText("Deseja filtrar os usuários?")
         
-        if filtro == QMessageBox.Yes:
+        btn_sim = QPushButton("Sim")
+        btn_nao = QPushButton("Não")
+        
+        msg_box.addButton(btn_sim, QMessageBox.YesRole)
+        msg_box.addButton(btn_nao, QMessageBox.NoRole)
+        msg_box.setDefaultButton(btn_sim)
+        
+        resposta = msg_box.exec()
+
+        if msg_box.clickedButton() == btn_sim:
             dialog = QDialog(self)
-            dialog.setWindowTitle("Filtrar por Nome")
-            
+            dialog.setWindowTitle("Escolha o Filtro")
             layout = QVBoxLayout()
-            
-            # Label e campo de entrada para o nome do produto
-            lbl_nome = QLabel("Nome do Usuário:")
-            txt_nome = QLineEdit()
-            layout.addWidget(lbl_nome)
-            layout.addWidget(txt_nome)
-            
-            # Botão para aplicar o filtro
+
+            combo = QComboBox()
+            filtros = [
+                "Filtrar por Nome", "Filtrar Por Usuário", "Filtrar Por Acesso",
+                "Filtrar Por Telefone", "Filtrar Por Email", "Filtrar Por RG",
+                "Filtrar Por CPF", "Filtrar Por CNPJ"
+            ]
+            combo.addItems(filtros)
+            layout.addWidget(combo)
+
+            # Criação da label e line edit genéricos
+            lbl_criterio = QLabel("Nome do Usuário:")
+            txt_entrada = QLineEdit()
+            layout.addWidget(lbl_criterio)
+            layout.addWidget(txt_entrada)
+
+            # Atualização da label dinamicamente
+            def atualizar_label():
+                texto = combo.currentText()
+                mapeamento = {
+                    "Filtrar por Nome": "Nome do Usuário:",
+                    "Filtrar Por Usuário": "Usuário:",
+                    "Filtrar Por Acesso": "Acesso do Usuário:",
+                    "Filtrar Por Telefone": "Telefone do Usuário:",
+                    "Filtrar Por Email": "Email do Usuário:",
+                    "Filtrar Por RG": "RG do Usuário:",
+                    "Filtrar Por CPF": "CPF do Usuário:",
+                    "Filtrar Por CNPJ": "CNPJ do Usuário:"
+                }
+                lbl_criterio.setText(mapeamento.get(texto, "Digite o valor:"))
+
+            combo.currentIndexChanged.connect(atualizar_label)
+
+            # Botão de filtrar
             btn_filtrar = QPushButton("Filtrar")
-            
+            layout.addWidget(btn_filtrar)
+
+            def formatar_texto(text):
+                cursor_pos = txt_entrada.cursorPosition()
+                criterio = combo.currentText()
+                formatado = text  # valor padrão
+                numero = ''.join(filter(str.isdigit, text))  # agora sempre existe
+
+                if criterio == "Filtrar Por CPF":
+                    numero = numero[:11]
+                    if len(numero) <= 3:
+                        formatado = numero
+                    elif len(numero) <= 6:
+                        formatado = "{}.{}".format(numero[:3], numero[3:])
+                    elif len(numero) <= 9:
+                        formatado = "{}.{}.{}".format(numero[:3], numero[3:6], numero[6:])
+                    else:
+                        formatado = "{}.{}.{}-{}".format(numero[:3], numero[3:6], numero[6:9], numero[9:])
+
+                elif criterio == "Filtrar Por CNPJ":
+                    numero = numero[:14]
+                    if len(numero) <= 2:
+                        formatado = numero
+                    elif len(numero) <= 5:
+                        formatado = "{}.{}".format(numero[:2], numero[2:])
+                    elif len(numero) <= 8:
+                        formatado = "{}.{}.{}".format(numero[:2], numero[2:5], numero[5:])
+                    elif len(numero) <= 12:
+                        formatado = "{}.{}.{}/{}".format(numero[:2], numero[2:5], numero[5:8], numero[8:])
+                    else:
+                        formatado = "{}.{}.{}/{}-{}".format(numero[:2], numero[2:5], numero[5:8], numero[8:12], numero[12:14])
+
+                elif criterio == "Filtrar Por RG":
+                    numero = numero[:9]
+                    if len(numero) <= 2:
+                        formatado = numero
+                    elif len(numero) <= 5:
+                        formatado = "{}.{}".format(numero[:2], numero[2:])
+                    elif len(numero) <= 8:
+                        formatado = "{}.{}.{}".format(numero[:2], numero[2:5], numero[5:])
+                    else:
+                        formatado = "{}.{}.{}-{}".format(numero[:2], numero[2:5], numero[5:8], numero[8:])
+
+                elif criterio == "Filtrar Por Telefone":
+                    numero = numero[:11]
+                    if len(numero) <= 2:
+                        formatado = "({})".format(numero)
+                    elif len(numero) <= 6:
+                        formatado = "({}) {}".format(numero[:2], numero[2:])
+                    elif len(numero) <= 10:
+                        formatado = "({}) {}-{}".format(numero[:2], numero[2:6], numero[6:])
+                    else:
+                        formatado = "({}) {}-{}".format(numero[:2], numero[2:7], numero[7:])
+
+                # Evita loop de evento
+                if txt_entrada.text() != formatado:
+                    txt_entrada.blockSignals(True)
+                    txt_entrada.setText(formatado)
+                    nova_pos = min(cursor_pos + 1, len(formatado))
+                    txt_entrada.setCursorPosition(nova_pos)
+                    txt_entrada.blockSignals(False)
+
+            txt_entrada.textEdited.connect(formatar_texto)
+
             def aplicar_filtro():
-                nome = txt_nome.text()
-                print(f"Filtrando por Nome: {nome}")
-                
-                usuarios = self.obter_usuario_por_nome(nome)
-                self.atualizar_tabela_usuario_filtrada(usuarios)
-                
-                dialog.close()
+                criterio = combo.currentText()
+                valor = txt_entrada.text()
+                print(f"Filtro selecionado: {criterio}")
+                print(f"Valor digitado: {valor}")
+
+                mapeamento_campo = {
+                    "Filtrar por Nome": "Nome",
+                    "Filtrar Por Usuário": "Usuário",
+                    "Filtrar Por Acesso": "Acesso",
+                    "Filtrar Por Telefone": "Telefone",
+                    "Filtrar Por Email": "Email",
+                    "Filtrar Por RG": "RG",
+                    "Filtrar Por CPF": "CPF",
+                    "Filtrar Por CNPJ": "CNPJ"
+                }
+
+                campo_bd = mapeamento_campo.get(criterio)
+                if campo_bd:
+                    usuarios = self.obter_usuarios_por_filtro(campo_bd, valor)
+                    print(f"Usuários encontrados: {len(usuarios)}")  # <-- debug
+                    self.atualizar_tabela_usuario_filtrada(usuarios)
+                    dialog.close()
             
             btn_filtrar.clicked.connect(aplicar_filtro)
-            layout.addWidget(btn_filtrar)
-            
             dialog.setLayout(layout)
             dialog.exec()
-        else:
-            return
-
 #*******************************************************************************************************
     def selecionar_todos(self):
         # Verificar se os checkboxes já estão visíveis na primeira coluna antes da coluna ID
@@ -546,4 +645,52 @@ class TabelaUsuario(QDialog):
     def limpar_campos_de_texto(self):
         self.main_window.txt_usuario.clear()
 
-        
+    def atualizar_tabela_usuario(self):
+        try:
+            # Limpar a tabela antes de atualizar
+            self.table_widget.setRowCount(0)
+            self.table_widget.setColumnCount(23)  # Definir o número de colunas
+            self.table_widget.setHorizontalHeaderLabels([
+                 "Nome", "Usuário", "Senha", "Confirmar Senha", "CEP", "Endereço",
+                "Número", "Cidade", "Bairro", "Estado", "Complemento", "Telefone", "Email",
+                "Data de Nascimento", "RG", "CPF", "CNPJ",
+                "Última Troca de Senha", "Data da Senha Cadastrada",
+                "Data da Inclusão do Usuário", "Segredo", "Usuário Logado", "Acesso"
+            ])
+
+            conexao = self.db.connecta()
+            cursor = conexao.cursor()
+            
+            cursor.execute("""
+                SELECT Nome, Usuário, Senha, "Confirmar Senha", CEP, Endereço,Número,Cidade,
+                Bairro, Estado, Complemento, Telefone, Email, "Data de Nascimento", RG, CPF,
+                CNPJ, "Última Troca de Senha", "Data da Senha Cadastrada",
+                "Data da Inclusão do Usuário", Segredo, "Usuário Logado", Acesso
+                FROM users
+            """)
+            usuarios = cursor.fetchall()
+
+
+            # Preencher a tabela com os dados atualizados
+            for usuario in usuarios:
+                row_position = self.table_widget.rowCount()
+                self.table_widget.insertRow(row_position)
+                for col, dado in enumerate(usuario):
+                    item = self.formatar_texto(str(dado))
+                    self.table_widget.setItem(row_position, col, item)         
+
+            # Ajustar o tamanho das colunas
+            self.table_widget.resizeColumnsToContents()
+            self.table_widget.resizeRowsToContents()
+
+        except Exception as e:
+            print(f"Erro ao atualizar a tabela de usuários: {e}")
+
+     # Função auxiliar para criar um QTableWidgetItem com texto centralizado e branco
+    def formatar_texto(self, text):
+        item = QTableWidgetItem(text)
+        item.setTextAlignment(Qt.AlignCenter)
+        item.setForeground(QBrush(QColor("black")))
+        return item            
+    
+

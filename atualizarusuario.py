@@ -31,7 +31,7 @@ class AtualizarUsuario(QDialog):
         # Preencher a tabela de usuários com os dados do banco de dados
         dialog_tabela = TabelaUsuario(self.main_window)
         dialog_tabela.preencher_tabela_usuario()
-        dialog_tabela.exec()
+        dialog_tabela.show()
 
         self.close()
     

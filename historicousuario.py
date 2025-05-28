@@ -459,15 +459,6 @@ class Pagina_Usuarios(QWidget):
 
         except Exception as e:
             print(f"Erro ao atualizar a tabela de ativos: {e}")
-
-            msg_box = QMessageBox()
-            msg_box.setIcon(QMessageBox.Information)
-            msg_box.setWindowTitle("Informação")
-            msg_box.setText("Tabela ativos atualizada com sucesso!")       
-            msg_box.exec()
-
-        except Exception as e:
-            print(f"Erro ao atualizar a tabela de ativos: {e}")
             
     def atualizar_inativos(self):
         try:
@@ -1549,9 +1540,9 @@ class Pagina_Usuarios(QWidget):
                 df = pd.read_excel(self.nome_arquivo_excel_massa, engine="openpyxl", header=0)
                 df = df.fillna("Não informado")
 
-                colunas_table_massa_usuarios = ["Nome", "Usuário", "Senha", "Confirmar Senha", "Acesso",
-                    "Endereço", "CEP", "CPF", "Número", "Estado", "E-mail", "RG", "Complemento", "Telefone",
-                    "Data de Nascimento"]
+                colunas_table_massa_usuarios = ["Nome", "Usuário", "Senha", "Confirmar Senha","CEP", 
+                    "Endereço", "Número","Cidade","Bairro","Estado","Complemento","Telefone","E-mail", "Data de Nascimento",
+                    "RG","CPF","CNPJ", "Acesso"]
 
                 # Verificar se o DataFrame está vazio
                 if df.shape[1] != len(colunas_table_massa_usuarios):
@@ -1560,6 +1551,7 @@ class Pagina_Usuarios(QWidget):
                     # Zerando a barra de progresso
                     self.progress_massa_usuarios.setValue(0)
                     self.progresso_massa = 0
+                    return 
                     
                     
                 if df.shape[0] == 0:
@@ -1608,36 +1600,41 @@ class Pagina_Usuarios(QWidget):
                 nome = self.table_massa_usuarios.item(linha, 0).text().strip() if self.table_massa_usuarios.item(linha, 0) else ""
                 # Gerar código único para o usuário
                 usuario = self.main_window.gerar_codigo_usuarios()
-                senha = self.table_massa_usuarios.item(linha, 2).text().strip() if self.table_massa_usuarios.item(linha, 2) else ""
-                confirmar_senha = self.table_massa_usuarios.item(linha, 3).text().strip() if self.table_massa_usuarios.item(linha, 3) else ""
-                acesso = self.table_massa_usuarios.item(linha, 4).text().strip() if self.table_massa_usuarios.item(linha, 4) else ""
-                endereco = self.table_massa_usuarios.item(linha, 5).text().strip() if self.table_massa_usuarios.item(linha, 5) else ""
-                cep = self.table_massa_usuarios.item(linha, 6).text().strip() if self.table_massa_usuarios.item(linha, 6) else ""
-                cpf = self.table_massa_usuarios.item(linha, 7).text().strip() if self.table_massa_usuarios.item(linha, 7) else ""
-                numero = self.table_massa_usuarios.item(linha, 8).text().strip() if self.table_massa_usuarios.item(linha, 8) else ""
-                estado = self.table_massa_usuarios.item(linha, 9).text().strip() if self.table_massa_usuarios.item(linha, 9) else ""
-                email = self.table_massa_usuarios.item(linha, 10).text().strip() if self.table_massa_usuarios.item(linha, 10) else ""
-                rg = self.table_massa_usuarios.item(linha, 11).text().strip() if self.table_massa_usuarios.item(linha, 11) else ""
-                complemento = self.table_massa_usuarios.item(linha, 12).text().strip() if self.table_massa_usuarios.item(linha, 12) else ""
-                telefone = self.table_massa_usuarios.item(linha, 13).text().strip() if self.table_massa_usuarios.item(linha, 13) else ""
-                data_nascimento = self.table_massa_usuarios.item(linha, 14).text().strip() if self.table_massa_usuarios.item(linha, 14) else ""
-
+                senha = self.table_massa_usuarios.item(linha, 1).text().strip() if self.table_massa_usuarios.item(linha, 1) else ""
+                confirmar_senha = self.table_massa_usuarios.item(linha, 2).text().strip() if self.table_massa_usuarios.item(linha, 2) else ""
+                cep = self.table_massa_usuarios.item(linha, 3).text().strip() if self.table_massa_usuarios.item(linha, 3) else ""
+                endereco = self.table_massa_usuarios.item(linha, 4).text().strip() if self.table_massa_usuarios.item(linha, 4) else ""
+                numero = self.table_massa_usuarios.item(linha, 5).text().strip() if self.table_massa_usuarios.item(linha, 5) else ""
+                cidade = self.table_massa_usuarios.item(linha, 6).text().strip() if self.table_massa_usuarios.item(linha, 6) else ""
+                bairro = self.table_massa_usuarios.item(linha, 7).text().strip() if self.table_massa_usuarios.item(linha, 7) else ""
+                estado = self.table_massa_usuarios.item(linha, 8).text().strip() if self.table_massa_usuarios.item(linha, 8) else ""
+                complemento = self.table_massa_usuarios.item(linha, 9).text().strip() if self.table_massa_usuarios.item(linha, 9) else ""
+                telefone = self.table_massa_usuarios.item(linha, 10).text().strip() if self.table_massa_usuarios.item(linha, 10) else ""
+                email = self.table_massa_usuarios.item(linha, 11).text().strip() if self.table_massa_usuarios.item(linha, 11) else ""
+                data_nascimento = self.table_massa_usuarios.item(linha, 12).text().strip() if self.table_massa_usuarios.item(linha, 12) else ""
+                rg = self.table_massa_usuarios.item(linha, 13).text().strip() if self.table_massa_usuarios.item(linha, 13) else ""
+                cpf = self.table_massa_usuarios.item(linha, 14).text().strip() if self.table_massa_usuarios.item(linha, 14) else ""
+                cnpj = self.table_massa_usuarios.item(linha, 15).text().strip() if self.table_massa_usuarios.item(linha, 15) else "" 
+                acesso = self.table_massa_usuarios.item(linha, 16).text().strip() if self.table_massa_usuarios.item(linha, 16) else ""
                 dados_usuarios_massa = {
                     "Nome": nome,
                     "Usuário": usuario,
                     "Senha": senha,
                     "Confirmar Senha": confirmar_senha,
-                    "Acesso": acesso,
-                    "Endereço": endereco,
                     "CEP": cep,
-                    "CPF": cpf,
+                    "Endereço": endereco,
                     "Número": numero,
+                    "Cidade": cidade,
+                    "Bairro": bairro,
                     "Estado": estado,
-                    "E-mail": email,
-                    "RG": rg,
                     "Complemento": complemento,
                     "Telefone": telefone,
-                    "Data de Nascimento": data_nascimento
+                    "E-mail": email,
+                    "Data de Nascimento": data_nascimento,
+                    "RG": rg,
+                    "CPF": cpf,
+                    "CNPJ": cnpj,
+                    "Acesso": acesso
                 }
 
                 self.main_window.subscribe_user(dados_usuarios_massa, registrar_historico=True)
