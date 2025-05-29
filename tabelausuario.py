@@ -253,6 +253,8 @@ class TabelaUsuario(QMainWindow):
                 self.label_imagem_usuario = QLabel()
                 self.label_imagem_usuario.setScaledContents(True)  # Redimensiona a imagem para o tamanho do QLabel
 
+            self.main_window.usuario_tem_imagem_salva = bool(imagem_data)
+
             if imagem_data:
                 try:
                     image = QImage.fromData(imagem_data)
@@ -273,58 +275,51 @@ class TabelaUsuario(QMainWindow):
             else:
                 print("Imagem não encontrada no banco de dados.")
 
-            # Obter os dados do usuário selecionado
-            usuario_nome = self.pegar_linha_do_texto(self.table_widget, row_index, 1)
-            usuario_usuario = self.pegar_linha_do_texto(self.table_widget, row_index, 2)
-            usuario_senha = self.pegar_linha_do_texto(self.table_widget, row_index, 3)
-            usuario_confirmar_senha = self.pegar_linha_do_texto(self.table_widget, row_index, 4)
-            usuario_cep = self.pegar_linha_do_texto(self.table_widget, row_index, 5)
-            usuario_endereco = self.pegar_linha_do_texto(self.table_widget, row_index, 6)
-            usuario_numero = self.pegar_linha_do_texto(self.table_widget, row_index, 7)
-            usuario_cidade = self.pegar_linha_do_texto(self.table_widget, row_index, 8)
-            ususario_bairro = self.pegar_linha_do_texto(self.table_widget, row_index, 9)
-            usuario_estado = self.pegar_linha_do_texto(self.table_widget, row_index, 10)
-            usuario_complemento = self.pegar_linha_do_texto(self.table_widget, row_index, 11)
-            usuario_telefone = self.pegar_linha_do_texto(self.table_widget, row_index, 12)
-            usuario_email = self.pegar_linha_do_texto(self.table_widget, row_index, 13)
-            usuario_data_nascimento = self.pegar_linha_do_texto(self.table_widget, row_index, 14)
-            usuario_rg = self.pegar_linha_do_texto(self.table_widget, row_index, 15)
-            usuario_cpf = self.pegar_linha_do_texto(self.table_widget, row_index, 16)
-            usuario_cnpj = self.pegar_linha_do_texto(self.table_widget, row_index, 17)
-            usuario_acesso = self.pegar_linha_do_texto(self.table_widget, row_index, 18)
+            # Recuperar dados do usuário diretamente do banco
+            dados_usuario = self.db.recuperar_usuario_por_id(id_usuario)
+            if dados_usuario:
+                (usuario_nome, usuario_usuario, usuario_senha, usuario_confirmar_senha, usuario_cep, usuario_endereco,
+                usuario_numero, usuario_cidade, usuario_bairro, usuario_estado, usuario_complemento, usuario_telefone,
+                usuario_email, usuario_data_nascimento, usuario_rg, usuario_cpf, usuario_cnpj, usuario_acesso) = dados_usuario
+
+                # Preencher os campos da MainWindow com os dados do usuário selecionado
+                self.main_window.txt_nome.setText(usuario_nome or "")
+                self.main_window.txt_usuario.setText(usuario_usuario or "")
+                self.main_window.txt_senha.setText(usuario_senha or "")
+                self.main_window.txt_confirmar_senha.setText(usuario_confirmar_senha or "")
+                self.main_window.txt_cep.setText(usuario_cep or "")
+                self.main_window.txt_endereco.setText(usuario_endereco or "")
+                self.main_window.txt_numero.setText(usuario_numero or "")
+                self.main_window.txt_cidade.setText(usuario_cidade or "")
+                self.main_window.txt_bairro.setText(usuario_bairro or "")
+                self.main_window.perfil_estado.setCurrentText(usuario_estado or "")
+                self.main_window.txt_complemento.setText(usuario_complemento or "")
+                self.main_window.txt_telefone.setText(usuario_telefone or "")
+                self.main_window.txt_email.setText(usuario_email or "")
+                self.main_window.txt_data_nascimento.setText(usuario_data_nascimento or "")
+                self.main_window.txt_rg.setText(usuario_rg or "")
+                self.main_window.txt_cpf.setText(usuario_cpf or "")
+                self.main_window.txt_cnpj.setText(usuario_cnpj or "")
+                self.main_window.perfil_usuarios.setCurrentText(usuario_acesso or "")
+            
 
 
-            # Preencher os campos da MainWindow com os dados do usuário selecionado
-            self.main_window.txt_nome.setText(usuario_nome)
-            self.main_window.txt_usuario.setText(usuario_usuario)
-            self.main_window.txt_senha.setText(usuario_senha)
-            self.main_window.txt_confirmar_senha.setText(usuario_confirmar_senha)
-            self.main_window.txt_cep.setText(usuario_cep)
-            self.main_window.txt_endereco.setText(usuario_endereco)
-            self.main_window.txt_numero.setText(usuario_numero)
-            self.main_window.txt_cidade.setText(usuario_cidade)
-            self.main_window.txt_bairro.setText(ususario_bairro)
-            self.main_window.perfil_estado.setCurrentText(usuario_estado)
-            self.main_window.txt_complemento.setText(usuario_complemento)
-            self.main_window.txt_telefone.setText(usuario_telefone)
-            self.main_window.txt_email.setText(usuario_email)
-            self.main_window.txt_data_nascimento.setText(usuario_data_nascimento)
-            self.main_window.txt_rg.setText(usuario_rg)
-            self.main_window.txt_cpf.setText(usuario_cpf)
-            self.main_window.txt_cnpj.setText(usuario_cnpj)
-            self.main_window.perfil_usuarios.setCurrentText(usuario_acesso)
 
-            # Atualizar o layout do frame_imagem_cadastro com o QLabel
-            self.main_window.frame_imagem_cadastro.setVisible(True)  # Garante que o frame esteja visível
-            self.main_window.frame_imagem_cadastro.layout().addWidget(self.label_imagem_usuario)
 
-            self.main_window.is_editing = True  # Indica que um usuário está em edição
-            self.main_window.selected_user_id = id_usuario  # Guarda o ID do usuário selecionado
-            self.main_window.imagem_removida_usuario = False  # Indica que a imagem não foi removida
+                # Atualizar o layout do frame_imagem_cadastro com o QLabel
+                self.main_window.frame_imagem_cadastro.setVisible(True)  # Garante que o frame esteja visível
+                self.main_window.frame_imagem_cadastro.layout().addWidget(self.label_imagem_usuario)
 
-            self.usuario_selecionado = True  # Indica que um usuário foi selecionado
+                self.main_window.is_editing = True  # Indica que um usuário está em edição
+                self.main_window.selected_user_id = id_usuario  # Guarda o ID do usuário selecionado
+                self.main_window.imagem_removida_usuario = False  # Indica que a imagem não foi removida
 
-            self.close()
+                self.usuario_selecionado = True  # Indica que um usuário foi selecionado
+
+                self.close()
+            else:
+                print("Usuário não encontrado no banco de dados.")
+
     
     def pegar_linha_do_texto(self, tabela,linha,coluna,padrao="Não Cadastrado"):
         item = tabela.item(linha,coluna)

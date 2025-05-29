@@ -55,6 +55,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.historico_pausado = False
         self.historico_usuario_pausado = False
         self.imagem_removida_usuario = False
+        self.usuario_tem_imagem_salva = False
         
 
 
@@ -656,10 +657,19 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             # Executar a mensagem
             mensagem.exec()
             return
-        if not self.imagem_removida_usuario:
-            QMessageBox.warning(None,"Remoção de Imagem",
+        # Verificar se existe imagem carregada no QLabel
+        tem_imagem = (
+            hasattr(self, 'label_imagem_usuario') and 
+            self.label_imagem_usuario is not None and 
+            self.label_imagem_usuario.pixmap() is not None
+        )
+
+        # Se houver imagem, e ela não tiver sido removida, exibir aviso
+        if getattr(self, 'usuario_tem_imagem_salva',False) and tem_imagem and not self.imagem_removida_usuario:
+            QMessageBox.warning(None, "Remoção de Imagem",
                                 "Remova a imagem do usuário e inclua novamente para seguir com a atualização")
             return
+
         try:        
             # Verificar se o usuário existe no banco de dados antes de tentar atualizar
             cursor = self.connection.cursor()
@@ -690,6 +700,17 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         usuario_senha = self.txt_senha.text() or "Não Cadastrado"
         usuario_confirmar_senha = self.txt_confirmar_senha.text() or "Não Cadastrado"
         usuario_imagem = None
+        if tem_imagem:
+            pixmap = self.label_imagem_usuario.pixmap()
+            if pixmap:
+                buffer = QByteArray()
+                buffer_device = QBuffer(buffer)
+                buffer_device.open(QIODevice.WriteOnly)
+                pixmap.save(buffer_device, "PNG")
+                usuario_imagem = buffer.data()
+                print("Imagem capturada com sucesso, tamanho:", len(usuario_imagem))
+            else:
+                print("Falha ao salvar imagem no buffer")
         
         campos_com_erro = []
         # Validação de campos obrigatórios
@@ -748,7 +769,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         sql = """
             UPDATE users 
             SET Nome=?, Usuário=?,Telefone=?, Endereço=?, Número=?, Complemento=?, 
-            Email=?, Data de Nascimento=?, RG=?, CPF=?, CEP=?, Estado=?, Senha=?,
+            Email=?, "Data de Nascimento"=?, RG=?, CPF=?, CEP=?, Estado=?, Senha=?,
             "Confirmar Senha"=?,Acesso=?
             WHERE id=?
         """
@@ -763,7 +784,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             sql = """
                 UPDATE users 
                 SET Nome=?, Usuário=?,Telefone=?, Endereço=?, Número=?, Complemento=?, 
-                Email=?, Data de Nascimento=?, RG=?, CPF=?, CEP=?, Estado=?, Senha=?, Imagem=?,
+                Email=?, "Data de Nascimento"=?, RG=?, CPF=?, CEP=?, Estado=?, Senha=?, Imagem=?,
                 "Confirmar Senha"=?, Acesso=?
                 WHERE id=?
             """
@@ -941,7 +962,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 if self.pagina_atual_index < 0:
                     self.pagina_atual_index = len(self.paginas) - 1
             self.paginas_sistemas.setCurrentWidget(self.paginas[self.pagina_atual_index])
-        
 #*********************************************************************************************************************
 # Configuração do local
     locale.setlocale(locale.LC_ALL, 'pt_BR.UTF-8')
@@ -1299,6 +1319,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.txt_cpf.clear()
         self.txt_cep.clear()
         self.txt_senha.clear()
+        self.txt_cnpj.clear()
         self.txt_confirmar_senha.clear()
         self.label_imagem_usuario.clear()
 
@@ -1307,8 +1328,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.perfil_usuarios.setCurrentIndex(0)
 
         QMessageBox.information(self,"Sucesso","Todos os campos foram limpos com sucesso! ")
-
-        
 #*********************************************************************************************************************
     def converter_imagem_usuario(self):
         # Verificar se há uma imagem carregada no QLabel
@@ -1989,6 +2008,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.txt_cpf.setText(text[:14])
 #*********************************************************************************************************************
     def formatar_cnpj(self, text):
+        if text == "Não Cadastrado":
+            self.txt_cnpj.setText(text)
+            return
         # Remover caracteres não numéricos
         numero_cnpj = ''.join(filter(str.isdigit, text))
 
@@ -2179,23 +2201,21 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.txt_telefone.clear()
         self.txt_endereco.clear()
         self.txt_numero.clear()
+        self.txt_cidade.clear()
+        self.txt_bairro.clear()
         self.txt_complemento.clear()
         self.txt_email.clear()
         self.txt_data_nascimento.clear()
         self.txt_rg.clear()
         self.txt_cep.clear()
         self.txt_cpf.clear()
+        self.txt_cnpj.clear()
         self.txt_senha.clear()
         self.txt_confirmar_senha.clear()
         self.perfil_estado.setCurrentIndex(0)
         self.perfil_usuarios.setCurrentIndex(0)
         self.label_imagem_usuario.clear()
 
-
-
-
-    def cor_estado_produto(self):
-        pass
 
     def reiniciar_sistema(self):
         python = sys.executable

@@ -834,6 +834,16 @@ class DataBase:
             if cursor:
                 cursor.close()
 
+    def recuperar_usuario_por_id(self, id_usuario):
+        cursor = self.connection.cursor()
+        cursor.execute("""
+            SELECT Nome, Usuário, Senha, "Confirmar Senha", CEP, Endereço, Número, Cidade, Bairro,
+                Estado, Complemento, Telefone, Email, "Data de Nascimento", RG, CPF, CNPJ, Acesso
+            FROM users
+            WHERE id = ?
+        """, (id_usuario,))
+        return cursor.fetchone()
+
 
 if __name__ == "__main__":
     db = DataBase()
