@@ -707,8 +707,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 buffer_device = QBuffer(buffer)
                 buffer_device.open(QIODevice.WriteOnly)
                 pixmap.save(buffer_device, "PNG")
-                usuario_imagem = buffer.data()
-                print("Imagem capturada com sucesso, tamanho:", len(usuario_imagem))
+                imagem_bytes = buffer.data().data()
+                usuario_imagem = base64.b64encode(imagem_bytes).decote("utf-8")
+
+                print("Imagem capturada com sucesso, tamanho base64:", len(usuario_imagem))
             else:
                 print("Falha ao salvar imagem no buffer")
         

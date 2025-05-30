@@ -301,9 +301,6 @@ class TabelaUsuario(QMainWindow):
                 self.main_window.txt_cpf.setText(usuario_cpf or "")
                 self.main_window.txt_cnpj.setText(usuario_cnpj or "")
                 self.main_window.perfil_usuarios.setCurrentText(usuario_acesso or "")
-            
-
-
 
 
                 # Atualizar o layout do frame_imagem_cadastro com o QLabel
@@ -319,11 +316,6 @@ class TabelaUsuario(QMainWindow):
                 self.close()
             else:
                 print("Usuário não encontrado no banco de dados.")
-
-    
-    def pegar_linha_do_texto(self, tabela,linha,coluna,padrao="Não Cadastrado"):
-        item = tabela.item(linha,coluna)
-        return item.text() if item and item.text().strip() else padrao
 
     def usuario_foi_selecionado(self):
         return self.usuario_selecionado     
