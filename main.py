@@ -3702,13 +3702,25 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.txt_senha.clear()
         self.txt_cnpj.clear()
         self.txt_confirmar_senha.clear()
-        self.label_imagem_usuario.clear()
+        
+        frame = self.frame_imagem_cadastro
+        if frame is not None:
+            for widget in frame.children():
+                if isinstance(widget,QLabel) and widget.pixmap() is not None and not widget.pixmap().isNull():
+                    widget.clear()
+                    widget.setPixmap(QPixmap())
+                    widget.hide()
+                    print("Imagem removida do usuário com sucesso!!! ")
+        else:
+            QMessageBox.information(None,"Erro","Não foi possível remover a imagem\n" 
+                                    "Tente remover  pelo botão remover imagem")
+            
 
         # Limpar campos de combo box
         self.perfil_estado.setCurrentIndex(0)  # Se for um combo box, o índice padrão é 0 (ou o valor inicial)
         self.perfil_usuarios.setCurrentIndex(0)
 
-        QMessageBox.information(self,"Sucesso","Todos os campos foram limpos com sucesso! ")
+        QMessageBox.information(None,"Sucesso","Todos os campos foram limpos com sucesso! ")
 #*********************************************************************************************************************
     def converter_imagem_usuario(self):
         # Verificar se há uma imagem carregada no QLabel
