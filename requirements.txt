@@ -1,0 +1,9 @@
+PySide6
+reportlab
+plyer
+openpyxl
+requests
+qrcode
+pyotp
+urllib3
+pandas
