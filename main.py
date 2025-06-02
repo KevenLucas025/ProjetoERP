@@ -638,40 +638,27 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.paginas_sistemas.setCurrentWidget(self.pg_contato)
 #*********************************************************************************************************************
     def atualizar_usuario_no_bd(self):
-         # Verificar se a conexão está ativa antes de proceder
-        if not self.db.verificar_conexao():  # Verifica se a conexão foi estabelecida
+        if not self.db.verificar_conexao():
             QMessageBox.critical(self, "Erro", "Conexão com o banco de dados não estabelecida!")
             return
         self.connection = self.db.connection 
-        
+
         if not self.is_editing or not self.selected_user_id:
-            # Criar uma mensagem personalizada
-            mensagem = QMessageBox(self)
-            mensagem.setIcon(QMessageBox.Warning)
-            mensagem.setWindowTitle("Aviso")
-            mensagem.setText("Nenhum usuário selecionado para atualização!")
-
-            # Adicionar o botão OK com o estilo padrão
-            mensagem.setStandardButtons(QMessageBox.Ok)
-
-            # Executar a mensagem
-            mensagem.exec()
+            QMessageBox.warning(None, "Erro", "Nenhum usuário selecionado para atualizar")
             return
-        # Verificar se existe imagem carregada no QLabel
+
         tem_imagem = (
             hasattr(self, 'label_imagem_usuario') and 
             self.label_imagem_usuario is not None and 
             self.label_imagem_usuario.pixmap() is not None
         )
 
-        # Se houver imagem, e ela não tiver sido removida, exibir aviso
-        if getattr(self, 'usuario_tem_imagem_salva',False) and tem_imagem and not self.imagem_removida_usuario:
+        if getattr(self, 'usuario_tem_imagem_salva', False) and tem_imagem and not self.imagem_removida_usuario:
             QMessageBox.warning(None, "Remoção de Imagem",
                                 "Remova a imagem do usuário e inclua novamente para seguir com a atualização")
             return
 
         try:        
-            # Verificar se o usuário existe no banco de dados antes de tentar atualizar
             cursor = self.connection.cursor()
             cursor.execute("SELECT COUNT(1) FROM users WHERE id = ?", (self.selected_user_id,))
             user_exists = cursor.fetchone()[0]
@@ -682,133 +669,123 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         except Exception as e:
             QMessageBox.critical(self, "Erro", f"Erro ao verificar usuário: {str(e)}")
             return
-        
-        # Obtendo os dados atualizados do usuário da interface
-        usuario_nome = self.txt_nome.text() or "Não Cadastrado"
-        usuario_usuario = self.txt_usuario.text() or "Não Cadastrado"
-        usuario_telefone = self.txt_telefone.text() or "Não Cadastrado"
-        usuario_endereco = self.txt_endereco.text() or "Não Cadastrado"
-        usuario_numero = self.txt_numero.text() or "Não Cadastrado"
-        usuario_complemento = self.txt_complemento.text() or "Não Cadastrado"
-        usuario_email = self.txt_email.text() or "Não Cadastrado"
-        usuario_data_nascimento = self.txt_data_nascimento.text() or "Não Cadastrado"
-        usuario_rg = self.txt_rg.text() or "Não Cadastrado"
-        usuario_cpf = self.txt_cpf.text() or "Não Cadastrado"
-        usuario_cep = self.txt_cep.text() or "Não Cadastrado"
+
+        # Obter os dados da interface
+        usuario_nome = self.txt_nome.text()
+        usuario_usuario = self.txt_usuario.text()
+        usuario_telefone = self.txt_telefone.text()
+        usuario_endereco = self.txt_endereco.text()
+        usuario_numero = self.txt_numero.text()
+        usuario_complemento = self.txt_complemento.text()
+        usuario_cidade = self.txt_cidade.text()
+        usuario_bairro = self.txt_bairro.text()
+        usuario_email = self.txt_email.text()
+        usuario_data_nascimento = self.txt_data_nascimento.text()
+        usuario_rg = self.txt_rg.text()
+        usuario_cpf = self.txt_cpf.text()
+        usuario_cnpj = self.txt_cnpj.text()
+        usuario_cep = self.txt_cep.text()
         usuario_estado = self.perfil_estado.currentText()
-        usuario_perfil = self.perfil_usuarios.currentText()
-        usuario_senha = self.txt_senha.text() or "Não Cadastrado"
-        usuario_confirmar_senha = self.txt_confirmar_senha.text() or "Não Cadastrado"
+        usuario_senha = self.txt_senha.text()
+        usuario_confirmar_senha = self.txt_confirmar_senha.text()
+
+        # Verificar campos obrigatórios
+        campos_nao_preenchidos_usuarios = []
+        if not usuario_nome: campos_nao_preenchidos_usuarios.append("nome")
+        if not usuario_usuario: campos_nao_preenchidos_usuarios.append("usuario")
+        if not usuario_telefone: campos_nao_preenchidos_usuarios.append("telefone")
+        if not usuario_endereco: campos_nao_preenchidos_usuarios.append("endereco")
+        if not usuario_numero: campos_nao_preenchidos_usuarios.append("numero")
+        if not usuario_complemento: campos_nao_preenchidos_usuarios.append("complemento")
+        if not usuario_cidade: campos_nao_preenchidos_usuarios.append("cidade")
+        if not usuario_bairro: campos_nao_preenchidos_usuarios.append("bairro")
+        if not usuario_email: campos_nao_preenchidos_usuarios.append("email")
+        if not usuario_data_nascimento: campos_nao_preenchidos_usuarios.append("data_nascimento")
+        if not usuario_rg: campos_nao_preenchidos_usuarios.append("rg")
+        if not usuario_cpf: campos_nao_preenchidos_usuarios.append("cpf")
+        if not usuario_cnpj: campos_nao_preenchidos_usuarios.append("cnpj")
+        if not usuario_cep: campos_nao_preenchidos_usuarios.append("cep")
+        if not usuario_estado: campos_nao_preenchidos_usuarios.append("estado")
+        if not usuario_senha: campos_nao_preenchidos_usuarios.append("senha")
+        if not usuario_confirmar_senha: campos_nao_preenchidos_usuarios.append("confirmar_senha")
+
+        if campos_nao_preenchidos_usuarios:
+            self.exibir_asteriscos_usuarios(campos_nao_preenchidos_usuarios)
+            QMessageBox.warning(None, "Aviso", "Todos os campos obrigatórios devem ser preenchidos!")
+            return
+
+        if usuario_senha != usuario_confirmar_senha:
+            self.exibir_asteriscos_usuarios(["senha", "confirmar_senha"])
+            QMessageBox.warning(None, "Aviso", "As senhas não coincidem!")
+            return
+
+        if not self.validar_cpf(usuario_cpf):
+            self.exibir_asteriscos_usuarios(["cpf"])
+            QMessageBox.warning(None, "Aviso", "CPF inválido!")
+            return
+
+        if not self.validar_email(usuario_email):
+            self.exibir_asteriscos_usuarios(["email"])
+            QMessageBox.warning(None, "Aviso", "E-mail inválido!")
+            return
+
+        if not self.validar_telefone(usuario_telefone):
+            self.exibir_asteriscos_usuarios(["telefone"])
+            QMessageBox.warning(None, "Aviso", "Número de telefone inválido!")
+            return
+
+        # Obter imagem, se houver
         usuario_imagem = None
         if tem_imagem:
             pixmap = self.label_imagem_usuario.pixmap()
             if pixmap:
-                buffer = QByteArray()
-                buffer_device = QBuffer(buffer)
-                buffer_device.open(QIODevice.WriteOnly)
-                pixmap.save(buffer_device, "PNG")
-                imagem_bytes = buffer.data().data()
-                usuario_imagem = base64.b64encode(imagem_bytes).decote("utf-8")
+                byte_array = QByteArray()
+                buffer = QBuffer(byte_array)
+                buffer.open(QIODevice.WriteOnly)
+                pixmap.save(buffer, "PNG")
+                usuario_imagem = str(byte_array.toBase64(), encoding='utf-8')
 
-                print("Imagem capturada com sucesso, tamanho base64:", len(usuario_imagem))
-            else:
-                print("Falha ao salvar imagem no buffer")
-        
-        campos_com_erro = []
-        # Validação de campos obrigatórios
-        campos_obrigatorios = {
-                'nome': usuario_nome,
-                'usuário': usuario_usuario,
-                'telefone': usuario_telefone,
-                'endereço': usuario_endereco,
-                'número': usuario_numero,
-                'email': usuario_email,
-                'data nascimento': usuario_data_nascimento,
-                'rg': usuario_rg,
-                'cpf': usuario_cpf,
-                'cep': usuario_cep,
-                'estado': usuario_estado,
-                'perfil': usuario_perfil,
-                'senha': usuario_senha,
-                'confirmar senha': usuario_confirmar_senha
-            }
-
-        for campo, valor in campos_obrigatorios.items():
-            if not valor.strip():
-                campos_com_erro.append(campo)
-
-        if campos_com_erro:
-            self.exibir_asteriscos_usuarios(campos_com_erro)
-            QMessageBox.warning(self, "Erro", f"O campo {campos_com_erro[0]} é obrigatório.")
-            return
-
-        # Verificar se as senhas coincidem
-        if usuario_senha != usuario_confirmar_senha:
-            self.exibir_asteriscos_usuarios(['senha', 'confirmar senha'])
-            QMessageBox.warning(self, "Aviso", "As senhas não coincidem!")
-            return
-
-        # Verificar se o CPF é válido
-        if not self.validar_cpf(usuario_cpf):
-            self.exibir_asteriscos_usuarios(['cpf'])
-            QMessageBox.warning(self, "Aviso", "CPF inválido!")
-            return
-
-        # Verificar se o e-mail é válido
-        if not self.validar_email(usuario_email):
-            self.exibir_asteriscos_usuarios(['email'])
-            QMessageBox.warning(self, "Aviso", "E-mail inválido!")
-            return
-
-        # Verificar se o número de telefone é válido
-        if not self.validar_telefone(usuario_telefone):
-            self.exibir_asteriscos_usuarios(['telefone'])
-            QMessageBox.warning(self, "Aviso", "Número de telefone inválido!")
-            return
-
-
-        # Construir a consulta SQL
-        sql = """
-            UPDATE users 
-            SET Nome=?, Usuário=?,Telefone=?, Endereço=?, Número=?, Complemento=?, 
-            Email=?, "Data de Nascimento"=?, RG=?, CPF=?, CEP=?, Estado=?, Senha=?,
-            "Confirmar Senha"=?,Acesso=?
-            WHERE id=?
-        """
-
-        # Valores para substituir os placeholders
-        valores = (usuario_nome, usuario_usuario,usuario_telefone, usuario_endereco, usuario_numero, usuario_complemento,
-                usuario_email, usuario_data_nascimento, usuario_rg, usuario_cpf, usuario_cep,
-                usuario_estado,  usuario_senha, usuario_confirmar_senha,usuario_perfil, self.selected_user_id)
-
-        # Se uma nova imagem foi selecionada, inclua-a na consulta SQL
+        # SQL e valores
         if usuario_imagem:
             sql = """
                 UPDATE users 
-                SET Nome=?, Usuário=?,Telefone=?, Endereço=?, Número=?, Complemento=?, 
-                Email=?, "Data de Nascimento"=?, RG=?, CPF=?, CEP=?, Estado=?, Senha=?, Imagem=?,
-                "Confirmar Senha"=?, Acesso=?
+                SET Nome=?, Telefone=?, Endereço=?, Número=?, Cidade=?, Bairro=?, Complemento=?, 
+                    Email=?, "Data de Nascimento"=?, RG=?, CPF=?, CNPJ=?, CEP=?, Estado=?, 
+                    Senha=?, Imagem=?, "Confirmar Senha"=?
                 WHERE id=?
             """
-            # Adicione a imagem aos valores
-            valores = (usuario_nome, usuario_usuario,usuario_telefone, usuario_endereco, usuario_numero, usuario_complemento,
-                    usuario_email, usuario_data_nascimento, usuario_rg, usuario_cpf, usuario_cep,
-                    usuario_estado,usuario_senha, usuario_imagem, usuario_confirmar_senha,usuario_perfil, self.selected_user_id)
+            valores = (
+                usuario_nome, usuario_telefone, usuario_endereco, usuario_numero, usuario_cidade, usuario_bairro, usuario_complemento,
+                usuario_email, usuario_data_nascimento, usuario_rg, usuario_cpf, usuario_cnpj, usuario_cep, usuario_estado,
+                usuario_senha, usuario_imagem, usuario_confirmar_senha, self.selected_user_id
+            )
+        else:
+            sql = """
+                UPDATE users 
+                SET Nome=?, Telefone=?, Endereço=?, Número=?, Cidade=?, Bairro=?, Complemento=?, 
+                    Email=?, "Data de Nascimento"=?, RG=?, CPF=?, CNPJ=?, CEP=?, Estado=?, 
+                    Senha=?, "Confirmar Senha"=?
+                WHERE id=?
+            """
+            valores = (
+                usuario_nome, usuario_telefone, usuario_endereco, usuario_numero, usuario_cidade, usuario_bairro, usuario_complemento,
+                usuario_email, usuario_data_nascimento, usuario_rg, usuario_cpf, usuario_cnpj, usuario_cep, usuario_estado,
+                usuario_senha, usuario_confirmar_senha, self.selected_user_id
+            )
 
-        # Tentar executar a consulta SQL
         try:
             with self.connection:
                 cursor = self.connection.cursor()
                 cursor.execute(sql, valores)
             QMessageBox.information(self, "Sucesso", "Usuário atualizado com sucesso!")
             self.limpar_campos_após_atualizar_usuario()
-            # Resetar o estado de edição
             self.is_editing = False
             self.selected_user_id = None
-            self.imagem_removida_usuario = False
+            descricao = f"O usuário {usuario_usuario} foi atualizado com sucesso"
+            self.registrar_historico_usuarios("Atualização de Usuário", descricao)
         except Exception as e:
             QMessageBox.critical(self, "Erro", f"Erro ao atualizar o usuário: {str(e)}")
-            
+      
 #*********************************************************************************************************************
     def mostrar_tabela_usuarios(self):
         # Criar uma instância da classe AtualizarUsuario
@@ -1323,13 +1300,26 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.txt_senha.clear()
         self.txt_cnpj.clear()
         self.txt_confirmar_senha.clear()
-        self.label_imagem_usuario.clear()
-
         # Limpar campos de combo box
         self.perfil_estado.setCurrentIndex(0)  # Se for um combo box, o índice padrão é 0 (ou o valor inicial)
         self.perfil_usuarios.setCurrentIndex(0)
+        frame = self.frame_imagem_cadastro
+        if frame:
+            if frame is not None:
+                for widget in frame.children():
+                    if isinstance(widget,QLabel) and widget.pixmap():
+                        widget.clear()
+                        widget.setPixmap(QPixmap())
+                        widget.hide()
+                        print("Imagem do usuário removida com sucesso!!")
+                       
+            else:
+                QMessageBox.warning(None, "Erro","Não foi possível remover a imagem do usuário\n"
+                                                "Tente remover pelo botão  remover imagem")
 
-        QMessageBox.information(self,"Sucesso","Todos os campos foram limpos com sucesso! ")
+        
+
+        QMessageBox.information(None,"Sucesso","Todos os campos foram limpos com sucesso! ")
 #*********************************************************************************************************************
     def converter_imagem_usuario(self):
         # Verificar se há uma imagem carregada no QLabel
@@ -2502,6 +2492,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         # Se quiser mostrar visualmente que saiu do modo edição (opcional)
         QMessageBox.information(None, "Edição cancelada", "Você saiu do modo de edição.")
+    
+    def resource_path(relative_path):
+        try:
+            base_path = sys._MEIPASS  # PyInstaller cria essa pasta temporária
+        except Exception:
+            base_path = os.path.abspath(".")
+        return os.path.join(base_path, relative_path)
 
 # Função principal
 if __name__ == '__main__':
