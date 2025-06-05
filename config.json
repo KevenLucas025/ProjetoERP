@@ -1,9 +1,9 @@
 {
-    "usuario": "",
-    "senha": "",
+    "usuario": "Keven",
+    "senha": "123",
     "mantem_conectado": false,
     "nao_mostrar_mensagem_boas_vindas": true,
-    "nao_mostrar_aviso_irreversivel": false,
+    "nao_mostrar_aviso_irreversivel": true,
     "historico_autocompletes": {
         "txt_nome": [
             "Keven",
@@ -18,7 +18,9 @@
             "122121212",
             "reyrfbd34",
             "P123",
-            "Carlos25!"
+            "Carlos25!",
+            "Pydhsd123",
+            "Pdhsdh123"
         ],
         "txt_confirmar_senha": [
             "123",
@@ -26,15 +28,19 @@
             "1234",
             "reyrfbd34",
             "P123",
-            "Carlos25!"
+            "Carlos25!",
+            "Pydhsd123",
+            "Pdhsdh123"
         ],
         "txt_cep": [
             "13179-905",
-            "N�o Cadas"
+            "N�o Cadas",
+            "13188-040"
         ],
         "txt_complemento": [
             "Bloco A AP 31",
-            "l�l�l"
+            "l�l�l",
+            "CASA"
         ],
         "txt_telefone": [
             "(19) 98201-8869",
@@ -42,31 +48,48 @@
             "(11) 11111-1",
             "(43) 53434-5435",
             "(31) 61694-6196",
-            "(12) 49641-3496"
+            "(12) 49641-3496",
+            "(19) 98973-7867",
+            "(32) 43243-2423",
+            "(53) 24534-5345",
+            "(34) 53453-4534"
         ],
         "txt_email": [
             "keven.lucas00@hotmail.com",
             "keven.lucas00@dsdsd.com",
             "keven.lucas00@dfddf.com",
             "keven.lucas00@dsad.com",
-            "keven.lucas00@sdsd.com"
+            "keven.lucas00@sdsd.com",
+            "gabi.ignacio0909@gmail.com",
+            "keven.lucas00@hsdsd.com",
+            "keven.lucas00@hoasddl.com",
+            "keven.lucas00@hosdl.com"
         ],
         "txt_data_nascimento": [
-            "26/01/2000"
+            "26/01/2000",
+            "09/09/2002"
         ],
         "txt_rg": [
             "52.991.559-5",
             "53.453.453-4",
             "46.549.641-3",
             "11.111.111-1",
-            "52.144.164-9"
+            "52.144.164-9",
+            "58.237.837-0",
+            "23.423.423-4",
+            "24.234.234-2",
+            "dasdasd",
+            "23.423.423-2"
         ],
         "txt_cpf": [
             "506.796.778-10",
             "123.243.242-34",
             "453.453.454-35",
             "316.310.346-10",
-            "384.694.696-12"
+            "384.694.696-12",
+            "524.163.958-66",
+            "234.234.234-23",
+            "423.423.423-42"
         ],
         "txt_cnpj": [
             "11.111.111/1111-11",
@@ -74,7 +97,13 @@
             "34.534.534/5345-34",
             "32.196.431/6946-13",
             "52.113.213/3131-31",
-            "21.619.613/1613-61"
+            "21.619.613/1613-61",
+            "0000000000000",
+            "00.000.000/0000-00",
+            "23.423.423/4234-23",
+            "12.312.312/3123-12",
+            "32.423.423/4234-23",
+            "24.234.234/2342-34"
         ],
         "txt_endereco": [
             "Rua Jos� Vieira da Silva",
@@ -90,7 +119,8 @@
             "356",
             "14",
             "235",
-            "3434"
+            "3434",
+            "465"
         ]
     }
 }

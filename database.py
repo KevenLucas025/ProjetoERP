@@ -111,7 +111,7 @@ class DataBase:
                     RG TEXT NOT NULL,   
                     CPF TEXT NOT NULL,
                     CNPJ TEXT NOT NULL,
-                    Imagem BLOB TEXT NOT NULL,
+                    Imagem BLOB,
                     'Última Troca de Senha' TEXT,
                     'Data da Senha Cadastrada' TEXT,
                     'Data da Inclusão do Usuário' TEXT,

@@ -237,6 +237,7 @@ class Pagina_Usuarios(QWidget):
     def gerar_saida_usuarios(self, usuarios_selecionados):
         saida_usuarios = []
         historico_logs = []
+        data_atual = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
 
         numero_usuarios = len(usuarios_selecionados)
 
@@ -247,55 +248,62 @@ class Pagina_Usuarios(QWidget):
             QLineEdit.Normal,
             "Sim"
         )
-        
 
         if not ok or confirmar_saida != "Sim":
             return
 
-        # Abre a conexão com o banco de dados
-        conexao = self.db.connecta()
-        cursor = conexao.cursor()
+        with self.db.connecta() as conexao:
+            cursor = conexao.cursor()
 
-        for row in usuarios_selecionados:
-            dados_usuario = []
-            for coluna in range(21):
-                item = self.main_window.table_ativos.item(row, coluna)
-                dados_usuario.append(item.text() if item else "")
+            for row in usuarios_selecionados:
+                dados_usuario = []
 
-            # Atualiza a coluna 18 com a data/hora da saída
-            dados_usuario[18] = datetime.now().strftime("%d/%m/%Y %H:%M")
+                # Coleta as 23 colunas da linha da tabela
+                for coluna in range(23):
+                    item = self.main_window.table_ativos.item(row, coluna)
+                    dados_usuario.append(item.text() if item else "")
 
-            # Coluna 19: Segredo
-            item_segredo = self.main_window.table_ativos.item(row, 18)
-            dados_usuario[19] = item_segredo.text() if item_segredo else ""
+                # Agora adiciona os 2 campos extras na ordem correta:
+                # 23 -> Data da Inatividade do Usuário
+                # 24 -> Segredo
+                dados_usuario[21] = data_atual  # Corrige a Data de Inclusão
+                dados_usuario.append(data_atual)  # Data da Inatividade
+                dados_usuario.append("Não Cadastrado")  # Segredo
 
-            # Coluna 20: Usuário logado
-            item_usuario_logado = self.main_window.table_ativos.item(row, 19)
-            dados_usuario[20] = item_usuario_logado.text() if item_usuario_logado else "Desconhecido"
+                # Pega os valores corretos da tabela ativa
+                usuario_logado_item = self.main_window.table_ativos.item(row, 22)
+                usuario_logado = usuario_logado_item.text() if usuario_logado_item else ""
+                dados_usuario.append(usuario_logado)  # Usuário Logado
 
-            id_usuario = dados_usuario[1]
-            imagem = self.recuperar_imagem_usuario_bd_users(id_usuario)
+                acesso_item = self.main_window.table_ativos.item(row, 23)
+                acesso = acesso_item.text() if acesso_item else ""
+                dados_usuario.append(acesso)  # Acesso
 
-            dados_com_imagem = dados_usuario[:15] + [imagem] + dados_usuario[15:]
 
+                # Remove da tabela 'users' no banco
+                cpf = dados_usuario[15]
+                cursor.execute("DELETE FROM users WHERE CPF = ?", (cpf,))
 
-            # Inserção no banco de dados users_inativos
-            cursor.execute("""
-                INSERT INTO users_inativos (
-                    Nome, Usuário, Senha, "Confirmar Senha",CEP,  Endereço,Número,Cidade,Bairro,Estado,Complemento,Telefone, 
-                    Email,"Data de Nascimento",RG, CPF,CNPJ, Imagem, "Última Troca de Senha","Data da Senha Cadastrada", 
-                    "Data da Inclusão do Usuário", "Data da Inatividade do Usuário",Segredo, "Usuário Logado",Acesso
-                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?,?,?)
-            """, dados_com_imagem)
+                saida_usuarios.append(tuple(dados_usuario))
+                historico_logs.append(f"Usuário {dados_usuario[0]} gerado para saída.")
 
-            # Exclui o usuário da tabela users usando o CPF
-            cpf = dados_usuario[7]
-            cursor.execute("DELETE FROM users WHERE CPF = ?", (cpf,))
+            conexao.commit()
 
-            saida_usuarios.append(tuple(dados_usuario))
-            historico_logs.append(f"Usuário {dados_usuario[0]} gerado para saída.")
+            # Atualiza a interface com os dados corrigidos
+            self.tabela_inativos_preencher(saida_usuarios)
 
-        conexao.commit()
+            # Insere no banco de dados
+            for dados_completos in saida_usuarios:
+                cursor.execute("""
+                    INSERT OR REPLACE INTO users_inativos (
+                        Nome, Usuário, Senha, "Confirmar Senha", CEP, Endereço, Número, Cidade, Bairro, Estado,
+                        Complemento, Telefone, Email, "Data de Nascimento", RG, CPF, CNPJ, Imagem,
+                        "Última Troca de Senha", "Data da Senha Cadastrada", "Data da Inclusão do Usuário",
+                        "Data da Inatividade do Usuário", Segredo, "Usuário Logado", Acesso
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                """, dados_completos)
+
+            conexao.commit()
 
         for texto in historico_logs:
             self.main_window.registrar_historico("Gerado Saída de Usuário", texto)
@@ -306,10 +314,6 @@ class Pagina_Usuarios(QWidget):
             msg_box.setWindowTitle("Aviso")
             msg_box.setText("Saída do(s) usuário(s) gerada com sucesso!")
             msg_box.exec()
-            self.tabela_inativos_preencher(saida_usuarios)
-            # Ajusta colunas e linhas automaticamente após preencher
-            self.main_window.table_inativos.resizeColumnsToContents()
-            self.main_window.table_inativos.resizeRowsToContents()
 
 
 
@@ -318,7 +322,7 @@ class Pagina_Usuarios(QWidget):
             row_position = self.main_window.table_inativos.rowCount()
             self.main_window.table_inativos.insertRow(row_position)
 
-            for col in range(21):
+            for col in range(25):
                 if col < len(item):
                     self.main_window.table_inativos.setItem(row_position, col, self.formatar_texto(item[col]))
         # Ajusta colunas e linhas automaticamente após preencher
@@ -341,32 +345,6 @@ class Pagina_Usuarios(QWidget):
             # Adiciona o checkbox à caixa de mensagem
             checkbox = QCheckBox("Não mostrar esta mensagem novamente")
             msg_aviso.setCheckBox(checkbox)
-
-            # Estilos personalizados
-            msg_aviso.setStyleSheet("""
-                QMessageBox {
-                    background-color: #FFF3CD;
-                    color: #856404;
-                    border: 1px solid #ffeeba;
-                    border-radius: 10px;
-                    padding: 10px;
-                }
-                QMessageBox QPushButton {
-                    background-color: #f0d88b;
-                    color: #856404;  /* Cor do texto do botão igual ao checkbox */
-                    border: 1px solid #d6a937;
-                    border-radius: 4px;
-                    padding: 5px 10px;
-                    min-width: 100px;
-                }
-                QMessageBox QPushButton:hover {
-                    background-color: #e0a800;
-                    color: #856404;  /* Mantém a mesma cor no hover */
-                }
-                QMessageBox QCheckBox {
-                    color: black;
-                }
-            """)
 
 
             # Exibe a mensagem de aviso
@@ -492,13 +470,6 @@ class Pagina_Usuarios(QWidget):
         except Exception as e:
             print(f"Erro ao atualizar a tabela de inativos: {e}")
 
-
-    def importar(self):
-        msg = QMessageBox()
-        msg.setIcon(QMessageBox.Warning)
-        msg.setWindowTitle("ERRO")
-        msg.setText("Ação ainda não está disponível!")
-        msg.exec()
 
     # Função auxiliar para criar um QTableWidgetItem com texto centralizado e branco
     def formatar_texto(self, text):
