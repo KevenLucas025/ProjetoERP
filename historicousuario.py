@@ -113,187 +113,79 @@ class Pagina_Usuarios(QWidget):
                 item = self.formatar_texto(str(data))
                 self.table_ativos.setItem(row_index,col_index,item)
 
-
-    def tabela_inativos(self, usuarios_selecionados):
-        # Limpa a tabela de saída antes de preencher com novos dados
-        self.main_window.table_ativos.clearContents()
-        self.main_window.table_ativos.setRowCount(0)
-
-        if not usuarios_selecionados:
-            QMessageBox.critical(self.main_window, "Aviso", "Nenhum usuário selecionado para gerar saída!")
-            return False
-
-        # Preenche a table_inativos com os dados dos usuários selecionados
-        for row_index, row in enumerate(usuarios_selecionados):
-            self.main_window.table_ativos.insertRow(row_index)
-
-            # Nome
-            nome = self.main_window.table_ativos.item(row, 1)
-            if nome:
-                self.main_window.table_ativos.setItem(row_index, 1, self.formatar_texto(nome.text()))
-
-            # Usuário
-            usuario = self.main_window.table_ativos.item(row, 2)
-            if usuario:
-                self.main_window.table_ativos.setItem(row_index, 2, self.formatar_texto(usuario.text()))
-
-            # Senha
-            senha = self.main_window.table_ativos.item(row, 3)
-            if senha:
-                self.main_window.table_ativos.setItem(row_index, 3, self.formatar_texto(senha.text()))
-
-            # Confirmar Senha
-            confirmar_senha = self.main_window.table_ativos.item(row, 4)
-            if confirmar_senha:
-                self.main_window.table_ativos.setItem(row_index, 4, self.formatar_texto(confirmar_senha.text()))
-
-            # Acesso
-            acesso = self.main_window.table_ativos.item(row, 5)
-            if acesso:
-                self.main_window.table_ativos.setItem(row_index, 5, self.formatar_texto(acesso.text()))
-
-            # Endereço
-            endereco = self.main_window.table_ativos.item(row, 6)
-            if endereco:
-                self.main_window.table_ativos.setItem(row_index, 6, self.formatar_texto(endereco.text()))
-
-            # CEP
-            cep = self.main_window.table_ativos.item(row, 7)
-            if cep:
-                self.main_window.table_ativos.setItem(row_index, 7, self.formatar_texto(cep.text()))
-
-            # CPF
-            cpf = self.main_window.table_ativos.item(row, 8)
-            if cpf:
-                self.main_window.table_ativos.setItem(row_index, 8, self.formatar_texto(cpf.text()))
-
-            # Número
-            numero = self.main_window.table_ativos.item(row, 9)
-            if numero:
-                self.main_window.table_ativos.setItem(row_index, 9, self.formatar_texto(numero.text()))
-
-            # Estado
-            estado = self.main_window.table_ativos.item(row, 10)
-            if estado:
-                self.main_window.table_ativos.setItem(row_index, 10, self.formatar_texto(estado.text()))
-
-            # E-mail
-            email = self.main_window.table_ativos.item(row, 11)
-            if email:
-                self.main_window.table_ativos.setItem(row_index, 11, self.formatar_texto(email.text()))
-
-            # Complemento
-            complemento = self.main_window.table_ativos.item(row, 12)
-            if complemento:
-                self.main_window.table_ativos.setItem(row_index, 12, self.formatar_texto(complemento.text()))
-
-            # Telefone
-            telefone = self.main_window.table_ativos.item(row, 13)
-            if telefone:
-                self.main_window.table_ativos.setItem(row_index, 13, self.formatar_texto(telefone.text()))
-
-            # Data de Nascimento
-            data_nascimento = self.main_window.table_ativos.item(row, 14)
-            if data_nascimento:
-                self.main_window.table_ativos.setItem(row_index, 14, self.formatar_texto(data_nascimento.text()))
-
-            # RG
-            rg = self.main_window.table_ativos.item(row, 15)
-            if rg:
-                self.main_window.table_ativos.setItem(row_index, 15, self.formatar_texto(rg.text()))
-
-            # Última Troca de Senha
-            ultima_troca_senha = self.main_window.table_ativos.item(row, 16)
-            if ultima_troca_senha:
-                self.main_window.table_ativos.setItem(row_index, 16, self.formatar_texto(ultima_troca_senha.text()))
-
-            # Data da Senha Cadastrada
-            data_senha_cadastrada = self.main_window.table_ativos.item(row, 17)
-            if data_senha_cadastrada:
-                self.main_window.table_ativos.setItem(row_index, 17, self.formatar_texto(data_senha_cadastrada.text()))
-
-            # Data da Inclusão do Usuário
-            data_inclusao_usuario = self.main_window.table_ativos.item(row, 18)
-            if data_inclusao_usuario:
-                self.main_window.table_ativos.setItem(row_index, 18, self.formatar_texto(data_inclusao_usuario.text()))
-
-            # Data da Inatividade do Usuário
-            data_inatividade_usuario = self.main_window.table_ativos.item(row, 19)
-            if data_inatividade_usuario:
-                self.main_window.table_ativos.setItem(row_index, 19, self.formatar_texto(data_inatividade_usuario.text()))
-
-            # Segredo
-            segredo = self.main_window.table_ativos.item(row, 20)
-            if segredo:
-                self.main_window.table_ativos.setItem(row_index, 20, self.formatar_texto(segredo.text()))
-
-            # Usuário Logado
-            usuario_logado = self.main_window.table_ativos.item(row, 21)
-            if usuario_logado:
-                self.main_window.table_ativos.setItem(row_index, 21, self.formatar_texto(usuario_logado.text()))
-
-        return True
     
     def gerar_saida_usuarios(self, usuarios_selecionados):
         saida_usuarios = []
         historico_logs = []
-        data_atual = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+        data_atual = datetime.now().strftime("%d/%m/%Y %H:%M")
+        linhas_para_remover = []
 
-        numero_usuarios = len(usuarios_selecionados)
-
-        confirmar_saida, ok = QInputDialog.getText(
-            self.main_window,
-            "Confirmação de Saída",
-            f"Você selecionou {numero_usuarios} usuários, tem certeza que deseja gerar a saída de todos eles?",
-            QLineEdit.Normal,
-            "Sim"
-        )
-
-        if not ok or confirmar_saida != "Sim":
+        total_usuarios_ativos = self.main_window.table_ativos.rowCount()
+        quantidade_selecionada = len(usuarios_selecionados)
+        
+        if total_usuarios_ativos - quantidade_selecionada <= 1:
+            QMessageBox.critical(None,"Erro","Não é possível gerar saída. O sistema deve ter pelo menos um usuário ativo")
             return
+
 
         with self.db.connecta() as conexao:
             cursor = conexao.cursor()
 
             for row in usuarios_selecionados:
-                dados_usuario = []
+                usuario_nome = self.main_window.table_ativos.item(row, 0).text() or ""
+                usuario_usuario = self.main_window.table_ativos.item(row, 1).text() or ""
+                usuario_senha = self.main_window.table_ativos.item(row, 2).text() or ""
+                usuario_confirmar_senha = self.main_window.table_ativos.item(row, 3).text() or ""
+                usuario_cep = self.main_window.table_ativos.item(row, 4).text() or ""
+                usuario_endereco = self.main_window.table_ativos.item(row, 5).text() or ""
+                usuario_numero = self.main_window.table_ativos.item(row, 6).text() or ""
+                usuario_cidade = self.main_window.table_ativos.item(row, 7).text() or ""
+                usuario_bairro = self.main_window.table_ativos.item(row, 8).text() or ""
+                usuario_estado = self.main_window.table_ativos.item(row, 9).text() or ""
+                usuario_complemento = self.main_window.table_ativos.item(row, 10).text() or ""
+                usuario_telefone = self.main_window.table_ativos.item(row, 11).text() or ""
+                usuario_email = self.main_window.table_ativos.item(row, 12).text() or ""
+                usuario_data_nascimento = self.main_window.table_ativos.item(row, 13).text() or ""
+                usuario_rg = self.main_window.table_ativos.item(row, 14).text() or ""
+                usuario_cpf = self.main_window.table_ativos.item(row, 15).text() or ""
+                usuario_cnpj = self.main_window.table_ativos.item(row, 16).text() or ""
+                usuario_ultima_troca_senha = self.main_window.table_ativos.item(row, 17).text() or ""
+                usuario_data_senha_cadastrada = self.main_window.table_ativos.item(row, 18).text() or ""
+                usuario_data_inclusao_usuario = self.main_window.table_ativos.item(row, 19).text() or ""
+                usuario_segredo = self.main_window.table_ativos.item(row, 20).text() or ""
+                usuario_logado = self.main_window.table_ativos.item(row, 21).text() or ""
+                usuario_acesso = self.main_window.table_ativos.item(row, 22).text() or ""
 
-                # Coleta as 23 colunas da linha da tabela
-                for coluna in range(23):
-                    item = self.main_window.table_ativos.item(row, coluna)
-                    dados_usuario.append(item.text() if item else "")
+                
 
-                # Agora adiciona os 2 campos extras na ordem correta:
-                # 23 -> Data da Inatividade do Usuário
-                # 24 -> Segredo
-                dados_usuario[21] = data_atual  # Corrige a Data de Inclusão
-                dados_usuario.append(data_atual)  # Data da Inatividade
-                dados_usuario.append("Não Cadastrado")  # Segredo
+                # Recupera a imagem somente para o banco de dados
+                imagem_usuario = self.recuperar_imagem_usuario_bd_users(usuario_usuario)
 
-                # Pega os valores corretos da tabela ativa
-                usuario_logado_item = self.main_window.table_ativos.item(row, 22)
-                usuario_logado = usuario_logado_item.text() if usuario_logado_item else ""
-                dados_usuario.append(usuario_logado)  # Usuário Logado
+                # Dados completos com imagem - para o banco
+                dados_para_banco = (
+                    usuario_nome, usuario_usuario, usuario_senha, usuario_confirmar_senha,
+                    usuario_cep, usuario_endereco, usuario_numero, usuario_cidade, usuario_bairro,
+                    usuario_estado, usuario_complemento, usuario_telefone, usuario_email,
+                    usuario_data_nascimento, usuario_rg, usuario_cpf, usuario_cnpj, imagem_usuario,
+                    usuario_ultima_troca_senha, usuario_data_senha_cadastrada, usuario_data_inclusao_usuario,
+                    data_atual,  # Data da Inatividade
+                    usuario_segredo, usuario_logado, usuario_acesso
+                )
 
-                acesso_item = self.main_window.table_ativos.item(row, 23)
-                acesso = acesso_item.text() if acesso_item else ""
-                dados_usuario.append(acesso)  # Acesso
+                # Dados sem imagem - para exibir na tabela
+                dados_para_interface = (
+                    usuario_nome, usuario_usuario, usuario_senha, usuario_confirmar_senha,
+                    usuario_cep, usuario_endereco, usuario_numero, usuario_cidade, usuario_bairro,
+                    usuario_estado, usuario_complemento, usuario_telefone, usuario_email,
+                    usuario_data_nascimento, usuario_rg, usuario_cpf, usuario_cnpj,
+                    usuario_ultima_troca_senha, usuario_data_senha_cadastrada, usuario_data_inclusao_usuario,
+                    data_atual, usuario_segredo, usuario_logado, usuario_acesso
+                )
 
+                # Adiciona na lista para exibir
+                saida_usuarios.append(dados_para_interface)
 
-                # Remove da tabela 'users' no banco
-                cpf = dados_usuario[15]
-                cursor.execute("DELETE FROM users WHERE CPF = ?", (cpf,))
-
-                saida_usuarios.append(tuple(dados_usuario))
-                historico_logs.append(f"Usuário {dados_usuario[0]} gerado para saída.")
-
-            conexao.commit()
-
-            # Atualiza a interface com os dados corrigidos
-            self.tabela_inativos_preencher(saida_usuarios)
-
-            # Insere no banco de dados
-            for dados_completos in saida_usuarios:
+                # Adiciona ao banco de dados
                 cursor.execute("""
                     INSERT OR REPLACE INTO users_inativos (
                         Nome, Usuário, Senha, "Confirmar Senha", CEP, Endereço, Número, Cidade, Bairro, Estado,
@@ -301,12 +193,22 @@ class Pagina_Usuarios(QWidget):
                         "Última Troca de Senha", "Data da Senha Cadastrada", "Data da Inclusão do Usuário",
                         "Data da Inatividade do Usuário", Segredo, "Usuário Logado", Acesso
                     ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-                """, dados_completos)
+                """, dados_para_banco)
+
+                historico_logs.append(f"Usuário '{usuario_nome}' ({usuario_usuario}) foi transferido para inativos.")
+
+                cursor.execute("""DELETE FROM users WHERE "Usuário" = ?""",(usuario_usuario,))
+                linhas_para_remover.append(row)
 
             conexao.commit()
+            self.tabela_inativos_preencher(saida_usuarios,limpar=False)
+
+            # Remover da tabela de ativos os usuários transferidos
+            for row in sorted(linhas_para_remover):
+                self.main_window.table_ativos.removeRow(row)
 
         for texto in historico_logs:
-            self.main_window.registrar_historico("Gerado Saída de Usuário", texto)
+            self.main_window.registrar_historico_usuarios("Gerado Saída de Usuário", texto)
 
         if saida_usuarios:
             msg_box = QMessageBox()
@@ -315,19 +217,40 @@ class Pagina_Usuarios(QWidget):
             msg_box.setText("Saída do(s) usuário(s) gerada com sucesso!")
             msg_box.exec()
 
+   
 
+    def tabela_inativos_preencher(self, dados, limpar=True):
+        if limpar:
+            self.main_window.table_inativos.setRowCount(0)
+            linha_inicial = 0
+        else:
+            linha_inicial = self.main_window.table_inativos.rowCount()
 
-    def tabela_inativos_preencher(self, dados_saida):
-        for item in dados_saida:
-            row_position = self.main_window.table_inativos.rowCount()
-            self.main_window.table_inativos.insertRow(row_position)
+        for linha in dados:
+            self.main_window.table_inativos.insertRow(linha_inicial)
+            for coluna, valor in enumerate(linha):
+                self.main_window.table_inativos.setItem(linha_inicial, coluna, self.formatar_texto(str(valor)))
+            linha_inicial += 1
 
-            for col in range(25):
-                if col < len(item):
-                    self.main_window.table_inativos.setItem(row_position, col, self.formatar_texto(item[col]))
-        # Ajusta colunas e linhas automaticamente após preencher
         self.main_window.table_inativos.resizeColumnsToContents()
         self.main_window.table_inativos.resizeRowsToContents()
+
+        
+     # Função para recuperar imagem de um produto com base no código do produto
+    def recuperar_imagem_usuario_bd_users(self, id_usuario):
+        conexao = sqlite3.connect('banco_de_dados.db')
+        cursor = conexao.cursor()
+        cursor.execute("SELECT Imagem FROM users WHERE Usuário = ?", (id_usuario,))
+        
+        resultado = cursor.fetchone()  # Tenta buscar uma linha
+        
+        if resultado is not None:
+            imagem_blob = resultado[0]  # Recupera a imagem se o resultado não for None
+        else:
+            imagem_blob = None  # Define como None se a imagem não for encontrada
+        
+        conexao.close()
+        return imagem_blob
 
 
     def confirmar_saida_usuarios(self):
@@ -388,24 +311,6 @@ class Pagina_Usuarios(QWidget):
             msg_box.exec()
 
 
-
-
-    # Função para recuperar imagem de um produto com base no código do produto
-    def recuperar_imagem_usuario_bd_users(self, id_usuario):
-        conexao = sqlite3.connect('banco_de_dados.db')
-        cursor = conexao.cursor()
-        cursor.execute("SELECT Imagem FROM users WHERE Usuário = ?", (id_usuario,))
-        
-        resultado = cursor.fetchone()  # Tenta buscar uma linha
-        
-        if resultado is not None:
-            imagem_blob = resultado[0]  # Recupera a imagem se o resultado não for None
-        else:
-            imagem_blob = None  # Define como None se a imagem não for encontrada
-        
-        conexao.close()
-        return imagem_blob
-
     def atualizar_ativos(self):
         try:
             # Limpar a tabela antes de atualizar
@@ -445,8 +350,8 @@ class Pagina_Usuarios(QWidget):
             
             # Consulta os dados da tabela de saída no banco de dados (somente usuarios que já tiveram saída gerada)
             query = """
-            SELECT Nome,Usuário,Senha,"Confirmar Senha",CEP,Endereço,CPF,Número,Estado,Email,RG,Complemento,
-            Telefone,"Data de Nascimento","Última Troca de Senha","Data da Senha Cadastrada","Data da Inclusão do Usuário",
+            SELECT Nome,Usuário,Senha,"Confirmar Senha",CEP,Endereço,Número,Cidade,Bairro,Estado,Complemento,Telefone,Email,
+            "Data de Nascimento",RG,CPF,CNPJ,"Última Troca de Senha","Data da Senha Cadastrada","Data da Inclusão do Usuário",
             "Data da Inatividade do Usuário",Segredo,"Usuário Logado",Acesso
             FROM users_inativos
             """
@@ -1006,7 +911,15 @@ class Pagina_Usuarios(QWidget):
         direcao, ok = QInputDialog.getItem(self, "Direção da Ordenação", "Escolha a direção:", direcoes, 0, False)
         return direcao if ok else None
     
-    def filtrar_historico_usuarios(self):
+    def filtrar_historico_usuarios(self,data_filtrada,ordenar_por_mais_recente,ordenar_por_mais_antigo):
+        data_formatada = data_filtrada.strip()
+
+        with self.db.connecta() as conexao:
+            cursor = conexao.cursor()
+
+            query_base = "SELECT * FROM historico_usuarios"
+            filtros = []
+            parametros = []
         # Criar a janela de filtro
         janela_filtro = QDialog(self)
         janela_filtro.setWindowTitle("Filtrar Histórico")
