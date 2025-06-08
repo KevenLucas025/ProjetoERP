@@ -20,7 +20,7 @@ from openpyxl.styles import Alignment, Font
 
 
 class Pagina_Usuarios(QWidget):
-    def __init__(self,main_window,btn_abrir_planilha_usuarios,btn_cadastrar_novo_usuario,btn_gerar_pdf_usuario,
+    def __init__(self,main_window,btn_abrir_planilha_usuarios,btn_cadastrar_novo_usuario,
                   btn_historico_usuarios,btn_atualizar_ativos,btn_atualizar_inativos,btn_limpar_tabelas_usuarios,
                   btn_gerar_saida_usuarios,line_excel_usuarios,progress_excel_usuarios,
                   btn_importar_usuarios,btn_abrir_planilha_massa_usuarios,btn_fazer_cadastro_massa_usuarios,
@@ -29,6 +29,8 @@ class Pagina_Usuarios(QWidget):
 
         self.db = DataBase("banco_de_dados.db")
         self.alteracoes_salvas = False
+
+        self.config = Configuracoes_Login(self)
 
 
         self.checkboxes = []  # Lista para armazenar os checkboxes
@@ -43,7 +45,6 @@ class Pagina_Usuarios(QWidget):
         self.table_massa_usuarios = self.main_window.table_massa_usuarios
         self.btn_abrir_planilha_usuarios = btn_abrir_planilha_usuarios
         self.btn_cadastrar_novo_usuario = btn_cadastrar_novo_usuario
-        self.btn_gerar_pdf_usuario = btn_gerar_pdf_usuario
         self.btn_historico_usuarios = btn_historico_usuarios
         self.btn_atualizar_ativos = btn_atualizar_ativos
         self.btn_atualizar_inativos = btn_atualizar_inativos
@@ -63,7 +64,6 @@ class Pagina_Usuarios(QWidget):
         self.btn_limpar_tabelas_usuarios.clicked.connect(self.limpar_tabelas)
         self.btn_atualizar_ativos.clicked.connect(self.atualizar_ativos)
         self.btn_atualizar_inativos.clicked.connect(self.atualizar_inativos)
-        self.btn_gerar_pdf_usuario.clicked.connect(self.exibir_pdf_usuarios)
         self.btn_historico_usuarios.clicked.connect(self.exibir_tabela_historico_usuario)
         self.btn_abrir_planilha_usuarios.clicked.connect(self.abrir_planilha_usuarios)
         self.btn_importar_usuarios.clicked.connect(self.importar_usuario)
@@ -424,123 +424,6 @@ class Pagina_Usuarios(QWidget):
 
         return super().eventFilter(source, event)
 
-
-    def exibir_pdf_usuarios(self):
-        caminho, _ = QFileDialog.getSaveFileName(
-            None,
-            "Salvar PDF",
-            "relatorio_usuarios.pdf",
-            "PDF Files (*.pdf)"
-        )
-        if not caminho:
-            return
-
-        try:
-            doc = SimpleDocTemplate(
-                caminho,
-                pagesize=landscape(A4),
-                rightMargin=15,
-                leftMargin=15,
-                topMargin=20,
-                bottomMargin=20
-            )
-            elementos = []
-            estilo = getSampleStyleSheet()
-
-            def extrair_dados_da_tabela(table_widget):
-                headers = [table_widget.horizontalHeaderItem(col).text() for col in range(table_widget.columnCount())]
-                dados = [headers]
-                for row in range(table_widget.rowCount()):
-                    linha = []
-                    for col in range(table_widget.columnCount()):
-                        item = table_widget.item(row, col)
-                        texto = item.text() if item else ""
-                        linha.append(texto)
-                    dados.append(linha)
-                return dados
-
-            def criar_tabela(dados):
-                estilos = getSampleStyleSheet()
-                estilo_celula = estilos['Normal']
-                estilo_celula.fontSize = 4.5
-                estilo_celula.leading = 5
-
-                dados_formatados = []
-                for linha in dados:
-                    nova_linha = []
-                    for celula in linha:
-                        texto = str(celula or "").replace('\n', '<br/>')
-                        nova_linha.append(Paragraph(texto, estilo_celula))
-                    dados_formatados.append(nova_linha)
-
-                colWidths = [
-                    40,
-                ]
-
-
-                tabela = Table(dados_formatados,  colWidths=colWidths)
-                tabela.setStyle(TableStyle([
-                    ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
-                    ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
-                    ('GRID', (0, 0), (-1, -1), 0.25, colors.black),
-                    ('FONTNAME', (0, 0), (-1, -1), 'Helvetica'),
-                    ('VALIGN', (0, 0), (-1, -1), 'TOP'),
-                    ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
-                ]))
-
-                return tabela
-
-            def criar_tabela_inativos(dados):
-                estilos = getSampleStyleSheet()
-                estilo_celula = estilos['Normal']
-                estilo_celula.fontSize = 4.5
-                estilo_celula.leading = 6
-
-                dados_formatados = []
-                for linha in dados:
-                    nova_linha = []
-                    for celula in linha:
-                        texto = str(celula or "").replace('\n', '<br/>')
-                        nova_linha.append(Paragraph(texto, estilo_celula))
-                    dados_formatados.append(nova_linha)
-
-
-                colWidths = [
-                    40
-                ]
-
-                tabela = Table(dados_formatados, repeatRows=1, colWidths=colWidths)
-                tabela.setStyle(TableStyle([
-                    ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
-                    ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
-                    ('GRID', (0, 0), (-1, -1), 0.25, colors.black),
-                    ('FONTNAME', (0, 0), (-1, -1), 'Helvetica'),
-                    ('VALIGN', (0, 0), (-1, -1), 'TOP'),
-                    ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
-                ]))
-
-                return tabela
-
-            # Ativos
-            dados_ativos = extrair_dados_da_tabela(self.main_window.table_ativos)
-            elementos.append(Paragraph("Relatório de Usuários Ativos", estilo["Heading2"]))
-            elementos.append(Spacer(1, 6))
-            elementos.append(criar_tabela(dados_ativos))
-
-            # Inativos
-            if self.main_window.table_inativos.rowCount() > 0:
-                elementos.append(Spacer(1, 10))
-                elementos.append(Paragraph("Relatório de Usuários Inativos", estilo["Heading2"]))
-                elementos.append(Spacer(1, 3))
-                dados_inativos = extrair_dados_da_tabela(self.main_window.table_inativos)
-                elementos.append(criar_tabela_inativos(dados_inativos))
-
-            doc.build(elementos)
-            QMessageBox.information(None, "PDF Gerado", "O PDF foi gerado com sucesso!")
-
-        except Exception as e:
-            QMessageBox.critical(None, "Erro ao gerar PDF", f"Erro: {str(e)}")
-
     def exibir_tabela_historico_usuario(self):
         self.janela_historico = QMainWindow()
         self.janela_historico.setWindowTitle("Histórico de Ações")
@@ -622,7 +505,7 @@ class Pagina_Usuarios(QWidget):
     def carregar_historico_usuario(self):
         with sqlite3.connect('banco_de_dados.db') as cn:
             cursor = cn.cursor()
-            cursor.execute('SELECT * FROM historico_usuarios ORDER BY "Data e Hora" DESC')
+            cursor.execute('SELECT * FROM historico_usuarios ORDER BY "Data e Hora" ASC')
             registros = cursor.fetchall()
 
         self.tabela_historico_usuarios.clearContents()
@@ -911,15 +794,7 @@ class Pagina_Usuarios(QWidget):
         direcao, ok = QInputDialog.getItem(self, "Direção da Ordenação", "Escolha a direção:", direcoes, 0, False)
         return direcao if ok else None
     
-    def filtrar_historico_usuarios(self,data_filtrada,ordenar_por_mais_recente,ordenar_por_mais_antigo):
-        data_formatada = data_filtrada.strip()
-
-        with self.db.connecta() as conexao:
-            cursor = conexao.cursor()
-
-            query_base = "SELECT * FROM historico_usuarios"
-            filtros = []
-            parametros = []
+    def filtrar_historico_usuarios(self):
         # Criar a janela de filtro
         janela_filtro = QDialog(self)
         janela_filtro.setWindowTitle("Filtrar Histórico")
@@ -946,14 +821,14 @@ class Pagina_Usuarios(QWidget):
 
         # Botão para aplicar o filtro
         botao_filtrar = QPushButton("Aplicar Filtro")
-        botao_filtrar.clicked.connect(
-            lambda: self.aplicar_filtro_usuarios(
+        def aplicar_e_fechar():
+            self.aplicar_filtro_usuarios(
                 campo_data.text(),
                 radio_mais_novo.isChecked(),
                 radio_mais_velho.isChecked()
             )
-        )
-
+            janela_filtro.accept()
+        botao_filtrar.clicked.connect(aplicar_e_fechar)
         # Adicionar widgets ao layout
         layout.addWidget(QLabel("Filtros Disponíveis"))
         layout.addWidget(campo_data)
@@ -993,45 +868,41 @@ class Pagina_Usuarios(QWidget):
             campo_data.setText(data_formatada)  # Atualiza o texto do campo de data
             campo_data.setCursorPosition(len(data_formatada))  # Move o cursor para o final do texto
 
-    def aplicar_filtro_usuarios(self, data, filtrar_novo, filtrar_velho):
-        with sqlite3.connect('banco_de_dados.db') as cn:
-            cursor = cn.cursor()
+    def aplicar_filtro_usuarios(self, data_filtrada, ordenar_por_mais_recente, ordenar_por_mais_antigo):
+        data_formatada = data_filtrada.strip()
 
-            query = "SELECT * FROM historico"
-            params = []
+        with self.db.connecta() as conexao:
+            cursor = conexao.cursor()
 
-            # Filtrar pela data, se fornecida
-            if data:
-                try:
-                    # Garantir que a data seja no formato correto (DD/MM/AAAA)
-                    data_formatada = datetime.strptime(data, "%d/%m/%Y").strftime("%d/%m/%Y")  # Formato DD/MM/YYYY
-                    query += " WHERE SUBSTR([Data e Hora], 1, 10) = ?"
-                    params.append(data_formatada)
-                except ValueError:
-                    QMessageBox.warning(self, "Erro", "Data inválida. Use o formato DD/MM/AAAA.")
-                    return
+            query_base = "SELECT * FROM historico_usuarios"
+            parametros = []
 
-            # Ordenar por hora, se aplicável
-            if filtrar_novo:
-                query += " ORDER BY [Data e Hora] DESC LIMIT 1"
-            elif filtrar_velho:
-                query += " ORDER BY [Data e Hora] ASC LIMIT 1"
+            # Filtro por data
+            if data_formatada:
+                query_base += ' WHERE "Data e Hora" LIKE ?'
+                parametros.append(f"%{data_formatada}%")
 
-            # Executar a consulta
-            cursor.execute(query, params)
-            registros = cursor.fetchall()
+            if ordenar_por_mais_recente:
+                query_base += ' ORDER BY "Data e Hora" ASC'
+            elif ordenar_por_mais_antigo:
+                query_base += ' ORDER BY "Data e Hora" DESC'
 
-        # Atualizar a tabela com os registros filtrados
-        self.tabela_historico_usuarios.clearContents()
-        self.tabela_historico_usuarios.setRowCount(len(registros))
 
-        for i, row in enumerate(registros):
+            cursor.execute(query_base, parametros)
+            resultados = cursor.fetchall()
+
+        # Limpar e preencher a tabela
+        self.tabela_historico_usuarios.setRowCount(0)
+        for i, row in enumerate(resultados):
+            self.tabela_historico_usuarios.insertRow(i)
             self.tabela_historico_usuarios.setItem(i, 0, QTableWidgetItem(row[0]))  # Data/Hora
             self.tabela_historico_usuarios.setItem(i, 1, QTableWidgetItem(row[1]))  # Usuário
             self.tabela_historico_usuarios.setItem(i, 2, QTableWidgetItem(row[2]))  # Ação
             self.tabela_historico_usuarios.setItem(i, 3, QTableWidgetItem(row[3]))  # Descrição
 
-        QMessageBox.information(self, "Filtro Aplicado", f"{len(registros)} registro(s) encontrado(s)!")
+        QMessageBox.information(self, "Filtro Aplicado", f"{len(resultados)} registro(s) encontrado(s)!")
+
+
 
     def exportar_csv_usuarios(self):
         num_linhas = self.tabela_historico_usuarios.rowCount()
@@ -1479,6 +1350,11 @@ class Pagina_Usuarios(QWidget):
             if total_linhas == 0:
                 QMessageBox.warning(self, "Erro", "Nenhum usuário encontrado para cadastrar.")
                 return
+            with self.db.connecta() as conexao:
+                cursor = conexao.cursor()
+            
+            data_atual = datetime.now().strftime("%d/%m/%Y %H:%M")
+           
 
             for linha in range(total_linhas):
                 nome = self.table_massa_usuarios.item(linha, 0).text().strip() if self.table_massa_usuarios.item(linha, 0) else ""
@@ -1500,37 +1376,27 @@ class Pagina_Usuarios(QWidget):
                 cpf = self.table_massa_usuarios.item(linha, 14).text().strip() if self.table_massa_usuarios.item(linha, 14) else ""
                 cnpj = self.table_massa_usuarios.item(linha, 15).text().strip() if self.table_massa_usuarios.item(linha, 15) else "" 
                 acesso = self.table_massa_usuarios.item(linha, 16).text().strip() if self.table_massa_usuarios.item(linha, 16) else ""
-                dados_usuarios_massa = {
-                    "Nome": nome,
-                    "Usuário": usuario,
-                    "Senha": senha,
-                    "Confirmar Senha": confirmar_senha,
-                    "CEP": cep,
-                    "Endereço": endereco,
-                    "Número": numero,
-                    "Cidade": cidade,
-                    "Bairro": bairro,
-                    "Estado": estado,
-                    "Complemento": complemento,
-                    "Telefone": telefone,
-                    "E-mail": email,
-                    "Data de Nascimento": data_nascimento,
-                    "RG": rg,
-                    "CPF": cpf,
-                    "CNPJ": cnpj,
-                    "Acesso": acesso
-                }
 
-                self.main_window.subscribe_user(dados_usuarios_massa, registrar_historico=True)
+                cursor.execute("""
+                    INSERT INTO users(
+                        Nome, Usuário,Senha, "Confirmar Senha",CEP,Endereço,Número,Cidade,Bairro,Estado,Complemento,Telefone,
+                        Email, "Data de Nascimento",RG,CPF,CNPJ,Acesso   
+                    )VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+                """,(nome,usuario,senha,confirmar_senha,cep,endereco,numero,cidade,bairro,estado,complemento,
+                      telefone,email,data_nascimento,rg,cpf,cnpj,acesso))
 
                 # Registrar no histórico
                 descricao = f"Usuário {usuario} foi cadastrado no sistema!"
-                self.main_window.registrar_historico_usuarios("Cadastro em Massa", descricao)
+                cursor.execute("""
+                    INSERT INTO historico_usuarios ("Data e Hora",Usuário,Ação,Descrição)
+                    VALUES (?,?,?,?)
+                """,(data_atual,self.config.obter_usuario_logado(), "Cadastro em Massa",descricao))
+
+                conexao.commit()
 
 
             QMessageBox.information(self, "Sucesso", "Usuários cadastrados em massa com sucesso!")
             self.line_edit_massa_usuarios.clear()
-
             # Limpar a tabela após a inserção
             self.table_massa_usuarios.setRowCount(0)
 

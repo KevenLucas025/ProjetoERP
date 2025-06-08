@@ -295,7 +295,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.configracao_senha = TrocarSenha(self)
 
         self.pagina_usuarios = Pagina_Usuarios(self, self.btn_abrir_planilha_usuarios,self.btn_cadastrar_novo_usuario,
-                                               self.btn_gerar_pdf_usuarios,self.btn_historico_usuarios,self.btn_atualizar_ativos,
+                                               self.btn_historico_usuarios,self.btn_atualizar_ativos,
                                                self.btn_atualizar_inativos,self.btn_limpar_tabelas_usuarios,self.btn_gerar_saida_usuarios,
                                                self.line_excel_usuarios,self.progress_excel_usuarios,self.btn_importar_usuarios,
                                                self.btn_abrir_planilha_massa_usuarios,self.btn_fazer_cadastro_massa_usuarios,self.progress_massa_usuarios,
@@ -1094,7 +1094,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             detalhes_msg_detalhes.setText("O seu desconto não pode ser menor que 5%. \n Somente descontos maiores serão válidos para esta ação")
             detalhes_msg_detalhes.exec()
 #*********************************************************************************************************************
-    def subscribe_user(self,registrar_historico_usuarios=False):
+    def subscribe_user(self):
         # Verificar se está no modo de edição
         if self.is_editing:
             QMessageBox.warning(None, "Modo de Edição Ativo", 

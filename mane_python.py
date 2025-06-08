@@ -797,6 +797,27 @@ class Ui_MainWindow(object):
         self.frame_5.setFrameShadow(QFrame.Raised)
         self.gridLayout_9 = QGridLayout(self.frame_5)
         self.gridLayout_9.setObjectName(u"gridLayout_9")
+        self.btn_atualizar_ativos = QPushButton(self.frame_5)
+        self.btn_atualizar_ativos.setObjectName(u"btn_atualizar_ativos")
+        sizePolicy.setHeightForWidth(self.btn_atualizar_ativos.sizePolicy().hasHeightForWidth())
+        self.btn_atualizar_ativos.setSizePolicy(sizePolicy)
+        self.btn_atualizar_ativos.setMaximumSize(QSize(185, 30))
+        self.btn_atualizar_ativos.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
+        self.btn_atualizar_ativos.setStyleSheet(u"QPushButton {\n"
+"    color: rgb(255, 255, 255);\n"
+"    border-radius: 8px;\n"
+"    font-size: 16px;\n"
+"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */\n"
+"    border: 4px solid transparent;\n"
+"}\n"
+"\n"
+"QPushButton:hover {\n"
+"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */\n"
+"    color: black;\n"
+"}")
+
+        self.gridLayout_9.addWidget(self.btn_atualizar_ativos, 1, 0, 1, 1)
+
         self.btn_cadastrar_novo_usuario = QPushButton(self.frame_5)
         self.btn_cadastrar_novo_usuario.setObjectName(u"btn_cadastrar_novo_usuario")
         sizePolicy.setHeightForWidth(self.btn_cadastrar_novo_usuario.sizePolicy().hasHeightForWidth())
@@ -819,13 +840,13 @@ class Ui_MainWindow(object):
 
         self.gridLayout_9.addWidget(self.btn_cadastrar_novo_usuario, 0, 0, 1, 1)
 
-        self.btn_atualizar_ativos = QPushButton(self.frame_5)
-        self.btn_atualizar_ativos.setObjectName(u"btn_atualizar_ativos")
-        sizePolicy.setHeightForWidth(self.btn_atualizar_ativos.sizePolicy().hasHeightForWidth())
-        self.btn_atualizar_ativos.setSizePolicy(sizePolicy)
-        self.btn_atualizar_ativos.setMaximumSize(QSize(185, 30))
-        self.btn_atualizar_ativos.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
-        self.btn_atualizar_ativos.setStyleSheet(u"QPushButton {\n"
+        self.btn_limpar_tabelas_usuarios = QPushButton(self.frame_5)
+        self.btn_limpar_tabelas_usuarios.setObjectName(u"btn_limpar_tabelas_usuarios")
+        sizePolicy.setHeightForWidth(self.btn_limpar_tabelas_usuarios.sizePolicy().hasHeightForWidth())
+        self.btn_limpar_tabelas_usuarios.setSizePolicy(sizePolicy)
+        self.btn_limpar_tabelas_usuarios.setMaximumSize(QSize(185, 30))
+        self.btn_limpar_tabelas_usuarios.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
+        self.btn_limpar_tabelas_usuarios.setStyleSheet(u"QPushButton {\n"
 "    color: rgb(255, 255, 255);\n"
 "    border-radius: 8px;\n"
 "    font-size: 16px;\n"
@@ -838,49 +859,7 @@ class Ui_MainWindow(object):
 "    color: black;\n"
 "}")
 
-        self.gridLayout_9.addWidget(self.btn_atualizar_ativos, 1, 0, 1, 1)
-
-        self.btn_gerar_pdf_usuarios = QPushButton(self.frame_5)
-        self.btn_gerar_pdf_usuarios.setObjectName(u"btn_gerar_pdf_usuarios")
-        sizePolicy.setHeightForWidth(self.btn_gerar_pdf_usuarios.sizePolicy().hasHeightForWidth())
-        self.btn_gerar_pdf_usuarios.setSizePolicy(sizePolicy)
-        self.btn_gerar_pdf_usuarios.setMaximumSize(QSize(185, 30))
-        self.btn_gerar_pdf_usuarios.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
-        self.btn_gerar_pdf_usuarios.setStyleSheet(u"QPushButton {\n"
-"    color: rgb(255, 255, 255);\n"
-"    border-radius: 8px;\n"
-"    font-size: 16px;\n"
-"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */\n"
-"    border: 4px solid transparent;\n"
-"}\n"
-"\n"
-"QPushButton:hover {\n"
-"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */\n"
-"    color: black;\n"
-"}")
-
-        self.gridLayout_9.addWidget(self.btn_gerar_pdf_usuarios, 2, 0, 1, 1)
-
-        self.btn_historico_usuarios = QPushButton(self.frame_5)
-        self.btn_historico_usuarios.setObjectName(u"btn_historico_usuarios")
-        sizePolicy.setHeightForWidth(self.btn_historico_usuarios.sizePolicy().hasHeightForWidth())
-        self.btn_historico_usuarios.setSizePolicy(sizePolicy)
-        self.btn_historico_usuarios.setMaximumSize(QSize(185, 30))
-        self.btn_historico_usuarios.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
-        self.btn_historico_usuarios.setStyleSheet(u"QPushButton {\n"
-"    color: rgb(255, 255, 255);\n"
-"    border-radius: 8px;\n"
-"    font-size: 16px;\n"
-"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */\n"
-"    border: 4px solid transparent;\n"
-"}\n"
-"\n"
-"QPushButton:hover {\n"
-"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */\n"
-"    color: black;\n"
-"}")
-
-        self.gridLayout_9.addWidget(self.btn_historico_usuarios, 3, 0, 1, 1)
+        self.gridLayout_9.addWidget(self.btn_limpar_tabelas_usuarios, 4, 0, 1, 1)
 
         self.btn_atualizar_inativos = QPushButton(self.frame_5)
         self.btn_atualizar_inativos.setObjectName(u"btn_atualizar_inativos")
@@ -901,15 +880,15 @@ class Ui_MainWindow(object):
 "    color: black;\n"
 "}")
 
-        self.gridLayout_9.addWidget(self.btn_atualizar_inativos, 4, 0, 1, 1)
+        self.gridLayout_9.addWidget(self.btn_atualizar_inativos, 3, 0, 1, 1)
 
-        self.btn_limpar_tabelas_usuarios = QPushButton(self.frame_5)
-        self.btn_limpar_tabelas_usuarios.setObjectName(u"btn_limpar_tabelas_usuarios")
-        sizePolicy.setHeightForWidth(self.btn_limpar_tabelas_usuarios.sizePolicy().hasHeightForWidth())
-        self.btn_limpar_tabelas_usuarios.setSizePolicy(sizePolicy)
-        self.btn_limpar_tabelas_usuarios.setMaximumSize(QSize(185, 30))
-        self.btn_limpar_tabelas_usuarios.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
-        self.btn_limpar_tabelas_usuarios.setStyleSheet(u"QPushButton {\n"
+        self.btn_historico_usuarios = QPushButton(self.frame_5)
+        self.btn_historico_usuarios.setObjectName(u"btn_historico_usuarios")
+        sizePolicy.setHeightForWidth(self.btn_historico_usuarios.sizePolicy().hasHeightForWidth())
+        self.btn_historico_usuarios.setSizePolicy(sizePolicy)
+        self.btn_historico_usuarios.setMaximumSize(QSize(185, 30))
+        self.btn_historico_usuarios.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
+        self.btn_historico_usuarios.setStyleSheet(u"QPushButton {\n"
 "    color: rgb(255, 255, 255);\n"
 "    border-radius: 8px;\n"
 "    font-size: 16px;\n"
@@ -922,7 +901,7 @@ class Ui_MainWindow(object):
 "    color: black;\n"
 "}")
 
-        self.gridLayout_9.addWidget(self.btn_limpar_tabelas_usuarios, 5, 0, 1, 1)
+        self.gridLayout_9.addWidget(self.btn_historico_usuarios, 2, 0, 1, 1)
 
 
         self.gridLayout_21.addWidget(self.frame_5, 0, 6, 5, 1)
@@ -4297,12 +4276,11 @@ class Ui_MainWindow(object):
         self.btn_gerar_saida.setText(QCoreApplication.translate("MainWindow", u"Gerar S\u00e1ida", None))
         self.btn_gerar_estorno.setText(QCoreApplication.translate("MainWindow", u"Gerar Estorno", None))
         self.tb_base.setTabText(self.tb_base.indexOf(self.tabela_base), QCoreApplication.translate("MainWindow", u"Base", None))
-        self.btn_cadastrar_novo_usuario.setText(QCoreApplication.translate("MainWindow", u"Nova Usu\u00e1rio", None))
         self.btn_atualizar_ativos.setText(QCoreApplication.translate("MainWindow", u"Atualizar Ativos", None))
-        self.btn_gerar_pdf_usuarios.setText(QCoreApplication.translate("MainWindow", u"Gerar PDF", None))
-        self.btn_historico_usuarios.setText(QCoreApplication.translate("MainWindow", u"Hist\u00f3rico", None))
-        self.btn_atualizar_inativos.setText(QCoreApplication.translate("MainWindow", u"Atualizar Inativos", None))
+        self.btn_cadastrar_novo_usuario.setText(QCoreApplication.translate("MainWindow", u"Nova Usu\u00e1rio", None))
         self.btn_limpar_tabelas_usuarios.setText(QCoreApplication.translate("MainWindow", u"Limpar Tabelas", None))
+        self.btn_atualizar_inativos.setText(QCoreApplication.translate("MainWindow", u"Atualizar Inativos", None))
+        self.btn_historico_usuarios.setText(QCoreApplication.translate("MainWindow", u"Hist\u00f3rico", None))
 #if QT_CONFIG(whatsthis)
         self.label_ativos.setWhatsThis(QCoreApplication.translate("MainWindow", u"<html><head/><body><p><span style=\" font-size:18pt; font-weight:600; font-style:italic;\">ESTOQUE</span></p></body></html>", None))
 #endif // QT_CONFIG(whatsthis)
