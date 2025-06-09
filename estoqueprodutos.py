@@ -1,7 +1,7 @@
 from PySide6.QtGui import QColor, QBrush,QGuiApplication
 from PySide6.QtWidgets import (QWidget, QTableWidget, QTableWidgetItem, 
                                QMessageBox,QCheckBox,QVBoxLayout,QDialog,QPushButton,QMainWindow,QHBoxLayout,
-                               QLineEdit,QLabel,QInputDialog,QGroupBox,QRadioButton,QFileDialog)
+                               QLineEdit,QLabel,QInputDialog,QGroupBox,QRadioButton,QFileDialog,QHeaderView)
 from PySide6.QtCore import Qt,QTimer,QEvent
 import sqlite3
 import pandas as pd
@@ -839,15 +839,15 @@ class EstoqueProduto(QWidget):
         botao_ordenar_historico.clicked.connect(self.ordenar_historico)
 
         # Criar checkbox "Selecionar Todos" toda vez que a janela for aberta
-        self.checkbox_selecionar_todos = QCheckBox("Selecionar todo o histórico")
-        self.checkbox_selecionar_todos.stateChanged.connect(self.selecionar_todos)
+        '''self.checkbox_selecionar_todos = QCheckBox("Selecionar todo o histórico")
+        self.checkbox_selecionar_todos.stateChanged.connect(self.selecionar_todos)'''
 
         # Criar checkbox "Selecionar Individualmente" toda vez que a janela for aberta
         self.checkbox_selecionar_individual = QCheckBox("Selecionar Individualmente")
         self.checkbox_selecionar_individual.stateChanged.connect(self.selecionar_individual)
 
         # Adicionar os checkboxes ao layout
-        layout.addWidget(self.checkbox_selecionar_todos)
+        #layout.addWidget(self.checkbox_selecionar_todos)
         layout.addWidget(self.checkbox_selecionar_individual)
     
 
@@ -892,12 +892,25 @@ class EstoqueProduto(QWidget):
         QMessageBox.information(self.janela_historico, "Sucesso", "Dados carregados com sucesso!")
         self.carregar_historico()
 
+    def confirmar_historico_apagado(self, mensagem):
+        """
+        Exibe uma caixa de diálogo para confirmar a exclusão.
+        """
+        msgbox = QMessageBox(self)
+        msgbox.setWindowTitle("Confirmação")
+        msgbox.setText(mensagem)
+
+        btn_sim = QPushButton("Sim")
+        btn_nao = QPushButton("Não")
+        msgbox.addButton(btn_sim, QMessageBox.ButtonRole.YesRole)
+        msgbox.addButton(btn_nao, QMessageBox.ButtonRole.NoRole)
+
+        msgbox.setDefaultButton(btn_nao)
+        resposta = msgbox.exec()
+
+        return msgbox.clickedButton() == btn_sim
 
     def apagar_historico(self):
-        """
-        Função principal para apagar histórico. Trata tanto exclusão por checkboxes 
-        quanto exclusão por seleção direta, dependendo do estado da tabela.
-        """
         # Caso checkboxes estejam ativados
         if self.coluna_checkboxes_adicionada and self.checkboxes:
             linhas_para_remover = []
@@ -911,9 +924,8 @@ class EstoqueProduto(QWidget):
                     if item_data_widget:
                         item_data_text = item_data_widget.text().strip()
                         # Excluir com base na data e hora
-                        item_id = self.get_id_by_data_hora(item_data_text)
-                        if item_id:
-                            ids_para_remover.append(item_id)
+                        if item_data_text:
+                            ids_para_remover.append(item_data_text)
                         else:
                             print(f"Erro ao capturar ID para a data/hora: '{item_data_text}'")
                     else:
@@ -937,9 +949,8 @@ class EstoqueProduto(QWidget):
             with sqlite3.connect('banco_de_dados.db') as cn:
                 cursor = cn.cursor()
                 try:
-                    for item_id in ids_para_remover:
-                        cursor.execute("DELETE FROM historico WHERE id = ?", (item_id,))
-                        print(f"Item removido do banco: ID {item_id}")
+                    for data_hora in ids_para_remover:
+                        cursor.execute("DELETE FROM historico WHERE 'Data e Hora' = ?", (data_hora,))
                     cn.commit()
                 except Exception as e:
                     QMessageBox.critical(self, "Erro", f"Erro ao excluir do banco de dados: {e}")
@@ -975,7 +986,7 @@ class EstoqueProduto(QWidget):
                     cursor.execute('SELECT id FROM historico WHERE "Data e Hora" = ?', (item_data_text,))
                     resultado = cursor.fetchone()
 
-                    if resultado:
+                    if item_data_text:
                         item_id = resultado[0]  # Pegamos o ID encontrado
                     else:
                         QMessageBox.warning(self, "Erro", f"Não foi encontrado um item para a Data/Hora: {item_data_text}")
@@ -995,7 +1006,7 @@ class EstoqueProduto(QWidget):
             with sqlite3.connect('banco_de_dados.db') as cn:
                 cursor = cn.cursor()
                 try:
-                    cursor.execute("DELETE FROM historico WHERE id = ?", (item_id,))
+                    cursor.execute("DELETE FROM historico WHERE 'Data e Hora' = ?", (item_id,))
                     print(f"Item removido do banco de dados: ID {item_id}")
                     cn.commit()
                 except Exception as e:
@@ -1006,43 +1017,6 @@ class EstoqueProduto(QWidget):
             self.tabela_historico.removeRow(linha_selecionada)
 
             QMessageBox.information(self, "Sucesso", "Item removido com sucesso!")
-
-
-    def get_id_by_data_hora(self, data_hora):
-        """
-        Função que busca o ID correspondente à Data/Hora no banco de dados.
-        """
-        with sqlite3.connect('banco_de_dados.db') as cn:
-            cursor = cn.cursor()
-            try:
-                # Converter a Data/Hora para um formato compatível com o banco de dados
-                cursor.execute('SELECT id FROM historico WHERE "Data e Hora" = ?', (data_hora,))
-                resultado = cursor.fetchone()
-                if resultado:
-                    return resultado[0]  # Retorna o ID encontrado
-                else:
-                    return None  # Não encontrou nenhum ID correspondente
-            except Exception as e:
-                print(f"Erro ao buscar ID: {e}")
-                return None
-
-    def confirmar_historico_apagado(self, mensagem):
-        """
-        Exibe uma caixa de diálogo para confirmar a exclusão.
-        """
-        msgbox = QMessageBox(self)
-        msgbox.setWindowTitle("Confirmação")
-        msgbox.setText(mensagem)
-
-        btn_sim = QPushButton("Sim")
-        btn_nao = QPushButton("Não")
-        msgbox.addButton(btn_sim, QMessageBox.ButtonRole.YesRole)
-        msgbox.addButton(btn_nao, QMessageBox.ButtonRole.NoRole)
-
-        msgbox.setDefaultButton(btn_nao)
-        resposta = msgbox.exec()
-
-        return msgbox.clickedButton() == btn_sim
     
     # Função para desmarcar todos os checkboxes
     def desmarcar_checkboxes(self):
@@ -1075,40 +1049,68 @@ class EstoqueProduto(QWidget):
         if self.coluna_checkboxes_adicionada:
             self.desmarcar_checkboxes()
             self.tabela_historico.removeColumn(0)
+            self.tabela_historico.verticalHeader().setVisible(True)
             self.coluna_checkboxes_adicionada = False
+
+            # Esconde checkbox do cabeçalho, se estiver visível
+            if hasattr(self, "checkbox_header") and self.checkbox_header:
+                self.checkbox_header.hide()
             return
 
-        self.tabela_historico.insertColumn(0)
-        self.tabela_historico.setHorizontalHeaderItem(0, QTableWidgetItem("Selecionar"))
-        self.checkboxes = []
+        # Oculta os números da linha
+        self.tabela_historico.verticalHeader().setVisible(False)
 
+        # Adiciona a coluna com os checkboxes
+        self.tabela_historico.insertColumn(0)
+        self.tabela_historico.setHorizontalHeaderItem(0, QTableWidgetItem(""))  # Placeholder
+        self.tabela_historico.setColumnWidth(0, 30)
+        self.tabela_historico.horizontalHeader().setMinimumSectionSize(30)
+        self.tabela_historico.horizontalHeader().setSectionResizeMode(0, QHeaderView.Fixed)
+
+        # Criar o checkbox no cabeçalho (sem texto)
+        self.checkbox_header = QCheckBox()
+        self.checkbox_header.setToolTip("Selecionar todos")
+        self.checkbox_header.setChecked(False)
+        self.checkbox_header.stateChanged.connect(self.selecionar_todos)
+
+        # Posicionar o checkbox sobre a seção do cabeçalho
+        header_pos = self.tabela_historico.horizontalHeader().sectionPosition(0)
+        self.checkbox_header.setParent(self.tabela_historico.viewport())
+        self.checkbox_header.move(header_pos + 7, 5)
+        self.checkbox_header.show()
+
+        self.checkboxes = []
         for row in range(self.tabela_historico.rowCount()):
             checkbox = QCheckBox()
             checkbox.stateChanged.connect(self.atualizar_selecao_todos)
+
             checkbox_widget = QWidget()
             layout = QHBoxLayout(checkbox_widget)
             layout.addWidget(checkbox)
             layout.setAlignment(Qt.AlignCenter)
             layout.setContentsMargins(0, 0, 0, 0)
             checkbox_widget.setLayout(layout)
+
             self.tabela_historico.setCellWidget(row, 0, checkbox)
             self.checkboxes.append(checkbox)
 
-        self.tabela_historico.setColumnWidth(0, 30)
         self.coluna_checkboxes_adicionada = True
-        return
 
     
-    def atualizar_selecao_todos(self):
-        self.checkbox_selecionar_todos.blockSignals(True)
+    def selecionar_todos(self):
+        if not self.coluna_checkboxes_adicionada:
+            QMessageBox.warning(self, "Aviso", "Ative a opção 'Selecionar Individualmente' antes.")
+            if hasattr(self, "checkbox_header"):
+                self.checkbox_header.setChecked(False)
+            return
 
-        # Atualizar o estado do "Selecionar Todos"
-        all_checked = all(checkbox.isChecked() for checkbox in self.checkboxes if checkbox)
-        any_checked = any(checkbox.isChecked() for checkbox in self.checkboxes if checkbox)
+        estado = self.checkbox_header.isChecked()
+        for checkbox in self.checkboxes:
+            if checkbox:
+                checkbox.blockSignals(True)
+                checkbox.setChecked(estado)
+                checkbox.blockSignals(False)
 
-        self.checkbox_selecionar_todos.setChecked(all_checked)
-
-        self.checkbox_selecionar_todos.blockSignals(False)
 
 
     def ordenar_historico(self):

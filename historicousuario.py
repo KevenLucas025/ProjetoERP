@@ -701,18 +701,18 @@ class Pagina_Usuarios(QWidget):
             return
 
         if self.coluna_checkboxes_usuarios_adicionada:
-            self.desmarcar_checkboxes()
+            self.desmarcar_checkboxes_usuarios()
             self.tabela_historico_usuarios.removeColumn(0)
             self.coluna_checkboxes_usuarios_adicionada = False
             return
 
-        self.tabela_historico_usuarios_usuarios.insertColumn(0)
+        self.tabela_historico_usuarios.insertColumn(0)
         self.tabela_historico_usuarios.setHorizontalHeaderItem(0, QTableWidgetItem("Selecionar"))
         self.checkboxes = []
 
         for row in range(self.tabela_historico_usuarios.rowCount()):
             checkbox = QCheckBox()
-            checkbox.stateChanged.connect(self.atualizar_selecao_todos)
+            checkbox.stateChanged.connect(self.atualizar_selecao_todos_usuarios)
             checkbox_widget = QWidget()
             layout = QHBoxLayout(checkbox_widget)
             layout.addWidget(checkbox)
@@ -725,6 +725,12 @@ class Pagina_Usuarios(QWidget):
         self.tabela_historico_usuarios.setColumnWidth(0, 30)
         self.coluna_checkboxes_usuarios_adicionada = True
         return
+    
+    # Função para desmarcar todos os checkboxes
+    def desmarcar_checkboxes_usuarios(self):
+        for checkbox in self.checkboxes:
+            if checkbox:
+                checkbox.setChecked(False)
     
     def atualizar_selecao_todos_usuarios(self):
         self.todos_selecionados.blockSignals(True)
@@ -1353,46 +1359,46 @@ class Pagina_Usuarios(QWidget):
             with self.db.connecta() as conexao:
                 cursor = conexao.cursor()
             
-            data_atual = datetime.now().strftime("%d/%m/%Y %H:%M")
+            
+            usuario_logado = self.config.obter_usuario_logado()
            
 
             for linha in range(total_linhas):
-                nome = self.table_massa_usuarios.item(linha, 0).text().strip() if self.table_massa_usuarios.item(linha, 0) else ""
-                # Gerar código único para o usuário
+                nome = self.table_massa_usuarios.item(linha, 0).text().strip() if self.table_massa_usuarios.item(linha,0) else ""
                 usuario = self.main_window.gerar_codigo_usuarios()
-                senha = self.table_massa_usuarios.item(linha, 1).text().strip() if self.table_massa_usuarios.item(linha, 1) else ""
-                confirmar_senha = self.table_massa_usuarios.item(linha, 2).text().strip() if self.table_massa_usuarios.item(linha, 2) else ""
-                cep = self.table_massa_usuarios.item(linha, 3).text().strip() if self.table_massa_usuarios.item(linha, 3) else ""
-                endereco = self.table_massa_usuarios.item(linha, 4).text().strip() if self.table_massa_usuarios.item(linha, 4) else ""
-                numero = self.table_massa_usuarios.item(linha, 5).text().strip() if self.table_massa_usuarios.item(linha, 5) else ""
-                cidade = self.table_massa_usuarios.item(linha, 6).text().strip() if self.table_massa_usuarios.item(linha, 6) else ""
-                bairro = self.table_massa_usuarios.item(linha, 7).text().strip() if self.table_massa_usuarios.item(linha, 7) else ""
-                estado = self.table_massa_usuarios.item(linha, 8).text().strip() if self.table_massa_usuarios.item(linha, 8) else ""
-                complemento = self.table_massa_usuarios.item(linha, 9).text().strip() if self.table_massa_usuarios.item(linha, 9) else ""
-                telefone = self.table_massa_usuarios.item(linha, 10).text().strip() if self.table_massa_usuarios.item(linha, 10) else ""
-                email = self.table_massa_usuarios.item(linha, 11).text().strip() if self.table_massa_usuarios.item(linha, 11) else ""
-                data_nascimento = self.table_massa_usuarios.item(linha, 12).text().strip() if self.table_massa_usuarios.item(linha, 12) else ""
-                rg = self.table_massa_usuarios.item(linha, 13).text().strip() if self.table_massa_usuarios.item(linha, 13) else ""
-                cpf = self.table_massa_usuarios.item(linha, 14).text().strip() if self.table_massa_usuarios.item(linha, 14) else ""
-                cnpj = self.table_massa_usuarios.item(linha, 15).text().strip() if self.table_massa_usuarios.item(linha, 15) else "" 
-                acesso = self.table_massa_usuarios.item(linha, 16).text().strip() if self.table_massa_usuarios.item(linha, 16) else ""
-
-                cursor.execute("""
-                    INSERT INTO users(
-                        Nome, Usuário,Senha, "Confirmar Senha",CEP,Endereço,Número,Cidade,Bairro,Estado,Complemento,Telefone,
-                        Email, "Data de Nascimento",RG,CPF,CNPJ,Acesso   
-                    )VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
-                """,(nome,usuario,senha,confirmar_senha,cep,endereco,numero,cidade,bairro,estado,complemento,
-                      telefone,email,data_nascimento,rg,cpf,cnpj,acesso))
+                senha = self.table_massa_usuarios.item(linha, 2).text().strip() if self.table_massa_usuarios.item(linha, 2) else ""
+                confirmar_senha = self.table_massa_usuarios.item(linha, 3).text().strip() if self.table_massa_usuarios.item(linha, 3) else ""
+                cep = self.table_massa_usuarios.item(linha, 4).text().strip() if self.table_massa_usuarios.item(linha, 4) else ""
+                endereco = self.table_massa_usuarios.item(linha, 5).text().strip() if self.table_massa_usuarios.item(linha, 5) else ""
+                numero = self.table_massa_usuarios.item(linha, 6).text().strip() if self.table_massa_usuarios.item(linha, 6) else ""
+                cidade = self.table_massa_usuarios.item(linha, 7).text().strip() if self.table_massa_usuarios.item(linha, 7) else ""
+                bairro = self.table_massa_usuarios.item(linha, 8).text().strip() if self.table_massa_usuarios.item(linha, 8) else ""
+                estado = self.table_massa_usuarios.item(linha, 9).text().strip() if self.table_massa_usuarios.item(linha, 9) else ""
+                complemento = self.table_massa_usuarios.item(linha, 10).text().strip() if self.table_massa_usuarios.item(linha, 10) else ""
+                telefone = self.table_massa_usuarios.item(linha, 11).text().strip() if self.table_massa_usuarios.item(linha, 11) else ""
+                email = self.table_massa_usuarios.item(linha, 12).text().strip() if self.table_massa_usuarios.item(linha, 12) else ""
+                data_nascimento = self.table_massa_usuarios.item(linha, 13).text().strip() if self.table_massa_usuarios.item(linha, 13) else ""
+                rg = self.table_massa_usuarios.item(linha, 14).text().strip() if self.table_massa_usuarios.item(linha, 14) else ""
+                cpf = self.table_massa_usuarios.item(linha, 15).text().strip() if self.table_massa_usuarios.item(linha, 15) else ""
+                cnpj = self.table_massa_usuarios.item(linha, 16).text().strip() if self.table_massa_usuarios.item(linha, 16) else ""
+                acesso = self.table_massa_usuarios.item(linha,17).text().strip() if self.table_massa_usuarios.item(linha, 17) else ""
+           
+                segredo = "" # vazio por padrão no cadastro em massa
+                     
+                self.db.insert_user(
+                    nome,usuario,senha,confirmar_senha,cep,endereco,numero,cidade,bairro,estado,complemento,
+                    telefone,email,data_nascimento,rg,cpf,cnpj,segredo,usuario_logado,acesso)
+                
+                data_atual = datetime.now().strftime("%d/%m/%Y %H:%M")
 
                 # Registrar no histórico
                 descricao = f"Usuário {usuario} foi cadastrado no sistema!"
                 cursor.execute("""
                     INSERT INTO historico_usuarios ("Data e Hora",Usuário,Ação,Descrição)
                     VALUES (?,?,?,?)
-                """,(data_atual,self.config.obter_usuario_logado(), "Cadastro em Massa",descricao))
+                """,(data_atual,usuario_logado, "Cadastro em Massa",descricao))
 
-                conexao.commit()
+            conexao.commit()
 
 
             QMessageBox.information(self, "Sucesso", "Usuários cadastrados em massa com sucesso!")
