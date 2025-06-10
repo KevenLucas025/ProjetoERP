@@ -15,6 +15,8 @@ from reportlab.pdfgen import canvas
 
 
 
+
+
 class EstoqueProduto(QWidget):
     def __init__(self, main_window, btn_gerar_pdf, btn_gerar_estorno, 
                  btn_gerar_saida,btn_importar, btn_limpar_tabela, 
@@ -29,7 +31,7 @@ class EstoqueProduto(QWidget):
 
         self.checkboxes = []  # Lista para armazenar os checkboxes
         self.coluna_checkboxes_adicionada = False
-        self.todos_selecionados = False
+        self.todos_os_checkboxes = []
 
 
         self.main_window = main_window
@@ -838,17 +840,13 @@ class EstoqueProduto(QWidget):
         botao_ordenar_historico = QPushButton("Ordenar Histórico")
         botao_ordenar_historico.clicked.connect(self.ordenar_historico)
 
-        # Criar checkbox "Selecionar Todos" toda vez que a janela for aberta
-        '''self.checkbox_selecionar_todos = QCheckBox("Selecionar todo o histórico")
-        self.checkbox_selecionar_todos.stateChanged.connect(self.selecionar_todos)'''
 
         # Criar checkbox "Selecionar Individualmente" toda vez que a janela for aberta
-        self.checkbox_selecionar_individual = QCheckBox("Selecionar Individualmente")
-        self.checkbox_selecionar_individual.stateChanged.connect(self.selecionar_individual)
+        self.checkbox_selecionar = QCheckBox("Selecionar")
+        self.checkbox_selecionar.stateChanged.connect(self.selecionar_individual)
 
-        # Adicionar os checkboxes ao layout
-        #layout.addWidget(self.checkbox_selecionar_todos)
-        layout.addWidget(self.checkbox_selecionar_individual)
+    
+        
     
 
         # Adicionar outros botões ao layout
@@ -860,7 +858,9 @@ class EstoqueProduto(QWidget):
         layout.addWidget(botao_pausar_historico)
         layout.addWidget(botao_ordenar_historico)
         layout.addWidget(botao_filtrar_historico)
+        layout.addWidget(self.checkbox_selecionar)
         layout.addWidget(self.tabela_historico)
+        
 
 
         # Configurar o widget central e exibir a janela
@@ -1027,16 +1027,22 @@ class EstoqueProduto(QWidget):
     def selecionar_todos(self):
         if not self.coluna_checkboxes_adicionada:
             QMessageBox.warning(self, "Aviso", "Ative a opção 'Selecionar Individualmente' antes.")
-            self.checkbox_selecionar_todos.setChecked(False)
+            if hasattr(self, "checkbox_header"):
+                self.checkbox_header.setChecked(False)
             return
 
-        estado = self.checkbox_selecionar_todos.isChecked()
-        for checkbox in self.checkboxes:
-            if checkbox:
-                # Bloquear sinais para evitar loops
-                checkbox.blockSignals(True)
-                checkbox.setChecked(estado)
-                checkbox.blockSignals(False)
+        estado = self.checkbox_header.checkState() == Qt.Checked
+        self.checkboxes.clear()  # Reinicia a lista para manter consistência
+        
+        for row in range(self.tabela_historico.rowCount()):
+            widget = self.tabela_historico.cellWidget(row, 0)
+            if widget is not None:
+                checkbox = widget.findChild(QCheckBox)
+                if checkbox:
+                    checkbox.blockSignals(True)
+                    checkbox.setChecked(estado)
+                    checkbox.blockSignals(False)
+
 
 
      # Função para adicionar checkboxes selecionar_individual na tabela de histórico
@@ -1047,70 +1053,83 @@ class EstoqueProduto(QWidget):
             return
 
         if self.coluna_checkboxes_adicionada:
-            self.desmarcar_checkboxes()
             self.tabela_historico.removeColumn(0)
             self.tabela_historico.verticalHeader().setVisible(True)
             self.coluna_checkboxes_adicionada = False
 
-            # Esconde checkbox do cabeçalho, se estiver visível
-            if hasattr(self, "checkbox_header") and self.checkbox_header:
-                self.checkbox_header.hide()
+            if hasattr(self, "checkbox_header"):
+                self.checkbox_header.deleteLater()
+                del self.checkbox_header
+
+            self.checkboxes.clear()
             return
 
-        # Oculta os números da linha
-        self.tabela_historico.verticalHeader().setVisible(False)
-
-        # Adiciona a coluna com os checkboxes
         self.tabela_historico.insertColumn(0)
-        self.tabela_historico.setHorizontalHeaderItem(0, QTableWidgetItem(""))  # Placeholder
+        self.tabela_historico.setHorizontalHeaderItem(0, QTableWidgetItem(""))
         self.tabela_historico.setColumnWidth(0, 30)
         self.tabela_historico.horizontalHeader().setMinimumSectionSize(30)
         self.tabela_historico.horizontalHeader().setSectionResizeMode(0, QHeaderView.Fixed)
 
-        # Criar o checkbox no cabeçalho (sem texto)
-        self.checkbox_header = QCheckBox()
+        # Checkbox do cabeçalho
+        self.checkbox_header = QCheckBox(self.tabela_historico)
         self.checkbox_header.setToolTip("Selecionar todos")
         self.checkbox_header.setChecked(False)
         self.checkbox_header.stateChanged.connect(self.selecionar_todos)
-
-        # Posicionar o checkbox sobre a seção do cabeçalho
-        header_pos = self.tabela_historico.horizontalHeader().sectionPosition(0)
-        self.checkbox_header.setParent(self.tabela_historico.viewport())
-        self.checkbox_header.move(header_pos + 7, 5)
+        self.checkbox_header.setFixedSize(20, 20)
         self.checkbox_header.show()
 
-        self.checkboxes = []
+        header = self.tabela_historico.horizontalHeader()
+        self.atualizar_posicao_checkbox_header()
+        header.sectionResized.connect(self.atualizar_posicao_checkbox_header)
+
+        self.checkboxes.clear()
+
         for row in range(self.tabela_historico.rowCount()):
             checkbox = QCheckBox()
             checkbox.stateChanged.connect(self.atualizar_selecao_todos)
 
-            checkbox_widget = QWidget()
-            layout = QHBoxLayout(checkbox_widget)
+            container = QWidget()
+            layout = QHBoxLayout(container)
             layout.addWidget(checkbox)
             layout.setAlignment(Qt.AlignCenter)
             layout.setContentsMargins(0, 0, 0, 0)
-            checkbox_widget.setLayout(layout)
 
-            self.tabela_historico.setCellWidget(row, 0, checkbox)
+            self.tabela_historico.setCellWidget(row, 0, container)
             self.checkboxes.append(checkbox)
 
+        self.tabela_historico.verticalHeader().setVisible(False)
         self.coluna_checkboxes_adicionada = True
 
+    def atualizar_selecao_todos(self):
+        self.checkbox_header.blockSignals(True)
+
+        all_checked = all(checkbox.isChecked() for checkbox in self.checkboxes if checkbox)
+        any_checked = any(checkbox.isChecked() for checkbox in self.checkboxes if checkbox)
+
+        if all_checked:
+            self.checkbox_header.setCheckState(Qt.Checked)
+        elif any_checked:
+            self.checkbox_header.setCheckState(Qt.PartiallyChecked)
+        else:
+            self.checkbox_header.setCheckState(Qt.Unchecked)
+
+        self.checkbox_header.blockSignals(False)
+
+        
+    def atualizar_posicao_checkbox_header(self):
+        if hasattr(self, "checkbox_header") and self.coluna_checkboxes_adicionada:
+            header = self.tabela_historico.horizontalHeader()
+
+            # Pegamos a posição visível da seção 0 (primeira coluna)
+            x = header.sectionViewportPosition(0) + (header.sectionSize(0) - self.checkbox_header.width()) // 2
+
+            # Centraliza verticalmente no cabeçalho
+            y = (header.height() - self.checkbox_header.height()) // 2
+
+            self.checkbox_header.move(x, y)
+
+
     
-    def selecionar_todos(self):
-        if not self.coluna_checkboxes_adicionada:
-            QMessageBox.warning(self, "Aviso", "Ative a opção 'Selecionar Individualmente' antes.")
-            if hasattr(self, "checkbox_header"):
-                self.checkbox_header.setChecked(False)
-            return
-
-        estado = self.checkbox_header.isChecked()
-        for checkbox in self.checkboxes:
-            if checkbox:
-                checkbox.blockSignals(True)
-                checkbox.setChecked(estado)
-                checkbox.blockSignals(False)
-
 
 
     def ordenar_historico(self):
