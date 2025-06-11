@@ -1,7 +1,7 @@
 from PySide6.QtGui import QColor, QBrush,QGuiApplication
 from PySide6.QtWidgets import (QWidget, QTableWidget, QTableWidgetItem, 
                                QMessageBox,QCheckBox,QVBoxLayout,QDialog,QPushButton,QMainWindow,QHBoxLayout,
-                               QLineEdit,QLabel,QInputDialog,QGroupBox,QRadioButton,QFileDialog,QHeaderView)
+                               QLineEdit,QLabel,QInputDialog,QGroupBox,QRadioButton,QFileDialog,QApplication,QHeaderView)
 from PySide6.QtCore import Qt,QTimer,QEvent
 import sqlite3
 import pandas as pd
@@ -71,6 +71,8 @@ class EstoqueProduto(QWidget):
         self.btn_abrir_planilha_massa_produtos.clicked.connect(self.abrir_planilha_em_massa_produtos)
         self.main_window.table_base.viewport().installEventFilter(self)
         self.main_window.table_saida.viewport().installEventFilter(self)
+
+        
 
 
     # Função auxiliar para criar um QTableWidgetItem com texto centralizado
@@ -793,6 +795,12 @@ class EstoqueProduto(QWidget):
         self.janela_historico.setWindowTitle("Histórico de Ações")
         self.janela_historico.resize(800, 650)
 
+        def fechar_janela_historico(evento):
+            self.coluna_checkboxes_adicionada = False
+            evento.accept()
+
+        self.janela_historico.closeEvent = fechar_janela_historico # Liga a função fechar janela do histórico
+
         # Centralizar a janela na tela
         screen = QGuiApplication.primaryScreen()
         screen_geometry = screen.availableGeometry()
@@ -845,10 +853,6 @@ class EstoqueProduto(QWidget):
         self.checkbox_selecionar = QCheckBox("Selecionar")
         self.checkbox_selecionar.stateChanged.connect(self.selecionar_individual)
 
-    
-        
-    
-
         # Adicionar outros botões ao layout
         layout.addWidget(botao_atualizar)
         layout.addWidget(botao_apagar)
@@ -870,6 +874,7 @@ class EstoqueProduto(QWidget):
         # Preencher tabela pela primeira vez
         self.carregar_historico()
         self.tabela_historico.resizeColumnsToContents()
+    
 
     def carregar_historico(self):
         with sqlite3.connect('banco_de_dados.db') as cn:
@@ -880,11 +885,19 @@ class EstoqueProduto(QWidget):
         self.tabela_historico.clearContents()
         self.tabela_historico.setRowCount(len(registros))
 
+        deslocamento = 1 if self.coluna_checkboxes_adicionada else 0
+        self.checkboxes = []  # Zerar e recriar lista de checkboxes
+
         for i, (data, usuario, acao, descricao) in enumerate(registros):
-            self.tabela_historico.setItem(i, 0, QTableWidgetItem(data))
-            self.tabela_historico.setItem(i, 1, QTableWidgetItem(usuario))
-            self.tabela_historico.setItem(i, 2, QTableWidgetItem(acao))
-            self.tabela_historico.setItem(i, 3, QTableWidgetItem(descricao))
+            if self.coluna_checkboxes_adicionada:
+                checkbox = QCheckBox()
+                checkbox.setStyleSheet("margin-left:9px; margin-right:9px;")
+                self.tabela_historico.setCellWidget(i,0,checkbox)
+                self.checkboxes.append(checkbox)
+            self.tabela_historico.setItem(i, 0 + deslocamento, QTableWidgetItem(data))
+            self.tabela_historico.setItem(i, 1 + deslocamento, QTableWidgetItem(usuario))
+            self.tabela_historico.setItem(i, 2 + deslocamento, QTableWidgetItem(acao))
+            self.tabela_historico.setItem(i, 3 + deslocamento, QTableWidgetItem(descricao))
 
 
 
@@ -920,7 +933,8 @@ class EstoqueProduto(QWidget):
             for row, checkbox in enumerate(self.checkboxes):
                 if checkbox and checkbox.isChecked():
                     linhas_para_remover.append(row)
-                    item_data_widget = self.tabela_historico.item(row, 1)  # Coluna de Data/Hora
+                    coluna_data_hora = 1 if not self.coluna_checkboxes_adicionada else 2
+                    item_data_widget = self.tabela_historico.item(row, coluna_data_hora)  # Coluna de Data/Hora
                     if item_data_widget:
                         item_data_text = item_data_widget.text().strip()
                         # Excluir com base na data e hora
@@ -971,7 +985,8 @@ class EstoqueProduto(QWidget):
                 return
 
             # Capturar a Data/Hora da célula correspondente (coluna 0)
-            item_data_widget = self.tabela_historico.item(linha_selecionada, 0)  # Coluna de Data/Hora
+            coluna_data_hora = 0 if not self.coluna_checkboxes_adicionada else 1
+            item_data_widget = self.tabela_historico.item(linha_selecionada, coluna_data_hora)  # Coluna de Data/Hora
             if not item_data_widget:
                 QMessageBox.warning(self, "Erro", "Não foi possível identificar a Data/Hora do item a ser apagado!")
                 return
@@ -1084,6 +1099,8 @@ class EstoqueProduto(QWidget):
 
         self.checkboxes.clear()
 
+        QTimer.singleShot(0,self.atualizar_posicao_checkbox_header)
+
         for row in range(self.tabela_historico.rowCount()):
             checkbox = QCheckBox()
             checkbox.stateChanged.connect(self.atualizar_selecao_todos)
@@ -1120,19 +1137,20 @@ class EstoqueProduto(QWidget):
         if hasattr(self, "checkbox_header") and self.coluna_checkboxes_adicionada:
             header = self.tabela_historico.horizontalHeader()
 
-            # Pegamos a posição visível da seção 0 (primeira coluna)
-            x = header.sectionViewportPosition(0) + (header.sectionSize(0) - self.checkbox_header.width()) // 2
-
-            # Centraliza verticalmente no cabeçalho
+            x = header.sectionViewportPosition(0) + (header.sectionSize(0) - self.checkbox_header.width()) // 2 + 4
             y = (header.height() - self.checkbox_header.height()) // 2
 
             self.checkbox_header.move(x, y)
 
 
-    
-
-
     def ordenar_historico(self):
+        if hasattr(self, "checkbox_header"):
+            QMessageBox.warning(
+                None,
+                "Aviso",
+                "Desmarque o checkbox antes de ordenar o histórico."
+            )
+            return
         # Obter a coluna pela qual o usuário deseja ordenar
         coluna = self.obter_coluna_para_ordenar()  # Função fictícia para capturar escolha
         if coluna is None:
@@ -1193,6 +1211,14 @@ class EstoqueProduto(QWidget):
 
 
     def filtrar_historico(self):
+        if hasattr(self,"checkbox_header"):
+            QMessageBox.warning(
+                None,
+                "Aviso",
+                "Desmarque o checkbox antes de filtrar o histórico."
+            )
+            return
+        
         # Criar a janela de filtro
         janela_filtro = QDialog(self)
         janela_filtro.setWindowTitle("Filtrar Histórico")
@@ -1268,6 +1294,7 @@ class EstoqueProduto(QWidget):
 
 
     def aplicar_filtro(self, data, filtrar_novo, filtrar_velho):
+        self.remover_coluna_selecao() # Remove os checkboxes se estiverem ativos
         with sqlite3.connect('banco_de_dados.db') as cn:
             cursor = cn.cursor()
 
