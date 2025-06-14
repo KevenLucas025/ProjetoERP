@@ -1,9 +1,10 @@
 from PySide6.QtWidgets import (QDialog, QPushButton, QVBoxLayout, QTableWidget, 
                                QTableWidgetItem, QMessageBox, QCheckBox, QLabel, QLineEdit, 
-                               QLabel, QFrame,QAbstractItemView,QApplication,QMainWindow,QWidget,QComboBox)
+                               QLabel, QFrame,QMainWindow,QWidget,QComboBox,QHeaderView,
+                               QAbstractItemView,QHBoxLayout)
 from PySide6 import QtWidgets
 from PySide6.QtGui import QPixmap, Qt, QImage,QBrush, QColor
-from PySide6.QtCore import  Qt,QEvent
+from PySide6.QtCore import  Qt,QEvent,QTimer
 from PySide6 import QtCore
 from database import DataBase, sqlite3
 import base64
@@ -26,6 +27,10 @@ class TabelaUsuario(QMainWindow):
 
         self.usuarios = self.db.get_users()
         self.usuario_selecionado = False
+        
+        self.checkboxes = []  # Lista para armazenar os checkboxes
+        
+        self.coluna_checkboxes_adicionada = False  # Variável para controlar se a coluna de checkbox foi adicionada
 
         # Widget central e layout principal vertical
         widget_central = QWidget()
@@ -55,7 +60,7 @@ class TabelaUsuario(QMainWindow):
         self.btn_apagar_usuario = QPushButton("Apagar Usuários")
         self.btn_editar_usuario = QPushButton("Atualizar Usuário")
         self.btn_filtrar_usuario = QPushButton("Filtrar Usuários")
-        self.btn_selecionar_todos = QPushButton("Selecionar Usuários")
+        self.btn_selecionar_todos = QCheckBox("Selecionar")
         self.btn_ordenar_usuario = QPushButton("Ordenar Usuários")
         self.btn_visualizar_imagem = QPushButton("Visualizar Imagem")
         self.btn_atualizar_tabela = QPushButton("Atualizar Tabela")
@@ -64,10 +69,10 @@ class TabelaUsuario(QMainWindow):
         layout_botoes.addWidget(self.btn_apagar_usuario)
         layout_botoes.addWidget(self.btn_editar_usuario)
         layout_botoes.addWidget(self.btn_filtrar_usuario)
-        layout_botoes.addWidget(self.btn_selecionar_todos)
         layout_botoes.addWidget(self.btn_ordenar_usuario)
         layout_botoes.addWidget(self.btn_visualizar_imagem)
         layout_botoes.addWidget(self.btn_atualizar_tabela)
+        layout_botoes.addWidget(self.btn_selecionar_todos)
 
         # Faz os botões ficarem do tamanho da largura da janela
         for btn in [self.btn_apagar_usuario, self.btn_editar_usuario, self.btn_filtrar_usuario,
@@ -98,13 +103,12 @@ class TabelaUsuario(QMainWindow):
         self.btn_filtrar_usuario.clicked.connect(self.filtrar_usuario)
         self.btn_ordenar_usuario.clicked.connect(self.ordenar_usuario)
         self.btn_visualizar_imagem.clicked.connect(self.visualizar_imagem_usuario)
-        self.btn_selecionar_todos.clicked.connect(self.selecionar_todos)
+        self.btn_selecionar_todos.clicked.connect(self.selecionar_todos_users)
         self.btn_atualizar_tabela.clicked.connect(self.atualizar_tabela_usuario)
 
     
     def preencher_tabela_usuario(self):
         self.table_widget.setRowCount(0)
-
         column_titles = [
             "ID","Nome", "Usuário", "Senha", "Confirmar Senha", "CEP", "Endereço",
             "Número", "Cidade", "Bairro", "Estado", "Complemento", "Telefone", "Email",
@@ -383,6 +387,13 @@ class TabelaUsuario(QMainWindow):
                 cursor.close()
 #*******************************************************************************************************
     def filtrar_usuario(self):
+        if hasattr(self, "checkbox_header_users"):
+            QMessageBox.warning(
+                None,
+                "Aviso",
+                "Desmarque o checkbox antes de filtrar os usuários."
+            )
+            return
         msg_box = QMessageBox()
         msg_box.setWindowTitle("Filtrar Usuários")
         msg_box.setText("Deseja filtrar os usuários?")
@@ -532,27 +543,123 @@ class TabelaUsuario(QMainWindow):
             dialog.setLayout(layout)
             dialog.exec()
 #*******************************************************************************************************
-    def selecionar_todos(self):
-        # Verificar se os checkboxes já estão visíveis na primeira coluna antes da coluna ID
-        if self.table_widget.cellWidget(0, 0) is None:
-            # Criar e exibir os checkboxes em cada linha da primeira coluna antes da coluna ID
-            total_rows = self.table_widget.rowCount()
-            for row in range(total_rows):
-                for col in range(self.table_widget.columnCount()):
-                    item = self.table_widget.item(row, col)
-                    if col == 0 and item:  # Se for a primeira coluna e houver um item
-                        # Criar e posicionar o QCheckBox
-                        checkbox = QCheckBox()
-                        self.table_widget.setCellWidget(row, col, checkbox)
+    def selecionar_todos_users(self):
+        if not self.coluna_checkboxes_adicionada:
+            self.selecionar_users_individual()
+            return
+
+        estado = self.checkbox_header_users.checkState()
+        estado_checked = estado == Qt.Checked
+
+        # Verifica se todos estavam marcados antes
+        todos_estavam_marcados = all(checkbox.isChecked() for checkbox in self.checkboxes)
+
+        # Marca ou desmarca os checkboxes
+        for checkbox in self.checkboxes:
+            checkbox.blockSignals(True)
+            checkbox.setChecked(estado_checked)
+            checkbox.blockSignals(False)
+
+        # Se desmarcou "Selecionar Todos" E todos estavam marcados antes
+        # Isso significa que o usuário quer remover a coluna
+        if not estado_checked and todos_estavam_marcados:
+            self.selecionar_users_individual()
+
+
+
+
+                    
+    def selecionar_users_individual(self):
+        if self.table_widget.rowCount() == 0:
+            QMessageBox.warning(self, "Aviso", "Não há usuários na tabela para selecionar.")
+            return
+
+        if self.coluna_checkboxes_adicionada:
+            self.table_widget.removeColumn(0)
+            self.table_widget.verticalHeader().setVisible(True)
+            self.coluna_checkboxes_adicionada = False
+
+            if hasattr(self, "checkbox_header_users"):
+                self.checkbox_header_users.blockSignals(True)
+                self.checkbox_header_users.setChecked(False)  # Garante que não fique marcado
+                self.checkbox_header_users.blockSignals(False)
+                
+                self.checkbox_header_users.deleteLater()
+                del self.checkbox_header_users
+
+            self.checkboxes.clear()
+            return
+
+        self.table_widget.insertColumn(0)
+        self.table_widget.setHorizontalHeaderItem(0, QTableWidgetItem(""))
+        self.table_widget.setColumnWidth(0, 30)
+        self.table_widget.horizontalHeader().setMinimumSectionSize(30)
+        self.table_widget.horizontalHeader().setSectionResizeMode(0, QHeaderView.Fixed)
+
+        # Checkbox do cabeçalho
+        self.checkbox_header_users = QCheckBox(self.table_widget)
+        self.checkbox_header_users.setToolTip("Selecionar todos")
+        self.checkbox_header_users.setChecked(False)
+        self.checkbox_header_users.setFixedSize(20, 20)
+        self.checkbox_header_users.stateChanged.connect(self.selecionar_todos_users)
+        self.checkbox_header_users.show()
+
+        self.atualizar_posicao_checkbox_header_users()
+        self.table_widget.horizontalHeader().sectionResized.connect(self.atualizar_posicao_checkbox_header_users)
+        QTimer.singleShot(0, self.atualizar_posicao_checkbox_header_users)
+
+        self.checkboxes.clear()
+
+        for row in range(self.table_widget.rowCount()):
+            checkbox = QCheckBox()
+            checkbox.stateChanged.connect(self.atualizar_selecao_todos_usuarios)
+
+            container = QWidget()
+            layout = QHBoxLayout(container)
+            layout.addWidget(checkbox)
+            layout.setAlignment(Qt.AlignCenter)
+            layout.setContentsMargins(0, 0, 0, 0)
+
+            self.table_widget.setCellWidget(row, 0, container)
+            self.checkboxes.append(checkbox)
+
+        self.table_widget.verticalHeader().setVisible(False)
+        self.coluna_checkboxes_adicionada = True
+
+        
+    def atualizar_selecao_todos_usuarios(self):
+        self.checkbox_header_users.blockSignals(True)
+
+        # Atualizar o estado do "Selecionar Todos"
+        all_checked = all(checkbox.isChecked() for checkbox in self.checkboxes if checkbox)
+        any_checked = any(checkbox.isChecked() for checkbox in self.checkboxes if checkbox)
+
+        if all_checked:
+            self.checkbox_header_users.setCheckState(Qt.Checked)
+        elif any_checked:
+            self.checkbox_header_users.setCheckState(Qt.PartiallyChecked)
         else:
-            # Remover os checkboxes da primeira coluna antes da coluna ID
-            total_rows = self.table_widget.rowCount()
-            for row in range(total_rows):
-                for col in range(self.table_widget.columnCount()):
-                    if col == 0:
-                        self.table_widget.removeCellWidget(row, col)
+            self.checkbox_header_users.setCheckState(Qt.Unchecked)
+
+        self.checkbox_header_users.blockSignals(False)
+
+    def atualizar_posicao_checkbox_header_users(self):
+        if hasattr(self, "checkbox_header_users") and self.coluna_checkboxes_adicionada:
+            header = self.table_widget.horizontalHeader()
+
+            x = header.sectionViewportPosition(0) + (header.sectionSize(0) - self.checkbox_header_users.width()) // 2 + 4
+            y = (header.height() - self.checkbox_header_users.height()) // 2
+            self.checkbox_header_users.move(x, y)
+
 #*******************************************************************************************************
     def ordenar_usuario(self):
+        if hasattr(self, "checkbox_header_users"):
+            QMessageBox.warning(
+                None,
+                "Aviso",
+                "Desmarque o checkbox antes de ordenar o histórico."
+            )
+            return
         # Implementação básica para ordenar produtos
         self.table_widget.sortItems(1, Qt.AscendingOrder)  # Ordenar pela coluna 1 em ordem ascendente
 #*******************************************************************************************************
@@ -696,4 +803,3 @@ class TabelaUsuario(QMainWindow):
         item.setForeground(QBrush(QColor("black")))
         return item            
     
-

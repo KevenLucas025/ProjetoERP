@@ -1,7 +1,7 @@
 from PySide6.QtWidgets import (QWidget,QTableWidget,QMessageBox,
                                QTableWidgetItem,QInputDialog,QLineEdit,QCheckBox,
                                QFileDialog,QMainWindow,QVBoxLayout,QPushButton,QHBoxLayout,
-                               QLabel,QRadioButton,QGroupBox,QDialog)
+                               QLabel,QRadioButton,QGroupBox,QDialog,QHeaderView)
 from PySide6.QtGui import QBrush,QColor,QGuiApplication
 from PySide6.QtCore import Qt,QEvent,QTimer
 from database import DataBase
@@ -470,17 +470,13 @@ class Pagina_Usuarios(QWidget):
         botao_ordenar_historico = QPushButton("Ordenar Histórico")
         botao_ordenar_historico.clicked.connect(self.ordenar_historico_usuario)
 
-        # Criar checkbox "Selecionar Todos" toda vez que a janela for aberta
-        self.todos_selecionados = QCheckBox("Selecionar todo o histórico")
-        self.todos_selecionados.stateChanged.connect(self.selecionar_todos_usuarios)
+
 
         # Criar checkbox "Selecionar Individualmente" toda vez que a janela for aberta
-        self.checkbox_selecionar_individual = QCheckBox("Selecionar Individualmente")
-        self.checkbox_selecionar_individual.stateChanged.connect(self.selecionar_usuarios_individual)
+        self.checkbox_selecionar = QCheckBox("Selecionar")
+        self.checkbox_selecionar.stateChanged.connect(self.selecionar_usuarios_individual)
 
-        # Adicionar os checkboxes ao layout
-        layout.addWidget(self.todos_selecionados)
-        layout.addWidget(self.checkbox_selecionar_individual)
+        
 
         # Adicionar outros botões ao layout
         layout.addWidget(botao_atualizar)
@@ -491,6 +487,7 @@ class Pagina_Usuarios(QWidget):
         layout.addWidget(botao_pausar_historico)
         layout.addWidget(botao_ordenar_historico)
         layout.addWidget(botao_filtrar_historico)
+        layout.addWidget(self.checkbox_selecionar)
         layout.addWidget(self.tabela_historico_usuarios)
 
         # Configurar o widget central e exibir a janela
@@ -505,17 +502,26 @@ class Pagina_Usuarios(QWidget):
     def carregar_historico_usuario(self):
         with sqlite3.connect('banco_de_dados.db') as cn:
             cursor = cn.cursor()
-            cursor.execute('SELECT * FROM historico_usuarios ORDER BY "Data e Hora" ASC')
+            cursor.execute('SELECT * FROM historico_usuarios ORDER BY "Data e Hora" DESC')
             registros = cursor.fetchall()
 
         self.tabela_historico_usuarios.clearContents()
         self.tabela_historico_usuarios.setRowCount(len(registros))
+        
+        deslocamento_usuarios = 1 if self.coluna_checkboxes_usuarios_adicionada else 0
+        self.checkboxes = []  # Zerar e recriar lista de checkboxes
+        
 
         for i, (data, usuario, acao, descricao) in enumerate(registros):
-            self.tabela_historico_usuarios.setItem(i, 0, QTableWidgetItem(data))
-            self.tabela_historico_usuarios.setItem(i, 1, QTableWidgetItem(usuario))
-            self.tabela_historico_usuarios.setItem(i, 2, QTableWidgetItem(acao))
-            self.tabela_historico_usuarios.setItem(i, 3, QTableWidgetItem(descricao))
+            if self.coluna_checkboxes_usuarios_adicionada:
+                checkbox = QCheckBox()
+                checkbox.setStyleSheet("margin-left: 9px; margin-right: 9px;")
+                self.tabela_historico_usuarios.setCellWidget(i, 0, checkbox)
+                self.checkboxes.append(checkbox)
+            self.tabela_historico_usuarios.setItem(i, 0 + deslocamento_usuarios, QTableWidgetItem(data))
+            self.tabela_historico_usuarios.setItem(i, 1 + deslocamento_usuarios, QTableWidgetItem(usuario))
+            self.tabela_historico_usuarios.setItem(i, 2 + deslocamento_usuarios, QTableWidgetItem(acao))
+            self.tabela_historico_usuarios.setItem(i, 3 + deslocamento_usuarios, QTableWidgetItem(descricao))
 
 
 
@@ -524,10 +530,6 @@ class Pagina_Usuarios(QWidget):
         self.carregar_historico_usuario()
 
     def apagar_historico_usuario(self):
-        """
-        Função principal para apagar histórico. Trata tanto exclusão por checkboxes 
-        quanto exclusão por seleção direta, dependendo do estado da tabela.
-        """
         # Caso checkboxes estejam ativados
         if self.coluna_checkboxes_usuarios_adicionada and self.checkboxes:
             linhas_para_remover = []
@@ -537,13 +539,13 @@ class Pagina_Usuarios(QWidget):
             for row, checkbox in enumerate(self.checkboxes):
                 if checkbox and checkbox.isChecked():
                     linhas_para_remover.append(row)
-                    item_data_widget = self.tabela_historico_usuarios.item(row, 1)  # Coluna de Data/Hora
+                    coluna_data_hora = 1 if self.coluna_checkboxes_usuarios_adicionada else 2
+                    item_data_widget = self.tabela_historico_usuarios.item(row, coluna_data_hora)  # Coluna de Data/Hora
                     if item_data_widget:
                         item_data_text = item_data_widget.text().strip()
                         # Excluir com base na data e hora
-                        item_id = self.get_id_by_data_hora_usuarios(item_data_text)
-                        if item_id:
-                            ids_para_remover.append(item_id)
+                        if item_data_text:
+                            ids_para_remover.append(item_data_text)
                         else:
                             print(f"Erro ao capturar ID para a data/hora: '{item_data_text}'")
                     else:
@@ -568,8 +570,7 @@ class Pagina_Usuarios(QWidget):
                 cursor = cn.cursor()
                 try:
                     for item_id in ids_para_remover:
-                        cursor.execute("DELETE FROM historico_usuarios WHERE id = ?", (item_id,))
-                        print(f"Item removido do banco: ID {item_id}")
+                        cursor.execute("DELETE FROM historico_usuarios WHERE 'Data e Hora' = ?", (item_id,))
                     cn.commit()
                 except Exception as e:
                     QMessageBox.critical(self, "Erro", f"Erro ao excluir do banco de dados: {e}")
@@ -590,7 +591,8 @@ class Pagina_Usuarios(QWidget):
                 return
 
             # Capturar a Data/Hora da célula correspondente (coluna 0)
-            item_data_widget = self.tabela_historico_usuarios.item(linha_selecionada, 0)  # Coluna de Data/Hora
+            coluna_data_hora = 0 if self.coluna_checkboxes_usuarios_adicionada else 1
+            item_data_widget = self.tabela_historico_usuarios.item(linha_selecionada, coluna_data_hora)  # Coluna de Data/Hora
             if not item_data_widget:
                 QMessageBox.warning(self, "Erro", "Não foi possível identificar a Data/Hora do item a ser apagado!")
                 return
@@ -625,7 +627,7 @@ class Pagina_Usuarios(QWidget):
             with sqlite3.connect('banco_de_dados.db') as cn:
                 cursor = cn.cursor()
                 try:
-                    cursor.execute("DELETE FROM historico_usuarios WHERE id = ?", (item_id,))
+                    cursor.execute("DELETE FROM historico_usuarios WHERE 'Data e Hora' = ?", (item_id,))
                     print(f"Item removido do banco de dados: ID {item_id}")
                     cn.commit()
                 except Exception as e:
@@ -637,23 +639,30 @@ class Pagina_Usuarios(QWidget):
 
             QMessageBox.information(self, "Sucesso", "Item removido com sucesso!")
 
-    def get_id_by_data_hora_usuarios(self, data_hora):
-        """
-        Função que busca o ID correspondente à Data/Hora no banco de dados.
-        """
-        with sqlite3.connect('banco_de_dados.db') as cn:
-            cursor = cn.cursor()
-            try:
-                # Converter a Data/Hora para um formato compatível com o banco de dados
-                cursor.execute('SELECT id FROM historico_usuarios WHERE "Data e Hora" = ?', (data_hora,))
-                resultado = cursor.fetchone()
-                if resultado:
-                    return resultado[0]  # Retorna o ID encontrado
-                else:
-                    return None  # Não encontrou nenhum ID correspondente
-            except Exception as e:
-                print(f"Erro ao buscar ID: {e}")
-                return None
+     # Função para desmarcar todos os checkboxes
+    def desmarcar_checkboxes(self):
+        for checkbox in self.checkboxes:
+            if checkbox:
+                checkbox.setChecked(False)
+                
+    def selecionar_todos_usuarios(self):
+        if not self.coluna_checkboxes_usuarios_adicionada:
+            QMessageBox.warning(self, "Aviso", "Ative a opção 'Selecionar Individualmente' antes.")
+            self.checkbox_header_usuarios.setChecked(False)
+            return
+
+        estado = self.checkbox_header_usuarios.checkState() == Qt.Checked
+        self.checkboxes.clear()
+        
+        for row in range(self.tabela_historico_usuarios.rowCount()):
+            widget = self.tabela_historico_usuarios.cellWidget(row,0)
+            if widget is not None:
+                checkbox = widget.findChild(QCheckBox)
+                if checkbox:
+                    checkbox.blockSignals(True)
+                    checkbox.setChecked(estado)
+                    checkbox.blockSignals(False)
+    
             
     def confirmar_historico_usuarios_apagado(self, mensagem):
         """
@@ -672,26 +681,6 @@ class Pagina_Usuarios(QWidget):
         resposta = msgbox.exec()
 
         return msgbox.clickedButton() == btn_sim
-    
-    # Função para desmarcar todos os checkboxes
-    def desmarcar_checkboxes_usuarios(self):
-        for checkbox in self.checkboxes:
-            if checkbox:
-                checkbox.setChecked(False)
-
-    def selecionar_todos_usuarios(self):
-        if not self.coluna_checkboxes_usuarios_adicionada:
-            QMessageBox.warning(self, "Aviso", "Ative a opção 'Selecionar Individualmente' antes.")
-            self.todos_selecionados.setChecked(False)
-            return
-
-        estado = self.todos_selecionados.isChecked()
-        for checkbox in self.checkboxes:
-            if checkbox:
-                # Bloquear sinais para evitar loops
-                checkbox.blockSignals(True)
-                checkbox.setChecked(estado)
-                checkbox.blockSignals(False)
                 
     # Função para adicionar checkboxes selecionar_individual na tabela de histórico
     def selecionar_usuarios_individual(self):
@@ -701,49 +690,90 @@ class Pagina_Usuarios(QWidget):
             return
 
         if self.coluna_checkboxes_usuarios_adicionada:
-            self.desmarcar_checkboxes_usuarios()
             self.tabela_historico_usuarios.removeColumn(0)
+            self.tabela_historico_usuarios.verticalHeader().setVisible(True)
             self.coluna_checkboxes_usuarios_adicionada = False
+            
+            if hasattr(self, "checkbox_header_usuarios"):
+                self.checkbox_header_usuarios.deleteLater()
+                del self.checkbox_header_usuarios
+                
+            self.checkboxes.clear()
             return
-
+        
         self.tabela_historico_usuarios.insertColumn(0)
-        self.tabela_historico_usuarios.setHorizontalHeaderItem(0, QTableWidgetItem("Selecionar"))
-        self.checkboxes = []
+        self.tabela_historico_usuarios.setHorizontalHeaderItem(0, QTableWidgetItem(""))
+        self.tabela_historico_usuarios.setColumnWidth(0,30)
+        self.tabela_historico_usuarios.horizontalHeader().setMinimumSectionSize(30)
+        self.tabela_historico_usuarios.horizontalHeader().setSectionResizeMode(0,QHeaderView.Fixed)
+   
+        # Checkbox do cabeçalho
+        self.checkbox_header_usuarios = QCheckBox(self.tabela_historico_usuarios)
+        self.checkbox_header_usuarios.setToolTip("Selecionar todos")
+        self.checkbox_header_usuarios.setChecked(False)
+        self.checkbox_header_usuarios.stateChanged.connect(self.selecionar_todos_usuarios)
+        self.checkbox_header_usuarios.setFixedSize(20, 20)
+        self.checkbox_header_usuarios.show()
+        
+        header = self.tabela_historico_usuarios.horizontalHeader()
+        self.atualizar_posicao_checkbox_header_usuarios()
+        header.sectionResized.connect(self.atualizar_posicao_checkbox_header_usuarios)
+
+        self.checkboxes.clear()
+
+        QTimer.singleShot(0,self.atualizar_posicao_checkbox_header_usuarios)
 
         for row in range(self.tabela_historico_usuarios.rowCount()):
             checkbox = QCheckBox()
             checkbox.stateChanged.connect(self.atualizar_selecao_todos_usuarios)
-            checkbox_widget = QWidget()
-            layout = QHBoxLayout(checkbox_widget)
+            
+            container = QWidget()
+            layout = QHBoxLayout(container)
             layout.addWidget(checkbox)
             layout.setAlignment(Qt.AlignCenter)
-            layout.setContentsMargins(0, 0, 0, 0)
-            checkbox_widget.setLayout(layout)
-            self.tabela_historico_usuarios.setCellWidget(row, 0, checkbox)
+            layout.setContentsMargins(0,0,0,0)
+            
+            self.tabela_historico_usuarios.setCellWidget(row, 0, container)
             self.checkboxes.append(checkbox)
 
-        self.tabela_historico_usuarios.setColumnWidth(0, 30)
+        self.tabela_historico_usuarios.verticalHeader().setVisible(False)
         self.coluna_checkboxes_usuarios_adicionada = True
-        return
     
-    # Função para desmarcar todos os checkboxes
-    def desmarcar_checkboxes_usuarios(self):
-        for checkbox in self.checkboxes:
-            if checkbox:
-                checkbox.setChecked(False)
+  
     
     def atualizar_selecao_todos_usuarios(self):
-        self.todos_selecionados.blockSignals(True)
+        self.checkbox_header_usuarios.blockSignals(True)
 
         # Atualizar o estado do "Selecionar Todos"
         all_checked = all(checkbox.isChecked() for checkbox in self.checkboxes if checkbox)
         any_checked = any(checkbox.isChecked() for checkbox in self.checkboxes if checkbox)
 
-        self.todos_selecionados.setChecked(all_checked)
+        if all_checked:
+            self.checkbox_header_usuarios.setCheckState(Qt.Checked)
+        elif any_checked:
+            self.checkbox_header_usuarios.setCheckState(Qt.PartiallyChecked)
+        else:
+            self.checkbox_header_usuarios.setCheckState(Qt.Unchecked)
+        
+        self.checkbox_header_usuarios.blockSignals(False)
 
-        self.todos_selecionados.blockSignals(False)
+        
+    def atualizar_posicao_checkbox_header_usuarios(self):
+        if hasattr(self, "checkbox_header_usuarios") and self.coluna_checkboxes_usuarios_adicionada:
+            header = self.tabela_historico_usuarios.horizontalHeader()
+            
+            x = header.sectionViewportPosition(0) + (header.sectionSize(0) - self.checkbox_header_usuarios.width()) // 2 + 4
+            y = (header.height() - self.checkbox_header_usuarios.height()) // 2
+            self.checkbox_header_usuarios.move(x, y)
 
     def ordenar_historico_usuario(self):
+        if hasattr(self,"checkbox_header_usuarios"):
+            QMessageBox.warning(
+                None,
+                "Aviso",
+                "Desmarque o checkbox antes de ordernar o histórico de usuários."
+            )
+            return
         # Obter a coluna pela qual o usuário deseja ordenar
         coluna = self.obter_coluna_usuario_para_ordenar()  # Função fictícia para capturar escolha
         if coluna is None:
@@ -801,6 +831,13 @@ class Pagina_Usuarios(QWidget):
         return direcao if ok else None
     
     def filtrar_historico_usuarios(self):
+        if hasattr(self, "checkbox_header_usuarios"):
+            QMessageBox.warning(
+                None,
+                "Aviso",
+                "Desmarque o checkbox antes de filtrar o histórico de usuários."
+            )
+            return
         # Criar a janela de filtro
         janela_filtro = QDialog(self)
         janela_filtro.setWindowTitle("Filtrar Histórico")
@@ -808,7 +845,7 @@ class Pagina_Usuarios(QWidget):
 
         # Campo para inserir a data
         campo_data = QLineEdit()
-        campo_data.setPlaceholderText("Digite a data no formato DD/MM/AAAA")
+        campo_data.setPlaceholderText("DD/MM/AAAA")
         
         # Conectar ao método de formatação, passando o texto
         campo_data.textChanged.connect(lambda: self.formatar_data_usuarios(campo_data))
