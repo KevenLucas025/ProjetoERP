@@ -644,6 +644,24 @@ class Pagina_Usuarios(QWidget):
         for checkbox in self.checkboxes:
             if checkbox:
                 checkbox.setChecked(False)
+
+    def confirmar_historico_usuarios_apagado(self, mensagem):
+        """
+        Exibe uma caixa de diálogo para confirmar a exclusão.
+        """
+        msgbox = QMessageBox(self)
+        msgbox.setWindowTitle("Confirmação")
+        msgbox.setText(mensagem)
+
+        btn_sim = QPushButton("Sim")
+        btn_nao = QPushButton("Não")
+        msgbox.addButton(btn_sim, QMessageBox.ButtonRole.YesRole)
+        msgbox.addButton(btn_nao, QMessageBox.ButtonRole.NoRole)
+
+        msgbox.setDefaultButton(btn_nao)
+        resposta = msgbox.exec()
+
+        return msgbox.clickedButton() == btn_sim
                 
     def selecionar_todos_usuarios(self):
         if not self.coluna_checkboxes_usuarios_adicionada:
@@ -662,25 +680,6 @@ class Pagina_Usuarios(QWidget):
                     checkbox.blockSignals(True)
                     checkbox.setChecked(estado)
                     checkbox.blockSignals(False)
-    
-            
-    def confirmar_historico_usuarios_apagado(self, mensagem):
-        """
-        Exibe uma caixa de diálogo para confirmar a exclusão.
-        """
-        msgbox = QMessageBox(self)
-        msgbox.setWindowTitle("Confirmação")
-        msgbox.setText(mensagem)
-
-        btn_sim = QPushButton("Sim")
-        btn_nao = QPushButton("Não")
-        msgbox.addButton(btn_sim, QMessageBox.ButtonRole.YesRole)
-        msgbox.addButton(btn_nao, QMessageBox.ButtonRole.NoRole)
-
-        msgbox.setDefaultButton(btn_nao)
-        resposta = msgbox.exec()
-
-        return msgbox.clickedButton() == btn_sim
                 
     # Função para adicionar checkboxes selecionar_individual na tabela de histórico
     def selecionar_usuarios_individual(self):

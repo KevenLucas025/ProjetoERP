@@ -59,10 +59,10 @@ class TabelaProdutos(QDialog):
 
         # Tabela para exibir os produtos
         self.table_widget = QTableWidget()
-        self.table_widget.setColumnCount(11)  # Definindo o número de colunas
+        self.table_widget.setColumnCount(10)  # Definindo o número de colunas
         self.table_widget.setHorizontalHeaderLabels(["ID", "Produto", "Quantidade", "Valor do Produto", 
                                                      "Desconto", "Data da Compra", "Código do Produto", 
-                                                     "Cliente", "Descrição", "Imagem","Usuário"])  # Definindo os rótulos das colunas
+                                                     "Cliente", "Descrição","Usuário"])  # Definindo os rótulos das colunas
         
         # Personalizar o estilo dos cabeçalhos de linha e coluna
         font = self.table_widget.horizontalHeader().font()
@@ -80,11 +80,6 @@ class TabelaProdutos(QDialog):
         self.btn_filtrar_produtos = QPushButton("Filtrar Produtos")
         layout.addWidget(self.btn_filtrar_produtos)
 
-        self.btn_selecionar_todos = QCheckBox("Selecionar todos os produtos")
-        layout.addWidget(self.btn_selecionar_todos)
-
-        self.btn_selecionar_individual = QCheckBox("Selecionar individualmente")
-        layout.addWidget(self.btn_selecionar_individual)
         
         self.btn_ordenar_produtos = QPushButton("Ordenar Produtos")
         layout.addWidget(self.btn_ordenar_produtos)
@@ -101,6 +96,9 @@ class TabelaProdutos(QDialog):
         self.btn_duplicar_produto = QPushButton("Duplicar Produto")
         layout.addWidget(self.btn_duplicar_produto)
 
+        self.checkbox_selecionar = QCheckBox("Selecionar")
+        layout.addWidget(self.checkbox_selecionar)
+
         # Adicionar a tabela ao layout
         layout.addWidget(self.table_widget)
         
@@ -113,11 +111,10 @@ class TabelaProdutos(QDialog):
         self.btn_filtrar_produtos.clicked.connect(self.filtrar_produtos)
         self.btn_ordenar_produtos.clicked.connect(self.ordenar_produtos)
         self.btn_visualizar_imagem.clicked.connect(self.visualizar_imagem)
-        self.btn_selecionar_todos.clicked.connect(self.selecionar_todos)
-        self.btn_selecionar_individual.clicked.connect(self.selecionar_um_por_vez)
         self.btn_atualizar_tabela_produtos.clicked.connect(self.atualizar_tabela_produtos)
         self.btn_duplicar_produto.clicked.connect(self.duplicar_produto)
         self.btn_gerar_excel.clicked.connect(self.gerar_arquivo_excel)
+        self.checkbox_selecionar.clicked.connect(self.selecionar_um_por_vez)
 #*******************************************************************************************************
     def preencher_tabela_produtos(self):
         # Limpar a tabela antes de preencher
@@ -138,6 +135,8 @@ class TabelaProdutos(QDialog):
                 for col, data in enumerate(produto):
                     item = QTableWidgetItem(str(data))
                     self.table_widget.setItem(row_position, col, item)
+            self.table_widget.resizeColumnsToContents()  # Ajustar as colunas para o conteúdo
+            self.table_widget.resizeRowsToContents()  # Ajustar as linhas para o conteúdo
 
             # Verificar se a tabela está vazia
             if self.table_widget.rowCount() == 0:
@@ -148,8 +147,7 @@ class TabelaProdutos(QDialog):
         except Exception as e:
             QMessageBox.critical(self, "Erro", f"Erro ao acessar o banco de dados: {str(e)}")
         finally:
-            # Fechar a conexão com o banco de dados
-            db.close_connection()
+            pass
 
     def exibir_mensagem_sem_produtos(self):
         # Verificar se a QLabel já existe
@@ -245,7 +243,6 @@ class TabelaProdutos(QDialog):
         finally:
             if cursor:
                 cursor.close()  # Fechamos o cursor apenas se ele não for None
-            db.close_connection()  # Fechamos a conexão usando a instância de DataBase
 #*******************************************************************************************************          
     def obter_produtos_por_codigo(self, codigo):
         query = "SELECT * FROM products WHERE Código_Item = ?"
@@ -268,7 +265,6 @@ class TabelaProdutos(QDialog):
         finally:
             if cursor:
                 cursor.close()  # Fechamos o cursor apenas se ele não for None
-            db.close_connection()  # Fechamos a conexão usando a instância de DataBase
 #*******************************************************************************************************
     def obter_produtos_por_nome(self, nome):
         query = "SELECT * FROM products WHERE Produto LIKE ?"
@@ -291,8 +287,6 @@ class TabelaProdutos(QDialog):
         finally:
             if cursor:
                 cursor.close()  # Fechamos o cursor apenas se ele não for None
-            db.close_connection()  # Fechamos a conexão usando a instância de DataBase
-
 #*******************************************************************************************************
     def filtrar_produtos(self): 
 
@@ -756,8 +750,6 @@ class TabelaProdutos(QDialog):
 
                 except Exception as e:
                     QMessageBox.critical(self, "Erro", f"Erro ao remover os produtos: {str(e)}")
-                finally:
-                    db.close_connection()
         else:
             QMessageBox.warning(self, "Aviso", "Nenhum produto selecionado para apagar.")
 

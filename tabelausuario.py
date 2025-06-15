@@ -1,7 +1,7 @@
 from PySide6.QtWidgets import (QDialog, QPushButton, QVBoxLayout, QTableWidget, 
                                QTableWidgetItem, QMessageBox, QCheckBox, QLabel, QLineEdit, 
                                QLabel, QFrame,QMainWindow,QWidget,QComboBox,QHeaderView,
-                               QAbstractItemView,QHBoxLayout)
+                               QAbstractItemView,QHBoxLayout,QFileDialog)
 from PySide6 import QtWidgets
 from PySide6.QtGui import QPixmap, Qt, QImage,QBrush, QColor
 from PySide6.QtCore import  Qt,QEvent,QTimer
@@ -60,9 +60,10 @@ class TabelaUsuario(QMainWindow):
         self.btn_apagar_usuario = QPushButton("Apagar Usuários")
         self.btn_editar_usuario = QPushButton("Atualizar Usuário")
         self.btn_filtrar_usuario = QPushButton("Filtrar Usuários")
-        self.btn_selecionar_todos = QCheckBox("Selecionar")
+        self.checkbox_selecionar = QCheckBox("Selecionar")
         self.btn_ordenar_usuario = QPushButton("Ordenar Usuários")
         self.btn_visualizar_imagem = QPushButton("Visualizar Imagem")
+        self.btn_baixar_imagem = QPushButton("Baixar Imagem")
         self.btn_atualizar_tabela = QPushButton("Atualizar Tabela")
 
         layout_botoes = QVBoxLayout()
@@ -71,13 +72,14 @@ class TabelaUsuario(QMainWindow):
         layout_botoes.addWidget(self.btn_filtrar_usuario)
         layout_botoes.addWidget(self.btn_ordenar_usuario)
         layout_botoes.addWidget(self.btn_visualizar_imagem)
+        layout_botoes.addWidget(self.btn_baixar_imagem)
         layout_botoes.addWidget(self.btn_atualizar_tabela)
-        layout_botoes.addWidget(self.btn_selecionar_todos)
+        layout_botoes.addWidget(self.checkbox_selecionar)
 
         # Faz os botões ficarem do tamanho da largura da janela
         for btn in [self.btn_apagar_usuario, self.btn_editar_usuario, self.btn_filtrar_usuario,
-                    self.btn_selecionar_todos, self.btn_ordenar_usuario, self.btn_visualizar_imagem,
-                    self.btn_atualizar_tabela]:
+                    self.checkbox_selecionar, self.btn_ordenar_usuario, self.btn_visualizar_imagem,
+                    self.btn_atualizar_tabela, self.btn_baixar_imagem]:
             btn.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed)
 
         # Adicionar layout dos botões em cima
@@ -103,8 +105,10 @@ class TabelaUsuario(QMainWindow):
         self.btn_filtrar_usuario.clicked.connect(self.filtrar_usuario)
         self.btn_ordenar_usuario.clicked.connect(self.ordenar_usuario)
         self.btn_visualizar_imagem.clicked.connect(self.visualizar_imagem_usuario)
-        self.btn_selecionar_todos.clicked.connect(self.selecionar_todos_users)
+        self.btn_baixar_imagem.clicked.connect(self.baixar_imagem_usuario)
+        self.checkbox_selecionar.stateChanged.connect(self.ao_clicar_em_selecionar)
         self.btn_atualizar_tabela.clicked.connect(self.atualizar_tabela_usuario)
+        
 
     
     def preencher_tabela_usuario(self):
@@ -246,16 +250,40 @@ class TabelaUsuario(QMainWindow):
             pass
 #*******************************************************************************************************
     def editar_usuario(self):
-        if self.table_widget.currentRow() >= 0:
-            row_index = self.table_widget.currentRow()
-            id_usuario = int(self.table_widget.item(row_index, 0).text())
+        #Verifica quantos checkboxes estão marcados (se estiverem visíveis)
+        if self.coluna_checkboxes_adicionada:
+            selecionados = [cb for cb in self.checkboxes if cb.isChecked()]
+
+            if len(selecionados) == 0:
+                QMessageBox.warning(self, "Aviso", "Nenhum usuário selecionado para editar.")
+                return
+            elif len(selecionados) > 1:
+                QMessageBox.warning(self, "Aviso", "Você só pode editar um usuário por vez.")
+                return
+            
+            # Encontrar a linha do checkbox marcado
+            for row_index in range(self.table_widget.rowCount()):
+                widget = self.table_widget.cellWidget(row_index, 0)
+                if widget and widget.findChild(QCheckBox).isChecked():
+                    id_item = self.table_widget.item(row_index, 1)
+                    break
+            else:
+                row_index = self.table_widget.currentRow()
+                if row_index < 0:
+                    QMessageBox.warning(self, "Aviso", "Selecione um usuário na tabela.")
+                    return
+                id_item = self.table_widget.item(row_index, 0)
+            if not id_item or not id_item.text().isdigit():
+                QMessageBox.warning(self, "Aviso", "ID de usuário inválido ou não encontrado.")
+                return
+            id_usuario = int(id_item.text())
 
             # Obter a imagem do banco de dados
             imagem_data = self.recuperar_imagem_do_banco(id_usuario)
 
             if not hasattr(self, 'label_imagem_usuario') or self.label_imagem_usuario is None:
                 self.label_imagem_usuario = QLabel()
-                self.label_imagem_usuario.setScaledContents(True)  # Redimensiona a imagem para o tamanho do QLabel
+                self.label_imagem_usuario.setScaledContents(True)
 
             self.main_window.usuario_tem_imagem_salva = bool(imagem_data)
 
@@ -542,33 +570,42 @@ class TabelaUsuario(QMainWindow):
             btn_filtrar.clicked.connect(aplicar_filtro)
             dialog.setLayout(layout)
             dialog.exec()
+
+    def ao_clicar_em_selecionar(self, estado):
+        if estado == Qt.Checked:
+            self.adicionar_coluna_checkboxes()  # Adiciona os checkboxes na tabela
+        else:
+            # Desmarcar o checkbox do cabeçalho, se estiver marcado
+            if hasattr(self, "checkbox_header_users"):
+                self.checkbox_header_users.blockSignals(True)
+                self.checkbox_header_users.setChecked(False)
+                self.checkbox_header_users.blockSignals(False)
+
+            self.selecionar_users_individual()  # Remove a coluna de checkboxes
+
 #*******************************************************************************************************
     def selecionar_todos_users(self):
         if not self.coluna_checkboxes_adicionada:
+            # Se a coluna não está ativa, chama para garantir que tudo fique desativado
             self.selecionar_users_individual()
             return
 
         estado = self.checkbox_header_users.checkState()
+
+        # Se desmarcou o checkbox do cabeçalho E todos os checkboxes individuais estão desmarcados,
+        # aí remove a coluna inteira (checkboxes)
+        if estado == Qt.Unchecked and all(not cb.isChecked() for cb in self.checkboxes):
+            self.selecionar_users_individual()
+            return
+
+        # Marca ou desmarca todos os checkboxes individuais de acordo com o estado do cabeçalho
         estado_checked = estado == Qt.Checked
-
-        # Verifica se todos estavam marcados antes
-        todos_estavam_marcados = all(checkbox.isChecked() for checkbox in self.checkboxes)
-
-        # Marca ou desmarca os checkboxes
         for checkbox in self.checkboxes:
             checkbox.blockSignals(True)
             checkbox.setChecked(estado_checked)
             checkbox.blockSignals(False)
 
-        # Se desmarcou "Selecionar Todos" E todos estavam marcados antes
-        # Isso significa que o usuário quer remover a coluna
-        if not estado_checked and todos_estavam_marcados:
-            self.selecionar_users_individual()
 
-
-
-
-                    
     def selecionar_users_individual(self):
         if self.table_widget.rowCount() == 0:
             QMessageBox.warning(self, "Aviso", "Não há usuários na tabela para selecionar.")
@@ -664,93 +701,65 @@ class TabelaUsuario(QMainWindow):
         self.table_widget.sortItems(1, Qt.AscendingOrder)  # Ordenar pela coluna 1 em ordem ascendente
 #*******************************************************************************************************
     def visualizar_imagem_usuario(self):
-        if self.table_widget.currentRow() >= 0:
+        # Se a coluna de checkboxes está ativa, usar os checkboxes para saber os selecionados
+        if self.coluna_checkboxes_adicionada:
+            selecionados = [i for i, cb in enumerate(self.checkboxes) if cb.isChecked()]
+
+            if not selecionados:
+                QMessageBox.warning(self, "Aviso", "Selecione um usuário para visualizar a imagem.")
+                return
+
+            if len(selecionados) > 1:
+                QMessageBox.warning(self, "Aviso", "Só é possível visualizar a imagem de um usuário por vez.")
+                return
+
+            row_index = selecionados[0]
+        else:
+            # Se a seleção for pela linha da tabela
             row_index = self.table_widget.currentRow()
-            id_usuario = int(self.table_widget.item(row_index, 0).text())
+            if row_index < 0:
+                QMessageBox.warning(self, "Aviso", "Selecione um usuário para visualizar a imagem.")
+                return
 
-            imagem_data = self.recuperar_imagem_do_banco(id_usuario)
-
-            if imagem_data:
-                try:
-                    print("Dados da imagem recuperados com sucesso para visualização.")
-
-                    pixmap = QPixmap()
-                    pixmap.loadFromData(imagem_data)
-
-                    if pixmap.isNull():
-                        print("Aviso: pixmap é nulo")
-                        QMessageBox.warning(self, "Aviso", "Não foi possível carregar a imagem.")
-                        return
-
-                    # Salvar a imagem temporária no disco
-                    with open("imagem_temporaria.png", "wb") as file:
-                        file.write(imagem_data)
-
-                    # Tentar abrir o arquivo com um visualizador de imagens padrão
-                    os.startfile("imagem_temporaria.png")
-
-                except Exception as e:
-                    print(f"Erro ao processar imagem: {str(e)}")
-            else:
-                QMessageBox.warning(self, "Aviso", "Imagem não encontrada.")
-
-#*******************************************************************************************************
-    def verificar_usuario(self, usuario, senha):
-        # Consulta SQL para verificar o usuário e senha
-        query = "SELECT Acesso FROM users WHERE Usuário = ? AND Senha = ? COLLATE NOCASE"
-        parameters = (usuario, senha)
-
-        cursor = None  # Inicialize o cursor como None
+        # Pega o ID da coluna correta (0 se não tiver coluna de checkbox, 1 se tiver)
+        coluna_id = 1 if self.coluna_checkboxes_adicionada else 0
+        item = self.table_widget.item(row_index, coluna_id)
         
-        try:
-            # Obter o cursor usando o método da classe DataBase
-            cursor = self.db.execute_query(query, parameters)
-            
-            resultado = cursor.fetchone()
-            
-            if resultado:
-                tipo_usuario = resultado[0]
-                print(f"Resultado da consulta: {resultado}")
-                print("Usuário autenticado com sucesso")
-                return tipo_usuario.lower()
-            else:
-                print("Usuário ou senha incorretos")
-                return None
-        except Exception as e:
-            print(f"Erro ao verificar usuário: {str(e)}")
-            return None
-        finally:
-            # Fechar o cursor se ele foi inicializado
-            if cursor:
-                cursor.close()
-#*******************************************************************************************************
-    def obter_usuario_por_nome(self, nome):
-        query = "SELECT * FROM users WHERE Nome LIKE ?"
-        parameters = (f"%{nome}%",)  # Usamos LIKE com % para fazer a consulta parcial
+        if item is None:
+            QMessageBox.warning(self, "Erro", "Não foi possível identificar o ID do usuário.")
+            return
 
-        cursor = None  # Inicialize o cursor como None
-        
         try:
-            db = DataBase()  # Cria uma instância da classe DataBase
-            connection = db.connecta()  # Obtemos uma conexão
-            cursor = connection.cursor()  # Criamos um cursor a partir da conexão
-            cursor.execute(query, parameters)
-            
-            produtos = cursor.fetchall()
-            
-            return produtos
-        except Exception as e:
-            print("Erro ao consultar produtos:", e)
-            return []
-        finally:
-            if cursor:
-                cursor.close()  # Fechamos o cursor apenas se ele não for None
-            pass
-#*******************************************************************************************************
-    def fechar_janela_tabela(self):
-        # Fechar a janela
-        self.close()
+            id_usuario = int(item.text())
+        except ValueError:
+            QMessageBox.warning(self, "Erro", "ID de usuário inválido.")
+            return
 
+        imagem_data = self.recuperar_imagem_do_banco(id_usuario)
+
+        if imagem_data:
+            try:
+                print("Dados da imagem recuperados com sucesso para visualização.")
+
+                pixmap = QPixmap()
+                pixmap.loadFromData(imagem_data)
+
+                if pixmap.isNull():
+                    print("Aviso: pixmap é nulo")
+                    QMessageBox.warning(self, "Aviso", "Não foi possível carregar a imagem.")
+                    return
+
+                # Salvar a imagem temporária no disco
+                with open("imagem_temporaria.png", "wb") as file:
+                    file.write(imagem_data)
+
+                # Tentar abrir o arquivo com um visualizador de imagens padrão
+                os.startfile("imagem_temporaria.png")
+
+            except Exception as e:
+                print(f"Erro ao processar imagem: {str(e)}")
+        else:
+            QMessageBox.warning(self, "Aviso", "Imagem não encontrada.")
 
     def limpar_campos_de_texto(self):
         self.main_window.txt_usuario.clear()
@@ -803,3 +812,62 @@ class TabelaUsuario(QMainWindow):
         item.setForeground(QBrush(QColor("black")))
         return item            
     
+    def baixar_imagem_usuario(self):
+        # Verifica se a coluna de checkboxes está ativa
+        if self.coluna_checkboxes_adicionada:
+            selecionados = [i for i, cb in enumerate(self.checkboxes) if cb.isChecked()]
+
+            if not selecionados:
+                QMessageBox.warning(self, "Aviso", "Selecione um usuário para baixar a imagem.")
+                return
+
+            if len(selecionados) > 1:
+                QMessageBox.warning(self, "Aviso", "Só é possível baixar a imagem de um usuário por vez.")
+                return
+
+            row_index = selecionados[0]
+        else:
+            row_index = self.table_widget.currentRow()
+            if row_index < 0:
+                QMessageBox.warning(self, "Aviso", "Selecione um usuário para baixar a imagem.")
+                return
+
+        # Pega o ID da coluna correta (0 se não tiver coluna de checkbox, 1 se tiver)
+        coluna_id = 1 if self.coluna_checkboxes_adicionada else 0
+        item = self.table_widget.item(row_index, coluna_id)
+
+        if item is None:
+            QMessageBox.warning(self, "Erro", "Não foi possível identificar o ID do usuário.")
+            return
+
+        try:
+            id_usuario = int(item.text())
+        except ValueError:
+            QMessageBox.warning(self, "Erro", "ID de usuário inválido.")
+            return
+
+        imagem_data = self.recuperar_imagem_do_banco(id_usuario)
+
+        if imagem_data:
+            try:
+                # Abrir diálogo para escolher onde salvar
+                caminho, _ = QFileDialog.getSaveFileName(
+                    self,
+                    "Salvar Imagem do Usuário",
+                    f"usuario_{id_usuario}.png",
+                    "Imagens (*.png *.jpg *.jpeg *.bmp *.gif)"
+                )
+
+                if not caminho:
+                    return  # Usuário cancelou o diálogo
+
+                # Escreve os dados da imagem no local escolhido
+                with open(caminho, "wb") as file:
+                    file.write(imagem_data)
+
+                QMessageBox.information(self, "Sucesso", "Imagem salva com sucesso.")
+
+            except Exception as e:
+                QMessageBox.critical(self, "Erro", f"Erro ao salvar imagem: {str(e)}")
+        else:
+            QMessageBox.warning(self, "Aviso", "Imagem não encontrada.")
