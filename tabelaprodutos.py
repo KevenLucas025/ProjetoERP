@@ -2,10 +2,10 @@ from PySide6.QtWidgets import (QDialog, QPushButton, QVBoxLayout, QTableWidget,
                                QTableWidgetItem, QMessageBox, QCheckBox, QLabel, QLineEdit, 
                                QLabel, QFrame,QDateEdit,QGridLayout,
                                QFileDialog,QMainWindow,QWidget,QSizePolicy,QApplication,QHBoxLayout,
-                               QComboBox,QAbstractItemView,QDialogButtonBox)
+                               QComboBox,QAbstractItemView,QDialogButtonBox,QHeaderView)
 from PySide6 import QtWidgets
 from PySide6.QtGui import QPixmap, Qt, QImage
-from PySide6.QtCore import QDate, Qt,QSize
+from PySide6.QtCore import QDate, Qt,QSize,QTimer
 from database import DataBase, sqlite3
 import base64
 import re
@@ -25,7 +25,6 @@ class TabelaProdutos(QDialog):
         self.edit_mode = False  # Inicializando o modo de edição como falso
         self.codigo_item_original = None
         self.filtragem_aplicada = False  # Inicializa a variável
-        self.tabela_atualizada = False
         self.db = DataBase()  # Inicializando o atributo db
         
         self.setWindowTitle("Tabela de Produtos")
@@ -44,9 +43,8 @@ class TabelaProdutos(QDialog):
 
         # Inicialize a variável de estado
         self.todos_selecionados = False
-
         # Variável para rastrear se a coluna de checkboxes está visível
-        self.coluna_checkboxes_adicionada = False
+        self.coluna_checkboxes_produtos_adicionada = False
 
 
         cursor = None
@@ -96,8 +94,8 @@ class TabelaProdutos(QDialog):
         self.btn_duplicar_produto = QPushButton("Duplicar Produto")
         layout.addWidget(self.btn_duplicar_produto)
 
-        self.checkbox_selecionar = QCheckBox("Selecionar")
-        layout.addWidget(self.checkbox_selecionar)
+        self.checkbox_selecionar_produtos = QCheckBox("Selecionar")
+        layout.addWidget(self.checkbox_selecionar_produtos)
 
         # Adicionar a tabela ao layout
         layout.addWidget(self.table_widget)
@@ -111,10 +109,10 @@ class TabelaProdutos(QDialog):
         self.btn_filtrar_produtos.clicked.connect(self.filtrar_produtos)
         self.btn_ordenar_produtos.clicked.connect(self.ordenar_produtos)
         self.btn_visualizar_imagem.clicked.connect(self.visualizar_imagem)
-        self.btn_atualizar_tabela_produtos.clicked.connect(self.atualizar_tabela_produtos)
+        self.btn_atualizar_tabela_produtos.clicked.connect(self.atualizar_tabela_products)
         self.btn_duplicar_produto.clicked.connect(self.duplicar_produto)
         self.btn_gerar_excel.clicked.connect(self.gerar_arquivo_excel)
-        self.checkbox_selecionar.clicked.connect(self.selecionar_um_por_vez)
+        self.checkbox_selecionar_produtos.clicked.connect(self.selecionar_individual)
 #*******************************************************************************************************
     def preencher_tabela_produtos(self):
         # Limpar a tabela antes de preencher
@@ -327,8 +325,6 @@ class TabelaProdutos(QDialog):
         # Executa a caixa de diálogo e espera pela resposta
         mensagem_box.exec()
 
-        self.filtragem_aplicada = False
-
     def abrir_criterio_dialog(self):
         # Criar um QDialog para a seleção do critério de filtragem
         criterio_dialog = QDialog(self)
@@ -420,6 +416,164 @@ class TabelaProdutos(QDialog):
         dialog.setLayout(layout)
         dialog.exec()
 #*******************************************************************************************************
+    def atualizar_valores_frames(self, valor_total, valor_com_desconto, valor_do_desconto, quantidade):
+        # Verificar e formatar os valores corretamente
+        valor_total_formatado = locale.currency(valor_total, grouping=True)
+        
+        # Se o valor do desconto for 0, significa que não há desconto, então "Sem desconto" é exibido
+        valor_com_desconto_formatado = "Sem desconto" if valor_do_desconto == 0 else locale.currency(valor_com_desconto, grouping=True)
+
+        # Evitar erro de tipo ao formatar "Sem desconto"
+        if isinstance(valor_do_desconto, (int, float)):
+            valor_do_desconto_formatado = locale.currency(valor_do_desconto, grouping=True)
+        else:
+            valor_do_desconto_formatado = "Sem desconto"
+
+        # Definir os textos nos frames    
+        self.main_window.frame_valor_do_desconto.setText(valor_do_desconto_formatado)
+        self.main_window.frame_valor_desconto.setText(valor_com_desconto_formatado)
+        self.main_window.frame_quantidade.setText("{:.0f}".format(quantidade))
+        self.main_window.frame_valor_total_produtos.setText(valor_total_formatado)
+
+        # Ajustar as geometrias, se necessário
+        altura = 101
+        largura_padrao = 335
+
+        # Ajustar a posição e tamanho apenas quando o desconto for zero (Sem desconto)
+        if valor_do_desconto == 0:  # Verificando se o valor do desconto é zero (sem desconto)
+            largura = 300  # Ajuste a largura para acomodar "Sem desconto"
+            self.main_window.frame_valor_do_desconto.setGeometry(100,50,largura,altura) # Posição da label quando não há desconto
+        else:
+            largura = largura_padrao  # Tamanho padrão do frame quando há desconto
+            self.main_window.frame_valor_do_desconto.setGeometry(90, 45, largura, altura)
+
+        # Posicionar o frame de valor total
+        self.main_window.frame_valor_total_produtos.setGeometry(125, 45, largura, altura)
+
+        # Posicionar o frame de valor com desconto
+        self.main_window.frame_valor_desconto.setGeometry(115, 45, largura, altura)
+
+        # Posicionar o frame de quantidade
+        self.main_window.frame_quantidade.setGeometry(135, 50, largura, altura)
+
+        # Atualizar os frames para exibir os novos valores
+        self.main_window.frame_valor_total_produtos.adjustSize()
+        self.main_window.frame_valor_do_desconto.adjustSize()
+        self.main_window.frame_valor_desconto.adjustSize()
+        self.main_window.frame_quantidade.adjustSize()
+#*******************************************************************************************************
+    def apagar_produto_confirmado(self):
+        produtos_para_remover = []
+        linhas_para_remover = []
+
+        # Verificar se a tabela está vazia
+        if self.table_widget.rowCount() == 0:
+            QMessageBox.warning(self, "Aviso", "Nenhum produto cadastrado para apagar.")
+            return  # Se a tabela estiver vazia, encerra a função sem prosseguir
+
+        # 1. Verificar checkboxes marcadas
+        if self.coluna_checkboxes_produtos_adicionada:
+            total_rows = self.table_widget.rowCount()
+            for row in range(total_rows):
+                if row < len(self.checkboxes):
+                    checkbox = self.checkboxes[row]
+                    if checkbox and checkbox.isChecked():
+                        item_id = self.table_widget.item(row, 1)  # ID do produto (coluna 1)
+                        nome_item = self.table_widget.item(row, 2)  # Nome do produto (coluna 2)
+
+                        if item_id and nome_item:
+                            produto_id = item_id.text().strip()
+                            nome_produto = nome_item.text().strip()
+
+                            print(f"Produto (checkbox) na linha {row + 1}: Nome = '{nome_produto}', ID = '{produto_id}'")  # Depuração
+
+                            # Verificando se o ID do produto é um número válido
+                            if produto_id.isdigit():  # Verifica se o ID é numérico
+                                # Evitar duplicados entre seleção direta e checkboxes
+                                if (int(produto_id), nome_produto) not in produtos_para_remover:
+                                    produtos_para_remover.append((int(produto_id), nome_produto))
+                                    linhas_para_remover.append(row)
+                            else:
+                                QMessageBox.warning(self, "Erro", f"ID inválido para o produto na linha {row + 1}. Esperado um número.")
+
+        # 2. Verificar linhas selecionadas utilizando selectedIndexes, se não houver seleção por checkbox
+        if not produtos_para_remover:  # Só verificar `selectedIndexes()` se não houver produtos selecionados via checkbox
+            selecionados = self.table_widget.selectedIndexes()
+
+            if selecionados:
+                # Usando um conjunto para garantir que cada linha seja processada apenas uma vez
+                linhas_selecionadas = set(index.row() for index in selecionados)
+
+                for row in linhas_selecionadas:
+                    item_id = self.table_widget.item(row, 0)  # ID do produto (coluna 1)
+                    nome_item = self.table_widget.item(row, 1)  # Nome do produto (coluna 2)
+
+                    if item_id and nome_item:
+                        produto_id = item_id.text().strip()  # Pega o ID e remove espaços extras
+                        nome_produto = nome_item.text().strip()
+
+                        # Verificando se o ID do produto é um número válido
+                        if produto_id.isdigit():  # Verifica se o ID é numérico
+                            produtos_para_remover.append((int(produto_id), nome_produto))
+                            linhas_para_remover.append(row)
+                        else:
+                            QMessageBox.warning(self, "Erro", f"ID inválido para o produto na linha {row + 1}: '{produto_id}'. Esperado um número.")
+                    else:
+                        QMessageBox.warning(self, "Erro", f"Produto na linha {row + 1} não tem dados válidos.")
+            else:
+                # Aqui verificamos se há produtos selecionados via checkbox ou selectedIndexes
+                if not produtos_para_remover:
+                    QMessageBox.warning(self, "Aviso", "Nenhum produto selecionado.")
+
+        # 3. Validar se há produtos para remover
+        if produtos_para_remover:
+            num_produtos = len(produtos_para_remover)
+            mensagem = "Você tem certeza que deseja apagar o produto selecionado?" if num_produtos == 1 else "Você tem certeza que deseja apagar os produtos selecionados?"
+
+            # Criar a caixa de confirmação
+            msgbox = QMessageBox(self)
+            msgbox.setWindowTitle("Confirmar")
+            msgbox.setText(mensagem)
+
+            # Adicionar botões personalizados
+            btn_sim = QPushButton("Sim")
+            btn_nao = QPushButton("Não")
+            msgbox.addButton(btn_sim, QMessageBox.ButtonRole.YesRole)
+            msgbox.addButton(btn_nao, QMessageBox.ButtonRole.NoRole)
+
+            msgbox.setDefaultButton(btn_nao)
+            resposta = msgbox.exec()
+
+            # Se o usuário confirmar a ação
+            if msgbox.clickedButton() == btn_sim:
+                db = DataBase()
+                try:
+                    db.connecta()
+                    for produto_id, nome_produto in produtos_para_remover:
+                        db.remover_produto(produto_id)
+
+                        # Registrar no histórico após a remoção do produto
+                        descricao = f"Produto {nome_produto} (ID: {produto_id}) foi removido."
+                        self.main_window.registrar_historico("Remoção de Produto", descricao)
+
+                    # Remover as linhas da tabela
+                    for row in sorted(linhas_para_remover, reverse=True):
+                        self.table_widget.removeRow(row)
+
+                    # Sucesso
+                    QMessageBox.information(self, "Sucesso", "Produtos removidos com sucesso!")
+
+                    # Desmarcar checkboxes
+                    if self.coluna_checkboxes_produtos_adicionada:
+                        self.btn_selecionar_todos.setChecked(False)
+                        self.btn_selecionar_individual.setChecked(False)
+
+                except Exception as e:
+                    QMessageBox.critical(self, "Erro", f"Erro ao remover os produtos: {str(e)}")
+        else:
+            QMessageBox.warning(self, "Aviso", "Nenhum produto selecionado para apagar.")
+
+#*******************************************************************************************************
     def editar_produto_tabela(self):
         produto_id = None
 
@@ -429,7 +583,7 @@ class TabelaProdutos(QDialog):
             return  # Se a tabela estiver vazia, encerra a função sem prosseguir
 
         # Verifica se a coluna de checkboxes está ativa
-        if self.coluna_checkboxes_adicionada:
+        if self.coluna_checkboxes_produtos_adicionada:
             produtos_selecionados = []
             total_rows = self.table_widget.rowCount()
 
@@ -439,7 +593,7 @@ class TabelaProdutos(QDialog):
                     if checkbox is not None:  # Verifica se o checkbox ainda existe
                         try:
                             if checkbox.isChecked():
-                                item = self.table_widget.item(row, 1)
+                                item = self.table_widget.item(row, 1) # Quando checkbox ativo, ID está na coluna 1
                                 if item:
                                     produto_id = int(item.text())
                                     produtos_selecionados.append(produto_id)
@@ -448,7 +602,7 @@ class TabelaProdutos(QDialog):
                             continue
 
             if len(produtos_selecionados) > 1:
-                QMessageBox.warning(self, "Erro", "Somente um produto por vez poderá ser editado.")
+                QMessageBox.warning(None, "Erro", "Somente um produto por vez poderá ser editado.")
                 return
 
             if len(produtos_selecionados) == 1:
@@ -466,7 +620,7 @@ class TabelaProdutos(QDialog):
 
         imagem_data = self.recuperar_imagem_do_banco(produto_id)
 
-        coluna_id = 1 if self.coluna_checkboxes_adicionada else 0
+        coluna_id = 1 if self.coluna_checkboxes_produtos_adicionada else 0
         coluna_nome = coluna_id + 1
         coluna_quantidade = coluna_nome + 1
         coluna_valor = coluna_quantidade + 1
@@ -476,19 +630,30 @@ class TabelaProdutos(QDialog):
         coluna_cliente = coluna_codigo_item + 1
         coluna_descricao = coluna_cliente + 1
 
-        produto_nome = self.table_widget.item(self.table_widget.currentRow(), coluna_nome).text()
-        produto_quantidade = self.table_widget.item(self.table_widget.currentRow(), coluna_quantidade).text()
-        produto_valor_real = self.table_widget.item(self.table_widget.currentRow(), coluna_valor).text()
-        produto_desconto = self.table_widget.item(self.table_widget.currentRow(), coluna_desconto).text()
-        produto_dateEdit = self.table_widget.item(self.table_widget.currentRow(), coluna_dateEdit).text()
-        produto_codigo_item = self.table_widget.item(self.table_widget.currentRow(), coluna_codigo_item).text()
-        produto_cliente = self.table_widget.item(self.table_widget.currentRow(), coluna_cliente).text()
-        produto_descricao = self.table_widget.item(self.table_widget.currentRow(), coluna_descricao).text()
+        # Econtrar a linha onde está o produto id
+        linha_produto = None
+        for row in range(self.table_widget.rowCount()):
+            item = self.table_widget.item(row, coluna_id)
+            if item and item.text() == str(produto_id):
+                linha_produto = row
+                break
+        if linha_produto is None:
+            QMessageBox.warning(self, "Erro", f"Produto com ID {produto_id} não encontrado na tabela.")
+            return
+
+        # Pegar os dados da linha selecionada
+        produto_nome = self.table_widget.item(linha_produto, coluna_nome).text()
+        produto_quantidade = self.table_widget.item(linha_produto, coluna_quantidade).text()
+        produto_valor_real = self.table_widget.item(linha_produto, coluna_valor).text()
+        produto_desconto = self.table_widget.item(linha_produto, coluna_desconto).text()
+        produto_dateEdit = self.table_widget.item(linha_produto, coluna_dateEdit).text()
+        produto_codigo_item = self.table_widget.item(linha_produto, coluna_codigo_item).text()
+        produto_cliente = self.table_widget.item(linha_produto, coluna_cliente).text()
+        produto_descricao = self.table_widget.item(linha_produto, coluna_descricao).text()
 
         
         # Tratar a conversão do desconto para evitar erro
         desconto_str = produto_desconto.replace('%', '').replace(',', '.').strip()
-
         # Se o desconto for "Sem desconto" ou vazio, define como 0.0 para cálculo
         if not desconto_str or not desconto_str.replace('.','').isdigit() or desconto_str.lower() == "sem desconto":
             desconto = 0.0
@@ -594,252 +759,108 @@ class TabelaProdutos(QDialog):
 
         except ValueError as e:
             print(f"Erro ao converter valores: {str(e)}")
-
-#*******************************************************************************************************
-    def atualizar_valores_frames(self, valor_total, valor_com_desconto, valor_do_desconto, quantidade):
-        # Verificar e formatar os valores corretamente
-        valor_total_formatado = locale.currency(valor_total, grouping=True)
-        
-        # Se o valor do desconto for 0, significa que não há desconto, então "Sem desconto" é exibido
-        valor_com_desconto_formatado = "Sem desconto" if valor_do_desconto == 0 else locale.currency(valor_com_desconto, grouping=True)
-
-        # Evitar erro de tipo ao formatar "Sem desconto"
-        if isinstance(valor_do_desconto, (int, float)):
-            valor_do_desconto_formatado = locale.currency(valor_do_desconto, grouping=True)
-        else:
-            valor_do_desconto_formatado = "Sem desconto"
-
-        # Definir os textos nos frames    
-        self.main_window.frame_valor_do_desconto.setText(valor_do_desconto_formatado)
-        self.main_window.frame_valor_desconto.setText(valor_com_desconto_formatado)
-        self.main_window.frame_quantidade.setText("{:.0f}".format(quantidade))
-        self.main_window.frame_valor_total_produtos.setText(valor_total_formatado)
-
-        # Ajustar as geometrias, se necessário
-        altura = 101
-        largura_padrao = 335
-
-        # Ajustar a posição e tamanho apenas quando o desconto for zero (Sem desconto)
-        if valor_do_desconto == 0:  # Verificando se o valor do desconto é zero (sem desconto)
-            largura = 300  # Ajuste a largura para acomodar "Sem desconto"
-            self.main_window.frame_valor_do_desconto.setGeometry(100,50,largura,altura) # Posição da label quando não há desconto
-        else:
-            largura = largura_padrao  # Tamanho padrão do frame quando há desconto
-            self.main_window.frame_valor_do_desconto.setGeometry(90, 45, largura, altura)
-
-        # Posicionar o frame de valor total
-        self.main_window.frame_valor_total_produtos.setGeometry(125, 45, largura, altura)
-
-        # Posicionar o frame de valor com desconto
-        self.main_window.frame_valor_desconto.setGeometry(115, 45, largura, altura)
-
-        # Posicionar o frame de quantidade
-        self.main_window.frame_quantidade.setGeometry(135, 50, largura, altura)
-
-        # Atualizar os frames para exibir os novos valores
-        self.main_window.frame_valor_total_produtos.adjustSize()
-        self.main_window.frame_valor_do_desconto.adjustSize()
-        self.main_window.frame_valor_desconto.adjustSize()
-        self.main_window.frame_quantidade.adjustSize()
-#*******************************************************************************************************
-    def apagar_produto_confirmado(self):
-        produtos_para_remover = []
-        linhas_para_remover = []
-
-        # Verificar se a tabela está vazia
-        if self.table_widget.rowCount() == 0:
-            QMessageBox.warning(self, "Aviso", "Nenhum produto cadastrado para apagar.")
-            return  # Se a tabela estiver vazia, encerra a função sem prosseguir
-
-        # 1. Verificar checkboxes marcadas
-        if self.coluna_checkboxes_adicionada:
-            total_rows = self.table_widget.rowCount()
-            for row in range(total_rows):
-                if row < len(self.checkboxes):
-                    checkbox = self.checkboxes[row]
-                    if checkbox and checkbox.isChecked():
-                        item_id = self.table_widget.item(row, 1)  # ID do produto (coluna 1)
-                        nome_item = self.table_widget.item(row, 2)  # Nome do produto (coluna 2)
-
-                        if item_id and nome_item:
-                            produto_id = item_id.text().strip()
-                            nome_produto = nome_item.text().strip()
-
-                            print(f"Produto (checkbox) na linha {row + 1}: Nome = '{nome_produto}', ID = '{produto_id}'")  # Depuração
-
-                            # Verificando se o ID do produto é um número válido
-                            if produto_id.isdigit():  # Verifica se o ID é numérico
-                                # Evitar duplicados entre seleção direta e checkboxes
-                                if (int(produto_id), nome_produto) not in produtos_para_remover:
-                                    produtos_para_remover.append((int(produto_id), nome_produto))
-                                    linhas_para_remover.append(row)
-                            else:
-                                QMessageBox.warning(self, "Erro", f"ID inválido para o produto na linha {row + 1}. Esperado um número.")
-
-        # 2. Verificar linhas selecionadas utilizando selectedIndexes, se não houver seleção por checkbox
-        if not produtos_para_remover:  # Só verificar `selectedIndexes()` se não houver produtos selecionados via checkbox
-            selecionados = self.table_widget.selectedIndexes()
-
-            if selecionados:
-                # Usando um conjunto para garantir que cada linha seja processada apenas uma vez
-                linhas_selecionadas = set(index.row() for index in selecionados)
-
-                for row in linhas_selecionadas:
-                    item_id = self.table_widget.item(row, 0)  # ID do produto (coluna 1)
-                    nome_item = self.table_widget.item(row, 1)  # Nome do produto (coluna 2)
-
-                    if item_id and nome_item:
-                        produto_id = item_id.text().strip()  # Pega o ID e remove espaços extras
-                        nome_produto = nome_item.text().strip()
-
-                        # Verificando se o ID do produto é um número válido
-                        if produto_id.isdigit():  # Verifica se o ID é numérico
-                            produtos_para_remover.append((int(produto_id), nome_produto))
-                            linhas_para_remover.append(row)
-                        else:
-                            QMessageBox.warning(self, "Erro", f"ID inválido para o produto na linha {row + 1}: '{produto_id}'. Esperado um número.")
-                    else:
-                        QMessageBox.warning(self, "Erro", f"Produto na linha {row + 1} não tem dados válidos.")
-            else:
-                # Aqui verificamos se há produtos selecionados via checkbox ou selectedIndexes
-                if not produtos_para_remover:
-                    QMessageBox.warning(self, "Aviso", "Nenhum produto selecionado.")
-
-        # 3. Validar se há produtos para remover
-        if produtos_para_remover:
-            num_produtos = len(produtos_para_remover)
-            mensagem = "Você tem certeza que deseja apagar o produto selecionado?" if num_produtos == 1 else "Você tem certeza que deseja apagar os produtos selecionados?"
-
-            # Criar a caixa de confirmação
-            msgbox = QMessageBox(self)
-            msgbox.setWindowTitle("Confirmar")
-            msgbox.setText(mensagem)
-
-            # Adicionar botões personalizados
-            btn_sim = QPushButton("Sim")
-            btn_nao = QPushButton("Não")
-            msgbox.addButton(btn_sim, QMessageBox.ButtonRole.YesRole)
-            msgbox.addButton(btn_nao, QMessageBox.ButtonRole.NoRole)
-
-            msgbox.setDefaultButton(btn_nao)
-            resposta = msgbox.exec()
-
-            # Se o usuário confirmar a ação
-            if msgbox.clickedButton() == btn_sim:
-                db = DataBase()
-                try:
-                    db.connecta()
-                    for produto_id, nome_produto in produtos_para_remover:
-                        db.remover_produto(produto_id)
-
-                        # Registrar no histórico após a remoção do produto
-                        descricao = f"Produto {nome_produto} (ID: {produto_id}) foi removido."
-                        self.main_window.registrar_historico("Remoção de Produto", descricao)
-
-                    # Remover as linhas da tabela
-                    for row in sorted(linhas_para_remover, reverse=True):
-                        self.table_widget.removeRow(row)
-
-                    # Sucesso
-                    QMessageBox.information(self, "Sucesso", "Produtos removidos com sucesso!")
-
-                    # Desmarcar checkboxes
-                    if self.coluna_checkboxes_adicionada:
-                        self.btn_selecionar_todos.setChecked(False)
-                        self.btn_selecionar_individual.setChecked(False)
-
-                except Exception as e:
-                    QMessageBox.critical(self, "Erro", f"Erro ao remover os produtos: {str(e)}")
-        else:
-            QMessageBox.warning(self, "Aviso", "Nenhum produto selecionado para apagar.")
-
-
 #*******************************************************************************************************
     def selecionar_todos(self):
-        # Verificar se a coluna de checkboxes está visível
-        if not self.coluna_checkboxes_adicionada:
-            QMessageBox.warning(self, "Aviso", "É necessário utilizar a opção 'Selecionar Individualmente' para que essa função possa funcionar")  
-            
-            # Desmarcar o botão "Selecionar Todos"
-            self.btn_selecionar_todos.setChecked(False)
+        if not self.coluna_checkboxes_produtos_adicionada:
+            QMessageBox.warning(self, "Aviso", "Ative a opção 'Selecionar' antes.")
+            if hasattr(self, "checkbox_header_produtos"):
+                self.checkbox_header_produtos.setChecked(False)
             return
 
-        # Verificar se a tabela está vazia
-        if self.table_widget.rowCount() == 0:
-            QMessageBox.warning(self, "Aviso", "Nenhum produto cadastrado para selecionar.")
-            return  # Se a tabela estiver vazia, encerra a função sem prosseguir
+        estado = self.checkbox_header_produtos.checkState() == Qt.Checked
+        self.checkboxes.clear()  # Reinicia a lista para manter consistência
         
-        
+        for row in range(self.table_widget.rowCount()):
+            widget = self.table_widget.cellWidget(row, 0)
+            if widget is not None:
+                checkbox = widget.findChild(QCheckBox)
+                if checkbox:
+                    checkbox.blockSignals(True)
+                    checkbox.setChecked(estado)
+                    checkbox.blockSignals(False)
 
-        # Verificar se há pelo menos um produto na tabela
-        if self.table_widget.rowCount() == 0:
-            QMessageBox.warning(self, "Aviso", "Não há produtos para selecionar.")
-            return
-        
-        # Alternar o estado de seleção
-        self.todos_selecionados = not self.todos_selecionados
-
-        # Selecionar ou desmarcar todos os produtos na tabela
-        total_rows = self.table_widget.rowCount()
-        for row in range(total_rows):
-            checkbox = self.checkboxes[row]
-            if checkbox:
-                checkbox.setChecked(self.todos_selecionados)
 #*******************************************************************************************************
-    def remover_checkboxes(self):
-        # Remover a coluna de checkboxes e desmarcar todos os checkboxes se existirem
-        total_rows = self.table_widget.rowCount()
-        if self.coluna_checkboxes_adicionada:
+     # Função para adicionar checkboxes selecionar_individual na tabela de histórico
+    def selecionar_individual(self):
+        if self.table_widget.rowCount() == 0:
+            QMessageBox.warning(self, "Aviso", "Nenhum histórico para selecionar.")
+            self.coluna_checkboxes_produtos_adicionada.setChecked(False)
+            return
+
+        if self.coluna_checkboxes_produtos_adicionada:
             self.table_widget.removeColumn(0)
-            self.coluna_checkboxes_adicionada = False
-            # Desmarcar todos os checkboxes
-            for row in range(total_rows):
-                checkbox_widget = self.table_widget.cellWidget(row, 0)
-                if checkbox_widget:
-                    checkbox = checkbox_widget.findChild(QCheckBox)
-                    if checkbox:
-                        checkbox.setChecked(False)   
-#*******************************************************************************************************
-    def selecionar_um_por_vez(self):
-        self.checkboxes = []  # Lista para armazenar os checkboxes
+            self.table_widget.verticalHeader().setVisible(True)
+            self.coluna_checkboxes_produtos_adicionada = False
 
-        # Verificar se a tabela está vazia
-        if self.table_widget.rowCount() == 0:
-            QMessageBox.warning(self, "Aviso", "Nenhum produto cadastrado para selecionar.")
-            return  # Se a tabela estiver vazia, encerra a função sem prosseguir
+            if hasattr(self, "checkbox_header_produtos"):
+                self.checkbox_header_produtos.deleteLater()
+                del self.checkbox_header_produtos
 
-        # Verificar se há pelo menos um produto na tabela
-        if self.table_widget.rowCount() == 0:
-            QMessageBox.warning(self, "Aviso", "Não há produtos para selecionar.")
-            # Desmarcar o botão de selecionar individualmente
-            self.btn_selecionar_individual.setChecked(False)
+            self.checkboxes.clear()
             return
-        
-        if self.coluna_checkboxes_adicionada:
-            # Se a coluna de checkboxes já estiver visível, remova-a
-            self.remover_checkboxes()
+
+        self.table_widget.insertColumn(0)
+        self.table_widget.setHorizontalHeaderItem(0, QTableWidgetItem(""))
+        self.table_widget.setColumnWidth(0, 30)
+        self.table_widget.horizontalHeader().setMinimumSectionSize(30)
+        self.table_widget.horizontalHeader().setSectionResizeMode(0, QHeaderView.Fixed)
+
+        # Checkbox do cabeçalho
+        self.checkbox_header_produtos = QCheckBox(self.table_widget)
+        self.checkbox_header_produtos.setToolTip("Selecionar todos")
+        self.checkbox_header_produtos.setChecked(False)
+        self.checkbox_header_produtos.stateChanged.connect(self.selecionar_todos)
+        self.checkbox_header_produtos.setFixedSize(20, 20)
+        self.checkbox_header_produtos.show()
+
+        header = self.table_widget.horizontalHeader()
+        self.atualizar_posicao_checkbox_header_produtos()
+        header.sectionResized.connect(self.atualizar_posicao_checkbox_header_produtos)
+
+        self.checkboxes.clear()
+
+        QTimer.singleShot(0,self.atualizar_posicao_checkbox_header_produtos)
+
+        for row in range(self.table_widget.rowCount()):
+            checkbox = QCheckBox()
+            checkbox.stateChanged.connect(self.atualizar_selecao_todos)
+
+            container = QWidget()
+            layout = QHBoxLayout(container)
+            layout.addWidget(checkbox)
+            layout.setAlignment(Qt.AlignCenter)
+            layout.setContentsMargins(0, 0, 0, 0)
+
+            self.table_widget.setCellWidget(row, 0, container)
+            self.checkboxes.append(checkbox)
+
+        self.table_widget.verticalHeader().setVisible(False)
+        self.coluna_checkboxes_produtos_adicionada  = True
+
+    def atualizar_selecao_todos(self):
+        self.checkbox_header_produtos.blockSignals(True)
+
+        all_checked = all(checkbox.isChecked() for checkbox in self.checkboxes if checkbox)
+        any_checked = any(checkbox.isChecked() for checkbox in self.checkboxes if checkbox)
+
+        if all_checked:
+            self.checkbox_header_produtos.setCheckState(Qt.Checked)
+        elif any_checked:
+            self.checkbox_header_produtos.setCheckState(Qt.PartiallyChecked)
         else:
-            # Adicionar uma coluna de checkboxes se ainda não foi adicionada
-            self.table_widget.insertColumn(0)
-            self.table_widget.setHorizontalHeaderItem(0, QTableWidgetItem())
-            
-            # Atualizar cada linha para adicionar um checkbox na primeira coluna
-            total_rows = self.table_widget.rowCount()
-            for row in range(total_rows):
-                checkbox = QCheckBox()
-                checkbox_widget = QWidget()
-                layout = QHBoxLayout(checkbox_widget)
-                layout.addWidget(checkbox)
-                layout.setAlignment(Qt.AlignCenter)
-                layout.setContentsMargins(0, 0, 0, 0)
-                checkbox_widget.setLayout(layout)
-                self.table_widget.setCellWidget(row, 0, checkbox)
-                self.checkboxes.append(checkbox)  # Armazenar o checkbox na lista
-            
-            # Definir a largura da coluna para corresponder ao tamanho do checkbox
-            checkbox_width = checkbox.sizeHint().width()
-            self.table_widget.setColumnWidth(0, checkbox_width)
-            self.coluna_checkboxes_adicionada = True
+            self.checkbox_header_produtos.setCheckState(Qt.Unchecked)
+
+        self.checkbox_header_produtos.blockSignals(False)
+
+
+    def atualizar_posicao_checkbox_header_produtos(self):
+        if hasattr(self, "checkbox_header_produtos") and self.coluna_checkboxes_produtos_adicionada:
+            header = self.table_widget.horizontalHeader()
+
+            x = header.sectionViewportPosition(0) + (header.sectionSize(0) - self.checkbox_header_produtos.width()) // 2 + 4
+            y = (header.height() - self.checkbox_header_produtos.height()) // 2
+
+            self.checkbox_header_produtos.move(x, y)
   
 #*******************************************************************************************************
     def ordenar_produtos(self):
@@ -1091,35 +1112,42 @@ class TabelaProdutos(QDialog):
 
         return label_imagem
     
-    def atualizar_tabela_produtos(self):
-        # Recupera todos os produtos do banco de dados
-        query = "SELECT * FROM products"
-        
-        cursor = None  # Inicialize o cursor como None
-        
-        try:
-            db = DataBase()  # Cria uma instância da classe DataBase
-            connection = db.connecta()  # Obtemos uma conexão
-            cursor = connection.cursor()  # Criamos um cursor a partir da conexão
-            cursor.execute(query)
-            
-            produtos = cursor.fetchall()
-            
-            # Atualiza a tabela com todos os produtos
-            self.atualizar_tabela_produtos_filtrada(produtos)
+    def carregar_tabela_produtos(self):
+        with sqlite3.connect('banco_de_dados.db') as cn:
+            cursor = cn.cursor()
+            cursor.execute('SELECT Produto, Quantidade, Valor_Real, Desconto, Data_Compra, ' \
+                           '"Código_Item", Cliente, "Descrição_Produto", ' \
+                           '"Usuário" FROM products ORDER BY Data_Compra DESC')
 
-            # Verifica se a tabela já foi atualizada anteriormente
-            if self.tabela_atualizada:
-                QMessageBox.information(self, "Atualização", "Tabela Atualizada")
-            else:
-                self.tabela_atualizada = True  # Marca a tabela como atualizada pela primeira vez
+            registros = cursor.fetchall()
 
-        except Exception as e:
-            print("Erro ao consultar todos os produtos:", e)
-        finally:
-            if cursor:
-                cursor.close()  # Fechamos o cursor apenas se ele não for None
-            db.close_connection()  # Fechamos a conexão usando a instância de DataBase
+        self.table_widget.clearContents()
+        self.table_widget.setRowCount(len(registros))
+
+        deslocamento = 1 if self.coluna_checkboxes_produtos_adicionada else 0
+        self.checkboxes = []  # Zerar e recriar lista de checkboxes
+
+        for i, (produto, quantidade, valor_real, desconto,data_compra,codigo_item,cliente,descricao_produto,usuario) in enumerate(registros):
+            if self.coluna_checkboxes_produtos_adicionada:
+                checkbox = QCheckBox()
+                checkbox.setStyleSheet("margin-left:9px; margin-right:9px;")
+                self.table_widget.setCellWidget(i,0,checkbox)
+                self.checkboxes.append(checkbox)
+            self.table_widget.setItem(i, 0 + deslocamento, QTableWidgetItem(produto))
+            self.table_widget.setItem(i, 1 + deslocamento, QTableWidgetItem(quantidade))
+            self.table_widget.setItem(i, 2 + deslocamento, QTableWidgetItem(valor_real))
+            self.table_widget.setItem(i, 3 + deslocamento, QTableWidgetItem(desconto))
+            self.table_widget.setItem(i, 4 + deslocamento, QTableWidgetItem(data_compra))
+            self.table_widget.setItem(i, 5 + deslocamento, QTableWidgetItem(codigo_item))
+            self.table_widget.setItem(i, 6 + deslocamento, QTableWidgetItem(cliente))
+            self.table_widget.setItem(i, 7 + deslocamento, QTableWidgetItem(descricao_produto))
+            self.table_widget.setItem(i, 8 + deslocamento, QTableWidgetItem(usuario))
+
+
+
+    def atualizar_tabela_products(self):
+        QMessageBox.information(self.table_widget, "Sucesso", "Dados carregados com sucesso!")
+        self.carregar_tabela_produtos()
 
 
     def gerar_arquivo_excel(self):

@@ -1,7 +1,7 @@
 from PySide6.QtGui import QColor, QBrush,QGuiApplication
 from PySide6.QtWidgets import (QWidget, QTableWidget, QTableWidgetItem, 
                                QMessageBox,QCheckBox,QVBoxLayout,QDialog,QPushButton,QMainWindow,QHBoxLayout,
-                               QLineEdit,QLabel,QInputDialog,QGroupBox,QRadioButton,QFileDialog,QApplication,QHeaderView)
+                               QLineEdit,QLabel,QInputDialog,QGroupBox,QRadioButton,QFileDialog,QHeaderView)
 from PySide6.QtCore import Qt,QTimer,QEvent
 import sqlite3
 import pandas as pd
@@ -31,7 +31,6 @@ class EstoqueProduto(QWidget):
 
         self.checkboxes = []  # Lista para armazenar os checkboxes
         self.coluna_checkboxes_adicionada = False
-        self.todos_os_checkboxes = []
 
 
         self.main_window = main_window
