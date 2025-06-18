@@ -135,7 +135,12 @@
             "Notebook com 16GB RAM, SSD"
         ],
         "txt_quantidade": [
-            "10"
+            "10",
+            "12"
+        ],
+        "txt_valor_produto_3": [
+            "12",
+            "120"
         ]
     }
 }

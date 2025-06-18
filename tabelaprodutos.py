@@ -520,10 +520,6 @@ class TabelaProdutos(QDialog):
                             QMessageBox.warning(self, "Erro", f"ID inválido para o produto na linha {row + 1}: '{produto_id}'. Esperado um número.")
                     else:
                         QMessageBox.warning(self, "Erro", f"Produto na linha {row + 1} não tem dados válidos.")
-            else:
-                # Aqui verificamos se há produtos selecionados via checkbox ou selectedIndexes
-                if not produtos_para_remover:
-                    QMessageBox.warning(self, "Aviso", "Nenhum produto selecionado.")
 
         # 3. Validar se há produtos para remover
         if produtos_para_remover:
@@ -562,11 +558,6 @@ class TabelaProdutos(QDialog):
 
                     # Sucesso
                     QMessageBox.information(self, "Sucesso", "Produtos removidos com sucesso!")
-
-                    # Desmarcar checkboxes
-                    if self.coluna_checkboxes_produtos_adicionada:
-                        self.btn_selecionar_todos.setChecked(False)
-                        self.btn_selecionar_individual.setChecked(False)
 
                 except Exception as e:
                     QMessageBox.critical(self, "Erro", f"Erro ao remover os produtos: {str(e)}")
@@ -685,7 +676,7 @@ class TabelaProdutos(QDialog):
         self.main_window.txt_cliente_3.setText(produto_cliente)
         self.main_window.txt_descricao_produto_3.setText(produto_descricao)
 
-        self.main_window.is_editing = True
+        self.main_window.is_editing_produto = True
         self.codigo_item_original = produto_codigo_item
         self.main_window.produto_id = produto_id
 
@@ -1115,38 +1106,51 @@ class TabelaProdutos(QDialog):
     def carregar_tabela_produtos(self):
         with sqlite3.connect('banco_de_dados.db') as cn:
             cursor = cn.cursor()
-            cursor.execute('SELECT Produto, Quantidade, Valor_Real, Desconto, Data_Compra, ' \
-                           '"Código_Item", Cliente, "Descrição_Produto", ' \
-                           '"Usuário" FROM products ORDER BY Data_Compra DESC')
+            cursor.execute('SELECT id, Produto, Quantidade, Valor_Real, Desconto, Data_Compra, '
+                        '"Código_Item", Cliente, "Descrição_Produto", "Usuário" '
+                        'FROM products ORDER BY id ASC')  # <-- Ordem crescente
 
             registros = cursor.fetchall()
 
+        self.table_widget.setSortingEnabled(False)  # Impede bagunça enquanto carrega
         self.table_widget.clearContents()
         self.table_widget.setRowCount(len(registros))
 
         deslocamento = 1 if self.coluna_checkboxes_produtos_adicionada else 0
-        self.checkboxes = []  # Zerar e recriar lista de checkboxes
+        self.checkboxes = []  # Zera os checkboxes
 
-        for i, (produto, quantidade, valor_real, desconto,data_compra,codigo_item,cliente,descricao_produto,usuario) in enumerate(registros):
+        for i, (id, produto, quantidade, valor_real, desconto, data_compra,
+                codigo_item, cliente, descricao_produto, usuario) in enumerate(registros):
+
             if self.coluna_checkboxes_produtos_adicionada:
                 checkbox = QCheckBox()
                 checkbox.setStyleSheet("margin-left:9px; margin-right:9px;")
-                self.table_widget.setCellWidget(i,0,checkbox)
+                self.table_widget.setCellWidget(i, 0, checkbox)
                 self.checkboxes.append(checkbox)
-            self.table_widget.setItem(i, 0 + deslocamento, QTableWidgetItem(produto))
-            self.table_widget.setItem(i, 1 + deslocamento, QTableWidgetItem(quantidade))
-            self.table_widget.setItem(i, 2 + deslocamento, QTableWidgetItem(valor_real))
-            self.table_widget.setItem(i, 3 + deslocamento, QTableWidgetItem(desconto))
-            self.table_widget.setItem(i, 4 + deslocamento, QTableWidgetItem(data_compra))
-            self.table_widget.setItem(i, 5 + deslocamento, QTableWidgetItem(codigo_item))
-            self.table_widget.setItem(i, 6 + deslocamento, QTableWidgetItem(cliente))
-            self.table_widget.setItem(i, 7 + deslocamento, QTableWidgetItem(descricao_produto))
-            self.table_widget.setItem(i, 8 + deslocamento, QTableWidgetItem(usuario))
+
+            self.table_widget.setItem(i, 0 + deslocamento, QTableWidgetItem(str(id)))
+            self.table_widget.setItem(i, 1 + deslocamento, QTableWidgetItem(produto))
+            self.table_widget.setItem(i, 2 + deslocamento, QTableWidgetItem(str(quantidade)))
+            self.table_widget.setItem(i, 3 + deslocamento, QTableWidgetItem(str(valor_real)))
+            self.table_widget.setItem(i, 4 + deslocamento, QTableWidgetItem(str(desconto)))
+            self.table_widget.setItem(i, 5 + deslocamento, QTableWidgetItem(data_compra))
+            self.table_widget.setItem(i, 6 + deslocamento, QTableWidgetItem(codigo_item))
+            self.table_widget.setItem(i, 7 + deslocamento, QTableWidgetItem(cliente))
+            self.table_widget.setItem(i, 8 + deslocamento, QTableWidgetItem(descricao_produto))
+            self.table_widget.setItem(i, 9 + deslocamento, QTableWidgetItem(usuario))
+
+        # Agora sim: organiza pela coluna de ID (em ordem crescente)
+        self.table_widget.sortItems(0 + deslocamento, Qt.AscendingOrder)
+        self.table_widget.setSortingEnabled(True)
+
+
+
+            
 
 
 
     def atualizar_tabela_products(self):
-        QMessageBox.information(self.table_widget, "Sucesso", "Dados carregados com sucesso!")
+        QMessageBox.information(None, "Sucesso", "Dados carregados com sucesso!")
         self.carregar_tabela_produtos()
 
 

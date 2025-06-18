@@ -162,6 +162,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # Variáveis para armazenar o estado de edição e o ID do usuário selecionado
         self.is_editing = False
         self.selected_user_id = None
+        self.is_editing_produto = False
+        self.selected_produto_id = None
 
         self.pagina_clientes = Clientes(self.line_clientes)
 
@@ -400,8 +402,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.btn_verificar_estoque.clicked.connect(self.mostrar_page_estoque)
         self.btn_apagar_cadastro.clicked.connect(self.eliminar_campos_usuarios)
         self.btn_remover_imagem_usuario.clicked.connect(self.retirar_imagem_usuario)
-        self.btn_sair_modo_edicao.clicked.connect(self.sair_modo_edicao)
-        
+        self.btn_sair_modo_edicao.clicked.connect(self.sair_modo_edicao_usuarios)
+        self.btn_sair_modo_edicao_produtos.clicked.connect(self.sair_modo_edicao_produto)
+
         self.btn_fazer_cadastro.clicked.connect(self.subscribe_user)
         self.btn_editar.clicked.connect(self.exibir_tabela_produtos)
         self.btn_atualizar_produto.clicked.connect(self.atualizar_produto)
@@ -1501,6 +1504,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         return self.config.obter_usuario_logado()
 #*********************************************************************************************************************
     def subscribe_produto(self):
+        # Verificar se está no modo de edição
+        if self.is_editing_produto:
+            QMessageBox.warning(None, "Modo de Edição Ativo", 
+                                "Você está editando um produto.\nAtualize o produto em vez de criar um novo.")
+            return  
         # Verificar se todos os campos obrigatórios estão preenchidos
         campos_nao_preenchidos = [
             campo for campo, widget in self.campos_obrigatorios.items()
@@ -1530,7 +1538,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.esconder_asteriscos()  # Esconder os asteriscos se não houver erro
 
         # Verificar se não estamos no modo de edição
-        if not self.is_editing:
+        if not self.is_editing_produto:
             codigo_item = self.gerar_codigo_aleatorio()
             self.txt_codigo_item.setText(codigo_item)
 
@@ -1631,6 +1639,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.produto_selecionado = None
 #*********************************************************************************************************************
     def confirmar_produtos(self):
+        if self.is_editing_produto:
+            QMessageBox.warning(None, "Modo de Edição Ativo",
+                                "Você está editando um produto.\nAtualize o produto em vez de criar um novo.")
+            return
         # Verificar se há produtos pendentes para confirmar
         if not self.produtos_pendentes:
             msg = QMessageBox()
@@ -1847,6 +1859,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.label_imagem_produto = novo_label  # Atualiza a referência ao novo QLabel
 #*********************************************************************************************************************
     def atualizar_produto(self):
+        if not self.is_editing_produto or not self.selected_produto_id:
+            QMessageBox.warning(None, "Erro", "Nenhum produto selecionado para atualizar")
+            return
         # Verificar se algum produto foi selecionado na tabela
         if not hasattr(self, 'produto_id') or not self.produto_id:
             msgBox = QMessageBox()
@@ -1886,7 +1901,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             # Obter os dados dos campos
             produto_nome = self.txt_produto.text()
             produto_quantidade = self.txt_quantidade.text()
-            produto_valor_real = self.txt_valor_produto.text()
+            produto_valor_real = self.txt_valor_produto_3.text()
             produto_desconto = self.txt_desconto_3.text()
             produto_data_compra = self.dateEdit_3.date().toString("dd/MM/yyyy")
             produto_codigo_item = self.txt_codigo_item.text()
@@ -1906,6 +1921,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 msgBox2.exec()
                 self.limpar_imagem_produto_após_atualizar()
                 self.limpar_campos()
+                self.is_editing_produto = False  # Resetar o estado de edição
+                self.selected_produto_id = None  # Limpar o ID do produto selecionado
             except Exception as e:
                 QMessageBox.critical(self, "Erro", f"Erro ao atualizar o produto: {str(e)}")
             finally:
@@ -2462,7 +2479,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.paginas_sistemas.setCurrentWidget(self.page_cadastrar_massa_usuarios)
 
     # Sair do modo edição na página de cadastrar usuários
-    def sair_modo_edicao(self):
+    def sair_modo_edicao_usuarios(self):
         if not self.is_editing:
             QMessageBox.warning(None, "Aviso", "Você não está no modo de edição.")
             return
@@ -2489,6 +2506,17 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.perfil_estado.setCurrentIndex(0)
         self.perfil_usuarios.setCurrentIndex(0)
         self.label_imagem_usuario.clear()
+
+        # Se quiser mostrar visualmente que saiu do modo edição (opcional)
+        QMessageBox.information(None, "Edição cancelada", "Você saiu do modo de edição.")
+
+    def sair_modo_edicao_produto(self):
+        if not self.is_editing_produto:
+            QMessageBox.warning(None, "Aviso", "Você não está no modo de edição de produtos.")
+            return
+
+        self.is_editing_produto = False
+        self.selected_produto_id = None
 
         # Se quiser mostrar visualmente que saiu do modo edição (opcional)
         QMessageBox.information(None, "Edição cancelada", "Você saiu do modo de edição.")

@@ -1417,7 +1417,7 @@ class Ui_MainWindow(object):
         sizePolicy.setHeightForWidth(self.frame_botoes_a_e_a_a.sizePolicy().hasHeightForWidth())
         self.frame_botoes_a_e_a_a.setSizePolicy(sizePolicy)
         self.frame_botoes_a_e_a_a.setMinimumSize(QSize(177, 0))
-        self.frame_botoes_a_e_a_a.setMaximumSize(QSize(185, 180))
+        self.frame_botoes_a_e_a_a.setMaximumSize(QSize(200, 190))
         self.frame_botoes_a_e_a_a.setFrameShape(QFrame.NoFrame)
         self.frame_botoes_a_e_a_a.setFrameShadow(QFrame.Raised)
         self.verticalLayout_12 = QVBoxLayout(self.frame_botoes_a_e_a_a)
@@ -1426,7 +1426,7 @@ class Ui_MainWindow(object):
         self.btn_adicionar_produto.setObjectName(u"btn_adicionar_produto")
         sizePolicy.setHeightForWidth(self.btn_adicionar_produto.sizePolicy().hasHeightForWidth())
         self.btn_adicionar_produto.setSizePolicy(sizePolicy)
-        self.btn_adicionar_produto.setMaximumSize(QSize(16777215, 23))
+        self.btn_adicionar_produto.setMaximumSize(QSize(16777215, 30))
         self.btn_adicionar_produto.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.btn_adicionar_produto.setStyleSheet(u"QPushButton {\n"
 "    color: rgb(255, 255, 255);\n"
@@ -1450,7 +1450,7 @@ class Ui_MainWindow(object):
         self.btn_editar.setObjectName(u"btn_editar")
         sizePolicy.setHeightForWidth(self.btn_editar.sizePolicy().hasHeightForWidth())
         self.btn_editar.setSizePolicy(sizePolicy)
-        self.btn_editar.setMaximumSize(QSize(16777215, 23))
+        self.btn_editar.setMaximumSize(QSize(16777215, 30))
         self.btn_editar.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.btn_editar.setStyleSheet(u"QPushButton {\n"
 "    color: rgb(255, 255, 255);\n"
@@ -1470,11 +1470,34 @@ class Ui_MainWindow(object):
 
         self.verticalLayout_12.addWidget(self.btn_editar)
 
+        self.btn_sair_modo_edicao_produtos = QPushButton(self.frame_botoes_a_e_a_a)
+        self.btn_sair_modo_edicao_produtos.setObjectName(u"btn_sair_modo_edicao_produtos")
+        sizePolicy.setHeightForWidth(self.btn_sair_modo_edicao_produtos.sizePolicy().hasHeightForWidth())
+        self.btn_sair_modo_edicao_produtos.setSizePolicy(sizePolicy)
+        self.btn_sair_modo_edicao_produtos.setMaximumSize(QSize(16777215, 30))
+        self.btn_sair_modo_edicao_produtos.setStyleSheet(u"QPushButton {\n"
+"    color: rgb(255, 255, 255);\n"
+"    border-radius: 8px;\n"
+"    font-size: 14px;\n"
+"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */\n"
+"    border: 4px solid transparent;\n"
+"}\n"
+"\n"
+"QPushButton:hover {\n"
+"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */\n"
+"    color: black;\n"
+"}")
+        icon2 = QIcon()
+        icon2.addFile(u"imagens/sair.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        self.btn_sair_modo_edicao_produtos.setIcon(icon2)
+
+        self.verticalLayout_12.addWidget(self.btn_sair_modo_edicao_produtos)
+
         self.btn_atualizar_produto = QPushButton(self.frame_botoes_a_e_a_a)
         self.btn_atualizar_produto.setObjectName(u"btn_atualizar_produto")
         sizePolicy.setHeightForWidth(self.btn_atualizar_produto.sizePolicy().hasHeightForWidth())
         self.btn_atualizar_produto.setSizePolicy(sizePolicy)
-        self.btn_atualizar_produto.setMaximumSize(QSize(16777215, 23))
+        self.btn_atualizar_produto.setMaximumSize(QSize(16777215, 30))
         self.btn_atualizar_produto.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.btn_atualizar_produto.setStyleSheet(u"QPushButton {\n"
 "    color: rgb(255, 255, 255);\n"
@@ -1488,9 +1511,9 @@ class Ui_MainWindow(object):
 "    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */\n"
 "    color: black;\n"
 "}")
-        icon2 = QIcon()
-        icon2.addFile(u"imagens/toppng.com-update-512x512.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
-        self.btn_atualizar_produto.setIcon(icon2)
+        icon3 = QIcon()
+        icon3.addFile(u"imagens/toppng.com-update-512x512.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        self.btn_atualizar_produto.setIcon(icon3)
 
         self.verticalLayout_12.addWidget(self.btn_atualizar_produto)
 
@@ -1498,7 +1521,7 @@ class Ui_MainWindow(object):
         self.btn_limpar_campos.setObjectName(u"btn_limpar_campos")
         sizePolicy.setHeightForWidth(self.btn_limpar_campos.sizePolicy().hasHeightForWidth())
         self.btn_limpar_campos.setSizePolicy(sizePolicy)
-        self.btn_limpar_campos.setMaximumSize(QSize(16777215, 23))
+        self.btn_limpar_campos.setMaximumSize(QSize(16777215, 30))
         self.btn_limpar_campos.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.btn_limpar_campos.setStyleSheet(u"QPushButton {\n"
 "    color: rgb(255, 255, 255);\n"
@@ -1512,9 +1535,9 @@ class Ui_MainWindow(object):
 "    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */\n"
 "    color: black;\n"
 "}")
-        icon3 = QIcon()
-        icon3.addFile(u"imagens/Delete-Button-PNG-Download-Image.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
-        self.btn_limpar_campos.setIcon(icon3)
+        icon4 = QIcon()
+        icon4.addFile(u"imagens/Delete-Button-PNG-Download-Image.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        self.btn_limpar_campos.setIcon(icon4)
         self.btn_limpar_campos.setIconSize(QSize(16, 16))
         self.btn_limpar_campos.setCheckable(False)
 
@@ -1974,7 +1997,7 @@ class Ui_MainWindow(object):
         self.frame_remover_e_carregar_imagem.setObjectName(u"frame_remover_e_carregar_imagem")
         sizePolicy.setHeightForWidth(self.frame_remover_e_carregar_imagem.sizePolicy().hasHeightForWidth())
         self.frame_remover_e_carregar_imagem.setSizePolicy(sizePolicy)
-        self.frame_remover_e_carregar_imagem.setMaximumSize(QSize(200, 84))
+        self.frame_remover_e_carregar_imagem.setMaximumSize(QSize(200, 89))
         self.frame_remover_e_carregar_imagem.setFrameShape(QFrame.NoFrame)
         self.frame_remover_e_carregar_imagem.setFrameShadow(QFrame.Raised)
         self.verticalLayout_13 = QVBoxLayout(self.frame_remover_e_carregar_imagem)
@@ -1983,7 +2006,7 @@ class Ui_MainWindow(object):
         self.btn_remover_imagem.setObjectName(u"btn_remover_imagem")
         sizePolicy.setHeightForWidth(self.btn_remover_imagem.sizePolicy().hasHeightForWidth())
         self.btn_remover_imagem.setSizePolicy(sizePolicy)
-        self.btn_remover_imagem.setMaximumSize(QSize(170, 23))
+        self.btn_remover_imagem.setMaximumSize(QSize(170, 30))
         self.btn_remover_imagem.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.btn_remover_imagem.setStyleSheet(u"QPushButton {\n"
 "    color: rgb(255, 255, 255);\n"
@@ -1997,9 +2020,9 @@ class Ui_MainWindow(object):
 "    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */\n"
 "    color: black;\n"
 "}")
-        icon4 = QIcon()
-        icon4.addFile(u"imagens/icons8-remover-imagem-16.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
-        self.btn_remover_imagem.setIcon(icon4)
+        icon5 = QIcon()
+        icon5.addFile(u"imagens/icons8-remover-imagem-16.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        self.btn_remover_imagem.setIcon(icon5)
 
         self.verticalLayout_13.addWidget(self.btn_remover_imagem)
 
@@ -2008,7 +2031,7 @@ class Ui_MainWindow(object):
         sizePolicy.setHeightForWidth(self.btn_carregar_imagem.sizePolicy().hasHeightForWidth())
         self.btn_carregar_imagem.setSizePolicy(sizePolicy)
         self.btn_carregar_imagem.setMinimumSize(QSize(153, 0))
-        self.btn_carregar_imagem.setMaximumSize(QSize(180, 23))
+        self.btn_carregar_imagem.setMaximumSize(QSize(180, 30))
         self.btn_carregar_imagem.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.btn_carregar_imagem.setStyleSheet(u"QPushButton {\n"
 "    color: rgb(255, 255, 255);\n"
@@ -2022,9 +2045,9 @@ class Ui_MainWindow(object):
 "    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */\n"
 "    color: black;\n"
 "}")
-        icon5 = QIcon()
-        icon5.addFile(u"imagens/014upload2_99941.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
-        self.btn_carregar_imagem.setIcon(icon5)
+        icon6 = QIcon()
+        icon6.addFile(u"imagens/014upload2_99941.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        self.btn_carregar_imagem.setIcon(icon6)
 
         self.verticalLayout_13.addWidget(self.btn_carregar_imagem)
 
@@ -2168,9 +2191,9 @@ class Ui_MainWindow(object):
 "    color: rgb(0, 0, 0); /* Cor do texto (preto) */\n"
 "}\n"
 "")
-        icon6 = QIcon()
-        icon6.addFile(u"imagens/confirmacao.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
-        self.btn_confirmar.setIcon(icon6)
+        icon7 = QIcon()
+        icon7.addFile(u"imagens/confirmacao.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        self.btn_confirmar.setIcon(icon7)
 
         self.verticalLayout_20.addWidget(self.btn_confirmar)
 
@@ -2193,9 +2216,9 @@ class Ui_MainWindow(object):
 "    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */\n"
 "    color: black;\n"
 "}")
-        icon7 = QIcon()
-        icon7.addFile(u"imagens/pasta.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
-        self.btn_ver_item.setIcon(icon7)
+        icon8 = QIcon()
+        icon8.addFile(u"imagens/pasta.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        self.btn_ver_item.setIcon(icon8)
 
         self.verticalLayout_20.addWidget(self.btn_ver_item)
 
@@ -3214,9 +3237,7 @@ class Ui_MainWindow(object):
 "    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */\n"
 "    color: black;\n"
 "}")
-        icon8 = QIcon()
-        icon8.addFile(u"imagens/sair.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
-        self.btn_sair_modo_edicao.setIcon(icon8)
+        self.btn_sair_modo_edicao.setIcon(icon2)
         self.btn_sair_modo_edicao.setIconSize(QSize(20, 20))
 
         self.verticalLayout_16.addWidget(self.btn_sair_modo_edicao)
@@ -3240,7 +3261,7 @@ class Ui_MainWindow(object):
 "    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */\n"
 "    color: black;\n"
 "}")
-        self.btn_atualizar_cadastro.setIcon(icon2)
+        self.btn_atualizar_cadastro.setIcon(icon3)
         self.btn_atualizar_cadastro.setIconSize(QSize(20, 20))
 
         self.verticalLayout_16.addWidget(self.btn_atualizar_cadastro)
@@ -3264,7 +3285,7 @@ class Ui_MainWindow(object):
 "    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */\n"
 "    color: black;\n"
 "}")
-        self.btn_apagar_cadastro.setIcon(icon3)
+        self.btn_apagar_cadastro.setIcon(icon4)
         self.btn_apagar_cadastro.setIconSize(QSize(20, 31))
 
         self.verticalLayout_16.addWidget(self.btn_apagar_cadastro)
@@ -3288,7 +3309,7 @@ class Ui_MainWindow(object):
 "    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */\n"
 "    color: black;\n"
 "}")
-        self.btn_carregar_imagem_4.setIcon(icon5)
+        self.btn_carregar_imagem_4.setIcon(icon6)
         self.btn_carregar_imagem_4.setIconSize(QSize(20, 20))
 
         self.verticalLayout_16.addWidget(self.btn_carregar_imagem_4)
@@ -3312,7 +3333,7 @@ class Ui_MainWindow(object):
 "    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */\n"
 "    color: black;\n"
 "}")
-        self.btn_remover_imagem_usuario.setIcon(icon3)
+        self.btn_remover_imagem_usuario.setIcon(icon4)
         self.btn_remover_imagem_usuario.setIconSize(QSize(24, 31))
 
         self.verticalLayout_16.addWidget(self.btn_remover_imagem_usuario)
@@ -3336,7 +3357,7 @@ class Ui_MainWindow(object):
 "    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */\n"
 "    color: black;\n"
 "}")
-        self.btn_fazer_cadastro.setIcon(icon6)
+        self.btn_fazer_cadastro.setIcon(icon7)
         self.btn_fazer_cadastro.setIconSize(QSize(20, 20))
 
         self.verticalLayout_16.addWidget(self.btn_fazer_cadastro)
@@ -4647,6 +4668,7 @@ class Ui_MainWindow(object):
         ___qtablewidgetitem65.setText(QCoreApplication.translate("MainWindow", u"Acesso", None));
         self.btn_adicionar_produto.setText(QCoreApplication.translate("MainWindow", u"ADICIONAR", None))
         self.btn_editar.setText(QCoreApplication.translate("MainWindow", u"EDITAR ", None))
+        self.btn_sair_modo_edicao_produtos.setText(QCoreApplication.translate("MainWindow", u"SAIR DO MODO EDI\u00c7\u00c3O", None))
         self.btn_atualizar_produto.setText(QCoreApplication.translate("MainWindow", u"ATUALIZAR", None))
         self.btn_limpar_campos.setText(QCoreApplication.translate("MainWindow", u"APAGAR", None))
         self.label_produto.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p><span style=\" font-weight:600;\">Produto</span></p></body></html>", None))

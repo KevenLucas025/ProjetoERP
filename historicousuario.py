@@ -28,7 +28,6 @@ class Pagina_Usuarios(QWidget):
         super().__init__(parent)
 
         self.db = DataBase("banco_de_dados.db")
-        self.alteracoes_salvas = False
 
         self.config = Configuracoes_Login(self)
 
