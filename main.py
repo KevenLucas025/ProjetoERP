@@ -1360,6 +1360,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             print("Imagem base64 vazia ou inválida.")
 #*********************************************************************************************************************
     def erros_frames_produtos(self):
+        print("Inicializando erros_frames_produtos")
         # Definir os campos obrigatórios e seus respectivos frames de erro
         self.campos_obrigatorios = {
             'produto': self.txt_produto,
@@ -1370,7 +1371,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             'descricao': self.txt_descricao_produto_3
         }
 
-        self.frames_erro = {
+        self.frames_erros = {
             'produto': self.frame_erro_produto,
             'quantidade': self.frame_erro_quantidade,
             'valor_produto': self.frame_erro_valor_produto,
@@ -1380,38 +1381,165 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         }
 
         # Esconder todos os frames de erro inicialmente
-        for frame in self.frames_erro.values():
+        for frame in self.frames_erros.values():
             frame.hide()
 
         # Conectar o sinal focusIn ao método esconder_asteriscos
         for widget in self.campos_obrigatorios.values():
             widget.installEventFilter(self)
-
+#*********************************************************************************************************************
     def exibir_asteriscos_produtos(self, campos_nao_preenchidos):
         for campo in campos_nao_preenchidos:
-            frame = self.frames_erro.get(campo)
-            if frame and not hasattr(self, f'label_asterisco_{campo}'):
-                label = QLabel(frame)
-                asterisco_pixmap = QPixmap("imagens/Imagem1.png").scaled(12, 12, Qt.KeepAspectRatio, Qt.SmoothTransformation)
-                label.setPixmap(asterisco_pixmap)
-                label.setAlignment(Qt.AlignCenter)
-                setattr(self, f'label_asterisco_{campo}', label)
-            
-            frame.show()
-            getattr(self, f'label_asterisco_{campo}').show()
+            frame = self.frames_erros.get(campo)
+            if frame is None:
+                print(f"[ERRO] Campo '{campo}' não tem frame correspondente! ")
+                continue
+            name_label_asterisco_produtos = f'label_asterisco_produtos_{campo}'
 
-    def esconder_asteriscos(self):
-        for frame in self.frames_erro.values():
+            if not hasattr(self,name_label_asterisco_produtos):
+                #Define o QLabel de asterisco correspondente ao campo
+                label = QLabel(frame)
+                #Carregar a imagem do frame do asterisco, redimensionando para 12x12, mantendo a proporção original
+                asterisco_produtos_pixmap = QPixmap("imagens/Imagem1.png").scaled(12,12,Qt.KeepAspectRatio, Qt.SmoothTransformation)
+                # Definir o tamanho do QLabel para ser o mesmo que o QFrame
+                label.setPixmap(asterisco_produtos_pixmap)
+                # Alinhar o QLabel ao centro do frame
+                label.setAlignment(Qt.AlignCenter)
+                # Aplicar um layout ao frame
+                layout = QVBoxLayout(frame)
+                layout.setContentsMargins(0,0,0,0) # Remover margens
+                # Adicionar o QLabel ao layout
+                layout.addWidget(label)
+                setattr(self, name_label_asterisco_produtos,label) # Armazena a referência do QLabel
+                # Adiciona o print para verificar se o asterisco foi realmente adicionado
+                print(f"Asterisco adicionado ao campo de: {campo}")
+            else:
+                label = getattr(self, name_label_asterisco_produtos)
+                label.show()  # Exibir o QLabel do asterisco
+
+            # Exibir o frame de erro
+            frame.show()
+
+    def esconder_asteriscos_produtos(self):
+        for campo, frame in self.frames_erros.items():
+            frame.hide()
+            label_name = f'label_asterisco_produtos_{campo}'
+            if hasattr(self, label_name):
+                getattr(self, label_name).hide()  # Esconder o QLabel do asterisco
+#*********************************************************************************************************************
+    def erros_frames_usuarios(self):
+        print("Inicializando erros_frames_usuarios")
+        self.campos_obrigatorios_usuarios = {
+        'nome': self.txt_nome,
+        'usuario': self.txt_usuario,
+        'telefone': self.txt_telefone,
+        'endereco': self.txt_endereco,            # <--- corrigido
+        'numero': self.txt_numero,          # <--- corrigido
+        'complemento': self.txt_complemento,
+        'email': self.txt_email,               # <--- corrigido
+        'data_nascimento': self.txt_data_nascimento,  # <--- corrigido
+        'rg': self.txt_rg,
+        'cpf': self.txt_cpf,
+        'cnpj': self.txt_cnpj,
+        'cep': self.txt_cep,
+        'estado': self.perfil_estado,
+        'senha': self.txt_senha,
+        'confirmar senha': self.txt_confirmar_senha,
+        'perfil': self.perfil_usuarios
+        }
+
+        self.frames_erros_usuarios = {
+            'nome': self.frame_erro_nome,
+            'usuario': self.frame_erro_usuario,
+            'telefone': self.frame_erro_telefone,
+            'endereco': self.frame_erro_endereco,
+            'cidade': self.frame_erro_cidade,
+            'bairro': self.frame_erro_bairro,
+            'numero': self.frame_erro_numero,
+            'complemento': self.frame_erro_complemento,
+            'email': self.frame_erro_email,
+            'data_nascimento': self.frame_data_nascimento,
+            'rg': self.frame_erro_rg,
+            'cpf': self.frame_erro_cpf,
+            'cnpj': self.frame_erro_cnpj,
+            'cep': self.frame_erro_cep,
+            'estado': self.frame_erro_estado,
+            'senha': self.frame_senha,
+            'confirmar senha': self.frame_confirmar_senha,
+            'perfil': self.frame_erro_perfil
+        }
+
+        # Esconder todos os frames de erro inicialmente
+        for frame in self.frames_erros_usuarios.values():
             frame.hide()
 
+        # Conectar o sinal focusIn ao método esconder_asteriscos
+        for widget in self.campos_obrigatorios_usuarios.values():
+            widget.installEventFilter(self)
+#*********************************************************************************************************************
+    def exibir_asteriscos_usuarios(self, campos_nao_preenchidos_usuarios):
+        for campo in campos_nao_preenchidos_usuarios:
+            frame = self.frames_erros_usuarios.get(campo)
+            if frame is None:
+                print(f"[ERRO] Campo '{campo}' não tem frame correspondente!")
+                continue
+
+            name_label_asterisco = f'label_asterisco_usuarios_{campo}'
+
+            if not hasattr(self,name_label_asterisco):
+                # Define o QLabel para o asterisco
+                label = QLabel(frame)
+                # Carregar a imagem do asterisco, redimensionando para 12x12, mantendo a proporção original
+                asterisco_pixmap = QPixmap("imagens/Imagem1.png").scaled(12, 12, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+                # Definir o tamanho do QLabel para ser o mesmo que o QFrame
+                label.setPixmap(asterisco_pixmap)
+                # Alinhar o QLabel ao centro do frame
+                label.setAlignment(Qt.AlignCenter)
+                # Aplicar um layout ao frame
+                layout = QVBoxLayout(frame)
+                layout.setContentsMargins(0, 0, 0, 0)  # Remove margens
+                # Adicionar o QLabel ao layout
+                layout.addWidget(label)
+                setattr(self, name_label_asterisco, label)  # Armazena a referência do QLabel
+                # Adiciona o print para verificar se o asterisco foi realmente adicionado
+                print(f"Asterisco adicionado ao frame de: {campo}")
+            else:
+                label = getattr(self, name_label_asterisco)
+                label.show()  # Exibir o QLabel do asterisco
+            
+            # Exibir o frame de erro
+            frame.show()
+#*********************************************************************************************************************
+    def esconder_asteriscos_usuarios(self):
+        for campo, frame in self.frames_erros_usuarios.items():
+            frame.hide()
+            label_name = f'label_asterisco_usuarios_{campo}'
+            if hasattr(self, label_name):
+                getattr(self, label_name).hide()
+#*********************************************************************************************************************
     def eventFilter(self, obj, event):
         if event.type() == QEvent.FocusIn:
+            # Esconder somente o erro do campo de USUÁRIO que recebeu foco
+            for campo, widget in self.campos_obrigatorios_usuarios.items():
+                if obj is widget:
+                    frame = self.frames_erros_usuarios.get(campo)
+                    if frame:
+                        frame.hide()
+                    label_name = f'label_asterisco_usuarios_{campo}'
+                    if hasattr(self, label_name):
+                        getattr(self, label_name).hide()
+                    break 
+            # Esconder somente o erro do campo de PRODUTO que recebeu foco
             for campo, widget in self.campos_obrigatorios.items():
-                if obj == widget:
-                    self.esconder_asteriscos()
+                if obj is widget:
+                    frame = self.frames_erros.get(campo)
+                    if frame:
+                        frame.hide()
+                    label_name = f'label_asterisco_produtos{campo}'
+                    if hasattr(self, label_name):
+                        getattr(self, label_name).hide()
+                    break
         return super().eventFilter(obj, event)
-
-    
 #*********************************************************************************************************************  
     def atualizar_valores_frames(self, quantidade, valor_do_desconto, valor_com_desconto):
         # Verificar se o valor com desconto é zero e definir a mensagem apropriada
@@ -1503,12 +1631,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # Obtenha o usuário logado das configurações
         return self.config.obter_usuario_logado()
 #*********************************************************************************************************************
-    def subscribe_produto(self):
-        # Verificar se está no modo de edição
-        if self.is_editing_produto:
-            QMessageBox.warning(None, "Modo de Edição Ativo", 
-                                "Você está editando um produto.\nAtualize o produto em vez de criar um novo.")
-            return  
+    def subscribe_produto(self): 
         # Verificar se todos os campos obrigatórios estão preenchidos
         campos_nao_preenchidos = [
             campo for campo, widget in self.campos_obrigatorios.items()
@@ -1516,7 +1639,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         ]
 
         if campos_nao_preenchidos:
-            self.exibir_asteriscos(campos_nao_preenchidos)  # Mostrar os asteriscos nos campos obrigatórios
+            self.exibir_asteriscos_produtos(campos_nao_preenchidos)  # Mostrar os asteriscos nos campos obrigatórios
             msg = QMessageBox()
             msg.setIcon(QMessageBox.Warning)
             msg.setWindowTitle("Erro")
@@ -1535,7 +1658,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             msg.exec()
             return
         else:
-            self.esconder_asteriscos()  # Esconder os asteriscos se não houver erro
+            self.esconder_asteriscos_produtos()  # Esconder os asteriscos se não houver erro
 
         # Verificar se não estamos no modo de edição
         if not self.is_editing_produto:
@@ -1577,9 +1700,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             "descricao_produto": self.txt_descricao_produto_3.text()
         }
 
-        # Adicionar produto na lista de produtos pendentes
-        if produto_info not in self.produtos_pendentes:
-            self.produtos_pendentes.append(produto_info)
+        if not self.is_editing_produto:
+            if produto_info not in self.produtos_pendentes:
+                self.produtos_pendentes.append(produto_info)
+        else:
+            # Apenas cálculo foi feito, mas o produto não será adicionado
+                pass
+
 
         # Retornar os valores calculados para exibição
         return quantidade, valor_desconto, valor_com_desconto
@@ -1859,7 +1986,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.label_imagem_produto = novo_label  # Atualiza a referência ao novo QLabel
 #*********************************************************************************************************************
     def atualizar_produto(self):
-        if not self.is_editing_produto or not self.selected_produto_id:
+        if not self.is_editing_produto or not self.produto_id:
             QMessageBox.warning(None, "Erro", "Nenhum produto selecionado para atualizar")
             return
         # Verificar se algum produto foi selecionado na tabela
@@ -2265,105 +2392,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         return False
 
 
-    def erros_frames_usuarios(self):
-        print("Inicializando erros_frames_usuarios")
-        self.campos_obrigatorios_usuarios = {
-        'nome': self.txt_nome,
-        'usuario': self.txt_usuario,
-        'telefone': self.txt_telefone,
-        'endereco': self.txt_endereco,            # <--- corrigido
-        'numero': self.txt_numero,          # <--- corrigido
-        'complemento': self.txt_complemento,
-        'email': self.txt_email,               # <--- corrigido
-        'data_nascimento': self.txt_data_nascimento,  # <--- corrigido
-        'rg': self.txt_rg,
-        'cpf': self.txt_cpf,
-        'cnpj': self.txt_cnpj,
-        'cep': self.txt_cep,
-        'estado': self.perfil_estado,
-        'senha': self.txt_senha,
-        'confirmar senha': self.txt_confirmar_senha,
-        'perfil': self.perfil_usuarios
-        }
+    
 
-        self.frames_erros_usuarios = {
-            'nome': self.frame_erro_nome,
-            'usuario': self.frame_erro_usuario,
-            'telefone': self.frame_erro_telefone,
-            'endereco': self.frame_erro_endereco,
-            'cidade': self.frame_erro_cidade,
-            'bairro': self.frame_erro_bairro,
-            'numero': self.frame_erro_numero,
-            'complemento': self.frame_erro_complemento,
-            'email': self.frame_erro_email,
-            'data_nascimento': self.frame_data_nascimento,
-            'rg': self.frame_erro_rg,
-            'cpf': self.frame_erro_cpf,
-            'cnpj': self.frame_erro_cnpj,
-            'cep': self.frame_erro_cep,
-            'estado': self.frame_erro_estado,
-            'senha': self.frame_senha,
-            'confirmar senha': self.frame_confirmar_senha,
-            'perfil': self.frame_erro_perfil
-        }
-
-        # Esconder todos os frames de erro inicialmente
-        for frame in self.frames_erros_usuarios.values():
-            frame.hide()
-
-        # Conectar o sinal focusIn ao método esconder_asteriscos
-        for widget in self.campos_obrigatorios_usuarios.values():
-            widget.installEventFilter(self)
-
-    def exibir_asteriscos_usuarios(self, campos_nao_preenchidos_usuarios):
-        for campo in campos_nao_preenchidos_usuarios:
-            frame = self.frames_erros_usuarios.get(campo)
-            if frame is None:
-                print(f"[ERRO] Campo '{campo}' não tem frame correspondente!")
-                continue
-
-            name_label_asterisco = f'label_asterisco_usuarios_{campo}'
-
-            if not hasattr(self,name_label_asterisco):
-                # Define o QLabel para o asterisco
-                label = QLabel(frame)
-                # Carregar a imagem do asterisco, redimensionando para 12x12, mantendo a proporção original
-                asterisco_pixmap = QPixmap("imagens/Imagem1.png").scaled(12, 12, Qt.KeepAspectRatio, Qt.SmoothTransformation)
-                # Definir o tamanho do QLabel para ser o mesmo que o QFrame
-                label.setPixmap(asterisco_pixmap)
-                # Alinhar o QLabel ao centro do frame
-                label.setAlignment(Qt.AlignCenter)
-                # Aplicar um layout ao frame
-                layout = QVBoxLayout(frame)
-                layout.setContentsMargins(0, 0, 0, 0)  # Remove margens
-                # Adicionar o QLabel ao layout
-                layout.addWidget(label)
-                setattr(self, name_label_asterisco, label)  # Armazena a referência do QLabel
-                # Adiciona o print para verificar se o asterisco foi realmente adicionado
-                print(f"Asterisco adicionado ao frame de: {campo}")
-            else:
-                label = getattr(self, name_label_asterisco)
-                label.show()  # Exibir o QLabel do asterisco
-            
-            # Exibir o frame de erro
-            frame.show()
-
-
-    def esconder_asteriscos_usuarios(self):
-        for campo, frame in self.frames_erros_usuarios.items():
-            frame.hide()
-            label_name = f'label_asterisco_usuarios_{campo}'
-            if hasattr(self, label_name):
-                getattr(self, label_name).hide()
-
-
-    def eventFilter(self, obj, event):
-        if event.type() == QEvent.FocusIn:
-            if obj in self.campos_obrigatorios_usuarios.values():
-                self.esconder_asteriscos_usuarios()
-            elif obj in self.campos_obrigatorios.values():
-                self.esconder_asteriscos_usuarios()
-        return super().eventFilter(obj, event)
 
     def exibir_planilhas_exemplo(self):
         opcoes = ["Planilha de Exemplo 1", "Planilha de Exemplo 2"]

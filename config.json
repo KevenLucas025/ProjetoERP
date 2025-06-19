@@ -129,10 +129,13 @@
             "465"
         ],
         "txt_codigo_item": [
-            "6KTO7HD9Q4FV"
+            "6KTO7HD9Q4FV",
+            "Y81OXYEVBC8F",
+            "12"
         ],
         "txt_descricao_produto_3": [
-            "Notebook com 16GB RAM, SSD"
+            "Notebook com 16GB RAM, SSD",
+            "12"
         ],
         "txt_quantidade": [
             "10",
@@ -140,7 +143,17 @@
         ],
         "txt_valor_produto_3": [
             "12",
-            "120"
+            "120",
+            "13",
+            "14",
+            "123"
+        ],
+        "txt_produto": [
+            "!Produtos",
+            "Produto"
+        ],
+        "txt_cliente_3": [
+            "12"
         ]
     }
 }

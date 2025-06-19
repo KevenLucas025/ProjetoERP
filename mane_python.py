@@ -1475,6 +1475,7 @@ class Ui_MainWindow(object):
         sizePolicy.setHeightForWidth(self.btn_sair_modo_edicao_produtos.sizePolicy().hasHeightForWidth())
         self.btn_sair_modo_edicao_produtos.setSizePolicy(sizePolicy)
         self.btn_sair_modo_edicao_produtos.setMaximumSize(QSize(16777215, 30))
+        self.btn_sair_modo_edicao_produtos.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.btn_sair_modo_edicao_produtos.setStyleSheet(u"QPushButton {\n"
 "    color: rgb(255, 255, 255);\n"
 "    border-radius: 8px;\n"

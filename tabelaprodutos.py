@@ -8,13 +8,10 @@ from PySide6.QtGui import QPixmap, Qt, QImage
 from PySide6.QtCore import QDate, Qt,QSize,QTimer
 from database import DataBase, sqlite3
 import base64
-import re
 import locale
-import random
-import string
-import subprocess
 import pandas as pd
 import openpyxl
+import os
 
 
 class TabelaProdutos(QDialog):
@@ -631,6 +628,8 @@ class TabelaProdutos(QDialog):
         if linha_produto is None:
             QMessageBox.warning(self, "Erro", f"Produto com ID {produto_id} não encontrado na tabela.")
             return
+        # ATIVAR MODO DE EDIÇÃO AQUI
+        self.main_window.is_editing_produto = True
 
         # Pegar os dados da linha selecionada
         produto_nome = self.table_widget.item(linha_produto, coluna_nome).text()
@@ -689,28 +688,24 @@ class TabelaProdutos(QDialog):
             quantidade_str = produto_quantidade.strip()
             produto_quantidade = int(quantidade_str) if quantidade_str else 0
 
-            print(f"DEBUG - desconto_str antes da conversão: {desconto_str}")  # Adicionado para depuração
-
-            # Garantir que não convertemos "Sem desconto" para float novamente
-            if desconto_exibicao == "Sem desconto":
-                produto_desconto = 0.0
-            else:
-                produto_desconto = float(desconto_str)
+            # Converter desconto para float e tratá-lo como porcentagem
+            desconto_str = produto_desconto.replace('%', '').replace(',', '.').strip()
+            
+            # Aqui, fazemos a conversão correta para percentual
+            produto_desconto = float(desconto_str)  if desconto_str else 0
 
             # Calcular valores
-            valor_total = (produto_valor_real * produto_quantidade) / 100
-            valor_desconto = valor_total * desconto
+            valor_total = (produto_valor_real * produto_quantidade) 
+            valor_desconto = valor_total * produto_desconto
             valor_com_desconto = valor_total - valor_desconto
 
             # Atualizar os frames com os valores corretos
-            if desconto_exibicao == "Sem desconto":
-                self.atualizar_valores_frames(valor_total, valor_com_desconto, "Sem desconto", produto_quantidade)
-            else:
-                self.atualizar_valores_frames(valor_total,valor_com_desconto,valor_desconto,produto_quantidade)
+            self.atualizar_valores_frames(valor_total, valor_com_desconto, valor_desconto, produto_quantidade)
 
             # Registrar a edição no histórico
             descricao_edicao = f"Produto {produto_nome} foi editado. Novos valores: quantidade {produto_quantidade}, valor {produto_valor_real}, desconto {produto_desconto}%."
             self.main_window.registrar_historico("Edição de Produto", descricao_edicao)
+
 
             if imagem_data:
                 try:
@@ -893,13 +888,6 @@ class TabelaProdutos(QDialog):
         ordenar_por_label = QLabel("Ordenar por:", ordenar_dialogo)
         layout.addWidget(ordenar_por_label)
         
-        ordenar_por_combo = QComboBox(ordenar_dialogo)
-        ordenar_por_combo.addItems(["ID", "Nome", "Quantidade"])
-        layout.addWidget(ordenar_por_combo)
-        
-        ordem_label = QLabel("Ordem:", ordenar_dialogo)
-        layout.addWidget(ordem_label)
-        
         ordem_combo = QComboBox(ordenar_dialogo)
         ordem_combo.addItems(["A a Z", "Z a A", "Menor para Maior", "Maior para Menor"])
         layout.addWidget(ordem_combo)
@@ -907,19 +895,13 @@ class TabelaProdutos(QDialog):
         botoes = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel, Qt.Horizontal, ordenar_dialogo)
         layout.addWidget(botoes)
         
-        botoes.button(QDialogButtonBox.Ok).clicked.connect(lambda: self.aplicar_ordenacao(ordenar_por_combo.currentText(), ordem_combo.currentText(), ordenar_dialogo))
+        botoes.button(QDialogButtonBox.Ok).clicked.connect(lambda: self.aplicar_ordenacao(ordem_combo.currentText(), ordenar_dialogo))
         botoes.button(QDialogButtonBox.Cancel).clicked.connect(ordenar_dialogo.reject)
         
         ordenar_dialogo.exec()
 
-    def aplicar_ordenacao(self, criterio, ordem, ordenar_dialogo):
+    def aplicar_ordenacao(self, ordem, ordenar_dialogo):
         ordenar_dialogo.accept()
-        
-        colunas = {
-            "ID": 0,
-            "Nome": 1,
-            "Quantidade": 2
-        }
         
         ordem_map = {
             "A a Z": Qt.AscendingOrder,
@@ -928,113 +910,68 @@ class TabelaProdutos(QDialog):
             "Maior para o Menor": Qt.DescendingOrder
         }
         
-        coluna = colunas.get(criterio, 0)
         ordem = ordem_map.get(ordem, Qt.AscendingOrder)
         
-        self.table_widget.sortItems(coluna, ordem)
+        self.table_widget.sortItems(ordem)
 #*******************************************************************************************************
     def visualizar_imagem(self):
-        # Verificar se a tabela está vazia
-        if self.table_widget.rowCount() == 0:
-            QMessageBox.warning(self, "Aviso", "Não é possível visualizar imagem de um produto não cadastrado.")
-            return  # Se a tabela estiver vazia, encerra a função sem prosseguir
+        # Se a coluna de checkboxes está ativa, usar os checkboxes para saber os selecionados
+        if self.coluna_checkboxes_produtos_adicionada:
+            selecionados = [i for i, cb in enumerate(self.checkboxes) if cb.isChecked()]
+        
             
-        if self.table_widget.currentRow() >= 0:
+            if not selecionados:
+                QMessageBox.warning(self, "Aviso", "Nenhum produto selecionado para visualizar a imagem.")
+                return
+            
+            if len(selecionados) > 1:
+                QMessageBox.warning(self, "Aviso", "Só é possível visualizar a imagem de um produto por vez.")
+                return
+            
+            row_index = selecionados[0]
+
+        else:
             row_index = self.table_widget.currentRow()
-            produto_id = int(self.table_widget.item(row_index, 0).text())
+            if row_index < 0:
+                QMessageBox.warning(self, "Aviso", "Selecione um produto para visualizar a imagem.")
+                return
             
-            imagem_data = self.recuperar_imagem_do_banco(produto_id)
+        # Pega o ID da coluna correta (0 se não tiver coluna de checkbox, 1 se tiver)
+        coluna_id = 1 if self.coluna_checkboxes_produtos_adicionada else 0
+        item = self.table_widget.item(row_index, coluna_id)
 
+        if item is None:
+            QMessageBox.warning(self, "Erro", "Não foi possível identificar o ID do produto.")
+            return
+        try:
+            produto_id = int(item.text())
+        except ValueError:
+            QMessageBox.warning(self, "Erro", "ID de produto inválido.")
+            return
+
+        imagem_data = self.recuperar_imagem_do_banco(produto_id)
             
-            
-            if imagem_data:
-                try:
-                    print("Dados da imagem recuperados com sucesso para visualização.")
-                    
-                    pixmap = QPixmap()
-                    pixmap.loadFromData(imagem_data)
-                    
-                    if pixmap.isNull():
-                        print("Aviso: pixmap é nulo")
-                        QMessageBox.warning(self, "Aviso", "Não foi possível carregar a imagem.")
-                        return
-                    else:
-                        print("Pixmap carregado com sucesso para visualização.")
-                    
-                    # Função para abrir a janela de visualização da imagem
-                    def abrir_pelo_sistema():
-                        visualizar_janela = QMainWindow(self)
-                        visualizar_janela.setWindowTitle("Visualizador de Imagem")
-
-                        # Criar um botão para baixar a imagem
-                        btn_baixar_imagem = QPushButton("Baixar Imagem",self)
-                        btn_baixar_imagem.clicked.connect(lambda: salvar_imagem(imagem_data))
-
-                        # Função para salvar a imagem
-                        def salvar_imagem(imagem_data):
-                            #Renomeia por padrão a imagem salva
-                            nome_padrao = f"Imagem salva produto {produto_id}"
-
-                            options = QFileDialog.Options()
-                            file_path, _ = QFileDialog.getSaveFileName(self, "Salvar Imagem", nome_padrao, "Imagens (*.png *.jpg *.bmp)", options=options)
-                            if file_path:
-                                with open(file_path, 'wb') as file:
-                                    file.write(imagem_data)
-                                QMessageBox.information(self, "Sucesso", "Imagem salva com sucesso")
-
-                        
-                        # Criar um widget central e definir o layout
-                        central_widget = QWidget()
-                        visualizar_janela.setCentralWidget(central_widget)
-                        
-                        layout = QVBoxLayout(central_widget)
-                        
-                        label_imagem = QLabel(central_widget)
-                        label_imagem.setAlignment(Qt.AlignCenter)  # Centralizar a imagem dentro do QLabel
-                    
-                        # Função para atualizar o pixmap com o tamanho atual da janela
-                        def atualizar_imagem():
-                            tamanho_janela = visualizar_janela.centralWidget().size()
-                            pixmap_redimensionado = pixmap.scaled(tamanho_janela, Qt.KeepAspectRatio)
-                            label_imagem.setPixmap(pixmap_redimensionado)
-                        
-                        # Conectar o redimensionamento da janela ao ajuste da imagem
-                        visualizar_janela.resizeEvent = lambda event: atualizar_imagem()
-                        
-                        # Inicializar o tamanho da janela
-                        tamanho_inicial = QSize(800, 600)
-                        visualizar_janela.resize(tamanho_inicial)
-                        
-                        # Centralizar a janela na tela
-                        frame_graficos = visualizar_janela.frameGeometry()
-                        tela = QApplication.primaryScreen().availableGeometry()
-                        frame_graficos.moveCenter(tela.center())
-                        visualizar_janela.move(frame_graficos.topLeft())
-                        
-                        # Adicionar o QLabel ao layout
-                        layout.addWidget(label_imagem)
-                        layout.addWidget(btn_baixar_imagem)
-                        
-                        # Ajustar a política de redimensionamento para permitir a alteração do tamanho
-                        central_widget.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-                        label_imagem.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-                        
-                        # Ajustar a imagem pela primeira vez
-                        atualizar_imagem()
-                        
-                        # Definir a janela para ser redimensionável
-                        visualizar_janela.setMinimumSize(200, 200)  # Definindo um tamanho mínimo para a janela
-                        
-                        visualizar_janela.show()
-                    
-                    # Chamar a função para abrir a janela de visualização da imagem
-                    abrir_pelo_sistema()
-                    
-                    
-                except Exception as e:
-                    print(f"Erro ao processar imagem: {str(e)}")
-            else:
-                QMessageBox.warning(self, "Aviso", "Imagem não encontrada.")
+        if imagem_data:
+            try:
+                print("Dados da imagem recuperados com sucesso para visualização.")
+                
+                pixmap = QPixmap()
+                pixmap.loadFromData(imagem_data)
+                
+                if pixmap.isNull():
+                    print("Aviso: pixmap é nulo")
+                    QMessageBox.warning(self, "Aviso", "Não foi possível carregar a imagem.")
+                    return
+                else:
+                    print("Pixmap carregado com sucesso para visualização.")
+                
+                # Tentar abrir o arquivo com um visualizador de imagens padrão
+                os.startfile("imagem_temporaria.png")
+                
+            except Exception as e:
+                print(f"Erro ao processar imagem: {str(e)}")
+        else:
+            QMessageBox.warning(self, "Aviso", "Imagem não encontrada.")
 #*******************************************************************************************************         
     def adicionar_widgets(self, frame, debug_text):
         layout = QVBoxLayout()  # Criar um layout vertical

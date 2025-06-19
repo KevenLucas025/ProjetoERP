@@ -749,10 +749,6 @@ class TabelaUsuario(QMainWindow):
                     QMessageBox.warning(self, "Aviso", "Não foi possível carregar a imagem.")
                     return
 
-                # Salvar a imagem temporária no disco
-                with open("imagem_temporaria.png", "wb") as file:
-                    file.write(imagem_data)
-
                 # Tentar abrir o arquivo com um visualizador de imagens padrão
                 os.startfile("imagem_temporaria.png")
 
