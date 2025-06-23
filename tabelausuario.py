@@ -11,6 +11,10 @@ import base64
 import re
 import os
 from configuracoes import Configuracoes_Login
+import pandas as pd
+from openpyxl import load_workbook
+from openpyxl.utils import get_column_letter
+from openpyxl.styles import Alignment
 
 class TabelaUsuario(QMainWindow):
     def __init__(self, main_window, parent=None):
@@ -63,8 +67,8 @@ class TabelaUsuario(QMainWindow):
         self.checkbox_selecionar = QCheckBox("Selecionar")
         self.btn_ordenar_usuario = QPushButton("Ordenar Usuários")
         self.btn_visualizar_imagem = QPushButton("Visualizar Imagem")
-        self.btn_baixar_imagem = QPushButton("Baixar Imagem")
         self.btn_atualizar_tabela = QPushButton("Atualizar Tabela")
+        self.btn_gerar_excel = QPushButton("Gerar arquivo Excel")
 
         layout_botoes = QVBoxLayout()
         layout_botoes.addWidget(self.btn_apagar_usuario)
@@ -72,14 +76,15 @@ class TabelaUsuario(QMainWindow):
         layout_botoes.addWidget(self.btn_filtrar_usuario)
         layout_botoes.addWidget(self.btn_ordenar_usuario)
         layout_botoes.addWidget(self.btn_visualizar_imagem)
-        layout_botoes.addWidget(self.btn_baixar_imagem)
         layout_botoes.addWidget(self.btn_atualizar_tabela)
+        layout_botoes.addWidget(self.btn_gerar_excel)
         layout_botoes.addWidget(self.checkbox_selecionar)
+        
 
         # Faz os botões ficarem do tamanho da largura da janela
         for btn in [self.btn_apagar_usuario, self.btn_editar_usuario, self.btn_filtrar_usuario,
                     self.checkbox_selecionar, self.btn_ordenar_usuario, self.btn_visualizar_imagem,
-                    self.btn_atualizar_tabela, self.btn_baixar_imagem]:
+                    self.btn_atualizar_tabela,self.btn_gerar_excel]:
             btn.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed)
 
         # Adicionar layout dos botões em cima
@@ -105,9 +110,9 @@ class TabelaUsuario(QMainWindow):
         self.btn_filtrar_usuario.clicked.connect(self.filtrar_usuario)
         self.btn_ordenar_usuario.clicked.connect(self.ordenar_usuario)
         self.btn_visualizar_imagem.clicked.connect(self.visualizar_imagem_usuario)
-        self.btn_baixar_imagem.clicked.connect(self.baixar_imagem_usuario)
         self.checkbox_selecionar.stateChanged.connect(self.ao_clicar_em_selecionar)
         self.btn_atualizar_tabela.clicked.connect(self.atualizar_tabela_usuario)
+        self.btn_gerar_excel.clicked.connect(self.gerar_arquivo_excel_usuarios)
         
 
     
@@ -226,12 +231,11 @@ class TabelaUsuario(QMainWindow):
         else:
             QMessageBox.warning(self, "Aviso", "Nenhuma célula selecionada ou célula vazia.")
 #*******************************************************************************************************
-    def recuperar_imagem_do_banco(self, id_usuario):
+    def recuperar_imagem_do_banco_usuarios(self, id_usuario):
         imagem_blob = None
+        
         try:
             connection = self.db.connecta()
-            print("Conexão está ativa:", connection is not None)
-
             if connection:
                 cursor = connection.cursor()
                 cursor.execute("SELECT Imagem FROM users WHERE id = ?", (id_usuario,))
@@ -239,17 +243,32 @@ class TabelaUsuario(QMainWindow):
 
                 if result:
                     imagem_blob = result[0]
-                    if imagem_blob:
-                        imagem_bytes = base64.b64decode(imagem_blob)
-                        return imagem_bytes  # Agora está como binário de imagem mesmo
                 else:
-                    print(f"Nenhum resultado retornado para ID: {id_usuario}")
+                    print(f"Imagem não encontrada para o usuário: {id_usuario}")
                     return None
 
-        except ValueError or AttributeError:
-            pass
+        except Exception as e:
+            print(f"Erro ao recuperar imagem do banco de dados: {str(e)}")
+            return None
+
+        if imagem_blob and isinstance(imagem_blob,str) and imagem_blob.strip().lower() != "não cadastrado":
+            try:
+                imagem_data = base64.b64decode(imagem_blob)
+                return imagem_data  # Retorna bytes decodificados
+                
+            except Exception as e:
+                print(f"Erro ao decodificar imagem: {str(e)}")
+                return None
+        else:
+            print(f"Imagem não cadastrada ou inválida para o usuário: {id_usuario}")
+            return None
 #*******************************************************************************************************
     def editar_usuario(self):
+        print("Função editar_usuario chamada")
+
+        row_index = -1
+        id_item = None # Inicialmente vazio
+
         #Verifica quantos checkboxes estão marcados (se estiverem visíveis)
         if self.coluna_checkboxes_adicionada:
             selecionados = [cb for cb in self.checkboxes if cb.isChecked()]
@@ -261,93 +280,102 @@ class TabelaUsuario(QMainWindow):
                 QMessageBox.warning(self, "Aviso", "Você só pode editar um usuário por vez.")
                 return
             
-            # Encontrar a linha do checkbox marcado
-            for row_index in range(self.table_widget.rowCount()):
-                widget = self.table_widget.cellWidget(row_index, 0)
-                if widget and widget.findChild(QCheckBox).isChecked():
-                    id_item = self.table_widget.item(row_index, 1)
-                    break
-            else:
-                row_index = self.table_widget.currentRow()
-                if row_index < 0:
-                    QMessageBox.warning(self, "Aviso", "Selecione um usuário na tabela.")
-                    return
-                id_item = self.table_widget.item(row_index, 0)
-            if not id_item or not id_item.text().isdigit():
-                QMessageBox.warning(self, "Aviso", "ID de usuário inválido ou não encontrado.")
+            # Encontrar o índice da linha do checkbox marcado
+            for i in range(self.table_widget.rowCount()):
+                widget = self.table_widget.cellWidget(i, 0)
+                if widget:
+                    checkbox = widget.findChild(QCheckBox)
+                    if checkbox and checkbox.isChecked():
+                        row_index = i
+                        id_item = self.table_widget.item(row_index, 1)  # ID na coluna 1 quando tem checkbox
+                        break
+        else:        
+            row_index = self.table_widget.currentRow()
+            if row_index < 0:
+                QMessageBox.warning(self, "Aviso", "Selecione um usuário na tabela.")
                 return
-            id_usuario = int(id_item.text())
+            id_item = self.table_widget.item(row_index, 0) # ID na coluna 0 quando não tem checkbox
 
-            # Obter a imagem do banco de dados
-            imagem_data = self.recuperar_imagem_do_banco(id_usuario)
+        # Validar ID
+        if not id_item or not id_item.text().isdigit():
+            print("id_item está vazio!")
+            QMessageBox.warning(self, "Aviso", "ID de usuário inválido ou não encontrado.")
+            return
 
-            if not hasattr(self, 'label_imagem_usuario') or self.label_imagem_usuario is None:
-                self.label_imagem_usuario = QLabel()
-                self.label_imagem_usuario.setScaledContents(True)
+        
+        id_usuario = int(id_item.text())
+        print(f"ID selecionado: {id_usuario}")
 
-            self.main_window.usuario_tem_imagem_salva = bool(imagem_data)
+        # Obter a imagem do banco de dados
+        imagem_data = self.recuperar_imagem_do_banco_usuarios(id_usuario)
 
-            if imagem_data:
-                try:
-                    image = QImage.fromData(imagem_data)
-                    if not image.isNull():
-                        pixmap = QPixmap.fromImage(image)
+        if not hasattr(self, 'label_imagem_usuario') or self.label_imagem_usuario is None:
+            self.label_imagem_usuario = QLabel()
+            self.label_imagem_usuario.setScaledContents(True)
 
-                        # Redimensionar a imagem para o tamanho do QLabel
-                        pixmap = pixmap.scaled(self.label_imagem_usuario.size(), Qt.KeepAspectRatio)
+        self.main_window.usuario_tem_imagem_salva = bool(imagem_data)
 
-                        # Definir a imagem no QLabel
-                        self.label_imagem_usuario.setPixmap(pixmap)
-                        self.label_imagem_usuario.repaint()
-                        print("Imagem definida no QLabel")
-                    else:
-                        print("Erro: Imagem está vazia")
-                except Exception as e:
-                    print(f"Erro ao processar imagem: {str(e)}")
-            else:
-                print("Imagem não encontrada no banco de dados.")
+        if imagem_data:
+            try:
+                image = QImage.fromData(imagem_data)
+                if not image.isNull():
+                    pixmap = QPixmap.fromImage(image)
 
-            # Recuperar dados do usuário diretamente do banco
-            dados_usuario = self.db.recuperar_usuario_por_id(id_usuario)
-            if dados_usuario:
-                (usuario_nome, usuario_usuario, usuario_senha, usuario_confirmar_senha, usuario_cep, usuario_endereco,
-                usuario_numero, usuario_cidade, usuario_bairro, usuario_estado, usuario_complemento, usuario_telefone,
-                usuario_email, usuario_data_nascimento, usuario_rg, usuario_cpf, usuario_cnpj, usuario_acesso) = dados_usuario
+                    # Redimensionar a imagem para o tamanho do QLabel
+                    pixmap = pixmap.scaled(self.label_imagem_usuario.size(), Qt.KeepAspectRatio)
 
-                # Preencher os campos da MainWindow com os dados do usuário selecionado
-                self.main_window.txt_nome.setText(usuario_nome or "")
-                self.main_window.txt_usuario.setText(usuario_usuario or "")
-                self.main_window.txt_senha.setText(usuario_senha or "")
-                self.main_window.txt_confirmar_senha.setText(usuario_confirmar_senha or "")
-                self.main_window.txt_cep.setText(usuario_cep or "")
-                self.main_window.txt_endereco.setText(usuario_endereco or "")
-                self.main_window.txt_numero.setText(usuario_numero or "")
-                self.main_window.txt_cidade.setText(usuario_cidade or "")
-                self.main_window.txt_bairro.setText(usuario_bairro or "")
-                self.main_window.perfil_estado.setCurrentText(usuario_estado or "")
-                self.main_window.txt_complemento.setText(usuario_complemento or "")
-                self.main_window.txt_telefone.setText(usuario_telefone or "")
-                self.main_window.txt_email.setText(usuario_email or "")
-                self.main_window.txt_data_nascimento.setText(usuario_data_nascimento or "")
-                self.main_window.txt_rg.setText(usuario_rg or "")
-                self.main_window.txt_cpf.setText(usuario_cpf or "")
-                self.main_window.txt_cnpj.setText(usuario_cnpj or "")
-                self.main_window.perfil_usuarios.setCurrentText(usuario_acesso or "")
+                    # Definir a imagem no QLabel
+                    self.label_imagem_usuario.setPixmap(pixmap)
+                    self.label_imagem_usuario.repaint()
+                    print("Imagem definida no QLabel")
+                else:
+                    print("Erro: Imagem está vazia")
+            except Exception as e:
+                print(f"Erro ao processar imagem: {str(e)}")
+        else:
+            print("Imagem não encontrada no banco de dados.")
+
+        # Recuperar dados do usuário diretamente do banco
+        dados_usuario = self.db.recuperar_usuario_por_id(id_usuario)
+        if dados_usuario:
+            (usuario_nome, usuario_usuario, usuario_senha, usuario_confirmar_senha, usuario_cep, usuario_endereco,
+            usuario_numero, usuario_cidade, usuario_bairro, usuario_estado, usuario_complemento, usuario_telefone,
+            usuario_email, usuario_data_nascimento, usuario_rg, usuario_cpf, usuario_cnpj, usuario_acesso) = dados_usuario
+
+            # Preencher os campos da MainWindow com os dados do usuário selecionado
+            self.main_window.txt_nome.setText(usuario_nome or "")
+            self.main_window.txt_usuario.setText(usuario_usuario or "")
+            self.main_window.txt_senha.setText(usuario_senha or "")
+            self.main_window.txt_confirmar_senha.setText(usuario_confirmar_senha or "")
+            self.main_window.txt_cep.setText(usuario_cep or "")
+            self.main_window.txt_endereco.setText(usuario_endereco or "")
+            self.main_window.txt_numero.setText(usuario_numero or "")
+            self.main_window.txt_cidade.setText(usuario_cidade or "")
+            self.main_window.txt_bairro.setText(usuario_bairro or "")
+            self.main_window.perfil_estado.setCurrentText(usuario_estado or "")
+            self.main_window.txt_complemento.setText(usuario_complemento or "")
+            self.main_window.txt_telefone.setText(usuario_telefone or "")
+            self.main_window.txt_email.setText(usuario_email or "")
+            self.main_window.txt_data_nascimento.setText(usuario_data_nascimento or "")
+            self.main_window.txt_rg.setText(usuario_rg or "")
+            self.main_window.txt_cpf.setText(usuario_cpf or "")
+            self.main_window.txt_cnpj.setText(usuario_cnpj or "")
+            self.main_window.perfil_usuarios.setCurrentText(usuario_acesso or "")
 
 
-                # Atualizar o layout do frame_imagem_cadastro com o QLabel
-                self.main_window.frame_imagem_cadastro.setVisible(True)  # Garante que o frame esteja visível
-                self.main_window.frame_imagem_cadastro.layout().addWidget(self.label_imagem_usuario)
+            # Atualizar o layout do frame_imagem_cadastro com o QLabel
+            self.main_window.frame_imagem_cadastro.setVisible(True)  # Garante que o frame esteja visível
+            self.main_window.frame_imagem_cadastro.layout().addWidget(self.label_imagem_usuario)
 
-                self.main_window.is_editing = True  # Indica que um usuário está em edição
-                self.main_window.selected_user_id = id_usuario  # Guarda o ID do usuário selecionado
-                self.main_window.imagem_removida_usuario = False  # Indica que a imagem não foi removida
+            self.main_window.is_editing = True  # Indica que um usuário está em edição
+            self.main_window.selected_user_id = id_usuario  # Guarda o ID do usuário selecionado
+            self.main_window.imagem_removida_usuario = False  # Indica que a imagem não foi removida
 
-                self.usuario_selecionado = True  # Indica que um usuário foi selecionado
+            self.usuario_selecionado = True  # Indica que um usuário foi selecionado
 
-                self.close()
-            else:
-                print("Usuário não encontrado no banco de dados.")
+            self.close()
+        else:
+            print("Usuário não encontrado no banco de dados.")
 
     def usuario_foi_selecionado(self):
         return self.usuario_selecionado     
@@ -735,7 +763,7 @@ class TabelaUsuario(QMainWindow):
             QMessageBox.warning(self, "Erro", "ID de usuário inválido.")
             return
 
-        imagem_data = self.recuperar_imagem_do_banco(id_usuario)
+        imagem_data = self.recuperar_imagem_do_banco_usuarios(id_usuario)
 
         if imagem_data:
             try:
@@ -801,6 +829,67 @@ class TabelaUsuario(QMainWindow):
         except Exception as e:
             print(f"Erro ao atualizar a tabela de usuários: {e}")
 
+    def gerar_arquivo_excel_usuarios(self):
+        # Obter o número de linhas e colunas na tabela
+        num_linhas = self.table_widget.rowCount()
+        num_colunas = self.table_widget.columnCount()
+
+        # Verifica se a tabela está vazia ou não
+        if self.table_widget.rowCount() == 0:
+            QMessageBox.information(None,"Aviso","Nenhum usuário cadastrado para gerar o arquivo")
+            return # Se a tabela estiver vazia, encerra a função sem prosseguir
+        
+         # Extrai os dados da tabela para uma lista de listas
+        dados_usuarios = []
+        for linha in range(num_linhas):
+            linhas_dados_usuarios = []
+            for coluna in range(num_colunas):
+                item = self.table_widget.item(linha,coluna)
+                linhas_dados_usuarios.append(item.text() if item else "")
+            dados_usuarios.append(linhas_dados_usuarios)
+
+        # Obtém os cabeçalhos da tabela
+        cabecalhos = []
+        for coluna in range(num_colunas):
+            cabecalho_usuario = self.table_widget.horizontalHeaderItem(coluna)
+            cabecalhos.append(cabecalho_usuario.text() if cabecalho_usuario else "")
+
+        # Nome da aba dentro do excel
+        nome_pagina = "Tabela de Usuários"
+        
+        # Cria um DataFrame do pandas com os dados da tabela
+        df = pd.DataFrame(dados_usuarios, columns=cabecalhos)
+
+        # Abre um diálogo para salvar o arquivo
+        caminho_arquivo, _ = QFileDialog.getSaveFileName(self,"Salvar Arquivo Excel","Tabela de Usuários","Arquivo Excel(*.xlsx)")
+
+        if caminho_arquivo:
+            # Salvao o DataFrame como um arquivo Excel
+            df.to_excel(caminho_arquivo,index=False,engine="openpyxl",sheet_name=nome_pagina)
+
+        # Abrir a planilha para formatação
+        openn = load_workbook(caminho_arquivo)
+        sheet = openn[nome_pagina]
+  
+        for col in sheet.columns:
+            max_length = 0
+            col_letter = get_column_letter(col[0].column)
+            for cell in col:
+                #Centraliza o texto
+                cell.alignment = Alignment(horizontal='center',vertical='center')
+                try:
+                    if cell.value:
+                        max_length = max(max_length,len(str(cell.value)))
+
+                except:
+                    pass
+                #Ajustar largura da coluna
+                sheet.column_dimensions[col_letter].width = max_length + 2
+        # Salvar as alterações
+        openn.save(caminho_arquivo)
+        QMessageBox.information(None,"Aviso","Arquivo excel gerado com sucesso")
+
+
      # Função auxiliar para criar um QTableWidgetItem com texto centralizado e branco
     def formatar_texto(self, text):
         item = QTableWidgetItem(text)
@@ -808,62 +897,3 @@ class TabelaUsuario(QMainWindow):
         item.setForeground(QBrush(QColor("black")))
         return item            
     
-    def baixar_imagem_usuario(self):
-        # Verifica se a coluna de checkboxes está ativa
-        if self.coluna_checkboxes_adicionada:
-            selecionados = [i for i, cb in enumerate(self.checkboxes) if cb.isChecked()]
-
-            if not selecionados:
-                QMessageBox.warning(self, "Aviso", "Selecione um usuário para baixar a imagem.")
-                return
-
-            if len(selecionados) > 1:
-                QMessageBox.warning(self, "Aviso", "Só é possível baixar a imagem de um usuário por vez.")
-                return
-
-            row_index = selecionados[0]
-        else:
-            row_index = self.table_widget.currentRow()
-            if row_index < 0:
-                QMessageBox.warning(self, "Aviso", "Selecione um usuário para baixar a imagem.")
-                return
-
-        # Pega o ID da coluna correta (0 se não tiver coluna de checkbox, 1 se tiver)
-        coluna_id = 1 if self.coluna_checkboxes_adicionada else 0
-        item = self.table_widget.item(row_index, coluna_id)
-
-        if item is None:
-            QMessageBox.warning(self, "Erro", "Não foi possível identificar o ID do usuário.")
-            return
-
-        try:
-            id_usuario = int(item.text())
-        except ValueError:
-            QMessageBox.warning(self, "Erro", "ID de usuário inválido.")
-            return
-
-        imagem_data = self.recuperar_imagem_do_banco(id_usuario)
-
-        if imagem_data:
-            try:
-                # Abrir diálogo para escolher onde salvar
-                caminho, _ = QFileDialog.getSaveFileName(
-                    self,
-                    "Salvar Imagem do Usuário",
-                    f"usuario_{id_usuario}.png",
-                    "Imagens (*.png *.jpg *.jpeg *.bmp *.gif)"
-                )
-
-                if not caminho:
-                    return  # Usuário cancelou o diálogo
-
-                # Escreve os dados da imagem no local escolhido
-                with open(caminho, "wb") as file:
-                    file.write(imagem_data)
-
-                QMessageBox.information(self, "Sucesso", "Imagem salva com sucesso.")
-
-            except Exception as e:
-                QMessageBox.critical(self, "Erro", f"Erro ao salvar imagem: {str(e)}")
-        else:
-            QMessageBox.warning(self, "Aviso", "Imagem não encontrada.")
