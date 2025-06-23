@@ -1,6 +1,7 @@
-from PySide6.QtWidgets import QLineEdit, QToolButton,QMessageBox
+from PySide6.QtWidgets import QLineEdit, QToolButton,QMessageBox,QVBoxLayout, QLabel, QFrame
 from PySide6.QtGui import QIcon, QPixmap
 from PySide6.QtCore import Qt
+
 
 class MostrarSenha:
     def __init__(self, main_window, line_edit: QLineEdit):
@@ -63,3 +64,21 @@ class MostrarSenha:
             self.line_edit.setEchoMode(QLineEdit.Normal)
             self.btn_mostrar_senha.setIcon(QIcon(QPixmap("imagens/829117.png")))
             self._show_password = True
+
+
+def configurar_frame_valores(frame: QFrame, titulo: str, valor_monetario: bool = True) -> QLabel:
+    layout = QVBoxLayout(frame)
+    layout.setAlignment(Qt.AlignCenter)
+
+    label_titulo = QLabel(titulo)
+    label_titulo.setAlignment(Qt.AlignCenter)
+    label_titulo.setStyleSheet("font-size: 14px; color: white; font-family: Arial; font-weight: normal;")
+
+    label_valor = QLabel("R$ 0,00" if valor_monetario else "")
+    label_valor.setAlignment(Qt.AlignCenter)
+    label_valor.setStyleSheet("font-size: 20px; color: white; font-family: Arial; font-weight: bold;")
+
+    layout.addWidget(label_titulo)
+    layout.addWidget(label_valor)
+
+    return label_valor  # você salva essa referência depois para atualizar o texto

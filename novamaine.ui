@@ -3616,33 +3616,6 @@ QPushButton:hover {
                 <property name="frameShadow">
                  <enum>QFrame::Raised</enum>
                 </property>
-                <widget class="QLabel" name="label_valor_total_produtos_2">
-                 <property name="geometry">
-                  <rect>
-                   <x>20</x>
-                   <y>10</y>
-                   <width>291</width>
-                   <height>20</height>
-                  </rect>
-                 </property>
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="styleSheet">
-                  <string notr="true">QLabel {
-    color: white;
-    text-align: center; /* Centraliza o texto horizontalmente */
-    vertical-align: middle; /* Centraliza o texto verticalmente */
-}
-</string>
-                 </property>
-                 <property name="text">
-                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:11pt; font-weight:600;&quot;&gt;Valor total de produtos sem desconto&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                 </property>
-                </widget>
                </widget>
               </item>
               <item>
@@ -3675,33 +3648,6 @@ QPushButton:hover {
                 <property name="frameShadow">
                  <enum>QFrame::Raised</enum>
                 </property>
-                <widget class="QLabel" name="label_valor_do_desconto">
-                 <property name="geometry">
-                  <rect>
-                   <x>83</x>
-                   <y>17</y>
-                   <width>161</width>
-                   <height>20</height>
-                  </rect>
-                 </property>
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="styleSheet">
-                  <string notr="true">QLabel {
-    color: white;
-    text-align: center; /* Centraliza o texto horizontalmente */
-    vertical-align: middle; /* Centraliza o texto verticalmente */
-}
-</string>
-                 </property>
-                 <property name="text">
-                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:12pt; font-weight:600;&quot;&gt;Valor do desconto&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                 </property>
-                </widget>
                </widget>
               </item>
               <item>
@@ -3734,33 +3680,6 @@ QPushButton:hover {
                 <property name="frameShadow">
                  <enum>QFrame::Raised</enum>
                 </property>
-                <widget class="QLabel" name="label_valor_com_desconto">
-                 <property name="geometry">
-                  <rect>
-                   <x>30</x>
-                   <y>10</y>
-                   <width>261</width>
-                   <height>20</height>
-                  </rect>
-                 </property>
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="styleSheet">
-                  <string notr="true">QLabel {
-    color: white;
-    text-align: center; /* Centraliza o texto horizontalmente */
-    vertical-align: middle; /* Centraliza o texto verticalmente */
-}
-</string>
-                 </property>
-                 <property name="text">
-                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:12pt; font-weight:600;&quot;&gt;Valor do produto com desconto&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                 </property>
-                </widget>
                </widget>
               </item>
               <item>
@@ -3793,33 +3712,6 @@ QPushButton:hover {
                 <property name="frameShadow">
                  <enum>QFrame::Raised</enum>
                 </property>
-                <widget class="QLabel" name="label_quantidade_2">
-                 <property name="geometry">
-                  <rect>
-                   <x>40</x>
-                   <y>10</y>
-                   <width>241</width>
-                   <height>20</height>
-                  </rect>
-                 </property>
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="styleSheet">
-                  <string notr="true">QLabel {
-    color: white;
-    text-align: center; /* Centraliza o texto horizontalmente */
-    vertical-align: middle; /* Centraliza o texto verticalmente */
-}
-</string>
-                 </property>
-                 <property name="text">
-                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:12pt; font-weight:600;&quot;&gt;Quantidade total de produtos&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                 </property>
-                </widget>
                </widget>
               </item>
              </layout>

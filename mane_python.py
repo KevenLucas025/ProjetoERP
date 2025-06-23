@@ -2074,17 +2074,6 @@ class Ui_MainWindow(object):
 "")
         self.frame_valor_total_produtos.setFrameShape(QFrame.StyledPanel)
         self.frame_valor_total_produtos.setFrameShadow(QFrame.Raised)
-        self.label_valor_total_produtos_2 = QLabel(self.frame_valor_total_produtos)
-        self.label_valor_total_produtos_2.setObjectName(u"label_valor_total_produtos_2")
-        self.label_valor_total_produtos_2.setGeometry(QRect(20, 10, 291, 20))
-        sizePolicy.setHeightForWidth(self.label_valor_total_produtos_2.sizePolicy().hasHeightForWidth())
-        self.label_valor_total_produtos_2.setSizePolicy(sizePolicy)
-        self.label_valor_total_produtos_2.setStyleSheet(u"QLabel {\n"
-"    color: white;\n"
-"    text-align: center; /* Centraliza o texto horizontalmente */\n"
-"    vertical-align: middle; /* Centraliza o texto verticalmente */\n"
-"}\n"
-"")
 
         self.verticalLayout_15.addWidget(self.frame_valor_total_produtos)
 
@@ -2098,17 +2087,6 @@ class Ui_MainWindow(object):
 "")
         self.frame_valor_do_desconto.setFrameShape(QFrame.StyledPanel)
         self.frame_valor_do_desconto.setFrameShadow(QFrame.Raised)
-        self.label_valor_do_desconto = QLabel(self.frame_valor_do_desconto)
-        self.label_valor_do_desconto.setObjectName(u"label_valor_do_desconto")
-        self.label_valor_do_desconto.setGeometry(QRect(83, 17, 161, 20))
-        sizePolicy.setHeightForWidth(self.label_valor_do_desconto.sizePolicy().hasHeightForWidth())
-        self.label_valor_do_desconto.setSizePolicy(sizePolicy)
-        self.label_valor_do_desconto.setStyleSheet(u"QLabel {\n"
-"    color: white;\n"
-"    text-align: center; /* Centraliza o texto horizontalmente */\n"
-"    vertical-align: middle; /* Centraliza o texto verticalmente */\n"
-"}\n"
-"")
 
         self.verticalLayout_15.addWidget(self.frame_valor_do_desconto)
 
@@ -2122,17 +2100,6 @@ class Ui_MainWindow(object):
 "")
         self.frame_valor_com_desconto1.setFrameShape(QFrame.StyledPanel)
         self.frame_valor_com_desconto1.setFrameShadow(QFrame.Raised)
-        self.label_valor_com_desconto = QLabel(self.frame_valor_com_desconto1)
-        self.label_valor_com_desconto.setObjectName(u"label_valor_com_desconto")
-        self.label_valor_com_desconto.setGeometry(QRect(30, 10, 261, 20))
-        sizePolicy.setHeightForWidth(self.label_valor_com_desconto.sizePolicy().hasHeightForWidth())
-        self.label_valor_com_desconto.setSizePolicy(sizePolicy)
-        self.label_valor_com_desconto.setStyleSheet(u"QLabel {\n"
-"    color: white;\n"
-"    text-align: center; /* Centraliza o texto horizontalmente */\n"
-"    vertical-align: middle; /* Centraliza o texto verticalmente */\n"
-"}\n"
-"")
 
         self.verticalLayout_15.addWidget(self.frame_valor_com_desconto1)
 
@@ -2146,17 +2113,6 @@ class Ui_MainWindow(object):
 "")
         self.frame_quantidade.setFrameShape(QFrame.StyledPanel)
         self.frame_quantidade.setFrameShadow(QFrame.Raised)
-        self.label_quantidade_2 = QLabel(self.frame_quantidade)
-        self.label_quantidade_2.setObjectName(u"label_quantidade_2")
-        self.label_quantidade_2.setGeometry(QRect(40, 10, 241, 20))
-        sizePolicy.setHeightForWidth(self.label_quantidade_2.sizePolicy().hasHeightForWidth())
-        self.label_quantidade_2.setSizePolicy(sizePolicy)
-        self.label_quantidade_2.setStyleSheet(u"QLabel {\n"
-"    color: white;\n"
-"    text-align: center; /* Centraliza o texto horizontalmente */\n"
-"    vertical-align: middle; /* Centraliza o texto verticalmente */\n"
-"}\n"
-"")
 
         self.verticalLayout_15.addWidget(self.frame_quantidade)
 
@@ -4684,10 +4640,6 @@ class Ui_MainWindow(object):
         self.label_cadastramento_produtos.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p align=\"center\"><span style=\" font-size:18pt; font-weight:600; font-style:italic;\">Cadastramento de Produtos</span></p></body></html>", None))
         self.btn_remover_imagem.setText(QCoreApplication.translate("MainWindow", u"REMOVER IMAGEM", None))
         self.btn_carregar_imagem.setText(QCoreApplication.translate("MainWindow", u"CARREGAR IMAGEM", None))
-        self.label_valor_total_produtos_2.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p><span style=\" font-size:11pt; font-weight:600;\">Valor total de produtos sem desconto</span></p></body></html>", None))
-        self.label_valor_do_desconto.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p><span style=\" font-size:12pt; font-weight:600;\">Valor do desconto</span></p></body></html>", None))
-        self.label_valor_com_desconto.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p><span style=\" font-size:12pt; font-weight:600;\">Valor do produto com desconto</span></p></body></html>", None))
-        self.label_quantidade_2.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p><span style=\" font-size:12pt; font-weight:600;\">Quantidade total de produtos</span></p></body></html>", None))
         self.btn_confirmar.setText(QCoreApplication.translate("MainWindow", u"CONFIRMAR", None))
         self.btn_ver_item.setText(QCoreApplication.translate("MainWindow", u"VER PRODUTOS", None))
         self.label_cadastramento.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p align=\"center\"><span style=\" font-size:14pt; font-weight:600; font-style:italic;\">CADASTRAMENTO DE USU\u00c1RIO</span></p></body></html>", None))

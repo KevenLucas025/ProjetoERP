@@ -143,7 +143,7 @@ class TabelaProdutos(QDialog):
             QMessageBox.critical(self, "Erro", f"Erro ao acessar o banco de dados: {str(e)}")
         finally:
             pass
-
+#*******************************************************************************************************
     def exibir_mensagem_sem_produtos(self):
         # Verificar se a QLabel já existe
         if not hasattr(self, 'label_sem_produto'):
@@ -161,13 +161,11 @@ class TabelaProdutos(QDialog):
             self.main_layout.addWidget(self.label_sem_produto)
 
         self.label_sem_produto.show()
-
+#*******************************************************************************************************
     def ocultar_mensagem_sem_produtos(self):
         # Oculta a mensagem caso existam produtos na tabela
         if hasattr(self, 'label_sem_produto'):
             self.label_sem_produto.hide()
-
-     
 #*******************************************************************************************************
     def recuperar_imagem_do_banco(self, produto_id):
         imagem_blob = None
@@ -189,10 +187,7 @@ class TabelaProdutos(QDialog):
             print(f"Erro ao recuperar imagem do banco de dados: {str(e)}")
             return None
 
-        finally:
-            self.db.close_connection()
-
-        if imagem_blob:
+        if imagem_blob and isinstance(imagem_blob,str) and imagem_blob.strip().lower() != "não cadastrado":
             try:
                 imagem_data = base64.b64decode(imagem_blob)
                 return imagem_data  # Retorna bytes decodificados
@@ -201,7 +196,7 @@ class TabelaProdutos(QDialog):
                 print(f"Erro ao decodificar imagem: {str(e)}")
                 return None
         else:
-            print("Imagem não encontrada para o produto:", produto_id)
+            print(f"Imagem não cadastrada ou inválida para o produto: {produto_id}")
             return None
 
 #*******************************************************************************************************
@@ -321,7 +316,7 @@ class TabelaProdutos(QDialog):
         
         # Executa a caixa de diálogo e espera pela resposta
         mensagem_box.exec()
-
+#*******************************************************************************************************
     def abrir_criterio_dialog(self):
         # Criar um QDialog para a seleção do critério de filtragem
         criterio_dialog = QDialog(self)
@@ -357,7 +352,7 @@ class TabelaProdutos(QDialog):
         
         criterio_dialog.setLayout(layout)
         criterio_dialog.exec_()
-
+#*******************************************************************************************************
     def abrir_dialogo_filtro(self, criterio):
         # Abre um diálogo para inserir o valor de filtragem com base no critério selecionado
         dialog = QDialog(self)
@@ -413,51 +408,32 @@ class TabelaProdutos(QDialog):
         dialog.setLayout(layout)
         dialog.exec()
 #*******************************************************************************************************
-    def atualizar_valores_frames(self, valor_total, valor_com_desconto, valor_do_desconto, quantidade):
+    def atualizar_valores_frames_apos_recuperar(self, valor_total, valor_com_desconto, valor_do_desconto, quantidade):
         # Verificar e formatar os valores corretamente
         valor_total_formatado = locale.currency(valor_total, grouping=True)
-        
-        # Se o valor do desconto for 0, significa que não há desconto, então "Sem desconto" é exibido
-        valor_com_desconto_formatado = "Sem desconto" if valor_do_desconto == 0 else locale.currency(valor_com_desconto, grouping=True)
 
-        # Evitar erro de tipo ao formatar "Sem desconto"
-        if isinstance(valor_do_desconto, (int, float)):
+        # Valor com desconto: se não houver desconto, mostrar "Sem desconto"
+        valor_com_desconto_formatado = (
+            "Sem desconto" if valor_do_desconto == 0 else locale.currency(valor_com_desconto, grouping=True)
+        )
+
+        # Valor do desconto: se for numérico e maior que 0, formatar
+        if isinstance(valor_do_desconto, (int, float)) and valor_do_desconto > 0:
             valor_do_desconto_formatado = locale.currency(valor_do_desconto, grouping=True)
         else:
             valor_do_desconto_formatado = "Sem desconto"
 
-        # Definir os textos nos frames    
-        self.main_window.frame_valor_do_desconto.setText(valor_do_desconto_formatado)
-        self.main_window.frame_valor_desconto.setText(valor_com_desconto_formatado)
-        self.main_window.frame_quantidade.setText("{:.0f}".format(quantidade))
-        self.main_window.frame_valor_total_produtos.setText(valor_total_formatado)
+        # Atualizar os textos das labels 
+        self.main_window.label_valor_do_desconto.setText(valor_do_desconto_formatado)
+        self.main_window.label_valor_desconto.setText(valor_com_desconto_formatado)
+        self.main_window.label_quantidade.setText("{:.0f}".format(quantidade))
+        self.main_window.label_valor_total_produtos.setText(valor_total_formatado)
 
-        # Ajustar as geometrias, se necessário
-        altura = 101
-        largura_padrao = 335
-
-        # Ajustar a posição e tamanho apenas quando o desconto for zero (Sem desconto)
-        if valor_do_desconto == 0:  # Verificando se o valor do desconto é zero (sem desconto)
-            largura = 300  # Ajuste a largura para acomodar "Sem desconto"
-            self.main_window.frame_valor_do_desconto.setGeometry(100,50,largura,altura) # Posição da label quando não há desconto
-        else:
-            largura = largura_padrao  # Tamanho padrão do frame quando há desconto
-            self.main_window.frame_valor_do_desconto.setGeometry(90, 45, largura, altura)
-
-        # Posicionar o frame de valor total
-        self.main_window.frame_valor_total_produtos.setGeometry(125, 45, largura, altura)
-
-        # Posicionar o frame de valor com desconto
-        self.main_window.frame_valor_desconto.setGeometry(115, 45, largura, altura)
-
-        # Posicionar o frame de quantidade
-        self.main_window.frame_quantidade.setGeometry(135, 50, largura, altura)
-
-        # Atualizar os frames para exibir os novos valores
-        self.main_window.frame_valor_total_produtos.adjustSize()
-        self.main_window.frame_valor_do_desconto.adjustSize()
-        self.main_window.frame_valor_desconto.adjustSize()
-        self.main_window.frame_quantidade.adjustSize()
+        # Centralizar o texto dentro dos labels
+        self.main_window.label_valor_total_produtos.setAlignment(Qt.AlignCenter)
+        self.main_window.label_valor_do_desconto.setAlignment(Qt.AlignCenter)
+        self.main_window.label_valor_desconto.setAlignment(Qt.AlignCenter)
+        self.main_window.label_quantidade.setAlignment(Qt.AlignCenter)
 #*******************************************************************************************************
     def apagar_produto_confirmado(self):
         produtos_para_remover = []
@@ -564,7 +540,7 @@ class TabelaProdutos(QDialog):
 #*******************************************************************************************************
     def editar_produto_tabela(self):
         produto_id = None
-
+        
         # Verificar se a tabela está vazia
         if self.table_widget.rowCount() == 0:
             QMessageBox.warning(self, "Aviso", "Nenhum produto cadastrado para atualizar.")
@@ -657,15 +633,17 @@ class TabelaProdutos(QDialog):
 
         # Armazenar o estado original do produto selecionado
         self.main_window.produto_selecionado = {
-            "produto": produto_nome,
-            "quantidade": int(produto_quantidade),
-            "valor_produto": float(produto_valor_real.replace('R$', '').replace('.', '').replace(',', '.').strip()),
-            "desconto": desconto,  # Tratado como número para cálculos
-            "data_compra": produto_dateEdit,
-            "codigo_item": produto_codigo_item,
-            "cliente": produto_cliente,
-            "descricao_produto": produto_descricao
+            "produto": produto_nome if produto_nome.strip() else "Não Cadastrado",
+            "quantidade": int(produto_quantidade) if produto_quantidade.strip() else "Não Cadastrado",
+            "valor_produto": float(produto_valor_real.replace('R$', '').replace('.', '').replace(',', '.').strip()) if produto_valor_real.strip() else "Não Cadastrado",
+            "desconto": desconto if desconto else "Sem desconto", # Tratado como número para cálculos
+            "data_compra": produto_dateEdit if produto_dateEdit.strip() else "Não Cadastrado",
+            "codigo_item": produto_codigo_item if produto_codigo_item.strip() else "Não Cadastrado",
+            "cliente": produto_cliente if produto_cliente.strip() else "Não Cadastrado",
+            "descricao_produto": produto_descricao if produto_descricao.strip() else "Não Cadastrado",
             }
+        
+        self.main_window.produto_original = self.main_window.produto_selecionado.copy()
 
         self.main_window.txt_produto.setText(produto_nome)
         self.main_window.txt_quantidade.setText(produto_quantidade)
@@ -682,11 +660,19 @@ class TabelaProdutos(QDialog):
         try:
             # Remover símbolo da moeda e converter para float
             valor_produto_str = produto_valor_real.replace('R$', '').replace('.', '').replace(',', '.').strip()
-            produto_valor_real = float(valor_produto_str) if valor_produto_str else 0
+            if not valor_produto_str:
+                self.main_window.txt_valor_produto_3.setText("Não Cadastrado")
+                produto_valor_real = 0.0
+            else:
+                produto_valor_real = float(valor_produto_str)
 
             # Converter quantidade para inteiro
             quantidade_str = produto_quantidade.strip()
-            produto_quantidade = int(quantidade_str) if quantidade_str else 0
+            if not quantidade_str:
+                self.main_window.txt_quantidade.setText("Não Cadastrado")
+                produto_quantidade = 0
+            else:
+                produto_quantidade = int(quantidade_str)
 
             # Converter desconto para float e tratá-lo como porcentagem
             desconto_str = produto_desconto.replace('%', '').replace(',', '.').strip()
@@ -700,7 +686,7 @@ class TabelaProdutos(QDialog):
             valor_com_desconto = valor_total - valor_desconto
 
             # Atualizar os frames com os valores corretos
-            self.atualizar_valores_frames(valor_total, valor_com_desconto, valor_desconto, produto_quantidade)
+            self.atualizar_valores_frames_apos_recuperar(valor_total, valor_com_desconto, valor_desconto, produto_quantidade)
 
             # Registrar a edição no histórico
             descricao_edicao = f"Produto {produto_nome} foi editado. Novos valores: quantidade {produto_quantidade}, valor {produto_valor_real}, desconto {produto_desconto}%."
@@ -964,21 +950,24 @@ class TabelaProdutos(QDialog):
                     return
                 else:
                     print("Pixmap carregado com sucesso para visualização.")
+
+
+                # Salvar imagem temporariamente para visualização
+                caminho_pasta = "imagens_temporarias"
+                os.makedirs(caminho_pasta,exist_ok=True)  # Cria a pasta se não existir
+
+                caminho_arquivo = os.path.join(caminho_pasta, "imagem_produto.png")
+
+                with open(caminho_arquivo, 'wb') as f:
+                    f.write(imagem_data)
                 
                 # Tentar abrir o arquivo com um visualizador de imagens padrão
-                os.startfile("imagem_temporaria.png")
+                os.startfile(caminho_arquivo)
                 
             except Exception as e:
                 print(f"Erro ao processar imagem: {str(e)}")
         else:
             QMessageBox.warning(self, "Aviso", "Imagem não encontrada.")
-#*******************************************************************************************************         
-    def adicionar_widgets(self, frame, debug_text):
-        layout = QVBoxLayout()  # Criar um layout vertical
-        label = QLabel(debug_text)
-        label.setAlignment(Qt.AlignCenter)
-        layout.addWidget(label)  # Adicionar o label ao layout
-        frame.setLayout(layout)  # Definir o layout ao frame
 #*******************************************************************************************************
     def obter_produtos_por_nome(self, nome):
         query = "SELECT * FROM products WHERE Produto LIKE ?"
@@ -1177,18 +1166,6 @@ class TabelaProdutos(QDialog):
         
         except Exception as e:
             QMessageBox.critical(self, "Erro", f"Falha ao cadastrar o produto: {str(e)}")
-
-
-    def atualizar_checkboxes(self):
-        # Atualiza a lista de checkboxes para corresponder ao número de linhas na tabela
-        total_rows = self.table_widget.rowCount()
-        self.checkboxes = []
-        for row in range(total_rows):
-            checkbox = self.table_widget.cellWidget(row, 0)
-            if checkbox is None:
-                checkbox = QCheckBox()
-                self.table_widget.setCellWidget(row, 0, checkbox)
-            self.checkboxes.append(checkbox)
 
 
 

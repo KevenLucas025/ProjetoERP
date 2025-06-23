@@ -6,7 +6,7 @@ from PySide6 import QtCore
 from PySide6.QtWidgets import (QMainWindow, QMessageBox, QPushButton,
                                QLabel, QFileDialog, QVBoxLayout,
                                QMenu,QTableWidgetItem,QCheckBox,QApplication,QToolButton,QHeaderView,QCompleter,
-                               QComboBox,QInputDialog)
+                               QComboBox,QInputDialog,QProgressDialog)
 from PySide6.QtGui import (QDoubleValidator, QIcon, QColor, QPixmap,QBrush,
                            QAction,QMovie,QImage)
 from PySide6 import QtWidgets
@@ -24,7 +24,7 @@ from atualizarusuario import AtualizarUsuario
 from pg_configuracoes import Pagina_Configuracoes
 from estoqueprodutos import EstoqueProduto
 from historicousuario import Pagina_Usuarios
-from utils import MostrarSenha
+from utils import MostrarSenha,configurar_frame_valores
 from clientes import Clientes
 import json
 import sqlite3
@@ -42,6 +42,7 @@ from openpyxl.utils import get_column_letter
 from openpyxl.styles import Alignment
 from openpyxl import load_workbook
 import requests
+import shutil
 
 
 
@@ -243,11 +244,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.action_sair = QAction("Sair do Sistema", self)
         self.action_configuracoes = QAction("Configurações", self)
         self.action_contato = QAction("Contato", self)
-        self.action_reiniciar = QAction("Reiniciar Sistema")
-        self.action_planilhas_exemplo = QAction("Planilhas de exemplo")
-        self.action_em_massa_produtos = QAction("Cadastrar produtos em massa")
-        self.action_em_massa_usuarios = QAction("Cadastrar usuários em massa")
-        self.action_informacoes_sistema = QAction("Informações do sistema")
+        self.action_reiniciar = QAction("Reiniciar Sistema", self)
+        self.action_planilhas_exemplo = QAction("Planilhas de exemplo", self)
+        self.action_em_massa_produtos = QAction("Cadastrar produtos em massa", self)
+        self.action_em_massa_usuarios = QAction("Cadastrar usuários em massa", self)
+        self.action_informacoes_sistema = QAction("Informações do sistema", self)
+        self.action_limpar_cache = QAction("Limpar Cache", self)
         
 
         # Adicionar as ações ao menu (FUNDAMENTAL!)
@@ -259,6 +261,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.menu_opcoes.addAction(self.action_em_massa_produtos)
         self.menu_opcoes.addAction(self.action_em_massa_usuarios)
         self.menu_opcoes.addAction(self.action_informacoes_sistema)
+        self.menu_opcoes.addAction(self.action_limpar_cache)
         
 
         # Associar o menu ao botão
@@ -276,9 +279,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.action_em_massa_produtos.triggered.connect(self.pagina_cadastro_em_massa_produtos)
         self.action_em_massa_usuarios.triggered.connect(self.pagina_cadastro_em_massa_usuarios)
         self.action_informacoes_sistema.triggered.connect(self.show_mensagem_sistema)
-        
-        
-        self.fechar_janela_login_signal.connect(self.fechar_janela_login)  
+        self.action_limpar_cache.triggered.connect(self.limpar_cache_sistema)
+
+        self.fechar_janela_login_signal.connect(self.fechar_janela_login)
 
 
         
@@ -294,7 +297,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.carregar_configuracoes()
         
-        self.configracao_senha = TrocarSenha(self)
 
         self.pagina_usuarios = Pagina_Usuarios(self, self.btn_abrir_planilha_usuarios,self.btn_cadastrar_novo_usuario,
                                                self.btn_historico_usuarios,self.btn_atualizar_ativos,
@@ -351,17 +353,21 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # Configurar a página inicial
         self.paginas_sistemas.setCurrentWidget(self.paginas[self.pagina_atual_index])
 
-        self.frame_valor_total_produtos = QLabel(self.frame_valor_total_produtos)
-        self.frame_valor_desconto = QLabel(self.frame_valor_com_desconto1)
-        self.frame_quantidade = QLabel(self.frame_quantidade)
-        self.frame_valor_do_desconto = QLabel(self.frame_valor_do_desconto)
-        
-        
+        self.label_valor_total_produtos = configurar_frame_valores(self.frame_valor_total_produtos, "Valor total de produtos sem desconto")
+        self.label_valor_do_desconto = configurar_frame_valores(self.frame_valor_do_desconto, "Valor do desconto")
+        self.label_valor_desconto = configurar_frame_valores(self.frame_valor_com_desconto1, "Valor do produto com desconto")
+        self.label_quantidade = configurar_frame_valores(self.frame_quantidade, "Quantidade total de produtos",valor_monetario=False)
 
-        self.frame_valor_total_produtos.setStyleSheet("font-size: 20px; color: white; font-family: 'Arial'; font-weight: bold;")
-        self.frame_valor_desconto.setStyleSheet("font-size: 20px; color: white; font-family: 'Arial'; font-weight: bold;")
-        self.frame_quantidade.setStyleSheet("font-size: 20px; color: white; font-family: 'Arial'; font-weight: bold;")
-        self.frame_valor_do_desconto.setStyleSheet("font-size: 20px; color: white; font-family: 'Arial'; font-weight: bold;")
+
+        # Centralizar o texto 
+        for label in [
+            self.label_valor_total_produtos,
+            self.label_valor_do_desconto,
+            self.label_valor_desconto,
+            self.label_quantidade,
+        ]:
+            label.setAlignment(Qt.AlignCenter)
+            label.setStyleSheet("font-size: 20px; color: white; font-family: 'Arial'; font-weight: bold;")
 
         validator = QDoubleValidator()
         validator.setNotation(QDoubleValidator.StandardNotation)  
@@ -395,7 +401,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
 
         self.btn_remover_imagem.clicked.connect(self.retirar_imagem_produto)
-        self.btn_limpar_campos.clicked.connect(self.apagar_campos)
+        self.btn_limpar_campos.clicked.connect(self.apagar_campos_produtos)
         self.btn_adicionar_produto.clicked.connect(self.adicionar_produto)
         self.btn_confirmar.clicked.connect(self.confirmar_produtos)
         self.btn_atualizar_cadastro.clicked.connect(self.atualizar_usuario_no_bd)
@@ -425,8 +431,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                                                          self.btn_cadastrar_produto, self.btn_cadastrar_usuarios, self.btn_clientes,self.btn_configuracoes,
                                                          self.btn_abrir_planilha,self.btn_importar,self.btn_gerar_saida,
                                                          self.line_excel,self.btn_gerar_estorno,
-                                                         self.label_cadastramento,self.label_cadastramento_produtos,self.frame_valor_total_produtos,self.frame_valor_do_desconto,
-                                                         self.frame_valor_desconto,self.frame_quantidade)
+                                                         self.label_cadastramento,self.label_cadastramento_produtos,self.frame_valor_total_produtos,
+                                                         self.frame_valor_do_desconto,self.frame_valor_com_desconto1,self.frame_quantidade)
 
 
     def abrir_menu_opcoes(self):
@@ -1320,8 +1326,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 QMessageBox.warning(None, "Erro","Não foi possível remover a imagem do usuário\n"
                                                 "Tente remover pelo botão  remover imagem")
 
-        
-
         QMessageBox.information(None,"Sucesso","Todos os campos foram limpos com sucesso! ")
 #*********************************************************************************************************************
     def converter_imagem_usuario(self):
@@ -1541,47 +1545,27 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                     break
         return super().eventFilter(obj, event)
 #*********************************************************************************************************************  
-    def atualizar_valores_frames(self, quantidade, valor_do_desconto, valor_com_desconto):
-        # Verificar se o valor com desconto é zero e definir a mensagem apropriada
+    def atualizar_valores_frames_na_hora_do_cadastro(self, quantidade, valor_do_desconto, valor_com_desconto):
+        # Formatar os valores corretamente
         valor_com_desconto_formatado = locale.currency(valor_com_desconto, grouping=True)
-        valor_do_desconto_formatado = "Sem desconto" if valor_do_desconto == 0 else locale.currency(valor_do_desconto, grouping=True)
+
+        valor_do_desconto_formatado = (
+            "Sem desconto" if valor_do_desconto == 0 else locale.currency(valor_do_desconto, grouping=True)
+        )
+
         valor_total_formatado = locale.currency(valor_com_desconto + valor_do_desconto, grouping=True)
 
-        # Atualizar os textos dos frames
-        self.frame_valor_desconto.setText(valor_com_desconto_formatado)
-        self.frame_valor_do_desconto.setText(valor_do_desconto_formatado)
-        self.frame_quantidade.setText("{:.0f}".format(quantidade))
-        self.frame_valor_total_produtos.setText(valor_total_formatado)
+        # Atualizar os textos das LABELS (não dos frames!)
+        self.label_valor_desconto.setText(valor_com_desconto_formatado)
+        self.label_valor_do_desconto.setText(valor_do_desconto_formatado)
+        self.label_quantidade.setText("{:.0f}".format(quantidade))
+        self.label_valor_total_produtos.setText(valor_total_formatado)
 
-        # Mostrar os frames
-        self.frame_valor_total_produtos.show()
-        self.frame_valor_do_desconto.show()
-        self.frame_valor_desconto.show()
-        self.frame_quantidade.show()
-
-        # Configurar as geometrias dos frames
-        altura = 101
-        largura_default = 335
-
-        # Ajustar a geometria do frame de desconto dependendo do valor
-        if valor_do_desconto == 0:
-            largura = 300  # Ajuste a largura para acomodar "Sem desconto"
-            self.frame_valor_do_desconto.setGeometry(100, 50, largura, altura)
-        else:
-            largura = largura_default
-            self.frame_valor_do_desconto.setGeometry(125, 45, largura, altura)
-
-        # Ajustar a posição e a largura dos outros frames
-        self.frame_valor_total_produtos.setGeometry(125, 45, largura, altura)
-        self.frame_valor_desconto.setGeometry(115, 45, largura, altura)
-        self.frame_quantidade.setGeometry(135, 50, largura, altura)    
-
-        # Atualizar os frames para exibir os novos valores
-        self.frame_valor_total_produtos.adjustSize()
-        self.frame_valor_do_desconto.adjustSize()
-        self.frame_valor_desconto.adjustSize()
-        self.frame_quantidade.adjustSize()
-
+        # Garantir que os textos fiquem centralizados nos labels
+        self.label_valor_total_produtos.setAlignment(Qt.AlignCenter)
+        self.label_valor_do_desconto.setAlignment(Qt.AlignCenter)
+        self.label_valor_desconto.setAlignment(Qt.AlignCenter)
+        self.label_quantidade.setAlignment(Qt.AlignCenter)
 #*********************************************************************************************************************
     def inserir_produto_no_bd(self, produto_info,registrar_historico=True):
         try:
@@ -1667,10 +1651,18 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         # Obter os valores dos campos
         valor_produto_str = self.txt_valor_produto_3.text().replace('R$', '').replace('.', '').replace(',', '.').strip()
-        valor_produto = float(valor_produto_str) if valor_produto_str else 0.0
+        if not valor_produto_str:
+            self.txt_valor_produto_3.setText("Não Cadastrado")
+            valor_produto = 0.0
+        else:
+            valor_produto = float(valor_produto_str)
 
         quantidade_str = self.txt_quantidade.text().strip()
-        quantidade = int(quantidade_str) if quantidade_str else 0
+        if not quantidade_str:
+            self.txt_quantidade.setText("Não Cadastrado")
+            quantidade = 0
+        else:
+            quantidade = int(quantidade_str)
 
         desconto_str = self.txt_desconto_3.text().replace('%', '').strip().replace(',', '.')  # Removendo o símbolo de porcentagem
         desconto = float(desconto_str) if desconto_str and desconto_str != 'Sem desconto' else 0.0
@@ -1706,45 +1698,64 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         else:
             # Apenas cálculo foi feito, mas o produto não será adicionado
                 pass
-
-
         # Retornar os valores calculados para exibição
         return quantidade, valor_desconto, valor_com_desconto
-
-    
+#*********************************************************************************************************************
     def verificar_alteracoes_produto(self, produto_original):
-        # Obtém os valores atuais dos campos de texto
         try:
             valor_produto = float(self.txt_valor_produto_3.text().replace('R$', '').replace('.', '').replace(',', '.').strip())
         except ValueError:
-            valor_produto = 0.0  # Valor padrão ou tratamento para erro
+            valor_produto = 0.0
 
         try:
             desconto_str = self.txt_desconto_3.text().replace('%', '').replace(',', '.').strip()
-            desconto = float(desconto_str) if desconto_str and desconto_str != 'Sem desconto' else 0.0
+            desconto = float(desconto_str) if desconto_str and desconto_str.lower() != 'sem desconto' else 0.0
         except ValueError:
-            desconto = 0.0  # Valor padrão ou tratamento para erro
+            desconto = 0.0
 
         produto_atual = {
-            "produto": self.txt_produto.text(),
+            "produto": self.txt_produto.text().strip(),
             "quantidade": int(self.txt_quantidade.text()) if self.txt_quantidade.text().isdigit() else 0,
-            "valor_produto": valor_produto,
-            "desconto": desconto,
+            "valor_produto": round(valor_produto, 2),
+            "desconto": round(desconto, 2),
             "data_compra": self.dateEdit_3.date().toString("dd/MM/yyyy"),
-            "codigo_item": self.txt_codigo_item.text(),
-            "cliente": self.txt_cliente_3.text(),
-            "descricao_produto": self.txt_descricao_produto_3.text()
+            "codigo_item": self.txt_codigo_item.text().strip(),
+            "cliente": self.txt_cliente_3.text().strip(),
+            "descricao_produto": self.txt_descricao_produto_3.text().strip()
         }
 
-        # Compara o estado atual com o original
-        return produto_atual != produto_original
+        print("Produto Original:", produto_original)
+        print("Produto Atual   :", produto_atual)
 
+        for chave in produto_atual:
+            valor_original = produto_original.get(chave)
+            valor_atual = produto_atual[chave]
+            if valor_original != valor_atual:
+                print(f"[ALTERADO] Campo '{chave}': Original = {valor_original}, Atual = {valor_atual}")
+                return True
 
+        return False
+
+#*********************************************************************************************************************
     def exibir_tabela_produtos(self):
         dialog_atualizacao = AtualizarProduto(self)
         dialog_atualizacao.exec()
 #*********************************************************************************************************************
     def adicionar_produto(self):
+        # Verificar se todos os campos estão preenchidos
+        campos_preenchidos = all([
+            self.txt_produto.text().strip(),
+            self.txt_quantidade.text().strip(),
+            self.txt_valor_produto_3.text().strip(),
+            self.dateEdit_3.date().isValid(),
+            self.txt_cliente_3.text().strip(),
+            self.txt_descricao_produto_3.text().strip()
+        ])
+
+        # Gerar código automaticamente se estiver vazio
+        if campos_preenchidos and (not self.txt_codigo_item.text().strip() or self.txt_codigo_item.text() == "0"):
+            self.txt_codigo_item.setText(self.gerar_codigo_aleatorio())
+
         produto_original = self.produto_selecionado if hasattr(self, 'produto_selecionado') else None
         produto_info = self.subscribe_produto()
 
@@ -1760,7 +1771,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 msg.exec()
                 return
             
-            self.atualizar_valores_frames(quantidade, valor_do_desconto, valor_com_desconto)
+            self.atualizar_valores_frames_na_hora_do_cadastro(quantidade, valor_do_desconto, valor_com_desconto)
 
             # Limpar produto selecionado após a adição
             self.produto_selecionado = None
@@ -1824,7 +1835,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.produtos_pendentes.clear()
 
         # Limpar os campos de entrada
-        self.limpar_campos()
+        self.limpar_campos_produtos()
         
         # Limpar a imagem
         self.label_imagem_produto.clear()
@@ -1959,15 +1970,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 self.imagem_carregada_produto = True
                 return
 #*********************************************************************************************************************
-    def limpar_campos_após_atualizar(self):
-        self.txt_produto.clear()
-        self.txt_quantidade.clear()
-        self.txt_valor_produto_3.clear()
-        self.txt_desconto_3.clear()
-        self.txt_codigo_item.clear()
-        self.txt_cliente_3.clear()
-        self.txt_descricao_produto_3.clear()
-#*********************************************************************************************************************
     def limpar_imagem_produto_após_atualizar(self):
         frame = self.frame_imagem_produto_3
         if frame is not None:
@@ -1989,19 +1991,16 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if not self.is_editing_produto or not self.produto_id:
             QMessageBox.warning(None, "Erro", "Nenhum produto selecionado para atualizar")
             return
-        # Verificar se algum produto foi selecionado na tabela
+
         if not hasattr(self, 'produto_id') or not self.produto_id:
             msgBox = QMessageBox()
             msgBox.setIcon(QMessageBox.Critical)
             msgBox.setText("Não há produto selecionado para seguir.")
             msgBox.setWindowTitle("Aviso")
-            
-            # Adicionar botão "Detalhes"
             detalhes_button = msgBox.addButton("Detalhes", QMessageBox.ActionRole)
             msgBox.addButton(QMessageBox.Ok)
-            
             clicked_button = msgBox.exec()
-            
+
             if clicked_button == QMessageBox.Ok:
                 return
             elif msgBox.clickedButton() == detalhes_button:
@@ -2009,51 +2008,63 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 detalhesMsgBox.setIcon(QMessageBox.Information)
                 detalhesMsgBox.setText("Para usar essa opção deverá ser necessário editar um produto")
                 detalhesMsgBox.setWindowTitle("Detalhes")
-                
                 detalhesMsgBox.exec()
-                
                 return
-        else:
-            # Verificar se a imagem foi alterada
-            produto_imagem = None
-            if hasattr(self, 'nova_imagem') and self.nova_imagem:
-                pixmap = QPixmap(self.nova_imagem)
-                if not pixmap.isNull():
-                    byte_array = QByteArray()
-                    buffer = QBuffer(byte_array)
-                    buffer.open(QIODevice.WriteOnly)
-                    pixmap.save(buffer, "PNG")
-                    produto_imagem = byte_array.toBase64().data().decode()
 
-            # Obter os dados dos campos
-            produto_nome = self.txt_produto.text()
-            produto_quantidade = self.txt_quantidade.text()
-            produto_valor_real = self.txt_valor_produto_3.text()
-            produto_desconto = self.txt_desconto_3.text()
-            produto_data_compra = self.dateEdit_3.date().toString("dd/MM/yyyy")
-            produto_codigo_item = self.txt_codigo_item.text()
-            produto_cliente = self.txt_cliente_3.text()
-            produto_descricao = self.txt_descricao_produto_3.text()
-            produto_id = self.produto_id
+        # Verificar se a imagem foi alterada
+        imagem_alterada = False
+        produto_imagem = None
+        if hasattr(self, 'nova_imagem') and self.nova_imagem:
+            pixmap = QPixmap(self.nova_imagem)
+            if not pixmap.isNull():
+                imagem_alterada = True
+                byte_array = QByteArray()
+                buffer = QBuffer(byte_array)
+                buffer.open(QIODevice.WriteOnly)
+                pixmap.save(buffer, "PNG")
+                produto_imagem = byte_array.toBase64().data().decode()
 
-            # Conectar ao banco de dados
-            db = DataBase()
-            try:
-                db.connecta()
-                # Atualizar o produto no banco de dados
-                db.atualizar_produto(produto_id, produto_nome, produto_quantidade, produto_valor_real,
-                                    produto_desconto, produto_data_compra, 
-                                    produto_codigo_item, produto_cliente, produto_descricao, produto_imagem)
-                msgBox2 = QMessageBox(QMessageBox.Information, "Sucesso", "Produto atualizado com sucesso!")
-                msgBox2.exec()
-                self.limpar_imagem_produto_após_atualizar()
-                self.limpar_campos()
-                self.is_editing_produto = False  # Resetar o estado de edição
-                self.selected_produto_id = None  # Limpar o ID do produto selecionado
-            except Exception as e:
-                QMessageBox.critical(self, "Erro", f"Erro ao atualizar o produto: {str(e)}")
-            finally:
-               pass
+        # Verificar se os campos foram alterados
+        alteracao_campo = False
+        if hasattr(self, 'produto_original'):
+            alteracao_campo = self.verificar_alteracoes_produto(self.produto_original)
+
+        # Se nada foi alterado, exibir mensagem e retornar
+        if not alteracao_campo and not imagem_alterada:
+            QMessageBox.information(None, "Aviso", "Nenhuma alteração foi feita no produto.")
+            return
+
+        # Obter os dados dos campos
+        produto_nome = self.txt_produto.text()
+        produto_quantidade = self.txt_quantidade.text()
+        produto_valor_real = self.txt_valor_produto_3.text()
+        produto_desconto = self.txt_desconto_3.text()
+        produto_data_compra = self.dateEdit_3.date().toString("dd/MM/yyyy")
+        produto_codigo_item = self.txt_codigo_item.text()
+        produto_cliente = self.txt_cliente_3.text()
+        produto_descricao = self.txt_descricao_produto_3.text()
+        produto_id = self.produto_id
+
+        # Conectar ao banco de dados
+        db = DataBase()
+        try:
+            db.connecta()
+            db.atualizar_produto(
+                produto_id, produto_nome, produto_quantidade, produto_valor_real,
+                produto_desconto, produto_data_compra,
+                produto_codigo_item, produto_cliente, produto_descricao, produto_imagem
+            )
+            msgBox2 = QMessageBox(QMessageBox.Information, "Sucesso", "Produto atualizado com sucesso!")
+            msgBox2.exec()
+            self.limpar_imagem_produto_após_atualizar()
+            self.limpar_campos_produtos()
+            self.is_editing_produto = False
+            self.selected_produto_id = None
+            if hasattr(self, 'produto_original'):
+                del self.produto_original
+        except Exception as e:
+            QMessageBox.critical(None, "Erro", f"Erro ao atualizar o produto: {str(e)}")
+
 #*******************************************************************************************************
     def registrar_historico(self, acao, descricao):
         # Verifica se o histórico está pausado
@@ -2241,7 +2252,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         detalhes_msg_detalhes.setText("Os campos obrigatórios precisam estar preenchidos.")
         detalhes_msg_detalhes.exec()
 #*******************************************************************************************************
-    def limpar_campos(self):
+    def limpar_campos_produtos(self):
         self.txt_produto.clear()
         self.txt_quantidade.clear()
         self.txt_valor_produto_3.clear()
@@ -2251,16 +2262,17 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.txt_cliente_3.clear()
         self.txt_descricao_produto_3.clear()
         
-        # Limpar o texto dos QLabel nos frames
-        self.frame_valor_total_produtos.setText("")
-        self.frame_valor_desconto.setText("")
-        self.frame_quantidade.setText("")
-        self.frame_valor_do_desconto.setText("")
+        # Resetar os QLabel dos frames para valores padrão
+        self.label_valor_total_produtos.setText("R$ 0,00")
+        self.label_valor_desconto.setText("R$ 0,00")
+        self.label_quantidade.setText("0")  # Quantidade é um número simples
+        self.label_valor_do_desconto.setText("R$ 0,00")
+
         
         # Limpar o campo dateEdit e configurar para a data atual
         self.dateEdit_3.setDate(QDate.currentDate())
 #*******************************************************************************************************
-    def apagar_campos(self):
+    def apagar_campos_produtos(self):
         # Verificar se algum campo já está preenchido
         if any([
             self.txt_produto.text(),
@@ -2272,7 +2284,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.txt_descricao_produto_3.text()
         ]):
             # Limpar todos os campos das QLineEdit
-            self.limpar_campos()
+            self.limpar_campos_produtos()
 
             # Limpar a imagem
             self.apagar_imagem_produto_btn_apagar_campos()
@@ -2557,6 +2569,95 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         except Exception:
             base_path = os.path.abspath(".")
         return os.path.join(base_path, relative_path)
+    
+    
+    def formatar_tamanho(self,bytes_tamanho):
+        for unidade in ['B', 'KB', 'MB', 'GB']:
+            if bytes_tamanho < 1024:
+                return f"{bytes_tamanho:.2f} {unidade}"
+            bytes_tamanho /= 1024
+        return f"{bytes_tamanho:.2f} TB"
+
+    
+    def limpar_cache_sistema(self):
+        pasta_cache = "imagens_temporarias"
+
+        if not os.path.exists(pasta_cache):
+            QMessageBox.information(self, "Limpeza de Cache", "Nenhum cache encontrado para limpar.")
+            return
+
+        # Calcular tamanho total antes de apagar
+        tamanho_total = 0
+        # Remover arquivos individualmente
+        for root, dirs, files in os.walk(pasta_cache):
+            for file in files:
+                caminho = os.path.join(root, file)
+                try:
+                    os.remove(caminho)
+                except PermissionError:
+                    print(f"Arquivo em uso ou protegido: {caminho}")
+                except Exception as e:
+                    print(f"Erro ao remover {caminho}: {e}")
+
+        tamanho_formatado = self.formatar_tamanho(tamanho_total)
+
+        # Criar progress dialog
+        progresso = QProgressDialog("Limpando cache do sistema...", "Cancelar", 0, 0, self)
+        progresso.setWindowTitle("Limpeza de Cache")
+        progresso.setWindowModality(Qt.ApplicationModal)
+        progresso.show()
+        QApplication.processEvents()  # Atualiza a interface imediatamente
+
+        try:
+            shutil.rmtree(pasta_cache)  # Remove a pasta inteira
+            os.makedirs(pasta_cache)    # Recria a pasta limpa
+        except Exception as e:
+            QMessageBox.critical(self, "Erro", f"Erro ao limpar cache: {str(e)}")
+            progresso.close()
+            return
+
+        progresso.close()
+
+        QMessageBox.information(
+            self,
+            "Limpeza concluída",
+            f"Cache do sistema limpo com sucesso.\nEspaço liberado: {tamanho_formatado}\n\nReinicie o sistema para garantir que tudo funcione corretamente."
+        )
+
+    def mostrar_menu_limpeza(self):
+        msg_box = QMessageBox(self)
+        msg_box.setWindowTitle("Limpar Cache")
+        msg_box.setText("Selecione o que deseja limpar:")
+        msg_box.setIcon(QMessageBox.Question)
+
+        btn_limpar_cache = msg_box.addButton("Cache (imagens temporárias)", QMessageBox.ActionRole)
+        btn_resetar_config = msg_box.addButton("Resetar configurações (config.json)", QMessageBox.ActionRole)
+        btn_cancelar = msg_box.addButton("Cancelar", QMessageBox.RejectRole)
+
+        msg_box.exec()
+
+        if msg_box.clickedButton() == btn_limpar_cache:
+            self.limpar_cache_sistema()
+        elif msg_box.clickedButton() == btn_resetar_config:
+            self.resetar_configuracoes()
+
+    def resetar_configuracoes(self):    
+        config_padrao = {
+            "tema": "claro",
+            "tamanho_janela": [800, 600],
+            "idioma": "pt-BR"
+            # ... outros padrões
+        }
+
+        try:
+            with open("config.json", "w", encoding="utf-8") as f:
+                json.dump(config_padrao, f, indent=4, ensure_ascii=False)
+            QMessageBox.information(self, "Configurações", "As configurações foram redefinidas com sucesso.")
+        except Exception as e:
+            QMessageBox.critical(self, "Erro", f"Erro ao resetar configurações: {str(e)}")
+
+
+
 
 # Função principal
 if __name__ == '__main__':
