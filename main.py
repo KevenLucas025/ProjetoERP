@@ -25,7 +25,7 @@ from pg_configuracoes import Pagina_Configuracoes
 from estoqueprodutos import EstoqueProduto
 from historicousuario import Pagina_Usuarios
 from utils import MostrarSenha,configurar_frame_valores
-from clientes import Clientes
+from clientes_juridicos import Clientes
 import json
 import sqlite3
 import os
@@ -82,6 +82,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.db.create_table_historico()
         self.db.create_table_users_inativos()
         self.db.create_table_historico_usuario()
+        self.db.create_table_clientes_juridicos()
+        self.db.create_table_clientes_fisicos()
 
         # Mapeia os campos com identificadores únicos
         self.campos_com_autocomplete = {
@@ -416,6 +418,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.btn_atualizar_produto.clicked.connect(self.atualizar_produto)
         self.btn_carregar_imagem.clicked.connect(self.carregar_imagem_produto)
         self.btn_opcoes_navegacao.clicked.connect(self.abrir_menu_opcoes)
+        
+        
 
         self.txt_cep.editingFinished.connect(self.on_cep_editing_finished)
 
@@ -2404,9 +2408,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         return False
 
 
-    
-
-
     def exibir_planilhas_exemplo(self):
         opcoes = ["Planilha de Exemplo 1", "Planilha de Exemplo 2"]
         escolha, ok = QInputDialog.getItem(
@@ -2656,7 +2657,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         except Exception as e:
             QMessageBox.critical(self, "Erro", f"Erro ao resetar configurações: {str(e)}")
 
-
+    
 
 
 # Função principal

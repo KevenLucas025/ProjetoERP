@@ -20,6 +20,7 @@ import webbrowser
 import sqlite3
 import time
 from datetime import datetime
+import subprocess
 
 
 class Login(QMainWindow, Ui_Mainwindow_Login):  
@@ -35,7 +36,8 @@ class Login(QMainWindow, Ui_Mainwindow_Login):
 
         self.setWindowTitle("Login do Sistema")
         self.btn_login.clicked.connect(self.checkLogin)
-        
+        self.btn_opcoes_extras.clicked.connect(reiniciar_sistema_tela_login)
+
         # Conexão do link "Primeiro Acesso"
         self.label_primeiro_acesso.linkActivated.connect(self.abrir_janela_primeiro_acesso)
         
@@ -47,7 +49,8 @@ class Login(QMainWindow, Ui_Mainwindow_Login):
 
         self.label_trocar_senha.linkActivated.connect(self.exibir_janela_trocar_senha)
 
-        
+    
+
     def abrir_janela_primeiro_acesso(self):
         # Criar e abrir a janela de cadastro
         cadastro_dialog = PrimeiroAcesso(self)
@@ -488,4 +491,24 @@ class PrimeiroAcesso(QMainWindow):
         
     def esconder_label_acesso(self):
         pass
-    
+
+def reiniciar_sistema_tela_login():
+        msg_box = QMessageBox()
+        msg_box.setWindowTitle("Reiniciar Sistema")
+        msg_box.setText("Tem certeza que deseja reiniciar o sistema? ")
+        msg_box.setIcon(QMessageBox.Question)
+
+        botao_sim = msg_box.addButton("Sim",QMessageBox.YesRole)
+        botao_nao = msg_box.addButton("Não",QMessageBox.NoRole)
+        msg_box.setDefaultButton(botao_nao) # Define "Não" como o botão padrão
+
+        msg_box.exec()
+
+        if msg_box.clickedButton() == botao_sim:
+            python = sys.executable
+            script = os.path.abspath(sys.argv[0])
+            # Fecha o app atual
+            QApplication.quit()
+            # Reinicia com subprocess (mais robusto para caminhos com espaço)
+            subprocess.Popen([python, script] + sys.argv[1:])
+            sys.exit()

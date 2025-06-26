@@ -867,6 +867,10 @@ class TabelaUsuario(QMainWindow):
             # Salvao o DataFrame como um arquivo Excel
             df.to_excel(caminho_arquivo,index=False,engine="openpyxl",sheet_name=nome_pagina)
 
+        if not caminho_arquivo:
+            print("Operação cancelada pelo usuário")
+            return
+
         # Abrir a planilha para formatação
         openn = load_workbook(caminho_arquivo)
         sheet = openn[nome_pagina]

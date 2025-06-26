@@ -224,6 +224,66 @@ class DataBase:
         except Exception as e:
             print("Erro ao criar tabela de historico_usuarios: ", e)
 #*********************************************************************************************************************
+    def create_table_clientes_juridicos(self):
+        try:
+            if self.tabela_existe("clientes_juridicos"):
+                print("A tabela 'clientes_juridicos' já está criada")
+                return
+            cursor = self.connection.cursor()
+            cursor.execute("""
+                CREATE TABLE IF NOT EXISTS clientes_juridicos(
+                    ID INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+                    "Nome do Cliente" TEXT,
+                    "Data da Inclusão" TEXT,
+                    CNPJ TEXT,
+                    Telefone TEXT,
+                    Endereço TEXT,
+                    Número TEXT,
+                    Cidade TEXT,
+                    Bairro TEXT,
+                    "Status do Cliente" TEXT,
+                    "Categoria do Cliente" TEXT,
+                    "Última Atualização" TEXT,
+                    "Origem do Cliente" TEXT,
+                    "Valor Gasto Total" TEXT,
+                    "Última Compra" TEXT  
+                    )
+                """)
+            self.connection.commit()
+            print("Tabela de clientes jurídicos criada com sucesso! ")
+        except Exception as e:
+            print("Erro ao criar tabela de clientes_juridicos: ", e)
+#*********************************************************************************************************************
+    def create_table_clientes_fisicos(self):
+        try:
+            if self.tabela_existe("clientes_fisicos"):
+                print("A tabela 'clientes_fisicos' já está criada")
+                return
+            cursor = self.connection.cursor()
+            cursor.execute("""
+                CREATE TABLE IF NOT EXISTS clientes_fisicos(
+                    ID INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+                    "Nome do Cliente" TEXT,
+                    "Data da Inclusão" TEXT,
+                    CPF TEXT,
+                    Telefone TEXT,
+                    Endereço TEXT,
+                    Número TEXT,
+                    Cidade TEXT,
+                    Bairro TEXT,
+                    "Status do Cliente" TEXT,
+                    "Categoria do Cliente" TEXT,
+                    "Última Atualização" TEXT,
+                    "Origem do Cliente" TEXT,
+                    "Valor Gasto Total" TEXT,
+                    "Última Compra" TEXT  
+                    )
+                """)
+            self.connection.commit()
+            print("Tabela de clientes fisícos criada com sucesso! ")
+        except Exception as e:
+            print("Erro ao criar tabela de clientes_fisicos: ", e)
+#*********************************************************************************************************************
     def insert_product(self, produto, quantidade, valor_real, desconto, data_compra, 
                     codigo_item, cliente, descricao_produto, usuario, imagem=None):
         try:

@@ -37,10 +37,6 @@ class Ui_Mainwindow_Login(object):
         self.centralwidget.setSizePolicy(sizePolicy)
         self.gridLayout = QGridLayout(self.centralwidget)
         self.gridLayout.setObjectName(u"gridLayout")
-        self.horizontalSpacer_2 = QSpacerItem(183, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
-
-        self.gridLayout.addItem(self.horizontalSpacer_2, 1, 0, 1, 1)
-
         self.btn_opcoes_extras = QPushButton(self.centralwidget)
         self.btn_opcoes_extras.setObjectName(u"btn_opcoes_extras")
         sizePolicy.setHeightForWidth(self.btn_opcoes_extras.sizePolicy().hasHeightForWidth())
@@ -66,6 +62,10 @@ class Ui_Mainwindow_Login(object):
         self.horizontalSpacer_4 = QSpacerItem(218, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
 
         self.gridLayout.addItem(self.horizontalSpacer_4, 3, 3, 1, 2)
+
+        self.horizontalSpacer_2 = QSpacerItem(183, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+
+        self.gridLayout.addItem(self.horizontalSpacer_2, 1, 0, 1, 1)
 
         self.horizontalSpacer_3 = QSpacerItem(189, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
 
@@ -142,6 +142,7 @@ class Ui_Mainwindow_Login(object):
         sizePolicy.setHeightForWidth(self.btn_login.sizePolicy().hasHeightForWidth())
         self.btn_login.setSizePolicy(sizePolicy)
         self.btn_login.setMaximumSize(QSize(16777215, 35))
+        self.btn_login.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.btn_login.setStyleSheet(u"QPushButton {\n"
 "    color: rgb(255, 255, 255);\n"
 "    border-radius: 14px;\n"
@@ -190,6 +191,9 @@ class Ui_Mainwindow_Login(object):
 
     def retranslateUi(self, Mainwindow_Login):
         Mainwindow_Login.setWindowTitle(QCoreApplication.translate("Mainwindow_Login", u"MainWindow", None))
+#if QT_CONFIG(tooltip)
+        self.btn_opcoes_extras.setToolTip(QCoreApplication.translate("Mainwindow_Login", u"Reiniciar sistema", None))
+#endif // QT_CONFIG(tooltip)
         self.btn_opcoes_extras.setText("")
         self.txt_usuario.setPlaceholderText(QCoreApplication.translate("Mainwindow_Login", u"Usu\u00e1rio,email ou CPF", None))
         self.txt_senha.setPlaceholderText(QCoreApplication.translate("Mainwindow_Login", u"Senha", None))

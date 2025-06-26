@@ -5926,7 +5926,7 @@ QPushButton:hover {
              </property>
              <widget class="QWidget" name="tab_clientes">
               <attribute name="title">
-               <string>Base de Clientes</string>
+               <string>Base de Clientes Juridícos</string>
               </attribute>
               <layout class="QGridLayout" name="gridLayout_22">
                <item row="0" column="0">
@@ -6264,7 +6264,7 @@ QPushButton:hover {
                 </widget>
                </item>
                <item row="1" column="0" colspan="2">
-                <widget class="QTableWidget" name="table_clientes">
+                <widget class="QTableWidget" name="table_clientes_juridicos">
                  <property name="styleSheet">
                   <string notr="true">/* Estiliza apenas o QTableView com objectName &quot;table_ativos&quot; */
 QTableView {
@@ -6360,6 +6360,499 @@ QTableWidget::item:selected {
                  </column>
                  <column>
                   <property name="text">
+                   <string>Telefone</string>
+                  </property>
+                 </column>
+                 <column>
+                  <property name="text">
+                   <string>CEP</string>
+                  </property>
+                 </column>
+                 <column>
+                  <property name="text">
+                   <string>Endereço</string>
+                  </property>
+                 </column>
+                 <column>
+                  <property name="text">
+                   <string>Número</string>
+                  </property>
+                 </column>
+                 <column>
+                  <property name="text">
+                   <string>Cidade</string>
+                  </property>
+                 </column>
+                 <column>
+                  <property name="text">
+                   <string>Bairro</string>
+                  </property>
+                 </column>
+                 <column>
+                  <property name="text">
+                   <string>Status do Cliente</string>
+                  </property>
+                 </column>
+                 <column>
+                  <property name="text">
+                   <string>Categoria do Cliente</string>
+                  </property>
+                 </column>
+                 <column>
+                  <property name="text">
+                   <string>Última Atualização</string>
+                  </property>
+                 </column>
+                 <column>
+                  <property name="text">
+                   <string>Origem do Cliente</string>
+                  </property>
+                 </column>
+                 <column>
+                  <property name="text">
+                   <string>Valor Gasto Total</string>
+                  </property>
+                 </column>
+                 <column>
+                  <property name="text">
+                   <string>Última Compra</string>
+                  </property>
+                 </column>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+             <widget class="QWidget" name="tab_3">
+              <attribute name="title">
+               <string>Base de Clientes Físicos</string>
+              </attribute>
+              <layout class="QGridLayout" name="gridLayout_28">
+               <item row="0" column="0">
+                <widget class="QLineEdit" name="line_clientes_fisicos">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="maximumSize">
+                  <size>
+                   <width>260</width>
+                   <height>30</height>
+                  </size>
+                 </property>
+                 <property name="styleSheet">
+                  <string notr="true">QLineEdit {
+	color: black;
+    background-color: rgb(240, 240, 240); /* Cor de fundo cinza claro */
+    border: 2px solid rgb(50, 150,250); /* Borda azul */
+    border-radius: 6px; /* Cantos arredondados */
+    padding: 3px; /* Espaçamento interno */
+}
+
+QLineEdit::placeholderText {
+    color: black; /* Cor do texto do placeholder */
+}
+</string>
+                 </property>
+                 <property name="placeholderText">
+                  <string>Pesquisar</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="1">
+                <widget class="QFrame" name="frame_12">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="maximumSize">
+                  <size>
+                   <width>16777215</width>
+                   <height>50</height>
+                  </size>
+                 </property>
+                 <property name="frameShape">
+                  <enum>QFrame::Box</enum>
+                 </property>
+                 <property name="frameShadow">
+                  <enum>QFrame::Raised</enum>
+                 </property>
+                 <layout class="QVBoxLayout" name="verticalLayout_23">
+                  <item>
+                   <layout class="QHBoxLayout" name="horizontalLayout_29">
+                    <item>
+                     <widget class="QPushButton" name="btn_editar_clientes_fisicos">
+                      <property name="sizePolicy">
+                       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                        <horstretch>0</horstretch>
+                        <verstretch>0</verstretch>
+                       </sizepolicy>
+                      </property>
+                      <property name="maximumSize">
+                       <size>
+                        <width>145</width>
+                        <height>30</height>
+                       </size>
+                      </property>
+                      <property name="cursor">
+                       <cursorShape>PointingHandCursor</cursorShape>
+                      </property>
+                      <property name="autoFillBackground">
+                       <bool>false</bool>
+                      </property>
+                      <property name="styleSheet">
+                       <string notr="true">QPushButton {
+    color: rgb(255, 255, 255);
+    border-radius: 8px;
+    font-size: 16px;
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */
+    border: 4px solid transparent;
+}
+
+QPushButton:hover {
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */
+    color: black;
+}</string>
+                      </property>
+                      <property name="text">
+                       <string>Editar</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QPushButton" name="btn_excluir_clientes_fisicos">
+                      <property name="sizePolicy">
+                       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                        <horstretch>0</horstretch>
+                        <verstretch>0</verstretch>
+                       </sizepolicy>
+                      </property>
+                      <property name="maximumSize">
+                       <size>
+                        <width>145</width>
+                        <height>30</height>
+                       </size>
+                      </property>
+                      <property name="cursor">
+                       <cursorShape>PointingHandCursor</cursorShape>
+                      </property>
+                      <property name="autoFillBackground">
+                       <bool>false</bool>
+                      </property>
+                      <property name="styleSheet">
+                       <string notr="true">QPushButton {
+    color: rgb(255, 255, 255);
+    border-radius: 8px;
+    font-size: 16px;
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */
+    border: 4px solid transparent;
+}
+
+QPushButton:hover {
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */
+    color: black;
+}</string>
+                      </property>
+                      <property name="text">
+                       <string>Excluir</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QPushButton" name="btn_visualizar_clientes_fisicos">
+                      <property name="sizePolicy">
+                       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                        <horstretch>0</horstretch>
+                        <verstretch>0</verstretch>
+                       </sizepolicy>
+                      </property>
+                      <property name="maximumSize">
+                       <size>
+                        <width>145</width>
+                        <height>27</height>
+                       </size>
+                      </property>
+                      <property name="cursor">
+                       <cursorShape>PointingHandCursor</cursorShape>
+                      </property>
+                      <property name="autoFillBackground">
+                       <bool>false</bool>
+                      </property>
+                      <property name="styleSheet">
+                       <string notr="true">QPushButton {
+    color: rgb(255, 255, 255);
+    border-radius: 8px;
+    font-size: 16px;
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */
+    border: 4px solid transparent;
+}
+
+QPushButton:hover {
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */
+    color: black;
+}</string>
+                      </property>
+                      <property name="text">
+                       <string>Visualizar Detalhes</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QPushButton" name="btn_enviaremail_clientes_fisicos">
+                      <property name="sizePolicy">
+                       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                        <horstretch>0</horstretch>
+                        <verstretch>0</verstretch>
+                       </sizepolicy>
+                      </property>
+                      <property name="maximumSize">
+                       <size>
+                        <width>145</width>
+                        <height>27</height>
+                       </size>
+                      </property>
+                      <property name="cursor">
+                       <cursorShape>PointingHandCursor</cursorShape>
+                      </property>
+                      <property name="autoFillBackground">
+                       <bool>false</bool>
+                      </property>
+                      <property name="styleSheet">
+                       <string notr="true">QPushButton {
+    color: rgb(255, 255, 255);
+    border-radius: 8px;
+    font-size: 16px;
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */
+    border: 4px solid transparent;
+}
+
+QPushButton:hover {
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */
+    color: black;
+}</string>
+                      </property>
+                      <property name="text">
+                       <string>Enviar E-mail</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QPushButton" name="btn_gerar_relatorio_clientes_fisicos">
+                      <property name="sizePolicy">
+                       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                        <horstretch>0</horstretch>
+                        <verstretch>0</verstretch>
+                       </sizepolicy>
+                      </property>
+                      <property name="maximumSize">
+                       <size>
+                        <width>145</width>
+                        <height>27</height>
+                       </size>
+                      </property>
+                      <property name="cursor">
+                       <cursorShape>PointingHandCursor</cursorShape>
+                      </property>
+                      <property name="autoFillBackground">
+                       <bool>false</bool>
+                      </property>
+                      <property name="styleSheet">
+                       <string notr="true">QPushButton {
+    color: rgb(255, 255, 255);
+    border-radius: 8px;
+    font-size: 16px;
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */
+    border: 4px solid transparent;
+}
+
+QPushButton:hover {
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */
+    color: black;
+}</string>
+                      </property>
+                      <property name="text">
+                       <string>Gerar Relatório</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QPushButton" name="btn_marcar_como_clientes_fisicos">
+                      <property name="sizePolicy">
+                       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                        <horstretch>0</horstretch>
+                        <verstretch>0</verstretch>
+                       </sizepolicy>
+                      </property>
+                      <property name="maximumSize">
+                       <size>
+                        <width>145</width>
+                        <height>27</height>
+                       </size>
+                      </property>
+                      <property name="cursor">
+                       <cursorShape>PointingHandCursor</cursorShape>
+                      </property>
+                      <property name="autoFillBackground">
+                       <bool>false</bool>
+                      </property>
+                      <property name="styleSheet">
+                       <string notr="true">QPushButton {
+    color: rgb(255, 255, 255);
+    border-radius: 8px;
+    font-size: 16px;
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */
+    border: 4px solid transparent;
+}
+
+QPushButton:hover {
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */
+    color: black;
+}</string>
+                      </property>
+                      <property name="text">
+                       <string>Marcar como</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QPushButton" name="btn_historico_clientes_fisicos">
+                      <property name="sizePolicy">
+                       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                        <horstretch>0</horstretch>
+                        <verstretch>0</verstretch>
+                       </sizepolicy>
+                      </property>
+                      <property name="maximumSize">
+                       <size>
+                        <width>145</width>
+                        <height>27</height>
+                       </size>
+                      </property>
+                      <property name="cursor">
+                       <cursorShape>PointingHandCursor</cursorShape>
+                      </property>
+                      <property name="autoFillBackground">
+                       <bool>false</bool>
+                      </property>
+                      <property name="styleSheet">
+                       <string notr="true">QPushButton {
+    color: rgb(255, 255, 255);
+    border-radius: 8px;
+    font-size: 16px;
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */
+    border: 4px solid transparent;
+}
+
+QPushButton:hover {
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */
+    color: black;
+}</string>
+                      </property>
+                      <property name="text">
+                       <string>Histórico</string>
+                      </property>
+                     </widget>
+                    </item>
+                   </layout>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+               <item row="1" column="0" colspan="2">
+                <widget class="QTableWidget" name="table_clientes_fisicos">
+                 <property name="styleSheet">
+                  <string notr="true">/* Estiliza apenas o QTableView com objectName &quot;table_ativos&quot; */
+QTableView {
+    gridline-color: black;
+    border: 2px solid white;
+    color: black;
+    selection-color: white;
+}
+
+/* Estiliza a barra de rolagem horizontal */
+QTableView QScrollBar:horizontal {
+    border: none;
+    background-color: rgb(255, 255, 255);
+    height: 15px;
+    margin: 0px 10px 0px 10px;
+}
+
+/* Estiliza a barra de rolagem vertical */
+QTableView QScrollBar:vertical {
+    border: none;
+    background-color: rgb(255, 255, 255); /* branco */
+    width: 35px;
+    margin: 0px 10px 0px 10px;
+}
+
+/* Parte que você arrasta */
+QTableView QScrollBar::handle:vertical {
+    background-color: rgb(180, 180,150);  /* cinza */
+    min-height: 30px;
+	border-radius: 5px;
+}
+
+QTableView QScrollBar::handle:horizontal{
+	background-color: rgb(180,180,150);
+	min-height: 30px;
+	border-radius: 5px;
+}
+
+/* Remove os botões */
+QTableView QScrollBar::add-line:vertical,
+QTableView QScrollBar::sub-line:vertical {
+    height: 0px;
+    width: 0px;
+    border: none;
+    background: none;
+}
+
+QTableView QScrollBar::groove:horizontal{
+	background-color: rgb(100,240,240);
+	border-radius: 2px;
+	height: 15px;
+	margin: 0px 10px 0px 10px;
+}
+
+/* Estilo para item selecionado */
+QTableWidget::item:selected {
+    background-color: rgb(0, 120, 215);
+    color: white;
+}</string>
+                 </property>
+                 <property name="frameShape">
+                  <enum>QFrame::Box</enum>
+                 </property>
+                 <property name="editTriggers">
+                  <set>QAbstractItemView::NoEditTriggers</set>
+                 </property>
+                 <property name="gridStyle">
+                  <enum>Qt::SolidLine</enum>
+                 </property>
+                 <property name="cornerButtonEnabled">
+                  <bool>false</bool>
+                 </property>
+                 <attribute name="horizontalHeaderDefaultSectionSize">
+                  <number>118</number>
+                 </attribute>
+                 <attribute name="verticalHeaderVisible">
+                  <bool>false</bool>
+                 </attribute>
+                 <column>
+                  <property name="text">
+                   <string>Nome do Cliente</string>
+                  </property>
+                 </column>
+                 <column>
+                  <property name="text">
+                   <string>Data da Inclusão</string>
+                  </property>
+                 </column>
+                 <column>
+                  <property name="text">
                    <string>CPF</string>
                   </property>
                  </column>
@@ -6370,7 +6863,27 @@ QTableWidget::item:selected {
                  </column>
                  <column>
                   <property name="text">
+                   <string>CEP</string>
+                  </property>
+                 </column>
+                 <column>
+                  <property name="text">
                    <string>Endereço</string>
+                  </property>
+                 </column>
+                 <column>
+                  <property name="text">
+                   <string>Número</string>
+                  </property>
+                 </column>
+                 <column>
+                  <property name="text">
+                   <string>Cidade</string>
+                  </property>
+                 </column>
+                 <column>
+                  <property name="text">
+                   <string>Bairro</string>
                   </property>
                  </column>
                  <column>
