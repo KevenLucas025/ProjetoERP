@@ -237,6 +237,7 @@ class DataBase:
                     "Data da Inclusão" TEXT,
                     CNPJ TEXT,
                     Telefone TEXT,
+                    CEP TEXT,
                     Endereço TEXT,
                     Número TEXT,
                     Cidade TEXT,
@@ -903,6 +904,57 @@ class DataBase:
             WHERE id = ?
         """, (id_usuario,))
         return cursor.fetchone()
+    
+    def upsert_cliente_juridico(self, nome_cliente, cnpj, telefone, cep, endereco, numero, cidade, bairro,
+                            data_inclusao, categoria, origem, valor_compra, data_ultima_compra):
+        cursor = self.connection.cursor()
+
+        # Verifica se já existe
+        cursor.execute("SELECT * FROM clientes_juridicos WHERE CNPJ = ?", (cnpj,))
+        existente = cursor.fetchone()
+
+        if existente:
+            cursor.execute("""
+                UPDATE clientes_juridicos
+                SET "Nome do Cliente" = ?, Telefone = ?, CEP = ?, Endereço = ?, Número = ?, Cidade = ?, Bairro = ?,
+                    "Última Atualização" = ?, "Categoria do Cliente" = ?, "Origem do Cliente" = ?,
+                    "Valor Gasto Total" = "Valor Gasto Total" + ?, "Última Compra" = ?
+                WHERE CNPJ = ?
+            """, (nome_cliente, telefone, cep, endereco, numero, cidade, bairro,
+                datetime.now().strftime("%d/%m/%Y"), categoria, origem, valor_compra, data_ultima_compra, cnpj))
+        else:
+            cursor.execute("""
+                INSERT INTO table_clientes_juridicos (
+                    "Nome do Cliente", "Data da Inclusão", CNPJ, Telefone, CEP, Endereço, Número,
+                    Cidade, Bairro, "Status do Cliente", "Categoria do Cliente", "Última Atualização",
+                    "Origem do Cliente", "Valor Gasto Total", "Última Compra"
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """, (
+                nome_cliente, data_inclusao, cnpj, telefone, cep, endereco, numero, cidade, bairro,
+                "Ativo", categoria, datetime.now().strftime("%d/%m/%Y"),
+                origem, valor_compra, data_ultima_compra
+            ))
+
+        self.connection.commit()
+
+    def get_dados_cliente_por_nome(self, nome_cliente):
+        cursor = self.connection.cursor()
+        cursor.execute("""
+            SELECT CNPJ, Telefone, CEP, Endereço, Número,CEP, Cidade, Bairro
+            FROM users WHERE Nome = ?
+        """, (nome_cliente,))
+        return cursor.fetchone()
+    
+    def obter_clientes_juridicos(self):
+        cursor = self.connection.cursor()
+        cursor.execute("""
+            SELECT "Nome do Cliente", "Data da Inclusão", CNPJ, Telefone, CEP, Endereço, Número,
+                Cidade, Bairro, "Status do Cliente", "Categoria do Cliente", "Última Atualização",
+                "Origem do Cliente", "Valor Gasto Total", "Última Compra"
+            FROM clientes_juridicos
+        """)
+        return cursor.fetchall()
+
 
 
 if __name__ == "__main__":

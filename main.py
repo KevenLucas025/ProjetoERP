@@ -116,7 +116,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.table_ativos.verticalHeader().setVisible(True)
         self.table_saida.horizontalHeader().setVisible(True)
         self.table_inativos.verticalHeader().setVisible(True)
-        self.table_clientes.verticalHeader().setVisible(True)
         self.table_base.setShowGrid(True)
         self.table_saida.setShowGrid(True)
         self.table_ativos.setShowGrid(True)
@@ -168,7 +167,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.is_editing_produto = False
         self.selected_produto_id = None
 
-        self.pagina_clientes = Clientes(self.line_clientes)
+        self.pagina_clientes = Clientes(self.line_clientes,self)
 
         # Crie o layout para o frame_imagem_cadastro e adicione o QLabel
         self.label_imagem_usuario = QLabel(self)
@@ -602,10 +601,20 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             for col, data in enumerate(usuario):
                 self.table_inativos.setItem(row_position, col,self.criar_item(str(data)))
 
+        # Carregar dados da table_clientes_juridicos
+        clientes = self.db.obter_clientes_juridicos()
+        for cliente in clientes:
+            row_position = self.table_clientes_juridicos.rowCount()
+            self.table_clientes_juridicos.insertRow(row_position)
+            for col, data in enumerate(cliente):
+                self.table_clientes_juridicos.setItem(row_position, col,self.criar_item(str(data)))
+
         self.table_inativos.resizeColumnsToContents()
         self.table_inativos.resizeRowsToContents()
         self.table_massa_produtos.resizeColumnsToContents()
         self.table_massa_produtos.resizeRowsToContents()
+        self.table_clientes_juridicos.resizeColumnsToContents()
+        self.table_clientes_juridicos.resizeRowsToContents()
      
     
     
@@ -1609,6 +1618,27 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             )
         except Exception as e:
             QMessageBox.critical(self, "Erro", f"Erro ao cadastrar produto: {str(e)}")
+
+        # Buscar dados do cliente pelo nome (do campo cliente)
+        dados_cliente = db.get_dados_cliente_por_nome(produto_info["cliente"])
+
+        if dados_cliente:
+            cnpj,telefone,cep,endereco,numero,cidade,bairro = dados_cliente
+
+            # Aqui você pode pegar a categoria e origem dos campos novos no cadastro de produto
+            categoria = produto_info.get("categoria", "Não informado")
+            origem = produto_info.get("origem", "Nacional")  # ou "Internacional"
+
+            db.upsert_cliente_juridico(
+                nome_cliente=produto_info["cliente"],
+                data_inclusao=produto_info["data_compra"],
+                categoria=categoria,
+                origem=origem,
+                valor_compra=float(produto_info["valor_produto"].replace("R$", "").replace(",", ".")),
+                data_ultima_compra=produto_info["data_compra"]
+            )
+        else:
+            print("Cliente não encontrado no banco de produtos.")
 
         if registrar_historico:
             # Registrar no histórico após a inserção do produto

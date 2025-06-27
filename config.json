@@ -132,19 +132,23 @@
             "6KTO7HD9Q4FV",
             "Y81OXYEVBC8F",
             "12",
-            "0"
+            "0",
+            "sdsd"
         ],
         "txt_descricao_produto_3": [
             "Notebook com 16GB RAM, SSD",
             "12",
-            "Frutas"
+            "Frutas",
+            "Alimentos"
         ],
         "txt_quantidade": [
             "10",
             "12",
             "11",
             "13",
-            "14"
+            "14",
+            "1",
+            "2"
         ],
         "txt_valor_produto_3": [
             "12",
@@ -155,11 +159,14 @@
         ],
         "txt_produto": [
             "!Produtos",
-            "Produto"
+            "Produto",
+            "Pizza"
         ],
         "txt_cliente_3": [
             "12",
-            "Jorge"
+            "Jorge",
+            "João da Silva",
+            "MAX NOOSE"
         ]
     }
 }

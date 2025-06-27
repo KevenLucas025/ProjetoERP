@@ -5914,6 +5914,9 @@ QPushButton:hover {
           <layout class="QGridLayout" name="gridLayout_18">
            <item row="0" column="0">
             <widget class="QTabWidget" name="tab_clientes_todos">
+             <property name="cursor">
+              <cursorShape>ArrowCursor</cursorShape>
+             </property>
              <property name="styleSheet">
               <string notr="true">QTabBar::tab:selected {
     background-color: white;
@@ -5922,7 +5925,7 @@ QPushButton:hover {
 </string>
              </property>
              <property name="currentIndex">
-              <number>0</number>
+              <number>1</number>
              </property>
              <widget class="QWidget" name="tab_clientes">
               <attribute name="title">

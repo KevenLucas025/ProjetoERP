@@ -3376,6 +3376,7 @@ class Ui_MainWindow(object):
         self.gridLayout_18.setObjectName(u"gridLayout_18")
         self.tab_clientes_todos = QTabWidget(self.frame_pg_clientes)
         self.tab_clientes_todos.setObjectName(u"tab_clientes_todos")
+        self.tab_clientes_todos.setCursor(QCursor(Qt.CursorShape.ArrowCursor))
         self.tab_clientes_todos.setStyleSheet(u"QTabBar::tab:selected {\n"
 "    background-color: white;\n"
 "    color: black;\n"
@@ -4742,7 +4743,7 @@ class Ui_MainWindow(object):
         self.retranslateUi(MainWindow)
 
         self.tb_base.setCurrentIndex(0)
-        self.tab_clientes_todos.setCurrentIndex(0)
+        self.tab_clientes_todos.setCurrentIndex(1)
 
 
         QMetaObject.connectSlotsByName(MainWindow)
