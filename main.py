@@ -167,7 +167,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.is_editing_produto = False
         self.selected_produto_id = None
 
-        self.pagina_clientes = Clientes(self.line_clientes,self)
+        self.pagina_clientes = Clientes(self.line_clientes,self,self.btn_adicionar_cliente_juridico,self.btn_editar_clientes,
+                                        self.btn_excluir_clientes,self.btn_visualizar_clientes,self.btn_enviaremail_clientes,
+                                        self.btn_gerar_relatorio_clientes,self.btn_marcar_como_clientes,self.btn_historico_clientes)
 
         # Crie o layout para o frame_imagem_cadastro e adicione o QLabel
         self.label_imagem_usuario = QLabel(self)
@@ -1183,7 +1185,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 QMessageBox.warning(None, "Erro", "E-mail inválido.")
                 return
             
-            
 
             # Verificar se usuário já existe
             campo_duplicado = db.user_exists(usuario,telefone,email,rg,cpf,cnpj)
@@ -1230,6 +1231,18 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
             self.registrar_historico_usuarios("Cadastro de Usuários", f"Usuário {usuario} cadastrado com sucesso.")
             QMessageBox.information(None, "Cadastro de Usuário", "Cadastro realizado com sucesso.")
+
+            '''db.update_dados_cliente_juridico_endereco(
+                nome_cliente=nome,
+                cnpj=cnpj,
+                telefone=telefone,
+                cep=cep,
+                endereco=endereco,
+                numero=numero,
+                cidade=cidade,
+                bairro=bairro
+            )'''
+
 
             # Limpar campos após cadastro
             self.txt_nome.clear()
@@ -1620,34 +1633,23 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             QMessageBox.critical(self, "Erro", f"Erro ao cadastrar produto: {str(e)}")
 
         # Buscar dados do cliente pelo nome (do campo cliente)
-        dados_cliente = db.get_dados_cliente_por_nome(produto_info["cliente"])
+        '''db.upsert_cliente_juridico(
+            nome_cliente=produto_info["cliente"],
+            data_inclusao=produto_info["data_compra"],
+            status="Ativo",
+            categoria=produto_info["descricao_produto"],
+            ultima_atualizacao=datetime.now().strftime("%d/%m/%Y"),
+            origem="Nacional",
+            valor_gasto=produto_info["valor_produto_formatado"],
+            ultima_compra=produto_info["data_compra"]
+        )'''
 
-        if dados_cliente:
-            cnpj,telefone,cep,endereco,numero,cidade,bairro = dados_cliente
-
-            # Aqui você pode pegar a categoria e origem dos campos novos no cadastro de produto
-            categoria = produto_info.get("categoria", "Não informado")
-            origem = produto_info.get("origem", "Nacional")  # ou "Internacional"
-
-            db.upsert_cliente_juridico(
-                nome_cliente=produto_info["cliente"],
-                data_inclusao=produto_info["data_compra"],
-                categoria=categoria,
-                origem=origem,
-                valor_compra=float(produto_info["valor_produto"].replace("R$", "").replace(",", ".")),
-                data_ultima_compra=produto_info["data_compra"]
-            )
-        else:
-            print("Cliente não encontrado no banco de produtos.")
 
         if registrar_historico:
             # Registrar no histórico após a inserção do produto
             descricao = f"Produto {produto_info['produto']} foi cadastrado com quantidade {produto_info['quantidade']} e valor {valor_real_formatado}."
             self.registrar_historico("Cadastro de Produto", descricao)
-#*********************************************************************************************************************
-    def get_usuario_logado(self):
-        # Obtenha o usuário logado das configurações
-        return self.config.obter_usuario_logado()
+
 #*********************************************************************************************************************
     def subscribe_produto(self): 
         # Verificar se todos os campos obrigatórios estão preenchidos
@@ -1714,11 +1716,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         valor_desconto = valor_total * desconto
         valor_com_desconto = valor_total - valor_desconto
 
+        # Formatando o valor para padrão nacional
+        valor_formatado = f"R$ {valor_produto:,.2f}".replace('.', '#').replace(',', '.').replace('#', ',')
+
         # Adicionar os dados do produto aos produtos pendentes
         produto_info = {
             "produto": self.txt_produto.text(),
             "quantidade": quantidade,
-            "valor_produto": valor_produto,
+            "valor_produto": valor_formatado,
+            #"valor_produto_formatado": valor_formatado,  # usado no upsert_cliente_juridico
             "desconto": desconto,
             "data_compra": self.dateEdit_3.date().toString("dd/MM/yyyy"),
             "codigo_item": self.txt_codigo_item.text(),
@@ -1734,6 +1740,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 pass
         # Retornar os valores calculados para exibição
         return quantidade, valor_desconto, valor_com_desconto
+#*********************************************************************************************************************
+    def get_usuario_logado(self):
+        # Obtenha o usuário logado das configurações
+        return self.config.obter_usuario_logado()
 #*********************************************************************************************************************
     def verificar_alteracoes_produto(self, produto_original):
         try:

@@ -3417,6 +3417,26 @@ class Ui_MainWindow(object):
         self.verticalLayout_21.setObjectName(u"verticalLayout_21")
         self.horizontalLayout_25 = QHBoxLayout()
         self.horizontalLayout_25.setObjectName(u"horizontalLayout_25")
+        self.btn_adicionar_cliente_juridico = QPushButton(self.frame_7)
+        self.btn_adicionar_cliente_juridico.setObjectName(u"btn_adicionar_cliente_juridico")
+        sizePolicy.setHeightForWidth(self.btn_adicionar_cliente_juridico.sizePolicy().hasHeightForWidth())
+        self.btn_adicionar_cliente_juridico.setSizePolicy(sizePolicy)
+        self.btn_adicionar_cliente_juridico.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
+        self.btn_adicionar_cliente_juridico.setStyleSheet(u"QPushButton {\n"
+"    color: rgb(255, 255, 255);\n"
+"    border-radius: 8px;\n"
+"    font-size: 16px;\n"
+"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */\n"
+"    border: 4px solid transparent;\n"
+"}\n"
+"\n"
+"QPushButton:hover {\n"
+"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */\n"
+"    color: black;\n"
+"}")
+
+        self.horizontalLayout_25.addWidget(self.btn_adicionar_cliente_juridico)
+
         self.btn_editar_clientes = QPushButton(self.frame_7)
         self.btn_editar_clientes.setObjectName(u"btn_editar_clientes")
         sizePolicy.setHeightForWidth(self.btn_editar_clientes.sizePolicy().hasHeightForWidth())
@@ -3715,6 +3735,26 @@ class Ui_MainWindow(object):
         self.verticalLayout_23.setObjectName(u"verticalLayout_23")
         self.horizontalLayout_29 = QHBoxLayout()
         self.horizontalLayout_29.setObjectName(u"horizontalLayout_29")
+        self.btn_adicionar_cliente_fisico = QPushButton(self.frame_12)
+        self.btn_adicionar_cliente_fisico.setObjectName(u"btn_adicionar_cliente_fisico")
+        sizePolicy.setHeightForWidth(self.btn_adicionar_cliente_fisico.sizePolicy().hasHeightForWidth())
+        self.btn_adicionar_cliente_fisico.setSizePolicy(sizePolicy)
+        self.btn_adicionar_cliente_fisico.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
+        self.btn_adicionar_cliente_fisico.setStyleSheet(u"QPushButton {\n"
+"    color: rgb(255, 255, 255);\n"
+"    border-radius: 8px;\n"
+"    font-size: 16px;\n"
+"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */\n"
+"    border: 4px solid transparent;\n"
+"}\n"
+"\n"
+"QPushButton:hover {\n"
+"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */\n"
+"    color: black;\n"
+"}")
+
+        self.horizontalLayout_29.addWidget(self.btn_adicionar_cliente_fisico)
+
         self.btn_editar_clientes_fisicos = QPushButton(self.frame_12)
         self.btn_editar_clientes_fisicos.setObjectName(u"btn_editar_clientes_fisicos")
         sizePolicy.setHeightForWidth(self.btn_editar_clientes_fisicos.sizePolicy().hasHeightForWidth())
@@ -4743,7 +4783,7 @@ class Ui_MainWindow(object):
         self.retranslateUi(MainWindow)
 
         self.tb_base.setCurrentIndex(0)
-        self.tab_clientes_todos.setCurrentIndex(1)
+        self.tab_clientes_todos.setCurrentIndex(0)
 
 
         QMetaObject.connectSlotsByName(MainWindow)
@@ -5011,6 +5051,7 @@ class Ui_MainWindow(object):
         self.btn_fazer_cadastro.setText(QCoreApplication.translate("MainWindow", u"FAZER CADASTRO", None))
         self.btn_ver_usuario.setText(QCoreApplication.translate("MainWindow", u"VER USU\u00c1RIO", None))
         self.line_clientes.setPlaceholderText(QCoreApplication.translate("MainWindow", u"Pesquisar", None))
+        self.btn_adicionar_cliente_juridico.setText(QCoreApplication.translate("MainWindow", u"Criar cliente", None))
         self.btn_editar_clientes.setText(QCoreApplication.translate("MainWindow", u"Editar", None))
         self.btn_excluir_clientes.setText(QCoreApplication.translate("MainWindow", u"Excluir", None))
         self.btn_visualizar_clientes.setText(QCoreApplication.translate("MainWindow", u"Visualizar Detalhes", None))
@@ -5050,6 +5091,7 @@ class Ui_MainWindow(object):
         ___qtablewidgetitem80.setText(QCoreApplication.translate("MainWindow", u"\u00daltima Compra", None));
         self.tab_clientes_todos.setTabText(self.tab_clientes_todos.indexOf(self.tab_clientes), QCoreApplication.translate("MainWindow", u"Base de Clientes Jurid\u00edcos", None))
         self.line_clientes_fisicos.setPlaceholderText(QCoreApplication.translate("MainWindow", u"Pesquisar", None))
+        self.btn_adicionar_cliente_fisico.setText(QCoreApplication.translate("MainWindow", u"Criar cliente", None))
         self.btn_editar_clientes_fisicos.setText(QCoreApplication.translate("MainWindow", u"Editar", None))
         self.btn_excluir_clientes_fisicos.setText(QCoreApplication.translate("MainWindow", u"Excluir", None))
         self.btn_visualizar_clientes_fisicos.setText(QCoreApplication.translate("MainWindow", u"Visualizar Detalhes", None))

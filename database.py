@@ -905,37 +905,68 @@ class DataBase:
         """, (id_usuario,))
         return cursor.fetchone()
     
-    def upsert_cliente_juridico(self, nome_cliente, cnpj, telefone, cep, endereco, numero, cidade, bairro,
-                            data_inclusao, categoria, origem, valor_compra, data_ultima_compra):
+    def upsert_cliente_juridico(self, nome_cliente, data_inclusao, status, categoria, ultima_atualizacao, 
+                                origem, valor_gasto, ultima_compra):
         cursor = self.connection.cursor()
 
-        # Verifica se já existe
-        cursor.execute("SELECT * FROM clientes_juridicos WHERE CNPJ = ?", (cnpj,))
+        cursor.execute("SELECT * FROM clientes_juridicos WHERE \"Nome do Cliente\" = ?", (nome_cliente,))
         existente = cursor.fetchone()
 
         if existente:
             cursor.execute("""
                 UPDATE clientes_juridicos
-                SET "Nome do Cliente" = ?, Telefone = ?, CEP = ?, Endereço = ?, Número = ?, Cidade = ?, Bairro = ?,
-                    "Última Atualização" = ?, "Categoria do Cliente" = ?, "Origem do Cliente" = ?,
-                    "Valor Gasto Total" = "Valor Gasto Total" + ?, "Última Compra" = ?
-                WHERE CNPJ = ?
-            """, (nome_cliente, telefone, cep, endereco, numero, cidade, bairro,
-                datetime.now().strftime("%d/%m/%Y"), categoria, origem, valor_compra, data_ultima_compra, cnpj))
+                SET "Última Atualização" = ?, "Categoria do Cliente" = ?, 
+                    "Origem do Cliente" = ?, "Valor Gasto Total" = "Valor Gasto Total" + ?, 
+                    "Última Compra" = ?, "Status do Cliente" = ?
+                WHERE "Nome do Cliente" = ?
+            """, (
+                ultima_atualizacao, categoria, origem, valor_gasto, ultima_compra, status, nome_cliente
+            ))
         else:
             cursor.execute("""
-                INSERT INTO table_clientes_juridicos (
+                INSERT INTO clientes_juridicos (
+                    "Nome do Cliente", "Data da Inclusão", "Status do Cliente", 
+                    "Categoria do Cliente", "Última Atualização", 
+                    "Origem do Cliente", "Valor Gasto Total", "Última Compra"
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            """, (
+                nome_cliente, data_inclusao, status, categoria, ultima_atualizacao,
+                origem, valor_gasto, ultima_compra
+            ))
+
+        self.connection.commit()
+
+
+    def update_dados_cliente_juridico_endereco(self, nome_cliente, cnpj, telefone, cep, endereco, numero, cidade, bairro):
+        cursor = self.connection.cursor()
+
+        cursor.execute("SELECT * FROM clientes_juridicos WHERE \"Nome do Cliente\" = ?", (nome_cliente,))
+        existente = cursor.fetchone()
+
+        if existente:
+            # Atualiza os dados
+            cursor.execute("""
+                UPDATE clientes_juridicos
+                SET CNPJ = ?, Telefone = ?, CEP = ?, Endereço = ?, Número = ?, Cidade = ?, Bairro = ?
+                WHERE "Nome do Cliente" = ?
+            """, (cnpj, telefone, cep, endereco, numero, cidade, bairro, nome_cliente))
+        else:
+            # Cria um novo cliente com os dados básicos
+            cursor.execute("""
+                INSERT INTO clientes_juridicos (
                     "Nome do Cliente", "Data da Inclusão", CNPJ, Telefone, CEP, Endereço, Número,
                     Cidade, Bairro, "Status do Cliente", "Categoria do Cliente", "Última Atualização",
                     "Origem do Cliente", "Valor Gasto Total", "Última Compra"
                 ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """, (
-                nome_cliente, data_inclusao, cnpj, telefone, cep, endereco, numero, cidade, bairro,
-                "Ativo", categoria, datetime.now().strftime("%d/%m/%Y"),
-                origem, valor_compra, data_ultima_compra
+                nome_cliente, datetime.now().strftime("%d/%m/%Y"), cnpj, telefone, cep, endereco, numero,
+                cidade, bairro, "Ativo", "Não informado", datetime.now().strftime("%d/%m/%Y"),
+                "Nacional", 0.0, "Não informado"
             ))
 
         self.connection.commit()
+
+
 
     def get_dados_cliente_por_nome(self, nome_cliente):
         cursor = self.connection.cursor()

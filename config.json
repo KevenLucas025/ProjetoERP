@@ -10,7 +10,9 @@
             "Lucas"
         ],
         "txt_usuario": [
-            "Keven"
+            "Keven",
+            "dshds",
+            "sadsad"
         ],
         "txt_senha": [
             "123",
@@ -41,7 +43,8 @@
         "txt_complemento": [
             "Bloco A AP 31",
             "lï¿½lï¿½l",
-            "CASA"
+            "CASA",
+            "B"
         ],
         "txt_telefone": [
             "(19) 98201-8869",
@@ -54,7 +57,10 @@
             "(32) 43243-2423",
             "(53) 24534-5345",
             "(34) 53453-4534",
-            "(19) 98201-8527"
+            "(19) 98201-8527",
+            "(19) 98201-5465",
+            "(19) 98201-8",
+            "(19) 98201-8343"
         ],
         "txt_email": [
             "keven.lucas00@hotmail.com",
@@ -66,7 +72,9 @@
             "keven.lucas00@hsdsd.com",
             "keven.lucas00@hoasddl.com",
             "keven.lucas00@hosdl.com",
-            "keven.lucas00@gfgf.com"
+            "keven.lucas00@gfgf.com",
+            "keven.lucas00@hsdd.com",
+            "keven.lucas00@hosdss.com"
         ],
         "txt_data_nascimento": [
             "26/01/2000",
@@ -83,7 +91,9 @@
             "24.234.234-2",
             "dasdasd",
             "23.423.423-2",
-            "45.654.645-6"
+            "45.654.645-6",
+            "55.461.984-6",
+            "45.345.345-3"
         ],
         "txt_cpf": [
             "506.796.778-10",
@@ -94,7 +104,9 @@
             "524.163.958-66",
             "234.234.234-23",
             "423.423.423-42",
-            "456.546.546-45"
+            "456.546.546-45",
+            "161.631.613-64",
+            "342.343.232-43"
         ],
         "txt_cnpj": [
             "11.111.111/1111-11",
@@ -109,7 +121,9 @@
             "12.312.312/3123-12",
             "32.423.423/4234-23",
             "24.234.234/2342-34",
-            "45.645.645/6456-45"
+            "45.645.645/6456-45",
+            "52.415.238/1741-65",
+            "23.432.432/4324-32"
         ],
         "txt_endereco": [
             "Rua Josï¿½ Vieira da Silva",
@@ -133,13 +147,17 @@
             "Y81OXYEVBC8F",
             "12",
             "0",
-            "sdsd"
+            "sdsd",
+            "kaska",
+            "dsj"
         ],
         "txt_descricao_produto_3": [
             "Notebook com 16GB RAM, SSD",
             "12",
             "Frutas",
-            "Alimentos"
+            "Alimentos",
+            "Diamamte",
+            "Diamante"
         ],
         "txt_quantidade": [
             "10",
@@ -160,13 +178,16 @@
         "txt_produto": [
             "!Produtos",
             "Produto",
-            "Pizza"
+            "Pizza",
+            "Joias"
         ],
         "txt_cliente_3": [
             "12",
             "Jorge",
             "João da Silva",
-            "MAX NOOSE"
+            "MAX NOOSE",
+            "Keven",
+            "K"
         ]
     }
 }
