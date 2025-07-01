@@ -1001,27 +1001,81 @@ QPushButton:hover {
                  </property>
                  <property name="styleSheet">
                   <string notr="true">/* Estiliza apenas o QTableView com objectName &quot;table_ativos&quot; */
+<<<<<<< HEAD
 QTableView{
+=======
+QTableView {
+>>>>>>> 9206acf (ATUALIZAÇÕES)
     gridline-color: black;
     border: 2px solid white;
     color: black;
     selection-color: white;
 }
 
+<<<<<<< HEAD
 
 /* Estiliza a barra de rolagem horizontal da &quot;table_ativos&quot; */
+=======
+/* Estiliza a barra de rolagem horizontal */
+>>>>>>> 9206acf (ATUALIZAÇÕES)
 QTableView QScrollBar:horizontal {
     border: none;
     background-color: rgb(255, 255, 255);
     height: 15px;
     margin: 0px 10px 0px 10px;
 }
+<<<<<<< HEAD
 QTableWidget::item:selected {
     background-color: rgb(0, 120, 215); /* azul personalizado */
     color: white; /* texto branco */
 }
 
 </string>
+=======
+
+/* Estiliza a barra de rolagem vertical */
+QTableView QScrollBar:vertical {
+    border: none;
+    background-color: rgb(255, 255, 255); /* branco */
+    width: 35px;
+    margin: 0px 10px 0px 10px;
+}
+
+/* Parte que você arrasta */
+QTableView QScrollBar::handle:vertical {
+    background-color: rgb(180, 180,150);  /* cinza */
+    min-height: 30px;
+	border-radius: 5px;
+}
+
+QTableView QScrollBar::handle:horizontal{
+	background-color: rgb(180,180,150);
+	min-height: 30px;
+	border-radius: 5px;
+}
+
+/* Remove os botões */
+QTableView QScrollBar::add-line:vertical,
+QTableView QScrollBar::sub-line:vertical {
+    height: 0px;
+    width: 0px;
+    border: none;
+    background: none;
+}
+
+QTableView QScrollBar::groove:horizontal{
+	background-color: rgb(100,240,240);
+	border-radius: 2px;
+	height: 15px;
+	margin: 0px 10px 0px 10px;
+}
+
+/* Estilo para item selecionado */
+QTableWidget::item:selected {
+    background-color: rgb(0, 120, 215);
+    color: white;
+}</string>
+>>>>>>> 9206acf (ATUALIZAÇÕES)
                  </property>
                  <property name="editTriggers">
                   <set>QAbstractItemView::NoEditTriggers</set>
@@ -1149,27 +1203,81 @@ QTableWidget::item:selected {
                 <widget class="QTableWidget" name="table_saida">
                  <property name="styleSheet">
                   <string notr="true">/* Estiliza apenas o QTableView com objectName &quot;table_ativos&quot; */
+<<<<<<< HEAD
 QTableView{
+=======
+QTableView {
+>>>>>>> 9206acf (ATUALIZAÇÕES)
     gridline-color: black;
     border: 2px solid white;
     color: black;
     selection-color: white;
 }
 
+<<<<<<< HEAD
 
 /* Estiliza a barra de rolagem horizontal da &quot;table_ativos&quot; */
+=======
+/* Estiliza a barra de rolagem horizontal */
+>>>>>>> 9206acf (ATUALIZAÇÕES)
 QTableView QScrollBar:horizontal {
     border: none;
     background-color: rgb(255, 255, 255);
     height: 15px;
     margin: 0px 10px 0px 10px;
 }
+<<<<<<< HEAD
 QTableWidget::item:selected {
     background-color: rgb(0, 120, 215); /* azul personalizado */
     color: white; /* texto branco */
 }
 
 </string>
+=======
+
+/* Estiliza a barra de rolagem vertical */
+QTableView QScrollBar:vertical {
+    border: none;
+    background-color: rgb(255, 255, 255); /* branco */
+    width: 35px;
+    margin: 0px 10px 0px 10px;
+}
+
+/* Parte que você arrasta */
+QTableView QScrollBar::handle:vertical {
+    background-color: rgb(180, 180,150);  /* cinza */
+    min-height: 30px;
+	border-radius: 5px;
+}
+
+QTableView QScrollBar::handle:horizontal{
+	background-color: rgb(180,180,150);
+	min-height: 30px;
+	border-radius: 5px;
+}
+
+/* Remove os botões */
+QTableView QScrollBar::add-line:vertical,
+QTableView QScrollBar::sub-line:vertical {
+    height: 0px;
+    width: 0px;
+    border: none;
+    background: none;
+}
+
+QTableView QScrollBar::groove:horizontal{
+	background-color: rgb(100,240,240);
+	border-radius: 2px;
+	height: 15px;
+	margin: 0px 10px 0px 10px;
+}
+
+/* Estilo para item selecionado */
+QTableWidget::item:selected {
+    background-color: rgb(0, 120, 215);
+    color: white;
+}</string>
+>>>>>>> 9206acf (ATUALIZAÇÕES)
                  </property>
                  <property name="frameShadow">
                   <enum>QFrame::Sunken</enum>
@@ -1419,6 +1527,22 @@ QPushButton:hover {
            <enum>QFrame::Raised</enum>
           </property>
           <layout class="QGridLayout" name="gridLayout_21">
+<<<<<<< HEAD
+=======
+           <item row="3" column="5">
+            <spacer name="horizontalSpacer_12">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>8</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+>>>>>>> 9206acf (ATUALIZAÇÕES)
            <item row="0" column="6" rowspan="5">
             <widget class="QFrame" name="frame_5">
              <property name="sizePolicy">
@@ -1446,6 +1570,45 @@ QPushButton:hover {
               <enum>QFrame::Raised</enum>
              </property>
              <layout class="QGridLayout" name="gridLayout_9">
+<<<<<<< HEAD
+=======
+              <item row="1" column="0">
+               <widget class="QPushButton" name="btn_atualizar_ativos">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>185</width>
+                  <height>30</height>
+                 </size>
+                </property>
+                <property name="cursor">
+                 <cursorShape>PointingHandCursor</cursorShape>
+                </property>
+                <property name="styleSheet">
+                 <string notr="true">QPushButton {
+    color: rgb(255, 255, 255);
+    border-radius: 8px;
+    font-size: 16px;
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */
+    border: 4px solid transparent;
+}
+
+QPushButton:hover {
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */
+    color: black;
+}</string>
+                </property>
+                <property name="text">
+                 <string>Atualizar Ativos</string>
+                </property>
+               </widget>
+              </item>
+>>>>>>> 9206acf (ATUALIZAÇÕES)
               <item row="0" column="0">
                <widget class="QPushButton" name="btn_cadastrar_novo_usuario">
                 <property name="sizePolicy">
@@ -1488,6 +1651,7 @@ QPushButton:hover {
                 </property>
                </widget>
               </item>
+<<<<<<< HEAD
               <item row="1" column="0">
                <widget class="QPushButton" name="btn_atualizar_ativos">
                 <property name="sizePolicy">
@@ -1633,6 +1797,9 @@ QPushButton:hover {
                </widget>
               </item>
               <item row="5" column="0">
+=======
+              <item row="4" column="0">
+>>>>>>> 9206acf (ATUALIZAÇÕES)
                <widget class="QPushButton" name="btn_limpar_tabelas_usuarios">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
@@ -1668,9 +1835,261 @@ QPushButton:hover {
                 </property>
                </widget>
               </item>
+<<<<<<< HEAD
              </layout>
             </widget>
            </item>
+=======
+              <item row="3" column="0">
+               <widget class="QPushButton" name="btn_atualizar_inativos">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>185</width>
+                  <height>30</height>
+                 </size>
+                </property>
+                <property name="cursor">
+                 <cursorShape>PointingHandCursor</cursorShape>
+                </property>
+                <property name="styleSheet">
+                 <string notr="true">QPushButton {
+    color: rgb(255, 255, 255);
+    border-radius: 8px;
+    font-size: 16px;
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */
+    border: 4px solid transparent;
+}
+
+QPushButton:hover {
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */
+    color: black;
+}</string>
+                </property>
+                <property name="text">
+                 <string>Atualizar Inativos</string>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="0">
+               <widget class="QPushButton" name="btn_historico_usuarios">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>185</width>
+                  <height>30</height>
+                 </size>
+                </property>
+                <property name="cursor">
+                 <cursorShape>PointingHandCursor</cursorShape>
+                </property>
+                <property name="styleSheet">
+                 <string notr="true">QPushButton {
+    color: rgb(255, 255, 255);
+    border-radius: 8px;
+    font-size: 16px;
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */
+    border: 4px solid transparent;
+}
+
+QPushButton:hover {
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */
+    color: black;
+}</string>
+                </property>
+                <property name="text">
+                 <string>Histórico</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item row="3" column="0">
+            <widget class="QFrame" name="frame_4">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>16777215</width>
+               <height>60</height>
+              </size>
+             </property>
+             <property name="frameShape">
+              <enum>QFrame::NoFrame</enum>
+             </property>
+             <property name="frameShadow">
+              <enum>QFrame::Raised</enum>
+             </property>
+             <layout class="QHBoxLayout" name="horizontalLayout_24">
+              <item>
+               <widget class="QLabel" name="label_inativos">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>0</width>
+                  <height>0</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>143</width>
+                  <height>40</height>
+                 </size>
+                </property>
+                <property name="whatsThis">
+                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:18pt; font-weight:600; font-style:italic;&quot;&gt;ESTOQUE&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                </property>
+                <property name="styleSheet">
+                 <string notr="true">QLabel {
+    color: white;
+    text-align: center; /* Centraliza o texto horizontalmente */
+    vertical-align: middle; /* Centraliza o texto verticalmente */
+	border: 3px solid white;
+}
+</string>
+                </property>
+                <property name="text">
+                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:18pt; font-weight:600; font-style:italic;&quot;&gt;INATIVOS&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                </property>
+                <property name="scaledContents">
+                 <bool>false</bool>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item row="3" column="1">
+            <spacer name="horizontalSpacer_10">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>128</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+           <item row="3" column="4">
+            <widget class="QPushButton" name="btn_gerar_saida_usuarios">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="minimumSize">
+              <size>
+               <width>140</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>16777215</width>
+               <height>30</height>
+              </size>
+             </property>
+             <property name="cursor">
+              <cursorShape>PointingHandCursor</cursorShape>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">QPushButton {
+    color: rgb(255, 255, 255);
+    border-radius: 8px;
+    font-size: 16px;
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */
+    border: 4px solid transparent;
+}
+
+QPushButton:hover {
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */
+    color: black;
+}</string>
+             </property>
+             <property name="text">
+              <string>Gerar Saída</string>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="2">
+            <widget class="QPushButton" name="btn_importar_usuarios">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="minimumSize">
+              <size>
+               <width>140</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>16777215</width>
+               <height>30</height>
+              </size>
+             </property>
+             <property name="cursor">
+              <cursorShape>PointingHandCursor</cursorShape>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">QPushButton {
+    color: rgb(255, 255, 255);
+    border-radius: 8px;
+    font-size: 16px;
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */
+    border: 4px solid transparent;
+}
+
+QPushButton:hover {
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */
+    color: black;
+}</string>
+             </property>
+             <property name="text">
+              <string>Importar</string>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="3">
+            <spacer name="horizontalSpacer_11">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>155</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+>>>>>>> 9206acf (ATUALIZAÇÕES)
            <item row="1" column="0">
             <widget class="QLabel" name="label_ativos">
              <property name="sizePolicy">
@@ -1690,15 +2109,26 @@ QPushButton:hover {
              </property>
              <property name="styleSheet">
               <string notr="true">QLabel {
+<<<<<<< HEAD
     color: black;
     text-align: center; /* Centraliza o texto horizontalmente */
     vertical-align: middle; /* Centraliza o texto verticalmente */
 	border: 3px solid black;
+=======
+    color: white;
+    text-align: center; /* Centraliza o texto horizontalmente */
+    vertical-align: middle; /* Centraliza o texto verticalmente */
+	border: 3px solid white;
+>>>>>>> 9206acf (ATUALIZAÇÕES)
 }
 </string>
              </property>
              <property name="text">
+<<<<<<< HEAD
               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:18pt; font-weight:600; font-style:italic;&quot;&gt;ATIVOS&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+=======
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:18pt; font-weight:600; font-style:italic;&quot;&gt;ATIVOS&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+>>>>>>> 9206acf (ATUALIZAÇÕES)
              </property>
             </widget>
            </item>
@@ -1791,6 +2221,214 @@ QProgressBar::chunk {
              </item>
             </layout>
            </item>
+<<<<<<< HEAD
+=======
+           <item row="4" column="0" colspan="6">
+            <widget class="QTableWidget" name="table_inativos">
+             <property name="styleSheet">
+              <string notr="true">/* Estiliza apenas o QTableView com objectName &quot;table_ativos&quot; */
+QTableView {
+    gridline-color: black;
+    border: 2px solid white;
+    color: black;
+    selection-color: white;
+}
+
+/* Estiliza a barra de rolagem horizontal */
+QTableView QScrollBar:horizontal {
+    border: none;
+    background-color: rgb(255, 255, 255);
+    height: 15px;
+    margin: 0px 10px 0px 10px;
+}
+
+/* Estiliza a barra de rolagem vertical */
+QTableView QScrollBar:vertical {
+    border: none;
+    background-color: rgb(255, 255, 255); /* branco */
+    width: 35px;
+    margin: 0px 10px 0px 10px;
+}
+
+/* Parte que você arrasta */
+QTableView QScrollBar::handle:vertical {
+    background-color: rgb(180, 180,150);  /* cinza */
+    min-height: 30px;
+	border-radius: 5px;
+}
+
+QTableView QScrollBar::handle:horizontal{
+	background-color: rgb(180,180,150);
+	min-height: 30px;
+	border-radius: 5px;
+}
+
+/* Remove os botões */
+QTableView QScrollBar::add-line:vertical,
+QTableView QScrollBar::sub-line:vertical {
+    height: 0px;
+    width: 0px;
+    border: none;
+    background: none;
+}
+
+QTableView QScrollBar::groove:horizontal{
+	background-color: rgb(100,240,240);
+	border-radius: 2px;
+	height: 15px;
+	margin: 0px 10px 0px 10px;
+}
+
+/* Estilo para item selecionado */
+QTableWidget::item:selected {
+    background-color: rgb(0, 120, 215);
+    color: white;
+}</string>
+             </property>
+             <property name="frameShape">
+              <enum>QFrame::NoFrame</enum>
+             </property>
+             <property name="frameShadow">
+              <enum>QFrame::Sunken</enum>
+             </property>
+             <property name="editTriggers">
+              <set>QAbstractItemView::NoEditTriggers</set>
+             </property>
+             <property name="selectionMode">
+              <enum>QAbstractItemView::ExtendedSelection</enum>
+             </property>
+             <property name="selectionBehavior">
+              <enum>QAbstractItemView::SelectRows</enum>
+             </property>
+             <property name="cornerButtonEnabled">
+              <bool>false</bool>
+             </property>
+             <attribute name="verticalHeaderCascadingSectionResizes">
+              <bool>false</bool>
+             </attribute>
+             <column>
+              <property name="text">
+               <string>Nome</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>Usuário</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>Senha</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>Confirmar Senha</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>CEP</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>Endereço</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>Número</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>Cidade</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>Bairro</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>Estado</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>Complemento</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>Telefone</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>E-mail</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>Data de Nascimento</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>RG</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>CPF</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>CNPJ</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>Última Troca de Senha</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>Data da Senha Cadastrada</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>Data da Inclusão do Usuário</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>Data da Inatividade do Usuário</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>Segredo</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>Usuário Logado</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>Acesso</string>
+              </property>
+             </column>
+            </widget>
+           </item>
+>>>>>>> 9206acf (ATUALIZAÇÕES)
            <item row="2" column="0" colspan="6">
             <widget class="QTableWidget" name="table_ativos">
              <property name="minimumSize">
@@ -1807,27 +2445,81 @@ QProgressBar::chunk {
              </property>
              <property name="styleSheet">
               <string notr="true">/* Estiliza apenas o QTableView com objectName &quot;table_ativos&quot; */
+<<<<<<< HEAD
 QTableView{
+=======
+QTableView {
+>>>>>>> 9206acf (ATUALIZAÇÕES)
     gridline-color: black;
     border: 2px solid white;
     color: black;
     selection-color: white;
 }
 
+<<<<<<< HEAD
 
 /* Estiliza a barra de rolagem horizontal da &quot;table_ativos&quot; */
+=======
+/* Estiliza a barra de rolagem horizontal */
+>>>>>>> 9206acf (ATUALIZAÇÕES)
 QTableView QScrollBar:horizontal {
     border: none;
     background-color: rgb(255, 255, 255);
     height: 15px;
     margin: 0px 10px 0px 10px;
 }
+<<<<<<< HEAD
 QTableWidget::item:selected {
     background-color: rgb(0, 120, 215); /* azul personalizado */
     color: white; /* texto branco */
 }
 
 </string>
+=======
+
+/* Estiliza a barra de rolagem vertical */
+QTableView QScrollBar:vertical {
+    border: none;
+    background-color: rgb(255, 255, 255); /* branco */
+    width: 35px;
+    margin: 0px 10px 0px 10px;
+}
+
+/* Parte que você arrasta */
+QTableView QScrollBar::handle:vertical {
+    background-color: rgb(180, 180,150);  /* cinza */
+    min-height: 30px;
+	border-radius: 5px;
+}
+
+QTableView QScrollBar::handle:horizontal{
+	background-color: rgb(180,180,150);
+	min-height: 30px;
+	border-radius: 5px;
+}
+
+/* Remove os botões */
+QTableView QScrollBar::add-line:vertical,
+QTableView QScrollBar::sub-line:vertical {
+    height: 0px;
+    width: 0px;
+    border: none;
+    background: none;
+}
+
+QTableView QScrollBar::groove:horizontal{
+	background-color: rgb(100,240,240);
+	border-radius: 2px;
+	height: 15px;
+	margin: 0px 10px 0px 10px;
+}
+
+/* Estilo para item selecionado */
+QTableWidget::item:selected {
+    background-color: rgb(0, 120, 215);
+    color: white;
+}</string>
+>>>>>>> 9206acf (ATUALIZAÇÕES)
              </property>
              <property name="frameShape">
               <enum>QFrame::NoFrame</enum>
@@ -1982,6 +2674,7 @@ QTableWidget::item:selected {
              </column>
             </widget>
            </item>
+<<<<<<< HEAD
            <item row="3" column="1">
             <spacer name="horizontalSpacer_10">
              <property name="orientation">
@@ -2338,6 +3031,8 @@ QTableWidget::item:selected {
              </column>
             </widget>
            </item>
+=======
+>>>>>>> 9206acf (ATUALIZAÇÕES)
           </layout>
          </widget>
         </item>
@@ -6227,22 +6922,76 @@ QPushButton:hover {
                 <widget class="QTableWidget" name="table_clientes">
                  <property name="styleSheet">
                   <string notr="true">/* Estiliza apenas o QTableView com objectName &quot;table_ativos&quot; */
+<<<<<<< HEAD
 QTableView{
+=======
+QTableView {
+>>>>>>> 9206acf (ATUALIZAÇÕES)
     gridline-color: black;
     border: 2px solid white;
     color: black;
     selection-color: white;
 }
 
+<<<<<<< HEAD
 
 /* Estiliza a barra de rolagem horizontal da &quot;table_ativos&quot; */
+=======
+/* Estiliza a barra de rolagem horizontal */
+>>>>>>> 9206acf (ATUALIZAÇÕES)
 QTableView QScrollBar:horizontal {
     border: none;
     background-color: rgb(255, 255, 255);
     height: 15px;
     margin: 0px 10px 0px 10px;
 }
+<<<<<<< HEAD
 </string>
+=======
+
+/* Estiliza a barra de rolagem vertical */
+QTableView QScrollBar:vertical {
+    border: none;
+    background-color: rgb(255, 255, 255); /* branco */
+    width: 35px;
+    margin: 0px 10px 0px 10px;
+}
+
+/* Parte que você arrasta */
+QTableView QScrollBar::handle:vertical {
+    background-color: rgb(180, 180,150);  /* cinza */
+    min-height: 30px;
+	border-radius: 5px;
+}
+
+QTableView QScrollBar::handle:horizontal{
+	background-color: rgb(180,180,150);
+	min-height: 30px;
+	border-radius: 5px;
+}
+
+/* Remove os botões */
+QTableView QScrollBar::add-line:vertical,
+QTableView QScrollBar::sub-line:vertical {
+    height: 0px;
+    width: 0px;
+    border: none;
+    background: none;
+}
+
+QTableView QScrollBar::groove:horizontal{
+	background-color: rgb(100,240,240);
+	border-radius: 2px;
+	height: 15px;
+	margin: 0px 10px 0px 10px;
+}
+
+/* Estilo para item selecionado */
+QTableWidget::item:selected {
+    background-color: rgb(0, 120, 215);
+    color: white;
+}</string>
+>>>>>>> 9206acf (ATUALIZAÇÕES)
                  </property>
                  <property name="frameShape">
                   <enum>QFrame::Box</enum>
@@ -7088,19 +7837,28 @@ QLineEdit::placeholderText {
              </property>
              <property name="styleSheet">
               <string notr="true">/* Estiliza apenas o QTableView com objectName &quot;table_ativos&quot; */
+<<<<<<< HEAD
 QTableView{
+=======
+QTableView {
+>>>>>>> 9206acf (ATUALIZAÇÕES)
     gridline-color: black;
     border: 2px solid white;
     color: black;
     selection-color: white;
 }
 
+<<<<<<< HEAD
 
 /* Estiliza a barra de rolagem horizontal da &quot;table_ativos&quot; */
+=======
+/* Estiliza a barra de rolagem horizontal */
+>>>>>>> 9206acf (ATUALIZAÇÕES)
 QTableView QScrollBar:horizontal {
     border: none;
     background-color: rgb(255, 255, 255);
     height: 15px;
+<<<<<<< HEAD
     margin: 0px 10px 0px 10px;
 }
 QTableWidget::item:selected {
@@ -7108,6 +7866,44 @@ QTableWidget::item:selected {
     color: white; /* texto branco */
 }
 
+=======
+    margin: 0px 
+}
+
+/* Estiliza a barra de rolagem vertical */
+QTableView QScrollBar:vertical {
+    border: none;
+    background-color: rgb(255, 255, 255); /* branco */
+    width: 20px;
+    margin: 0px 
+}
+
+/* Parte que você arrasta */
+QTableView QScrollBar::handle:vertical {
+    background-color: rgb(180, 180,150);  /* cinza */
+    min-height: 30px;
+}
+
+QTableView QScrollBar::handle:horizontal{
+	background-color: rgb(180,180,150);
+	min-height: 30px;
+}
+
+/* Remove os botões */
+QTableView QScrollBar::add-line:vertical,
+QTableView QScrollBar::sub-line:vertical {
+    height: 0px;
+    width: 0px;
+    border: none;
+    background: none;
+}
+
+/* Estilo para item selecionado */
+QTableWidget::item:selected {
+    background-color: rgb(0, 120, 215);
+    color: white;
+}
+>>>>>>> 9206acf (ATUALIZAÇÕES)
 </string>
              </property>
              <property name="editTriggers">
@@ -7482,27 +8278,81 @@ QPushButton:hover {
              </property>
              <property name="styleSheet">
               <string notr="true">/* Estiliza apenas o QTableView com objectName &quot;table_ativos&quot; */
+<<<<<<< HEAD
 QTableView{
+=======
+QTableView {
+>>>>>>> 9206acf (ATUALIZAÇÕES)
     gridline-color: black;
     border: 2px solid white;
     color: black;
     selection-color: white;
 }
 
+<<<<<<< HEAD
 
 /* Estiliza a barra de rolagem horizontal da &quot;table_ativos&quot; */
+=======
+/* Estiliza a barra de rolagem horizontal */
+>>>>>>> 9206acf (ATUALIZAÇÕES)
 QTableView QScrollBar:horizontal {
     border: none;
     background-color: rgb(255, 255, 255);
     height: 15px;
     margin: 0px 10px 0px 10px;
 }
+<<<<<<< HEAD
 QTableWidget::item:selected {
     background-color: rgb(0, 120, 215); /* azul personalizado */
     color: white; /* texto branco */
 }
 
 </string>
+=======
+
+/* Estiliza a barra de rolagem vertical */
+QTableView QScrollBar:vertical {
+    border: none;
+    background-color: rgb(255, 255, 255); /* branco */
+    width: 35px;
+    margin: 0px 10px 0px 10px;
+}
+
+/* Parte que você arrasta */
+QTableView QScrollBar::handle:vertical {
+    background-color: rgb(180, 180,150);  /* cinza */
+    min-height: 30px;
+	border-radius: 5px;
+}
+
+QTableView QScrollBar::handle:horizontal{
+	background-color: rgb(180,180,150);
+	min-height: 30px;
+	border-radius: 5px;
+}
+
+/* Remove os botões */
+QTableView QScrollBar::add-line:vertical,
+QTableView QScrollBar::sub-line:vertical {
+    height: 0px;
+    width: 0px;
+    border: none;
+    background: none;
+}
+
+QTableView QScrollBar::groove:horizontal{
+	background-color: rgb(100,240,240);
+	border-radius: 2px;
+	height: 15px;
+	margin: 0px 10px 0px 10px;
+}
+
+/* Estilo para item selecionado */
+QTableWidget::item:selected {
+    background-color: rgb(0, 120, 215);
+    color: white;
+}</string>
+>>>>>>> 9206acf (ATUALIZAÇÕES)
              </property>
              <property name="frameShape">
               <enum>QFrame::NoFrame</enum>
@@ -7625,6 +8475,14 @@ QTableWidget::item:selected {
                <string>CNPJ</string>
               </property>
              </column>
+<<<<<<< HEAD
+=======
+             <column>
+              <property name="text">
+               <string>Acesso</string>
+              </property>
+             </column>
+>>>>>>> 9206acf (ATUALIZAÇÕES)
             </widget>
            </item>
           </layout>

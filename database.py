@@ -60,6 +60,7 @@ class DataBase:
                     Usuário TEXT UNIQUE NOT NULL,
                     Senha TEXT NOT NULL,
                     "Confirmar Senha" TEXT NOT NULL,
+<<<<<<< HEAD
                     Acesso TEXT NOT NULL,
                     Endereço TEXT,
                     CEP TEXT,
@@ -892,6 +893,8 @@ class DataBase:
                     Usuário TEXT UNIQUE NOT NULL,
                     Senha TEXT NOT NULL,
                     "Confirmar Senha" TEXT NOT NULL,
+=======
+>>>>>>> 9206acf (ATUALIZAÇÕES)
                     CEP TEXT,
                     Endereço TEXT,
                     Número TEXT,
@@ -929,6 +932,7 @@ class DataBase:
                     Nome TEXT NOT NULL,
                     Usuário TEXT UNIQUE NOT NULL,
                     Senha TEXT NOT NULL,
+<<<<<<< HEAD
                     'Confirmar Senha' TEXT NOT NULL,
                     CEP TEXT NOT NULL,
                     Endereço TEXT NOT NULL,
@@ -944,13 +948,35 @@ class DataBase:
                     CPF TEXT NOT NULL,
                     CNPJ TEXT NOT NULL,
                     Imagem BLOB TEXT NOT NULL,
+=======
+                    'Confirmar Senha' TEXT,
+                    CEP TEXT,
+                    Endereço TEXT,
+                    Número TEXT,
+                    Cidade TEXT,
+                    Bairro TEXT,
+                    Estado TEXT,  
+                    Complemento TEXT,
+                    Telefone TEXT,
+                    Email TEXT,
+                    "Data de Nascimento" TEXT,
+                    RG TEXT,   
+                    CPF TEXT,
+                    CNPJ TEXT,
+                    Imagem BLOB TEXT,
+>>>>>>> 9206acf (ATUALIZAÇÕES)
                     'Última Troca de Senha' TEXT,
                     'Data da Senha Cadastrada' TEXT,
                     'Data da Inclusão do Usuário' TEXT,
                     'Data da Inatividade do Usuário' TEXT,
                     Segredo TEXT,
+<<<<<<< HEAD
                     'Usuário Logado' TEXT NOT NULL,
                     Acesso TEXT NOT NULL
+=======
+                    'Usuário Logado' TEXT,
+                    Acesso TEXT
+>>>>>>> 9206acf (ATUALIZAÇÕES)
                                     
                 )
             """)
@@ -1332,7 +1358,11 @@ class DataBase:
                 complemento, telefone, email, data_nascimento, rg, cpf, cnpj, segredo, usuario_logado, acesso, imagem=None):
         try:
             cursor = self.connection.cursor()
+<<<<<<< HEAD
             data_atual = datetime.now().strftime("%d/%m/%Y")
+=======
+            data_atual = datetime.now().strftime("%d/%m/%Y %H:%M")
+>>>>>>> 9206acf (ATUALIZAÇÕES)
 
             # Função auxiliar para padronizar valores
             def padrao(valor):

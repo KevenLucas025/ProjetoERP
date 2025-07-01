@@ -1,9 +1,17 @@
 {
+<<<<<<< HEAD
     "usuario": "Keven",
     "senha": "123",
     "mantem_conectado": false,
     "nao_mostrar_mensagem_boas_vindas": true,
     "nao_mostrar_aviso_irreversivel": false,
+=======
+    "usuario": "Lucas",
+    "senha": "123",
+    "mantem_conectado": false,
+    "nao_mostrar_mensagem_boas_vindas": true,
+    "nao_mostrar_aviso_irreversivel": true,
+>>>>>>> 9206acf (ATUALIZAÇÕES)
     "historico_autocompletes": {
         "txt_nome": [
             "Keven",
@@ -78,7 +86,11 @@
         ],
         "txt_endereco": [
             "Rua Jos� Vieira da Silva",
+<<<<<<< HEAD
             "Rua Jos� Vieira da Silva"
+=======
+            "Rua Jos� Vieira da Silva"
+>>>>>>> 9206acf (ATUALIZAÇÕES)
         ],
         "txt_numero": [
             "Loteamento Jardim das Est�ncias",
@@ -89,7 +101,12 @@
             "123",
             "356",
             "14",
+<<<<<<< HEAD
             "465"
+=======
+            "235",
+            "3434"
+>>>>>>> 9206acf (ATUALIZAÇÕES)
         ]
     }
 }
