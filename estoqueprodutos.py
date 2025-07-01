@@ -1,11 +1,7 @@
 from PySide6.QtGui import QColor, QBrush,QGuiApplication
 from PySide6.QtWidgets import (QWidget, QTableWidget, QTableWidgetItem, 
                                QMessageBox,QCheckBox,QVBoxLayout,QDialog,QPushButton,QMainWindow,QHBoxLayout,
-<<<<<<< HEAD
                                QLineEdit,QLabel,QInputDialog,QGroupBox,QRadioButton,QFileDialog)
-=======
-                               QLineEdit,QLabel,QInputDialog,QGroupBox,QRadioButton,QFileDialog,QApplication,QHeaderView)
->>>>>>> 9206acf (ATUALIZAÇÕES)
 from PySide6.QtCore import Qt,QTimer,QEvent
 import sqlite3
 import pandas as pd
@@ -19,11 +15,6 @@ from reportlab.pdfgen import canvas
 
 
 
-<<<<<<< HEAD
-=======
-
-
->>>>>>> 9206acf (ATUALIZAÇÕES)
 class EstoqueProduto(QWidget):
     def __init__(self, main_window, btn_gerar_pdf, btn_gerar_estorno, 
                  btn_gerar_saida,btn_importar, btn_limpar_tabela, 
@@ -38,11 +29,7 @@ class EstoqueProduto(QWidget):
 
         self.checkboxes = []  # Lista para armazenar os checkboxes
         self.coluna_checkboxes_adicionada = False
-<<<<<<< HEAD
         self.todos_selecionados = False
-=======
-        self.todos_os_checkboxes = []
->>>>>>> 9206acf (ATUALIZAÇÕES)
 
 
         self.main_window = main_window
@@ -83,11 +70,6 @@ class EstoqueProduto(QWidget):
         self.main_window.table_base.viewport().installEventFilter(self)
         self.main_window.table_saida.viewport().installEventFilter(self)
 
-<<<<<<< HEAD
-=======
-        
-
->>>>>>> 9206acf (ATUALIZAÇÕES)
 
     # Função auxiliar para criar um QTableWidgetItem com texto centralizado
     def criar_item(self, text):
@@ -809,15 +791,6 @@ class EstoqueProduto(QWidget):
         self.janela_historico.setWindowTitle("Histórico de Ações")
         self.janela_historico.resize(800, 650)
 
-<<<<<<< HEAD
-=======
-        def fechar_janela_historico(evento):
-            self.coluna_checkboxes_adicionada = False
-            evento.accept()
-
-        self.janela_historico.closeEvent = fechar_janela_historico # Liga a função fechar janela do histórico
-
->>>>>>> 9206acf (ATUALIZAÇÕES)
         # Centralizar a janela na tela
         screen = QGuiApplication.primaryScreen()
         screen_geometry = screen.availableGeometry()
@@ -865,7 +838,6 @@ class EstoqueProduto(QWidget):
         botao_ordenar_historico = QPushButton("Ordenar Histórico")
         botao_ordenar_historico.clicked.connect(self.ordenar_historico)
 
-<<<<<<< HEAD
         # Criar checkbox "Selecionar Todos" toda vez que a janela for aberta
         self.checkbox_selecionar_todos = QCheckBox("Selecionar todo o histórico")
         self.checkbox_selecionar_todos.stateChanged.connect(self.selecionar_todos)
@@ -878,12 +850,6 @@ class EstoqueProduto(QWidget):
         layout.addWidget(self.checkbox_selecionar_todos)
         layout.addWidget(self.checkbox_selecionar_individual)
     
-=======
-
-        # Criar checkbox "Selecionar Individualmente" toda vez que a janela for aberta
-        self.checkbox_selecionar = QCheckBox("Selecionar")
-        self.checkbox_selecionar.stateChanged.connect(self.selecionar_individual)
->>>>>>> 9206acf (ATUALIZAÇÕES)
 
         # Adicionar outros botões ao layout
         layout.addWidget(botao_atualizar)

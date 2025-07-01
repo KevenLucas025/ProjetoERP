@@ -1,11 +1,7 @@
 from PySide6.QtWidgets import (QWidget,QTableWidget,QMessageBox,
                                QTableWidgetItem,QInputDialog,QLineEdit,QCheckBox,
                                QFileDialog,QMainWindow,QVBoxLayout,QPushButton,QHBoxLayout,
-<<<<<<< HEAD
                                QLabel,QRadioButton,QGroupBox,QDialog)
-=======
-                               QLabel,QRadioButton,QGroupBox,QDialog,QHeaderView)
->>>>>>> 9206acf (ATUALIZAÇÕES)
 from PySide6.QtGui import QBrush,QColor,QGuiApplication
 from PySide6.QtCore import Qt,QEvent,QTimer
 from database import DataBase
@@ -24,11 +20,7 @@ from openpyxl.styles import Alignment, Font
 
 
 class Pagina_Usuarios(QWidget):
-<<<<<<< HEAD
     def __init__(self,main_window,btn_abrir_planilha_usuarios,btn_cadastrar_novo_usuario,btn_gerar_pdf_usuario,
-=======
-    def __init__(self,main_window,btn_abrir_planilha_usuarios,btn_cadastrar_novo_usuario,
->>>>>>> 9206acf (ATUALIZAÇÕES)
                   btn_historico_usuarios,btn_atualizar_ativos,btn_atualizar_inativos,btn_limpar_tabelas_usuarios,
                   btn_gerar_saida_usuarios,line_excel_usuarios,progress_excel_usuarios,
                   btn_importar_usuarios,btn_abrir_planilha_massa_usuarios,btn_fazer_cadastro_massa_usuarios,
@@ -38,11 +30,6 @@ class Pagina_Usuarios(QWidget):
         self.db = DataBase("banco_de_dados.db")
         self.alteracoes_salvas = False
 
-<<<<<<< HEAD
-=======
-        self.config = Configuracoes_Login(self)
-
->>>>>>> 9206acf (ATUALIZAÇÕES)
 
         self.checkboxes = []  # Lista para armazenar os checkboxes
         self.coluna_checkboxes_usuarios_adicionada = False
@@ -56,10 +43,7 @@ class Pagina_Usuarios(QWidget):
         self.table_massa_usuarios = self.main_window.table_massa_usuarios
         self.btn_abrir_planilha_usuarios = btn_abrir_planilha_usuarios
         self.btn_cadastrar_novo_usuario = btn_cadastrar_novo_usuario
-<<<<<<< HEAD
         self.btn_gerar_pdf_usuario = btn_gerar_pdf_usuario
-=======
->>>>>>> 9206acf (ATUALIZAÇÕES)
         self.btn_historico_usuarios = btn_historico_usuarios
         self.btn_atualizar_ativos = btn_atualizar_ativos
         self.btn_atualizar_inativos = btn_atualizar_inativos
@@ -79,10 +63,7 @@ class Pagina_Usuarios(QWidget):
         self.btn_limpar_tabelas_usuarios.clicked.connect(self.limpar_tabelas)
         self.btn_atualizar_ativos.clicked.connect(self.atualizar_ativos)
         self.btn_atualizar_inativos.clicked.connect(self.atualizar_inativos)
-<<<<<<< HEAD
         self.btn_gerar_pdf_usuario.clicked.connect(self.exibir_pdf_usuarios)
-=======
->>>>>>> 9206acf (ATUALIZAÇÕES)
         self.btn_historico_usuarios.clicked.connect(self.exibir_tabela_historico_usuario)
         self.btn_abrir_planilha_usuarios.clicked.connect(self.abrir_planilha_usuarios)
         self.btn_importar_usuarios.clicked.connect(self.importar_usuario)
@@ -132,7 +113,6 @@ class Pagina_Usuarios(QWidget):
                 item = self.formatar_texto(str(data))
                 self.table_ativos.setItem(row_index,col_index,item)
 
-<<<<<<< HEAD
 
     def tabela_inativos(self, usuarios_selecionados):
         # Limpa a tabela de saída antes de preencher com novos dados
@@ -253,13 +233,10 @@ class Pagina_Usuarios(QWidget):
                 self.main_window.table_ativos.setItem(row_index, 21, self.formatar_texto(usuario_logado.text()))
 
         return True
-=======
->>>>>>> 9206acf (ATUALIZAÇÕES)
     
     def gerar_saida_usuarios(self, usuarios_selecionados):
         saida_usuarios = []
         historico_logs = []
-<<<<<<< HEAD
 
         numero_usuarios = len(usuarios_selecionados)
 
@@ -322,100 +299,6 @@ class Pagina_Usuarios(QWidget):
 
         for texto in historico_logs:
             self.main_window.registrar_historico("Gerado Saída de Usuário", texto)
-=======
-        data_atual = datetime.now().strftime("%d/%m/%Y %H:%M")
-        linhas_para_remover = []
-
-        total_usuarios_ativos = self.main_window.table_ativos.rowCount()
-        quantidade_selecionada = len(usuarios_selecionados)
-        
-        if total_usuarios_ativos - quantidade_selecionada <= 1:
-            QMessageBox.critical(None,"Erro","Não é possível gerar saída. O sistema deve ter pelo menos um usuário ativo")
-            return
-
-
-        with self.db.connecta() as conexao:
-            cursor = conexao.cursor()
-
-            for row in usuarios_selecionados:
-                usuario_nome = self.main_window.table_ativos.item(row, 0).text() or ""
-                usuario_usuario = self.main_window.table_ativos.item(row, 1).text() or ""
-                usuario_senha = self.main_window.table_ativos.item(row, 2).text() or ""
-                usuario_confirmar_senha = self.main_window.table_ativos.item(row, 3).text() or ""
-                usuario_cep = self.main_window.table_ativos.item(row, 4).text() or ""
-                usuario_endereco = self.main_window.table_ativos.item(row, 5).text() or ""
-                usuario_numero = self.main_window.table_ativos.item(row, 6).text() or ""
-                usuario_cidade = self.main_window.table_ativos.item(row, 7).text() or ""
-                usuario_bairro = self.main_window.table_ativos.item(row, 8).text() or ""
-                usuario_estado = self.main_window.table_ativos.item(row, 9).text() or ""
-                usuario_complemento = self.main_window.table_ativos.item(row, 10).text() or ""
-                usuario_telefone = self.main_window.table_ativos.item(row, 11).text() or ""
-                usuario_email = self.main_window.table_ativos.item(row, 12).text() or ""
-                usuario_data_nascimento = self.main_window.table_ativos.item(row, 13).text() or ""
-                usuario_rg = self.main_window.table_ativos.item(row, 14).text() or ""
-                usuario_cpf = self.main_window.table_ativos.item(row, 15).text() or ""
-                usuario_cnpj = self.main_window.table_ativos.item(row, 16).text() or ""
-                usuario_ultima_troca_senha = self.main_window.table_ativos.item(row, 17).text() or ""
-                usuario_data_senha_cadastrada = self.main_window.table_ativos.item(row, 18).text() or ""
-                usuario_data_inclusao_usuario = self.main_window.table_ativos.item(row, 19).text() or ""
-                usuario_segredo = self.main_window.table_ativos.item(row, 20).text() or ""
-                usuario_logado = self.main_window.table_ativos.item(row, 21).text() or ""
-                usuario_acesso = self.main_window.table_ativos.item(row, 22).text() or ""
-
-                
-
-                # Recupera a imagem somente para o banco de dados
-                imagem_usuario = self.recuperar_imagem_usuario_bd_users(usuario_usuario)
-
-                # Dados completos com imagem - para o banco
-                dados_para_banco = (
-                    usuario_nome, usuario_usuario, usuario_senha, usuario_confirmar_senha,
-                    usuario_cep, usuario_endereco, usuario_numero, usuario_cidade, usuario_bairro,
-                    usuario_estado, usuario_complemento, usuario_telefone, usuario_email,
-                    usuario_data_nascimento, usuario_rg, usuario_cpf, usuario_cnpj, imagem_usuario,
-                    usuario_ultima_troca_senha, usuario_data_senha_cadastrada, usuario_data_inclusao_usuario,
-                    data_atual,  # Data da Inatividade
-                    usuario_segredo, usuario_logado, usuario_acesso
-                )
-
-                # Dados sem imagem - para exibir na tabela
-                dados_para_interface = (
-                    usuario_nome, usuario_usuario, usuario_senha, usuario_confirmar_senha,
-                    usuario_cep, usuario_endereco, usuario_numero, usuario_cidade, usuario_bairro,
-                    usuario_estado, usuario_complemento, usuario_telefone, usuario_email,
-                    usuario_data_nascimento, usuario_rg, usuario_cpf, usuario_cnpj,
-                    usuario_ultima_troca_senha, usuario_data_senha_cadastrada, usuario_data_inclusao_usuario,
-                    data_atual, usuario_segredo, usuario_logado, usuario_acesso
-                )
-
-                # Adiciona na lista para exibir
-                saida_usuarios.append(dados_para_interface)
-
-                # Adiciona ao banco de dados
-                cursor.execute("""
-                    INSERT OR REPLACE INTO users_inativos (
-                        Nome, Usuário, Senha, "Confirmar Senha", CEP, Endereço, Número, Cidade, Bairro, Estado,
-                        Complemento, Telefone, Email, "Data de Nascimento", RG, CPF, CNPJ, Imagem,
-                        "Última Troca de Senha", "Data da Senha Cadastrada", "Data da Inclusão do Usuário",
-                        "Data da Inatividade do Usuário", Segredo, "Usuário Logado", Acesso
-                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-                """, dados_para_banco)
-
-                historico_logs.append(f"Usuário '{usuario_nome}' ({usuario_usuario}) foi transferido para inativos.")
-
-                cursor.execute("""DELETE FROM users WHERE "Usuário" = ?""",(usuario_usuario,))
-                linhas_para_remover.append(row)
-
-            conexao.commit()
-            self.tabela_inativos_preencher(saida_usuarios,limpar=False)
-
-            # Remover da tabela de ativos os usuários transferidos
-            for row in sorted(linhas_para_remover):
-                self.main_window.table_ativos.removeRow(row)
-
-        for texto in historico_logs:
-            self.main_window.registrar_historico_usuarios("Gerado Saída de Usuário", texto)
->>>>>>> 9206acf (ATUALIZAÇÕES)
 
         if saida_usuarios:
             msg_box = QMessageBox()
@@ -423,7 +306,6 @@ class Pagina_Usuarios(QWidget):
             msg_box.setWindowTitle("Aviso")
             msg_box.setText("Saída do(s) usuário(s) gerada com sucesso!")
             msg_box.exec()
-<<<<<<< HEAD
             self.tabela_inativos_preencher(saida_usuarios)
             # Ajusta colunas e linhas automaticamente após preencher
             self.main_window.table_inativos.resizeColumnsToContents()
@@ -443,44 +325,6 @@ class Pagina_Usuarios(QWidget):
         self.main_window.table_inativos.resizeColumnsToContents()
         self.main_window.table_inativos.resizeRowsToContents()
 
-=======
-
-   
-
-    def tabela_inativos_preencher(self, dados, limpar=True):
-        if limpar:
-            self.main_window.table_inativos.setRowCount(0)
-            linha_inicial = 0
-        else:
-            linha_inicial = self.main_window.table_inativos.rowCount()
-
-        for linha in dados:
-            self.main_window.table_inativos.insertRow(linha_inicial)
-            for coluna, valor in enumerate(linha):
-                self.main_window.table_inativos.setItem(linha_inicial, coluna, self.formatar_texto(str(valor)))
-            linha_inicial += 1
-
-        self.main_window.table_inativos.resizeColumnsToContents()
-        self.main_window.table_inativos.resizeRowsToContents()
-
-        
-     # Função para recuperar imagem de um produto com base no código do produto
-    def recuperar_imagem_usuario_bd_users(self, id_usuario):
-        conexao = sqlite3.connect('banco_de_dados.db')
-        cursor = conexao.cursor()
-        cursor.execute("SELECT Imagem FROM users WHERE Usuário = ?", (id_usuario,))
-        
-        resultado = cursor.fetchone()  # Tenta buscar uma linha
-        
-        if resultado is not None:
-            imagem_blob = resultado[0]  # Recupera a imagem se o resultado não for None
-        else:
-            imagem_blob = None  # Define como None se a imagem não for encontrada
-        
-        conexao.close()
-        return imagem_blob
-
->>>>>>> 9206acf (ATUALIZAÇÕES)
 
     def confirmar_saida_usuarios(self):
         configuracoes = Configuracoes_Login(self.main_window)
@@ -498,7 +342,6 @@ class Pagina_Usuarios(QWidget):
             checkbox = QCheckBox("Não mostrar esta mensagem novamente")
             msg_aviso.setCheckBox(checkbox)
 
-<<<<<<< HEAD
             # Estilos personalizados
             msg_aviso.setStyleSheet("""
                 QMessageBox {
@@ -525,8 +368,6 @@ class Pagina_Usuarios(QWidget):
                 }
             """)
 
-=======
->>>>>>> 9206acf (ATUALIZAÇÕES)
 
             # Exibe a mensagem de aviso
             msg_aviso.exec()
@@ -569,7 +410,6 @@ class Pagina_Usuarios(QWidget):
             msg_box.exec()
 
 
-<<<<<<< HEAD
 
 
     # Função para recuperar imagem de um produto com base no código do produto
@@ -588,8 +428,6 @@ class Pagina_Usuarios(QWidget):
         conexao.close()
         return imagem_blob
 
-=======
->>>>>>> 9206acf (ATUALIZAÇÕES)
     def atualizar_ativos(self):
         try:
             # Limpar a tabela antes de atualizar
@@ -629,13 +467,8 @@ class Pagina_Usuarios(QWidget):
             
             # Consulta os dados da tabela de saída no banco de dados (somente usuarios que já tiveram saída gerada)
             query = """
-<<<<<<< HEAD
             SELECT Nome,Usuário,Senha,"Confirmar Senha",CEP,Endereço,CPF,Número,Estado,Email,RG,Complemento,
             Telefone,"Data de Nascimento","Última Troca de Senha","Data da Senha Cadastrada","Data da Inclusão do Usuário",
-=======
-            SELECT Nome,Usuário,Senha,"Confirmar Senha",CEP,Endereço,Número,Cidade,Bairro,Estado,Complemento,Telefone,Email,
-            "Data de Nascimento",RG,CPF,CNPJ,"Última Troca de Senha","Data da Senha Cadastrada","Data da Inclusão do Usuário",
->>>>>>> 9206acf (ATUALIZAÇÕES)
             "Data da Inatividade do Usuário",Segredo,"Usuário Logado",Acesso
             FROM users_inativos
             """
@@ -660,7 +493,6 @@ class Pagina_Usuarios(QWidget):
             print(f"Erro ao atualizar a tabela de inativos: {e}")
 
 
-<<<<<<< HEAD
     def importar(self):
         msg = QMessageBox()
         msg.setIcon(QMessageBox.Warning)
@@ -668,8 +500,6 @@ class Pagina_Usuarios(QWidget):
         msg.setText("Ação ainda não está disponível!")
         msg.exec()
 
-=======
->>>>>>> 9206acf (ATUALIZAÇÕES)
     # Função auxiliar para criar um QTableWidgetItem com texto centralizado e branco
     def formatar_texto(self, text):
         item = QTableWidgetItem(text)
@@ -718,7 +548,6 @@ class Pagina_Usuarios(QWidget):
 
         return super().eventFilter(source, event)
 
-<<<<<<< HEAD
 
     def exibir_pdf_usuarios(self):
         caminho, _ = QFileDialog.getSaveFileName(
@@ -836,8 +665,6 @@ class Pagina_Usuarios(QWidget):
         except Exception as e:
             QMessageBox.critical(None, "Erro ao gerar PDF", f"Erro: {str(e)}")
 
-=======
->>>>>>> 9206acf (ATUALIZAÇÕES)
     def exibir_tabela_historico_usuario(self):
         self.janela_historico = QMainWindow()
         self.janela_historico.setWindowTitle("Histórico de Ações")
@@ -884,7 +711,6 @@ class Pagina_Usuarios(QWidget):
         botao_ordenar_historico = QPushButton("Ordenar Histórico")
         botao_ordenar_historico.clicked.connect(self.ordenar_historico_usuario)
 
-<<<<<<< HEAD
         # Criar checkbox "Selecionar Todos" toda vez que a janela for aberta
         self.todos_selecionados = QCheckBox("Selecionar todo o histórico")
         self.todos_selecionados.stateChanged.connect(self.selecionar_todos_usuarios)
@@ -896,15 +722,6 @@ class Pagina_Usuarios(QWidget):
         # Adicionar os checkboxes ao layout
         layout.addWidget(self.todos_selecionados)
         layout.addWidget(self.checkbox_selecionar_individual)
-=======
-
-
-        # Criar checkbox "Selecionar Individualmente" toda vez que a janela for aberta
-        self.checkbox_selecionar = QCheckBox("Selecionar")
-        self.checkbox_selecionar.stateChanged.connect(self.selecionar_usuarios_individual)
-
-        
->>>>>>> 9206acf (ATUALIZAÇÕES)
 
         # Adicionar outros botões ao layout
         layout.addWidget(botao_atualizar)
@@ -915,10 +732,6 @@ class Pagina_Usuarios(QWidget):
         layout.addWidget(botao_pausar_historico)
         layout.addWidget(botao_ordenar_historico)
         layout.addWidget(botao_filtrar_historico)
-<<<<<<< HEAD
-=======
-        layout.addWidget(self.checkbox_selecionar)
->>>>>>> 9206acf (ATUALIZAÇÕES)
         layout.addWidget(self.tabela_historico_usuarios)
 
         # Configurar o widget central e exibir a janela
@@ -938,30 +751,12 @@ class Pagina_Usuarios(QWidget):
 
         self.tabela_historico_usuarios.clearContents()
         self.tabela_historico_usuarios.setRowCount(len(registros))
-<<<<<<< HEAD
 
         for i, (data, usuario, acao, descricao) in enumerate(registros):
             self.tabela_historico_usuarios.setItem(i, 0, QTableWidgetItem(data))
             self.tabela_historico_usuarios.setItem(i, 1, QTableWidgetItem(usuario))
             self.tabela_historico_usuarios.setItem(i, 2, QTableWidgetItem(acao))
             self.tabela_historico_usuarios.setItem(i, 3, QTableWidgetItem(descricao))
-=======
-        
-        deslocamento_usuarios = 1 if self.coluna_checkboxes_usuarios_adicionada else 0
-        self.checkboxes = []  # Zerar e recriar lista de checkboxes
-        
-
-        for i, (data, usuario, acao, descricao) in enumerate(registros):
-            if self.coluna_checkboxes_usuarios_adicionada:
-                checkbox = QCheckBox()
-                checkbox.setStyleSheet("margin-left: 9px; margin-right: 9px;")
-                self.tabela_historico_usuarios.setCellWidget(i, 0, checkbox)
-                self.checkboxes.append(checkbox)
-            self.tabela_historico_usuarios.setItem(i, 0 + deslocamento_usuarios, QTableWidgetItem(data))
-            self.tabela_historico_usuarios.setItem(i, 1 + deslocamento_usuarios, QTableWidgetItem(usuario))
-            self.tabela_historico_usuarios.setItem(i, 2 + deslocamento_usuarios, QTableWidgetItem(acao))
-            self.tabela_historico_usuarios.setItem(i, 3 + deslocamento_usuarios, QTableWidgetItem(descricao))
->>>>>>> 9206acf (ATUALIZAÇÕES)
 
 
 
@@ -970,13 +765,10 @@ class Pagina_Usuarios(QWidget):
         self.carregar_historico_usuario()
 
     def apagar_historico_usuario(self):
-<<<<<<< HEAD
         """
         Função principal para apagar histórico. Trata tanto exclusão por checkboxes 
         quanto exclusão por seleção direta, dependendo do estado da tabela.
         """
-=======
->>>>>>> 9206acf (ATUALIZAÇÕES)
         # Caso checkboxes estejam ativados
         if self.coluna_checkboxes_usuarios_adicionada and self.checkboxes:
             linhas_para_remover = []
@@ -986,7 +778,6 @@ class Pagina_Usuarios(QWidget):
             for row, checkbox in enumerate(self.checkboxes):
                 if checkbox and checkbox.isChecked():
                     linhas_para_remover.append(row)
-<<<<<<< HEAD
                     item_data_widget = self.tabela_historico_usuarios.item(row, 1)  # Coluna de Data/Hora
                     if item_data_widget:
                         item_data_text = item_data_widget.text().strip()
@@ -994,15 +785,6 @@ class Pagina_Usuarios(QWidget):
                         item_id = self.get_id_by_data_hora_usuarios(item_data_text)
                         if item_id:
                             ids_para_remover.append(item_id)
-=======
-                    coluna_data_hora = 1 if self.coluna_checkboxes_usuarios_adicionada else 2
-                    item_data_widget = self.tabela_historico_usuarios.item(row, coluna_data_hora)  # Coluna de Data/Hora
-                    if item_data_widget:
-                        item_data_text = item_data_widget.text().strip()
-                        # Excluir com base na data e hora
-                        if item_data_text:
-                            ids_para_remover.append(item_data_text)
->>>>>>> 9206acf (ATUALIZAÇÕES)
                         else:
                             print(f"Erro ao capturar ID para a data/hora: '{item_data_text}'")
                     else:
@@ -1027,12 +809,8 @@ class Pagina_Usuarios(QWidget):
                 cursor = cn.cursor()
                 try:
                     for item_id in ids_para_remover:
-<<<<<<< HEAD
                         cursor.execute("DELETE FROM historico_usuarios WHERE id = ?", (item_id,))
                         print(f"Item removido do banco: ID {item_id}")
-=======
-                        cursor.execute("DELETE FROM historico_usuarios WHERE 'Data e Hora' = ?", (item_id,))
->>>>>>> 9206acf (ATUALIZAÇÕES)
                     cn.commit()
                 except Exception as e:
                     QMessageBox.critical(self, "Erro", f"Erro ao excluir do banco de dados: {e}")
@@ -1053,12 +831,7 @@ class Pagina_Usuarios(QWidget):
                 return
 
             # Capturar a Data/Hora da célula correspondente (coluna 0)
-<<<<<<< HEAD
             item_data_widget = self.tabela_historico_usuarios.item(linha_selecionada, 0)  # Coluna de Data/Hora
-=======
-            coluna_data_hora = 0 if self.coluna_checkboxes_usuarios_adicionada else 1
-            item_data_widget = self.tabela_historico_usuarios.item(linha_selecionada, coluna_data_hora)  # Coluna de Data/Hora
->>>>>>> 9206acf (ATUALIZAÇÕES)
             if not item_data_widget:
                 QMessageBox.warning(self, "Erro", "Não foi possível identificar a Data/Hora do item a ser apagado!")
                 return
@@ -1093,11 +866,7 @@ class Pagina_Usuarios(QWidget):
             with sqlite3.connect('banco_de_dados.db') as cn:
                 cursor = cn.cursor()
                 try:
-<<<<<<< HEAD
                     cursor.execute("DELETE FROM historico_usuarios WHERE id = ?", (item_id,))
-=======
-                    cursor.execute("DELETE FROM historico_usuarios WHERE 'Data e Hora' = ?", (item_id,))
->>>>>>> 9206acf (ATUALIZAÇÕES)
                     print(f"Item removido do banco de dados: ID {item_id}")
                     cn.commit()
                 except Exception as e:
@@ -1108,7 +877,6 @@ class Pagina_Usuarios(QWidget):
             self.tabela_historico_usuarios.removeRow(linha_selecionada)
 
             QMessageBox.information(self, "Sucesso", "Item removido com sucesso!")
-<<<<<<< HEAD
 
     def get_id_by_data_hora_usuarios(self, data_hora):
         """
@@ -1127,32 +895,6 @@ class Pagina_Usuarios(QWidget):
             except Exception as e:
                 print(f"Erro ao buscar ID: {e}")
                 return None
-=======
-     # Função para desmarcar todos os checkboxes
-    def desmarcar_checkboxes(self):
-        for checkbox in self.checkboxes:
-            if checkbox:
-                checkbox.setChecked(False)
-                
-    def selecionar_todos_usuarios(self):
-        if not self.coluna_checkboxes_usuarios_adicionada:
-            QMessageBox.warning(self, "Aviso", "Ative a opção 'Selecionar Individualmente' antes.")
-            self.checkbox_header_usuarios.setChecked(False)
-            return
-
-        estado = self.checkbox_header_usuarios.checkState() == Qt.Checked
-        self.checkboxes.clear()
-        
-        for row in range(self.tabela_historico_usuarios.rowCount()):
-            widget = self.tabela_historico_usuarios.cellWidget(row,0)
-            if widget is not None:
-                checkbox = widget.findChild(QCheckBox)
-                if checkbox:
-                    checkbox.blockSignals(True)
-                    checkbox.setChecked(estado)
-                    checkbox.blockSignals(False)
-    
->>>>>>> 9206acf (ATUALIZAÇÕES)
             
     def confirmar_historico_usuarios_apagado(self, mensagem):
         """
@@ -1171,7 +913,6 @@ class Pagina_Usuarios(QWidget):
         resposta = msgbox.exec()
 
         return msgbox.clickedButton() == btn_sim
-<<<<<<< HEAD
     
     # Função para desmarcar todos os checkboxes
     def desmarcar_checkboxes_usuarios(self):
@@ -1192,8 +933,6 @@ class Pagina_Usuarios(QWidget):
                 checkbox.blockSignals(True)
                 checkbox.setChecked(estado)
                 checkbox.blockSignals(False)
-=======
->>>>>>> 9206acf (ATUALIZAÇÕES)
                 
     # Função para adicionar checkboxes selecionar_individual na tabela de histórico
     def selecionar_usuarios_individual(self):
@@ -1203,7 +942,6 @@ class Pagina_Usuarios(QWidget):
             return
 
         if self.coluna_checkboxes_usuarios_adicionada:
-<<<<<<< HEAD
             self.desmarcar_checkboxes()
             self.tabela_historico_usuarios.removeColumn(0)
             self.coluna_checkboxes_usuarios_adicionada = False
@@ -1231,101 +969,16 @@ class Pagina_Usuarios(QWidget):
     
     def atualizar_selecao_todos_usuarios(self):
         self.todos_selecionados.blockSignals(True)
-=======
-            self.tabela_historico_usuarios.removeColumn(0)
-            self.tabela_historico_usuarios.verticalHeader().setVisible(True)
-            self.coluna_checkboxes_usuarios_adicionada = False
-            
-            if hasattr(self, "checkbox_header_usuarios"):
-                self.checkbox_header_usuarios.deleteLater()
-                del self.checkbox_header_usuarios
-                
-            self.checkboxes.clear()
-            return
-        
-        self.tabela_historico_usuarios.insertColumn(0)
-        self.tabela_historico_usuarios.setHorizontalHeaderItem(0, QTableWidgetItem(""))
-        self.tabela_historico_usuarios.setColumnWidth(0,30)
-        self.tabela_historico_usuarios.horizontalHeader().setMinimumSectionSize(30)
-        self.tabela_historico_usuarios.horizontalHeader().setSectionResizeMode(0,QHeaderView.Fixed)
-   
-        # Checkbox do cabeçalho
-        self.checkbox_header_usuarios = QCheckBox(self.tabela_historico_usuarios)
-        self.checkbox_header_usuarios.setToolTip("Selecionar todos")
-        self.checkbox_header_usuarios.setChecked(False)
-        self.checkbox_header_usuarios.stateChanged.connect(self.selecionar_todos_usuarios)
-        self.checkbox_header_usuarios.setFixedSize(20, 20)
-        self.checkbox_header_usuarios.show()
-        
-        header = self.tabela_historico_usuarios.horizontalHeader()
-        self.atualizar_posicao_checkbox_header_usuarios()
-        header.sectionResized.connect(self.atualizar_posicao_checkbox_header_usuarios)
-
-        self.checkboxes.clear()
-
-        QTimer.singleShot(0,self.atualizar_posicao_checkbox_header_usuarios)
-
-        for row in range(self.tabela_historico_usuarios.rowCount()):
-            checkbox = QCheckBox()
-            checkbox.stateChanged.connect(self.atualizar_selecao_todos_usuarios)
-            
-            container = QWidget()
-            layout = QHBoxLayout(container)
-            layout.addWidget(checkbox)
-            layout.setAlignment(Qt.AlignCenter)
-            layout.setContentsMargins(0,0,0,0)
-            
-            self.tabela_historico_usuarios.setCellWidget(row, 0, container)
-            self.checkboxes.append(checkbox)
-
-        self.tabela_historico_usuarios.verticalHeader().setVisible(False)
-        self.coluna_checkboxes_usuarios_adicionada = True
-    
-  
-    
-    def atualizar_selecao_todos_usuarios(self):
-        self.checkbox_header_usuarios.blockSignals(True)
->>>>>>> 9206acf (ATUALIZAÇÕES)
 
         # Atualizar o estado do "Selecionar Todos"
         all_checked = all(checkbox.isChecked() for checkbox in self.checkboxes if checkbox)
         any_checked = any(checkbox.isChecked() for checkbox in self.checkboxes if checkbox)
 
-<<<<<<< HEAD
         self.todos_selecionados.setChecked(all_checked)
 
         self.todos_selecionados.blockSignals(False)
 
     def ordenar_historico_usuario(self):
-=======
-        if all_checked:
-            self.checkbox_header_usuarios.setCheckState(Qt.Checked)
-        elif any_checked:
-            self.checkbox_header_usuarios.setCheckState(Qt.PartiallyChecked)
-        else:
-            self.checkbox_header_usuarios.setCheckState(Qt.Unchecked)
-        
-        self.checkbox_header_usuarios.blockSignals(False)
-        
-    def atualizar_posicao_checkbox_header_usuarios(self):
-        if hasattr(self, "checkbox_header_usuarios") and self.coluna_checkboxes_usuarios_adicionada:
-            header = self.tabela_historico_usuarios.horizontalHeader()
-            
-            x = header.sectionViewportPosition(0) + (header.sectionSize(0) - self.checkbox_header_usuarios.width()) // 2 + 4
-            y = (header.height() - self.checkbox_header_usuarios.height()) // 2
-            
-            self.checkbox_header_usuarios.move(x, y)
-           
-
-    def ordenar_historico_usuario(self):
-        if hasattr(self,"checkbox_header_usuarios"):
-            QMessageBox.warning(
-                None,
-                "Aviso",
-                "Desmarque o checkbox antes de ordernar o histórico de usuários."
-            )
-            return
->>>>>>> 9206acf (ATUALIZAÇÕES)
         # Obter a coluna pela qual o usuário deseja ordenar
         coluna = self.obter_coluna_usuario_para_ordenar()  # Função fictícia para capturar escolha
         if coluna is None:
@@ -1383,16 +1036,6 @@ class Pagina_Usuarios(QWidget):
         return direcao if ok else None
     
     def filtrar_historico_usuarios(self):
-<<<<<<< HEAD
-=======
-        if hasattr(self, "checkbox_header_usuarios"):
-            QMessageBox.warning(
-                None,
-                "Aviso",
-                "Desmarque o checkbox antes de filtrar o histórico de usuários."
-            )
-            return
->>>>>>> 9206acf (ATUALIZAÇÕES)
         # Criar a janela de filtro
         janela_filtro = QDialog(self)
         janela_filtro.setWindowTitle("Filtrar Histórico")
@@ -1400,11 +1043,7 @@ class Pagina_Usuarios(QWidget):
 
         # Campo para inserir a data
         campo_data = QLineEdit()
-<<<<<<< HEAD
         campo_data.setPlaceholderText("Digite a data no formato DD/MM/AAAA")
-=======
-        campo_data.setPlaceholderText("DD/MM/AAAA")
->>>>>>> 9206acf (ATUALIZAÇÕES)
         
         # Conectar ao método de formatação, passando o texto
         campo_data.textChanged.connect(lambda: self.formatar_data_usuarios(campo_data))
@@ -1423,24 +1062,14 @@ class Pagina_Usuarios(QWidget):
 
         # Botão para aplicar o filtro
         botao_filtrar = QPushButton("Aplicar Filtro")
-<<<<<<< HEAD
         botao_filtrar.clicked.connect(
             lambda: self.aplicar_filtro_usuarios(
-=======
-        def aplicar_e_fechar():
-            self.aplicar_filtro_usuarios(
->>>>>>> 9206acf (ATUALIZAÇÕES)
                 campo_data.text(),
                 radio_mais_novo.isChecked(),
                 radio_mais_velho.isChecked()
             )
-<<<<<<< HEAD
         )
 
-=======
-            janela_filtro.accept()
-        botao_filtrar.clicked.connect(aplicar_e_fechar)
->>>>>>> 9206acf (ATUALIZAÇÕES)
         # Adicionar widgets ao layout
         layout.addWidget(QLabel("Filtros Disponíveis"))
         layout.addWidget(campo_data)
@@ -1480,7 +1109,6 @@ class Pagina_Usuarios(QWidget):
             campo_data.setText(data_formatada)  # Atualiza o texto do campo de data
             campo_data.setCursorPosition(len(data_formatada))  # Move o cursor para o final do texto
 
-<<<<<<< HEAD
     def aplicar_filtro_usuarios(self, data, filtrar_novo, filtrar_velho):
         with sqlite3.connect('banco_de_dados.db') as cn:
             cursor = cn.cursor()
@@ -1514,47 +1142,12 @@ class Pagina_Usuarios(QWidget):
         self.tabela_historico_usuarios.setRowCount(len(registros))
 
         for i, row in enumerate(registros):
-=======
-    def aplicar_filtro_usuarios(self, data_filtrada, ordenar_por_mais_recente, ordenar_por_mais_antigo):
-        data_formatada = data_filtrada.strip()
-
-        with self.db.connecta() as conexao:
-            cursor = conexao.cursor()
-
-            query_base = "SELECT * FROM historico_usuarios"
-            parametros = []
-
-            # Filtro por data
-            if data_formatada:
-                query_base += ' WHERE "Data e Hora" LIKE ?'
-                parametros.append(f"%{data_formatada}%")
-
-            if ordenar_por_mais_recente:
-                query_base += ' ORDER BY "Data e Hora" ASC'
-            elif ordenar_por_mais_antigo:
-                query_base += ' ORDER BY "Data e Hora" DESC'
-
-
-            cursor.execute(query_base, parametros)
-            resultados = cursor.fetchall()
-
-        # Limpar e preencher a tabela
-        self.tabela_historico_usuarios.setRowCount(0)
-        for i, row in enumerate(resultados):
-            self.tabela_historico_usuarios.insertRow(i)
->>>>>>> 9206acf (ATUALIZAÇÕES)
             self.tabela_historico_usuarios.setItem(i, 0, QTableWidgetItem(row[0]))  # Data/Hora
             self.tabela_historico_usuarios.setItem(i, 1, QTableWidgetItem(row[1]))  # Usuário
             self.tabela_historico_usuarios.setItem(i, 2, QTableWidgetItem(row[2]))  # Ação
             self.tabela_historico_usuarios.setItem(i, 3, QTableWidgetItem(row[3]))  # Descrição
 
-<<<<<<< HEAD
         QMessageBox.information(self, "Filtro Aplicado", f"{len(registros)} registro(s) encontrado(s)!")
-=======
-        QMessageBox.information(self, "Filtro Aplicado", f"{len(resultados)} registro(s) encontrado(s)!")
-
-
->>>>>>> 9206acf (ATUALIZAÇÕES)
 
     def exportar_csv_usuarios(self):
         num_linhas = self.tabela_historico_usuarios.rowCount()
@@ -1649,19 +1242,11 @@ class Pagina_Usuarios(QWidget):
             QMessageBox.critical(self, "Erro",f"Erro ao salvar arquivo Excel: {str(e)}")
 
     def exportar_pdf_usuarios(self):
-<<<<<<< HEAD
         num_linhas = self.tabela_historico.rowCount()
         num_colunas = self.tabela_historico.columnCount()
 
         # Verificar se a tabela está vazia
         if self.tabela_historico.rowCount() == 0:
-=======
-        num_linhas = self.tabela_historico_usuarios.rowCount()
-        num_colunas = self.tabela_historico_usuarios.columnCount()
-
-        # Verificar se a tabela está vazia
-        if self.tabela_historico_usuarios.rowCount() == 0:
->>>>>>> 9206acf (ATUALIZAÇÕES)
             QMessageBox.warning(self, "Aviso", "Nenhum histórico encontrado para gerar arquivo PDF.")
             return  # Se a tabela estiver vazia, encerra a função sem prosseguir
 
@@ -1683,22 +1268,14 @@ class Pagina_Usuarios(QWidget):
         dados = []
 
         # Obter os cabeçalhos da tabela
-<<<<<<< HEAD
         cabecalhos = [self.tabela_historico.horizontalHeaderItem(coluna).text() for coluna in range(num_colunas)]
-=======
-        cabecalhos = [self.tabela_historico_usuarios.horizontalHeaderItem(coluna).text() for coluna in range(num_colunas)]
->>>>>>> 9206acf (ATUALIZAÇÕES)
         dados.append(cabecalhos)  # Adicionar os cabeçalhos como a primeira linha do PDF
 
         # Adicionar os dados da tabela
         for linha in range(num_linhas):
             linha_dados = []
             for coluna in range(num_colunas):
-<<<<<<< HEAD
                 item = self.tabela_historico.item(linha, coluna)
-=======
-                item = self.tabela_historico_usuarios.item(linha, coluna)
->>>>>>> 9206acf (ATUALIZAÇÕES)
                 linha_dados.append(item.text() if item else "")  # Adicionar o texto ou vazio se o item for None
             dados.append(linha_dados)
 
@@ -2018,7 +1595,6 @@ class Pagina_Usuarios(QWidget):
             if total_linhas == 0:
                 QMessageBox.warning(self, "Erro", "Nenhum usuário encontrado para cadastrar.")
                 return
-<<<<<<< HEAD
 
             for linha in range(total_linhas):
                 nome = self.table_massa_usuarios.item(linha, 0).text().strip() if self.table_massa_usuarios.item(linha, 0) else ""
@@ -2066,59 +1642,10 @@ class Pagina_Usuarios(QWidget):
                 # Registrar no histórico
                 descricao = f"Usuário {usuario} foi cadastrado no sistema!"
                 self.main_window.registrar_historico_usuarios("Cadastro em Massa", descricao)
-=======
-            with self.db.connecta() as conexao:
-                cursor = conexao.cursor()
-            
-            
-            usuario_logado = self.config.obter_usuario_logado()
-           
-
-            for linha in range(total_linhas):
-                nome = self.table_massa_usuarios.item(linha, 0).text().strip() if self.table_massa_usuarios.item(linha,0) else ""
-                usuario = self.main_window.gerar_codigo_usuarios()
-                senha = self.table_massa_usuarios.item(linha, 2).text().strip() if self.table_massa_usuarios.item(linha, 2) else ""
-                confirmar_senha = self.table_massa_usuarios.item(linha, 3).text().strip() if self.table_massa_usuarios.item(linha, 3) else ""
-                cep = self.table_massa_usuarios.item(linha, 4).text().strip() if self.table_massa_usuarios.item(linha, 4) else ""
-                endereco = self.table_massa_usuarios.item(linha, 5).text().strip() if self.table_massa_usuarios.item(linha, 5) else ""
-                numero = self.table_massa_usuarios.item(linha, 6).text().strip() if self.table_massa_usuarios.item(linha, 6) else ""
-                cidade = self.table_massa_usuarios.item(linha, 7).text().strip() if self.table_massa_usuarios.item(linha, 7) else ""
-                bairro = self.table_massa_usuarios.item(linha, 8).text().strip() if self.table_massa_usuarios.item(linha, 8) else ""
-                estado = self.table_massa_usuarios.item(linha, 9).text().strip() if self.table_massa_usuarios.item(linha, 9) else ""
-                complemento = self.table_massa_usuarios.item(linha, 10).text().strip() if self.table_massa_usuarios.item(linha, 10) else ""
-                telefone = self.table_massa_usuarios.item(linha, 11).text().strip() if self.table_massa_usuarios.item(linha, 11) else ""
-                email = self.table_massa_usuarios.item(linha, 12).text().strip() if self.table_massa_usuarios.item(linha, 12) else ""
-                data_nascimento = self.table_massa_usuarios.item(linha, 13).text().strip() if self.table_massa_usuarios.item(linha, 13) else ""
-                rg = self.table_massa_usuarios.item(linha, 14).text().strip() if self.table_massa_usuarios.item(linha, 14) else ""
-                cpf = self.table_massa_usuarios.item(linha, 15).text().strip() if self.table_massa_usuarios.item(linha, 15) else ""
-                cnpj = self.table_massa_usuarios.item(linha, 16).text().strip() if self.table_massa_usuarios.item(linha, 16) else ""
-                acesso = self.table_massa_usuarios.item(linha,17).text().strip() if self.table_massa_usuarios.item(linha, 17) else ""
-           
-                segredo = "" # vazio por padrão no cadastro em massa
-                     
-                self.db.insert_user(
-                    nome,usuario,senha,confirmar_senha,cep,endereco,numero,cidade,bairro,estado,complemento,
-                    telefone,email,data_nascimento,rg,cpf,cnpj,segredo,usuario_logado,acesso)
-                
-                data_atual = datetime.now().strftime("%d/%m/%Y %H:%M")
-
-                # Registrar no histórico
-                descricao = f"Usuário {usuario} foi cadastrado no sistema!"
-                cursor.execute("""
-                    INSERT INTO historico_usuarios ("Data e Hora",Usuário,Ação,Descrição)
-                    VALUES (?,?,?,?)
-                """,(data_atual,usuario_logado, "Cadastro em Massa",descricao))
-
-            conexao.commit()
->>>>>>> 9206acf (ATUALIZAÇÕES)
 
 
             QMessageBox.information(self, "Sucesso", "Usuários cadastrados em massa com sucesso!")
             self.line_edit_massa_usuarios.clear()
-<<<<<<< HEAD
-
-=======
->>>>>>> 9206acf (ATUALIZAÇÕES)
             # Limpar a tabela após a inserção
             self.table_massa_usuarios.setRowCount(0)
 
@@ -2127,8 +1654,4 @@ class Pagina_Usuarios(QWidget):
 
                 
                 
-<<<<<<< HEAD
         
-=======
-        
->>>>>>> 9206acf (ATUALIZAÇÕES)

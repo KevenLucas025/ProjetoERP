@@ -19,10 +19,6 @@ import os
 import webbrowser
 import sqlite3
 import time
-<<<<<<< HEAD
-=======
-from datetime import datetime
->>>>>>> 9206acf (ATUALIZAÇÕES)
 
 
 class Login(QMainWindow, Ui_Mainwindow_Login):  
@@ -214,10 +210,6 @@ class Login(QMainWindow, Ui_Mainwindow_Login):
             self.mostrarMensagem("Erro", "Não foi possível autenticar automaticamente.", QMessageBox.Warning)
 
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 9206acf (ATUALIZAÇÕES)
     def closeEvent(self, event):
         # Garantir que o banco de dados seja fechado corretamente
         if hasattr(self, 'users'):
@@ -269,23 +261,6 @@ class PrimeiroAcesso(QMainWindow):
         hbox_nome = QHBoxLayout()
         self.label_nome = QLabel("Nome: ")
         self.txt_nome = QLineEdit()
-<<<<<<< HEAD
-=======
-        self.txt_nome.setStyleSheet("""
-                QLineEdit {
-                color: black;
-                background-color: rgb(240, 240, 240); /* Cor de fundo cinza claro */
-                border: 2px solid rgb(50, 150,250); /* Borda azul */
-                border-radius: 12px; /* Cantos arredondados */
-                padding: 3px; /* Espaçamento interno */
-            }
-
-            QLineEdit::placeholderText {
-                color: black; /* Cor do texto do placeholder */
-            }
-        
-        """)
->>>>>>> 9206acf (ATUALIZAÇÕES)
         hbox_nome.addWidget(self.label_nome)
         hbox_nome.addWidget(self.txt_nome)
         self.layout.addLayout(hbox_nome)
@@ -294,23 +269,6 @@ class PrimeiroAcesso(QMainWindow):
         hbox_usuario = QHBoxLayout()
         self.label_usuario = QLabel("Usuário: ")
         self.txt_usuario = QLineEdit()
-<<<<<<< HEAD
-=======
-        self.txt_usuario.setStyleSheet("""
-                QLineEdit {
-                color: black;
-                background-color: rgb(240, 240, 240); /* Cor de fundo cinza claro */
-                border: 2px solid rgb(50, 150,250); /* Borda azul */
-                border-radius: 12px; /* Cantos arredondados */
-                padding: 3px; /* Espaçamento interno */
-            }
-
-            QLineEdit::placeholderText {
-                color: black; /* Cor do texto do placeholder */
-            }
-
-            """)
->>>>>>> 9206acf (ATUALIZAÇÕES)
         hbox_usuario.addWidget(self.label_usuario)
         hbox_usuario.addWidget(self.txt_usuario)
         self.layout.addLayout(hbox_usuario)
@@ -319,23 +277,6 @@ class PrimeiroAcesso(QMainWindow):
         hbox_senha = QHBoxLayout()
         self.label_senha = QLabel("Senha: ")
         self.txt_senha = QLineEdit()
-<<<<<<< HEAD
-=======
-        self.txt_senha.setStyleSheet("""
-                QLineEdit {
-                color: black;
-                background-color: rgb(240, 240, 240); /* Cor de fundo cinza claro */
-                border: 2px solid rgb(50, 150,250); /* Borda azul */
-                border-radius: 12px; /* Cantos arredondados */
-                padding: 3px; /* Espaçamento interno */
-            }
-
-            QLineEdit::placeholderText {
-                color: black; /* Cor do texto do placeholder */
-            }
-        
-        """)
->>>>>>> 9206acf (ATUALIZAÇÕES)
         self.txt_senha.setEchoMode(QLineEdit.Password)  # Ocultar senha
         hbox_senha.addWidget(self.label_senha)
         hbox_senha.addWidget(self.txt_senha)
@@ -346,23 +287,6 @@ class PrimeiroAcesso(QMainWindow):
         hbox_confirmar_senha = QHBoxLayout()
         self.label_confirmar_senha = QLabel("Confirmar senha: ")
         self.txt_confirmar_senha = QLineEdit()
-<<<<<<< HEAD
-=======
-        self.txt_confirmar_senha.setStyleSheet("""
-                QLineEdit {
-                color: black;
-                background-color: rgb(240, 240, 240); /* Cor de fundo cinza claro */
-                border: 2px solid rgb(50, 150,250); /* Borda azul */
-                border-radius: 12px; /* Cantos arredondados */
-                padding: 3px; /* Espaçamento interno */
-            }
-
-            QLineEdit::placeholderText {
-                color: black; /* Cor do texto do placeholder */
-            }
-        
-        """)
->>>>>>> 9206acf (ATUALIZAÇÕES)
         hbox_confirmar_senha.addWidget(self.label_confirmar_senha)
         hbox_confirmar_senha.addWidget(self.txt_confirmar_senha)
         self.layout.addLayout(hbox_confirmar_senha)
@@ -375,44 +299,6 @@ class PrimeiroAcesso(QMainWindow):
         self.combobox_acesso.addItem("Convidado")
         self.combobox_acesso.addItem("Administrador")
         self.combobox_acesso.addItem("Usuário")
-<<<<<<< HEAD
-=======
-        self.combobox_acesso.setStyleSheet("""    
-                QComboBox { 
-                    background-color: white; 
-                    border: 3px solid rgb(50,150,250); 
-                    border-radius: 5px; 
-                    color: black; 
-                    padding: 5px;
-                }
-                QComboBox QAbstractItemView {
-                    background-color: white; 
-                    color: black; 
-                    border: 1px solid #ccc; 
-                    selection-background-color: #e5e5e5; 
-                    selection-color: black;
-                }
-                QComboBox QAbstractItemView QScrollBar:vertical {
-                    background: #f5f5f5; 
-                    width: 12px; 
-                    border: none;
-                }
-                QComboBox QAbstractItemView QScrollBar::handle:vertical {
-                    background: #cccccc; 
-                    min-height: 20px; 
-                    border-radius: 5px;
-                }
-                QComboBox QAbstractItemView QScrollBar::add-line:vertical, 
-                QComboBox QAbstractItemView QScrollBar::sub-line:vertical {
-                    background: none;
-                    height: 0px;  /* Remove os botões de linha (setas de cima e baixo) */
-                }
-                QComboBox QAbstractItemView QScrollBar::add-page:vertical, 
-                QComboBox QAbstractItemView QScrollBar::sub-page:vertical {
-                    background: none;
-                }   
-        """)
->>>>>>> 9206acf (ATUALIZAÇÕES)
         hbox_acesso.addWidget(self.combobox_acesso)
         self.layout.addLayout(hbox_acesso)
 
@@ -422,18 +308,11 @@ class PrimeiroAcesso(QMainWindow):
         self.layout.addWidget(self.btn_cadastrar)
 
         # Exibir a mensagem assim que a janela de primeiro acesso for exibida
-<<<<<<< HEAD
         self.mostrar_mensagem(
             "Informação",
             "O usuário será cadastrado com  informações temporárias\n"
             "assim que logado no sistema, ir em Cadastrar Usuário e incluir/alterar todas as informações necessárias. ",
             QMessageBox.Information
-=======
-        QMessageBox.information(None,
-            "Informação",
-            "O usuário será cadastrado com  informações temporárias\n"
-            "assim que logado no sistema, ir em Cadastrar Usuário e incluir/alterar todas as informações necessárias. ",
->>>>>>> 9206acf (ATUALIZAÇÕES)
         )
         
     def inserir_usuario_no_banco_de_dados(self):   
@@ -443,48 +322,25 @@ class PrimeiroAcesso(QMainWindow):
         senha = self.txt_senha.text()
         confirmar_senha = self.txt_confirmar_senha.text()
         acesso = self.combobox_acesso.currentText()
-<<<<<<< HEAD
 
         # Verificar se os campos obrigatórios estão preenchidos
         if not (nome and usuario and senha and confirmar_senha):
             self.mostrar_mensagem("Erro", "Por favor, preencha todos os campos.", QMessageBox.Warning)
-=======
-        data_atual = datetime.now().strftime("%d/%m/%Y %H:%M")
-        segredo = "Não Cadastrado"
-        usuario_logado = "Primeiro Acesso"
-        data_ultima_troca = "Não Cadastrado"
-
-        # Verificar se os campos obrigatórios estão preenchidos
-        if not (nome and usuario and senha and confirmar_senha):
-            QMessageBox.warning(None,"Erro", "Por favor, preencha todos os campos.")
->>>>>>> 9206acf (ATUALIZAÇÕES)
             return
 
         # Verificar se as senhas coincidem
         if senha != confirmar_senha:
-<<<<<<< HEAD
             self.mostrar_mensagem("Erro", "As senhas não coincidem.", QMessageBox.Warning)
             return
 
         if self.combobox_acesso.currentText() == "Administrador":
             self.mostrar_mensagem(
-=======
-            QMessageBox.warning(None,"Erro", "As senhas não coincidem.")
-            return
-
-        if self.combobox_acesso.currentText() == "Administrador":
-            QMessageBox.warning(self,
->>>>>>> 9206acf (ATUALIZAÇÕES)
                 "Erro",
                 "Para primeiro acesso o usuário pode ser cadastrado como Convidado ou Usuário comum.\n" 
                 "O tipo de acesso para usuário administrador só pode ser realizado por outro administrador.\n"
                 "Por favor, entre em contato com seu administrador para revogar seu privilégio.\n"
-<<<<<<< HEAD
                 "Se o erro persistir, entre em contato com o desenvolvedor do sistema.",
                 QMessageBox.Warning
-=======
-                "Se o erro persistir, entre em contato com o desenvolvedor do sistema.",        
->>>>>>> 9206acf (ATUALIZAÇÕES)
             )
             return
 
@@ -494,7 +350,6 @@ class PrimeiroAcesso(QMainWindow):
             cursor = conn.cursor()
 
             # Verificar se o usuário já existe
-<<<<<<< HEAD
             cursor.execute("SELECT * FROM users WHERE id = ?", (usuario,))
             existing_user = cursor.fetchone()
             if existing_user:
@@ -505,38 +360,15 @@ class PrimeiroAcesso(QMainWindow):
             # Inserir o novo usuário no banco de dados
             cursor.execute("INSERT INTO users (Nome, Usuário, Senha, 'Confirmar Senha', Acesso) VALUES (?, ?, ?, ?, ?)", 
                         (nome, usuario, senha, confirmar_senha, acesso))
-=======
-            cursor.execute("SELECT * FROM users WHERE Usuário = ?", (usuario,))
-            existing_user = cursor.fetchone()
-            if existing_user:
-                QMessageBox.warning(None,"Erro", "Já existe um usuário cadastrado no sistema! ")
-                return
-
-            # Inserir o novo usuário no banco de dados
-            cursor.execute("""
-                    INSERT INTO users(
-                        Nome, Usuário, Senha, "Confirmar Senha",Acesso,
-                        "Última Troca de Senha","Data da Senha Cadastrada",
-                        "Data da Inclusão do Usuário",Segredo, "Usuário Logado"
-                    )
-                    VALUES (?,?,?,?,?,?,?,?,?,?)
-            """,(nome, usuario,senha,confirmar_senha,acesso,data_ultima_troca,
-                  data_atual,data_atual,segredo,usuario_logado))
->>>>>>> 9206acf (ATUALIZAÇÕES)
             conn.commit()
             conn.close()
 
             # Mensagem de sucesso
-<<<<<<< HEAD
             self.mostrar_mensagem("Sucesso", "Usuário cadastrado com sucesso!", QMessageBox.Information)
-=======
-            QMessageBox.information(None,"Sucesso", "Usuário cadastrado com sucesso!")
->>>>>>> 9206acf (ATUALIZAÇÕES)
             self.close()  # Fecha a janela de cadastro
 
         except sqlite3.Error as e:
             print(f"Erro ao salvar o usuário: {e}")
-<<<<<<< HEAD
 
 
     def mostrar_mensagem(self, titulo, mensagem, icone):
@@ -545,8 +377,6 @@ class PrimeiroAcesso(QMainWindow):
         msg.setWindowTitle(titulo)
         msg.setText(mensagem)
         msg.exec_()
-=======
->>>>>>> 9206acf (ATUALIZAÇÕES)
    
         
     def esconder_label_acesso(self):

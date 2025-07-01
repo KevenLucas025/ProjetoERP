@@ -1,6 +1,5 @@
 PySide6
 reportlab
-<<<<<<< HEAD
 plyer
 openpyxl
 requests
@@ -8,11 +7,3 @@ qrcode
 pyotp
 urllib3
 pandas
-=======
-openpyxl
-urllib3
-pandas
-plyer
-pyotp
-qrcode
->>>>>>> 9206acf (ATUALIZAÇÕES)
