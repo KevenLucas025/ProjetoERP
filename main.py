@@ -2172,15 +2172,16 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         success_msg.setStyleSheet("color: black;")
         success_msg.exec()
 #*********************************************************************************************************************
-    def formatar_cep(self, text):
-        if len(text) <= 9 and text.isdigit():
-            if len(text) == 5:
-                self.txt_cep.setText(text + "-")
-            elif len(text) == 9:
-                cep_formatado = "{}-{}".format(text[:5], text[5:])
-                self.txt_cep.setText(cep_formatado)
-        elif len(text) > 9:
-            self.txt_cep.setText(text[:-1])
+    def formatar_cep(self, text, widget):
+        numero_limpo = ''.join(filter(str.isdigit, text))[:8]
+        if len(numero_limpo) >= 5:
+            cep_formatado = f"{numero_limpo[:5]}-{numero_limpo[5:]}"
+        else:
+            cep_formatado = numero_limpo
+
+        widget.blockSignals(True)
+        widget.setText(cep_formatado)
+        widget.blockSignals(False)
 #*********************************************************************************************************************
     def formatar_cpf(self, text):
         # Remover caracteres não numéricos
@@ -2198,17 +2199,18 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             # Se o CPF não tiver pelo menos 9 dígitos, manter o texto original
             self.txt_cpf.setText(text[:14])
 #*********************************************************************************************************************
-    def formatar_cnpj(self, text):
+    def formatar_cnpj(self, text, widget):
         if text == "Não Cadastrado":
-            self.txt_cnpj.setText(text)
+            widget.setText(text)
             return
+
         # Remover caracteres não numéricos
         numero_cnpj = ''.join(filter(str.isdigit, text))
 
         # Verifica se há pelo menos 14 dígitos
         if len(numero_cnpj) >= 14:
-            # Limita a 14 dígitos
-            numero_cnpj = numero_cnpj[:14]
+            numero_cnpj = numero_cnpj[:14]  # Limita a 14 dígitos
+
             # Formata para o padrão nacional: 11.111.111/1111-11
             cnpj_formatado = "{}.{}.{}/{}-{}".format(
                 numero_cnpj[:2],
@@ -2217,9 +2219,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 numero_cnpj[8:12],
                 numero_cnpj[12:]
             )
-            self.txt_cnpj.setText(cnpj_formatado)
+
+            # Atualiza o texto do widget com formatação
+            widget.blockSignals(True)
+            widget.setText(cnpj_formatado)
+            widget.blockSignals(False)
         else:
-            self.txt_cnpj.setText(numero_cnpj)
+            widget.blockSignals(True)
+            widget.setText(numero_cnpj)
+            widget.blockSignals(False)
 #*********************************************************************************************************************
     def formatar_rg(self, text):
         # Remover caracteres não numéricos
@@ -2257,26 +2265,21 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # Atualizar o texto do campo de data de nascimento
         self.txt_data_nascimento.setText(data_formatada)
 #*********************************************************************************************************************
-    def formatar_telefone(self, text):
-        # Remover todos os caracteres que não são dígitos
-        numero_limpo = ''.join(filter(str.isdigit, text))
-        
-        # Limitar o texto a 14 caracteres
-        numero_limpo = numero_limpo[:14]
-        
-        # Verificar se o número tem pelo menos 2 dígitos
+    def formatar_telefone(self, text, widget):
+        numero_limpo = ''.join(filter(str.isdigit, text))[:14]
+
         if len(numero_limpo) >= 2:
-            numero_formatado = "({}) ".format(numero_limpo[:2])
-            
-            # Adicionar o hífen se o número tiver mais de 8 dígitos
+            numero_formatado = f"({numero_limpo[:2]}) "
+
             if len(numero_limpo) >= 8:
-                numero_formatado += "{}-{}".format(numero_limpo[2:7], numero_limpo[7:11])
-                
-                # Atualizar o texto do campo de texto
-                self.txt_telefone.setText(numero_formatado)
+                numero_formatado += f"{numero_limpo[2:7]}-{numero_limpo[7:11]}"
             else:
-                # Se o número não tiver mais de 7 dígitos, apenas atualizar o texto
-                self.txt_telefone.setText(numero_formatado + numero_limpo[2:])
+                numero_formatado += numero_limpo[2:]
+
+            widget.blockSignals(True)
+            widget.setText(numero_formatado)
+            widget.blockSignals(False)
+
 #*******************************************************************************************************
     def conectar_botao_adicionar_produto(self):
         self.btn_adicionar_produto.clicked.connect(self.adicionar_produto)

@@ -6383,6 +6383,11 @@ QTableWidget::item:selected {
                  </column>
                  <column>
                   <property name="text">
+                   <string>Razão Social</string>
+                  </property>
+                 </column>
+                 <column>
+                  <property name="text">
                    <string>Data da Inclusão</string>
                   </property>
                  </column>
@@ -6413,12 +6418,22 @@ QTableWidget::item:selected {
                  </column>
                  <column>
                   <property name="text">
+                   <string>Complemento</string>
+                  </property>
+                 </column>
+                 <column>
+                  <property name="text">
                    <string>Cidade</string>
                   </property>
                  </column>
                  <column>
                   <property name="text">
                    <string>Bairro</string>
+                  </property>
+                 </column>
+                 <column>
+                  <property name="text">
+                   <string>Estado</string>
                   </property>
                  </column>
                  <column>
@@ -6941,12 +6956,22 @@ QTableWidget::item:selected {
                  </column>
                  <column>
                   <property name="text">
+                   <string>Complemento</string>
+                  </property>
+                 </column>
+                 <column>
+                  <property name="text">
                    <string>Cidade</string>
                   </property>
                  </column>
                  <column>
                   <property name="text">
                    <string>Bairro</string>
+                  </property>
+                 </column>
+                 <column>
+                  <property name="text">
+                   <string>Estado</string>
                   </property>
                  </column>
                  <column>

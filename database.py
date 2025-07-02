@@ -234,14 +234,17 @@ class DataBase:
                 CREATE TABLE IF NOT EXISTS clientes_juridicos(
                     ID INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
                     "Nome do Cliente" TEXT,
+                    "Razão Social" TEXT,
                     "Data da Inclusão" TEXT,
                     CNPJ TEXT,
                     Telefone TEXT,
                     CEP TEXT,
                     Endereço TEXT,
                     Número TEXT,
+                    Complemento TEXT,
                     Cidade TEXT,
                     Bairro TEXT,
+                    Estado TEXT,
                     "Status do Cliente" TEXT,
                     "Categoria do Cliente" TEXT,
                     "Última Atualização" TEXT,
@@ -270,8 +273,10 @@ class DataBase:
                     Telefone TEXT,
                     Endereço TEXT,
                     Número TEXT,
+                    Complemento TEXT,
                     Cidade TEXT,
                     Bairro TEXT,
+                    Estado TEXT,
                     "Status do Cliente" TEXT,
                     "Categoria do Cliente" TEXT,
                     "Última Atualização" TEXT,
@@ -979,8 +984,8 @@ class DataBase:
     def obter_clientes_juridicos(self):
         cursor = self.connection.cursor()
         cursor.execute("""
-            SELECT "Nome do Cliente", "Data da Inclusão", CNPJ, Telefone, CEP, Endereço, Número,
-                Cidade, Bairro, "Status do Cliente", "Categoria do Cliente", "Última Atualização",
+            SELECT "Nome do Cliente", "Razão Social","Data da Inclusão", CNPJ, Telefone, CEP, Endereço, Número,
+                Complemento,Cidade, Bairro, "Status do Cliente", "Categoria do Cliente", "Última Atualização",
                 "Origem do Cliente", "Valor Gasto Total", "Última Compra"
             FROM clientes_juridicos
         """)
