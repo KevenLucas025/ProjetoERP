@@ -1,9 +1,12 @@
-from PySide6.QtWidgets import QLineEdit, QToolButton,QTableWidgetItem,QMessageBox,QMainWindow,QVBoxLayout,QWidget,QLabel
+from PySide6.QtWidgets import (QLineEdit, QToolButton,QTableWidgetItem,
+                               QMessageBox,QMainWindow,QVBoxLayout,QWidget,QLabel,QCheckBox,QPushButton,QScrollArea,QComboBox)
 from PySide6.QtGui import QPixmap, QIcon,QColor,QBrush,QGuiApplication
 from PySide6.QtCore import Qt
 from database import DataBase
 import sqlite3
 import pandas as pd
+from configuracoes import Configuracoes_Login
+import datetime
 
 class Clientes:
     def __init__(self, line_clientes: QLineEdit,main_window,btn_adicionar_cliente_juridico,
@@ -12,6 +15,7 @@ class Clientes:
         self.line_clientes = line_clientes
         self.imagem_line()
         self.db = DataBase("banco_de_dados.db")
+        self.config = Configuracoes_Login(self)
         self.main_window = main_window
         self.table_clientes_juridicos = self.main_window.table_clientes_juridicos  # Referência para a tabela no main window
         self.btn_adicionar_cliente_juridico = btn_adicionar_cliente_juridico
@@ -22,8 +26,7 @@ class Clientes:
         self.btn_gerar_relatorio_clientes = btn_gerar_relatorio_clientes
         self.btn_marcar_como_clientes = btn_marcar_como_clientes
         self.btn_historico_clientes = btn_historico_clientes
-
-        self.btn_adicionar_cliente_juridico.clicked.connect(self.cadastrar_cliente_juridico)
+        self.btn_adicionar_cliente_juridico.clicked.connect(self.exibir_janela_cadastro_cliente)
 
 
 
@@ -103,28 +106,29 @@ class Clientes:
             "Essa função ainda não está disponível"
         )
 
-    def cadastrar_cliente_juridico(self):
+    def exibir_janela_cadastro_cliente(self):
         self.janela_cadastro = QMainWindow()
-        self.janela_cadastro.resize(800,650)
+        self.janela_cadastro.resize(700, 550)
         self.janela_cadastro.setWindowTitle("Cadastro do Cliente")
         self.janela_cadastro.setStyleSheet("""
-                background-color: rgb(0, 80, 121);
-            """)
-
-        # Exibe a janela no centro da tela
+            background-color: rgb(0, 80, 121);
+        """)
+ 
+        # Centralizar a janela
         screen = QGuiApplication.primaryScreen()
         screen_geometry = screen.availableGeometry()
         window_geometry = self.janela_cadastro.frameGeometry()
         window_geometry.moveCenter(screen_geometry.center())
         self.janela_cadastro.move(window_geometry.topLeft())
-
-        central_widget = QWidget()
-        layout = QVBoxLayout(central_widget)
-        central_widget.setStyleSheet("""
+ 
+        # Conteúdo do formulário
+        conteudo = QWidget()
+        layout = QVBoxLayout(conteudo)
+        conteudo.setStyleSheet("""
             QLineEdit {
                 color: black;
                 background-color: rgb(240, 240, 240);
-                border: 2px solid rgb(50, 150,250);
+                border: 2px solid rgb(50, 150, 250);
                 border-radius: 6px;
                 padding: 3px;
             }
@@ -133,56 +137,129 @@ class Clientes:
             }
         """)
 
-        label_nome = QLabel("Nome do Cliente: ")
-        txt_nome = QLineEdit()
-        label_cnpj = QLabel("CNPJ: ")
-        txt_cnpj = QLineEdit()
-        label_telefone = QLabel("Telefone: ")
-        txt_telefone = QLineEdit()
-        label_cep = QLabel("CEP: ")
-        txt_cep  = QLineEdit()
-        label_endereco = QLabel("Endereço: ")
-        txt_endereco = QLineEdit()
-        label_numero = QLabel("Número: ")
-        txt_numero = QLineEdit()
-        label_cidade = QLabel("Cidade: ")
-        txt_cidade = QLineEdit()
-        label_bairro = QLabel("Bairro: ")
-        txt_bairro = QLineEdit()
-        label_nacionalidade = QLabel("Nacionalidade: ")
-        txt_nacionalidade = QLineEdit()
-        label_status_cliente = QLabel("Status do Cliente: ")
-        txt_status_cliente = QLineEdit()
-        label_categoria = QLabel("Categoria do Cliente: ")
-        txt_categoria = QLineEdit()
-
-        # Adiciona os widgets ao layout
-        layout.addWidget(label_nome)
-        layout.addWidget(txt_nome)
-        layout.addWidget(label_cnpj)
-        layout.addWidget(txt_cnpj)
-        layout.addWidget(label_telefone)
-        layout.addWidget(txt_telefone)
-        layout.addWidget(label_cep)
-        layout.addWidget(txt_cep)
-        layout.addWidget(label_endereco)
-        layout.addWidget(txt_endereco)
-        layout.addWidget(label_numero)
-        layout.addWidget(txt_numero)
-        layout.addWidget(label_cidade)
-        layout.addWidget(txt_cidade)
-        layout.addWidget(label_bairro)
-        layout.addWidget(txt_bairro)
-        layout.addWidget(label_nacionalidade)
-        layout.addWidget(txt_nacionalidade)
-        layout.addWidget(label_status_cliente)
-        layout.addWidget(txt_status_cliente)
-        layout.addWidget(label_categoria)
-        layout.addWidget(txt_categoria)
-        
+        # Função genérica para adicionar campos
+        def add_linha(titulo,widget=None):
+            layout.addWidget(QLabel(titulo))
+            if widget is None:
+                layout.addWidget(QLineEdit())
+            else:
+                layout.addWidget(widget)
+ 
+        add_linha("Nome do Cliente:")
+        add_linha("CNPJ:")
+        add_linha("Telefone:")
+        add_linha("CEP:")
+        add_linha("Endereço:")
+        add_linha("Número:")
+        add_linha("Cidade:")
+        add_linha("Bairro:")
+        add_linha("Nacionalidade:")
+        add_linha("Categoria do Cliente:")
         
 
-        self.janela_cadastro.setCentralWidget(central_widget)
+        combobox_status_cliente = QComboBox()
+        combobox_status_cliente.setStyleSheet("""
+                QComboBox { 
+                    background-color: white; 
+                    border: 3px solid rgb(50,150,250); 
+                    border-radius: 5px; 
+                    color: black; 
+                    padding: 5px;
+                }
+                QComboBox QAbstractItemView {
+                    background-color: white; 
+                    color: black; 
+                    border: 1px solid #ccc; 
+                    selection-background-color: #e5e5e5; 
+                    selection-color: black;
+                }
+                QComboBox QAbstractItemView QScrollBar:vertical {
+                    background: #f5f5f5; 
+                    width: 12px; 
+                    border: none;
+                }
+                QComboBox QAbstractItemView QScrollBar::handle:vertical {
+                    background: #cccccc; 
+                    min-height: 20px; 
+                    border-radius: 5px;
+                }
+                QComboBox QAbstractItemView QScrollBar::add-line:vertical, 
+                QComboBox QAbstractItemView QScrollBar::sub-line:vertical {
+                    background: none;
+                    height: 0px;  /* Remove os botões de linha (setas de cima e baixo) */
+                }
+                QComboBox QAbstractItemView QScrollBar::add-page:vertical, 
+                QComboBox QAbstractItemView QScrollBar::sub-page:vertical {
+                    background: none;
+                }
+
+
+            """)
+        add_linha("Status do Cliente:",combobox_status_cliente)    
+
+        btn_fazer_cadastro = QPushButton("Fazer o Cadastro")
+        btn_fazer_cadastro.clicked.connect(self.cadastrar_clientes_juridicos)
+        btn_fazer_cadastro.setStyleSheet("""
+                QPushButton {
+                color: rgb(255, 255, 255);
+                border-radius: 8px;
+                font-size: 16px;
+                background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */
+                border: 4px solid transparent;
+            }
+ 
+            QPushButton:hover {
+                background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */
+                color: black;
+            }
+        """)
+        layout.addWidget(btn_fazer_cadastro)
+ 
+        scroll_area = QScrollArea()
+        scroll_area.setWidgetResizable(True)
+        scroll_area.setWidget(conteudo)
+ 
+        self.janela_cadastro.setCentralWidget(scroll_area)
         self.janela_cadastro.show()
 
 
+    def cadastrar_clientes_juridicos(self):
+        try:
+            with self.db.connecta() as conexao:
+                cursor = conexao.cursor()
+                usuario_logado = self.config.obter_usuario_logado()
+
+                # Coletar dados dos campos
+                get = lambda campo: self.campos_cliente_juridico[campo].text().strip() if isinstance(self.campos_cliente_juridico[campo], QLineEdit) else self.campos_cliente_juridico[campo].currentText()
+
+                nome = get("Nome do Cliente:")
+                cnpj = get("CNPJ:")
+                telefone = get("Telefone:")
+                cep = get("CEP:")
+                endereco = get("Endereço:")
+                numero = get("Número:")
+                cidade = get("Cidade:")
+                bairro = get("Bairro:")
+                nacionalidade = get("Nacionalidade:")
+                categoria = get("Categoria do Cliente:")
+                status = get("Status do Cliente:")
+
+                # Você pode adicionar lógica para validar campos aqui
+                if not nome or not cnpj:
+                    QMessageBox.warning(self, "Atenção", "Nome e CNPJ são obrigatórios.")
+                    return
+                # Inserir no banco
+                cursor.execute("""
+                    INSERT INTO clientes_juridicos(
+                        "Nome do Cliente", CNPJ,Telefone,CEP,Endereço,Número,Cidade,Bairro,"Status do Cliente","Categoria do Cliente"
+                        "Origem do Cliente"
+                )VALUES(?,?,?,?,?,?,?,?,?,?,?)
+                """,(nome,cnpj,telefone,cep,endereco,numero,cidade,bairro,nacionalidade,categoria,status))
+
+                conexao.commit()
+
+                QMessageBox.information(self, "Sucesso", "Cliente cadastrado com sucesso!")
+            self.janela_cadastro.close()
+
+        except Exception as e:
+            QMessageBox.critical(self, "Erro", f"Erro ao cadastrar cliente: \n{e}")
