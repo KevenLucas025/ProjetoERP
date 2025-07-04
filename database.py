@@ -142,7 +142,8 @@ class DataBase:
                     Quantidade INTEGER NOT NULL,
                     Valor_Real REAL NOT NULL,
                     Desconto REAL,
-                    Data_Compra TEXT,
+                    "Valor Total" TEXT,
+                    "Data do Cadastro" TEXT,
                     Código_Item TEXT,
                     Cliente TEXT,
                     Descrição_Produto TEXT,
@@ -290,7 +291,7 @@ class DataBase:
         except Exception as e:
             print("Erro ao criar tabela de clientes_fisicos: ", e)
 #*********************************************************************************************************************
-    def insert_product(self, produto, quantidade, valor_real, desconto, data_compra, 
+    def insert_product(self, produto, quantidade, valor_real, desconto,valor_total, data_cadastro, 
                     codigo_item, cliente, descricao_produto, usuario, imagem=None):
         try:
             cursor = self.connection.cursor()
@@ -300,7 +301,7 @@ class DataBase:
             quantidade = quantidade if quantidade is not None else 0
             valor_real = valor_real if valor_real is not None else 0.0
             desconto = desconto if desconto is not None else "Sem desconto"
-            data_compra = data_compra if data_compra is not None else "Não Cadastrado"
+            data_cadastro = data_cadastro if data_cadastro is not None else "Não Cadastrado"
             codigo_item = codigo_item if codigo_item is not None else "Não Cadastrado"
             cliente = cliente if cliente is not None else "Não Cadastrado"
             descricao_produto = descricao_produto if descricao_produto is not None else "Não Cadastrado"
@@ -308,10 +309,10 @@ class DataBase:
             imagem = imagem if imagem is not None else "Não Cadastrado"
 
             cursor.execute("""
-                INSERT INTO products (Produto, Quantidade, Valor_Real, Desconto, Data_Compra, Código_Item, 
+                INSERT INTO products (Produto, Quantidade, Valor_Real, Desconto, "Data do Cadastro", Código_Item, 
                         Cliente, Descrição_Produto, Imagem, Usuário) 
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-            """, (produto, quantidade, valor_real, desconto, data_compra, codigo_item, 
+            """, (produto, quantidade, valor_real, desconto, data_cadastro, codigo_item, 
                 cliente, descricao_produto, imagem, usuario))
             self.connection.commit()
             print("Produto inserido com sucesso!")
@@ -429,7 +430,7 @@ class DataBase:
 #*********************************************************************************************************************
     def atualizar_produto(self, produto_id, produto=None, quantidade=None, 
                         valor_real=None,desconto=None, 
-                        data_compra=None, codigo_item=None, cliente=None, descricao_produto=None, produto_imagem=None):
+                        data_cadastro=None, codigo_item=None, cliente=None, descricao_produto=None, produto_imagem=None):
         try:
             # Monta a query SQL dinamicamente com base nos parâmetros fornecidos
             columns_to_update = []
@@ -451,13 +452,13 @@ class DataBase:
                 desconto = "Não Cadastrado"
                 columns_to_update.append("Desconto = ?")
                 values_to_update.append(desconto)
-            if data_compra:
-                columns_to_update.append("Data_Compra = ?")
-                values_to_update.append(data_compra)
+            if data_cadastro:
+                columns_to_update.append("Data do Cadastro = ?")
+                values_to_update.append(data_cadastro)
             else:
-                data_compra = "Não Cadastrado"
-                columns_to_update.append("Data_Compra = ?")
-                values_to_update.append(data_compra)
+                data_cadastro = "Não Cadastrado"
+                columns_to_update.append("Data do Cadastro = ?")
+                values_to_update.append(data_cadastro)
             if codigo_item:
                 columns_to_update.append("Código_Item = ?")
                 values_to_update.append(codigo_item)
@@ -749,7 +750,7 @@ class DataBase:
     def obter_produtos_base(self):
         cursor = self.connection.cursor()
         cursor.execute("""
-            SELECT Produto, Quantidade, Valor_Real, Desconto, Data_Compra, Código_Item, Cliente, Descrição_Produto, Imagem, 'Status da Saída' 
+            SELECT Produto, Quantidade, Valor_Real, Desconto,"Valor Total", "Data do Cadastro", Código_Item, Cliente, Descrição_Produto, Imagem, 'Status da Saída' 
             FROM products
         """)
         produtos = cursor.fetchall()

@@ -87,7 +87,7 @@ class EstoqueProduto(QWidget):
         
         # Carregar dados da tabela "products" usando pandas
         query = """
-        SELECT Produto, Quantidade, Valor_Real, IFNULL(Desconto, 'Sem Desconto') AS Desconto, Data_Compra, Código_Item, Cliente, Descrição_Produto, Usuário
+        SELECT Produto, Quantidade, Valor_Real, IFNULL(Desconto, 'Sem Desconto') AS Desconto, "Data do Cadastro", Código_Item, Cliente, Descrição_Produto, Usuário
         FROM products
         """
         df = pd.read_sql_query(query, cn)
@@ -423,7 +423,7 @@ class EstoqueProduto(QWidget):
             quantidade_item = self.main_window.table_saida.item(row, 1)
             valor_real_item = self.main_window.table_saida.item(row, 2)
             desconto_item = self.main_window.table_saida.item(row, 3)
-            data_compra_item = self.main_window.table_saida.item(row, 5)
+            data_cadastro_item = self.main_window.table_saida.item(row, 5)
             codigo_item = self.main_window.table_saida.item(row, 6)
             cliente_item = self.main_window.table_saida.item(row, 7)
             descricao_item = self.main_window.table_saida.item(row, 8)
@@ -433,7 +433,7 @@ class EstoqueProduto(QWidget):
             quantidade = int(quantidade_item.text()) if quantidade_item else "0"
             valor_real = valor_real_item.text() if valor_real_item else ""
             desconto = desconto_item.text() if desconto_item else ""
-            data_compra = data_compra_item.text() if data_compra_item else ""
+            data_cadastro = data_cadastro_item.text() if data_cadastro_item else ""
             codigo_produto = codigo_item.text() if codigo_item else ""
             cliente = cliente_item.text() if cliente_item else ""
             descricao = descricao_item.text() if descricao_item else ""
@@ -486,9 +486,9 @@ class EstoqueProduto(QWidget):
                     # Insere como novo produto
                     cursor.execute("""
                         INSERT INTO products 
-                        (Produto, Quantidade, Valor_Real, Desconto, Data_Compra, Código_Item, Cliente, Descrição_Produto, Imagem, Usuário, Status, 'Status da Saída')
+                        (Produto, Quantidade, Valor_Real, Desconto, "Data do Cadastro", Código_Item, Cliente, Descrição_Produto, Imagem, Usuário, Status, 'Status da Saída')
                         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'Ativo', ?)
-                    """, (produto, str(quantidade_estorno), valor_real, desconto, data_compra, 
+                    """, (produto, str(quantidade_estorno), valor_real, desconto, data_cadastro, 
                           codigo_produto, cliente, descricao, imagem, usuario, "1"))
                 cn.commit()
 
@@ -533,7 +533,7 @@ class EstoqueProduto(QWidget):
                 self.main_window.table_base.setItem(row_base, 1, self.criar_item(str(quantidade_estorno)))
                 self.main_window.table_base.setItem(row_base, 2, self.criar_item(valor_real))
                 self.main_window.table_base.setItem(row_base, 3, self.criar_item(desconto))
-                self.main_window.table_base.setItem(row_base, 4, self.criar_item(data_compra))
+                self.main_window.table_base.setItem(row_base, 4, self.criar_item(data_cadastro))
                 self.main_window.table_base.setItem(row_base, 5, self.criar_item(codigo_produto))
                 self.main_window.table_base.setItem(row_base, 6, self.criar_item(cliente))
                 self.main_window.table_base.setItem(row_base, 7, self.criar_item(descricao))
@@ -591,7 +591,7 @@ class EstoqueProduto(QWidget):
 
             # Consultar todos os produtos
             query = """
-            SELECT Produto, Quantidade, Valor_Real, Desconto, Data_Compra, Código_Item, Cliente, Descrição_Produto, Usuário, "Status da Saída"
+            SELECT Produto, Quantidade, Valor_Real, Desconto, "Data do Cadastro", Código_Item, Cliente, Descrição_Produto, Usuário, "Status da Saída"
             FROM products
             """
             produtos = self.db.executar_query(query)
@@ -1706,17 +1706,17 @@ class EstoqueProduto(QWidget):
                 quantidade = row_data[1]
                 valor_real = row_data[2]
                 desconto = row_data[3]
-                data_compra = row_data[4]
+                data_cadastro = row_data[4]
                 codigo_item = row_data[5]
                 cliente = row_data[6]
                 descricao = row_data[7]
                 usuario = row_data[8]
 
                 cursor.execute("""
-                    INSERT INTO products (Produto, Quantidade, Valor_Real, Desconto, Data_Compra, Código_Item, 
+                    INSERT INTO products (Produto, Quantidade, Valor_Real, Desconto, "Data do Cadastro", Código_Item, 
                             Cliente, Descrição_Produto, Usuário) 
                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-                """, (produto, quantidade, valor_real, desconto, data_compra, codigo_item, 
+                """, (produto, quantidade, valor_real, desconto, data_cadastro, codigo_item, 
                     cliente, descricao, usuario))
 
             conn.commit()
@@ -1847,6 +1847,8 @@ class EstoqueProduto(QWidget):
                 produto = self.table_massa_produtos.item(linha, 0).text()
                 quantidade = self.table_massa_produtos.item(linha, 1).text()
 
+              
+
                 # Tratamento do valor (remover R$ e converter para float)
                 valor_str = self.table_massa_produtos.item(linha, 2).text().replace("R$", "").replace(".", "").replace(",", ".").strip()
                 valor_float = float(valor_str) if valor_str else 0.0
@@ -1856,9 +1858,14 @@ class EstoqueProduto(QWidget):
                 desconto_str = self.table_massa_produtos.item(linha, 3).text().replace("%", "").replace(",", ".").strip()
                 desconto = 0.0 if desconto_str.lower() == "sem desconto" else float(desconto_str)
 
-                data_compra = self.table_massa_produtos.item(linha, 4).text()
+                data_cadastro = self.table_massa_produtos.item(linha, 4).text()
                 cliente = self.table_massa_produtos.item(linha, 6).text()
                 descricao_produto = self.table_massa_produtos.item(linha, 7).text()
+                
+                 # Valor total vindo da coluna 5 (ajuste se estiver em outra)
+                valor_total_str = self.table_massa_produtos.item(linha, 5).text().replace("R$", "").replace(".", "").replace(",", ".").strip()
+                valor_total_float = float(valor_total_str) if valor_total_str else 0.0
+                valor_total = f"R$ {valor_total_float:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
 
                 # Gerar código aleatório para cada produto
                 codigo_aleatorio = self.main_window.gerar_codigo_aleatorio()
@@ -1868,7 +1875,8 @@ class EstoqueProduto(QWidget):
                     "quantidade": quantidade,
                     "valor_produto": valor_produto,
                     "desconto": desconto,
-                    "data_compra": data_compra,
+                    "valor_total":valor_total,
+                    "data_cadastro": data_cadastro,
                     "codigo_item": codigo_aleatorio,
                     "cliente": cliente,
                     "descricao_produto": descricao_produto

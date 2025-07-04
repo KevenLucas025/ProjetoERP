@@ -3107,7 +3107,7 @@ QLineEdit::placeholderText {
                  <item>
                   <layout class="QHBoxLayout" name="horizontalLayout_5">
                    <item>
-                    <widget class="QLabel" name="label_data_compra_3">
+                    <widget class="QLabel" name="label_data_cadastro">
                      <property name="styleSheet">
                       <string notr="true">QLabel {
     color: black;
@@ -3117,7 +3117,7 @@ QLineEdit::placeholderText {
 </string>
                      </property>
                      <property name="text">
-                      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Data da Compra&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Data do Cadastro&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                      </property>
                     </widget>
                    </item>
@@ -3161,7 +3161,7 @@ QLineEdit::placeholderText {
                     </widget>
                    </item>
                    <item>
-                    <widget class="QFrame" name="frame_erro_data_compra">
+                    <widget class="QFrame" name="frame_erro_data_cadastro">
                      <property name="maximumSize">
                       <size>
                        <width>21</width>
@@ -7890,7 +7890,12 @@ QTableWidget::item:selected {
              </column>
              <column>
               <property name="text">
-               <string>Data da Compra</string>
+               <string>Valor Total</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>Data do Cadastro</string>
               </property>
              </column>
              <column>

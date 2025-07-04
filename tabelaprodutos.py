@@ -12,6 +12,7 @@ import locale
 import pandas as pd
 import openpyxl
 import os
+from datetime import datetime
 
 
 class TabelaProdutos(QDialog):
@@ -50,13 +51,12 @@ class TabelaProdutos(QDialog):
         layout = QVBoxLayout()
 
         self.grid_layout = QGridLayout()
-        
 
         # Tabela para exibir os produtos
         self.table_widget = QTableWidget()
         self.table_widget.setColumnCount(10)  # Definindo o número de colunas
         self.table_widget.setHorizontalHeaderLabels(["ID", "Produto", "Quantidade", "Valor do Produto", 
-                                                     "Desconto", "Data da Compra", "Código do Produto", 
+                                                     "Desconto","Valor Total", "Data do Cadastro", "Código do Produto", 
                                                      "Cliente", "Descrição","Usuário"])  # Definindo os rótulos das colunas
         
         # Personalizar o estilo dos cabeçalhos de linha e coluna
@@ -585,14 +585,15 @@ class TabelaProdutos(QDialog):
         imagem_data = self.recuperar_imagem_do_banco(produto_id)
 
         coluna_id = 1 if self.coluna_checkboxes_produtos_adicionada else 0
-        coluna_nome = coluna_id + 1
-        coluna_quantidade = coluna_nome + 1
-        coluna_valor = coluna_quantidade + 1
-        coluna_desconto = coluna_valor + 1
-        coluna_dateEdit = coluna_desconto + 1
-        coluna_codigo_item = coluna_dateEdit + 1
-        coluna_cliente = coluna_codigo_item + 1
-        coluna_descricao = coluna_cliente + 1
+        coluna_nome = coluna_id + 1                  # Produto
+        coluna_quantidade = coluna_nome + 1          # Quantidade
+        coluna_valor = coluna_quantidade + 1         # Valor do Produto
+        coluna_desconto = coluna_valor + 1           # Desconto
+        # Pula coluna de Valor Total (frame separado)
+        coluna_dateEdit = coluna_desconto + 2        # Data do Cadastro
+        coluna_codigo_item = coluna_dateEdit + 1     # Código do Produto
+        coluna_cliente = coluna_codigo_item + 1      # Cliente
+        coluna_descricao = coluna_cliente + 1        # Descrição
 
         # Econtrar a linha onde está o produto id
         linha_produto = None
@@ -637,7 +638,7 @@ class TabelaProdutos(QDialog):
             "quantidade": int(produto_quantidade) if produto_quantidade.strip() else "Não Cadastrado",
             "valor_produto": float(produto_valor_real.replace('R$', '').replace('.', '').replace(',', '.').strip()) if produto_valor_real.strip() else "Não Cadastrado",
             "desconto": desconto if desconto else "Sem desconto", # Tratado como número para cálculos
-            "data_compra": produto_dateEdit if produto_dateEdit.strip() else "Não Cadastrado",
+            "data_cadastro": produto_dateEdit if produto_dateEdit.strip() else "Não Cadastrado",
             "codigo_item": produto_codigo_item if produto_codigo_item.strip() else "Não Cadastrado",
             "cliente": produto_cliente if produto_cliente.strip() else "Não Cadastrado",
             "descricao_produto": produto_descricao if produto_descricao.strip() else "Não Cadastrado",
@@ -726,7 +727,22 @@ class TabelaProdutos(QDialog):
                         if widget:
                             widget.deleteLater()
                 self.main_window.frame_imagem_produto_3.setLayout(None)
-
+            try:
+                db = DataBase()
+                db.connecta()
+                cursor = db.connection.cursor()
+                
+                data_hora = datetime.now().strftime("%d/%m/%Y %H:%M")
+                
+                cursor.execute("""
+                    UPDATE clientes_juridicos
+                    SET "Última Atualização" = ?
+                    WHERE "Nome do Cliente" = ?
+                """, (data_hora,produto_cliente))
+                db.connection.commit()
+                
+            except Exception as e:
+                print(f"Erro ao atualizar Última Atualização: {e}")
             self.accept()
 
         except ValueError as e:
@@ -1032,7 +1048,7 @@ class TabelaProdutos(QDialog):
     def carregar_tabela_produtos(self):
         with sqlite3.connect('banco_de_dados.db') as cn:
             cursor = cn.cursor()
-            cursor.execute('SELECT id, Produto, Quantidade, Valor_Real, Desconto, Data_Compra, '
+            cursor.execute('SELECT id, Produto, Quantidade, Valor_Real, Desconto, "Data do Cadastro",'
                         '"Código_Item", Cliente, "Descrição_Produto", "Usuário" '
                         'FROM products ORDER BY id ASC')  # <-- Ordem crescente
 
@@ -1045,7 +1061,7 @@ class TabelaProdutos(QDialog):
         deslocamento = 1 if self.coluna_checkboxes_produtos_adicionada else 0
         self.checkboxes = []  # Zera os checkboxes
 
-        for i, (id, produto, quantidade, valor_real, desconto, data_compra,
+        for i, (id, produto, quantidade, valor_real, desconto, data_cadastro,
                 codigo_item, cliente, descricao_produto, usuario) in enumerate(registros):
 
             if self.coluna_checkboxes_produtos_adicionada:
@@ -1059,7 +1075,7 @@ class TabelaProdutos(QDialog):
             self.table_widget.setItem(i, 2 + deslocamento, QTableWidgetItem(str(quantidade)))
             self.table_widget.setItem(i, 3 + deslocamento, QTableWidgetItem(str(valor_real)))
             self.table_widget.setItem(i, 4 + deslocamento, QTableWidgetItem(str(desconto)))
-            self.table_widget.setItem(i, 5 + deslocamento, QTableWidgetItem(data_compra))
+            self.table_widget.setItem(i, 5 + deslocamento, QTableWidgetItem(data_cadastro))
             self.table_widget.setItem(i, 6 + deslocamento, QTableWidgetItem(codigo_item))
             self.table_widget.setItem(i, 7 + deslocamento, QTableWidgetItem(cliente))
             self.table_widget.setItem(i, 8 + deslocamento, QTableWidgetItem(descricao_produto))
@@ -1069,16 +1085,9 @@ class TabelaProdutos(QDialog):
         self.table_widget.sortItems(0 + deslocamento, Qt.AscendingOrder)
         self.table_widget.setSortingEnabled(True)
 
-
-
-            
-
-
-
     def atualizar_tabela_products(self):
         QMessageBox.information(None, "Sucesso", "Dados carregados com sucesso!")
         self.carregar_tabela_produtos()
-
 
     def gerar_arquivo_excel(self):
         # Obtém o número de linhas e colunas da tabela
@@ -1151,15 +1160,16 @@ class TabelaProdutos(QDialog):
             quantidade = dados_produto[2]
             valor_real = dados_produto[3]
             desconto = dados_produto[4]
-            data_compra = dados_produto[5]
-            codigo_item = dados_produto[6]
-            cliente = dados_produto[7]
-            descricao_produto = dados_produto[8]
-            imagem = dados_produto[9] if len(dados_produto) > 8 else None
+            data_cadastro = dados_produto[5]
+            valor_total = dados_produto[6]
+            codigo_item = dados_produto[7]
+            cliente = dados_produto[8]
+            descricao_produto = dados_produto[9]
+            imagem = dados_produto[10] if len(dados_produto) > 8 else None
 
             # Inserir o produto no banco de dados usando a função do módulo database
-            self.db.insert_product(produto, quantidade, valor_real, desconto, data_compra, 
-                        codigo_item, cliente, descricao_produto, imagem)
+            self.db.insert_product(produto, quantidade, valor_real, desconto, data_cadastro, 
+                        valor_total,codigo_item, cliente, descricao_produto, imagem)
 
             # Exibir uma mensagem de sucesso
             QMessageBox.information(self, "Sucesso", "Produto duplicado e cadastrado com sucesso.")
