@@ -54,10 +54,10 @@ class TabelaProdutos(QDialog):
 
         # Tabela para exibir os produtos
         self.table_widget = QTableWidget()
-        self.table_widget.setColumnCount(10)  # Definindo o número de colunas
+        self.table_widget.setColumnCount(12)  # Definindo o número de colunas
         self.table_widget.setHorizontalHeaderLabels(["ID", "Produto", "Quantidade", "Valor do Produto", 
                                                      "Desconto","Valor Total", "Data do Cadastro", "Código do Produto", 
-                                                     "Cliente", "Descrição","Usuário"])  # Definindo os rótulos das colunas
+                                                     "Cliente", "Descrição do Produto","Usuário","Status da Saída"])  # Definindo os rótulos das colunas
         
         # Personalizar o estilo dos cabeçalhos de linha e coluna
         font = self.table_widget.horizontalHeader().font()

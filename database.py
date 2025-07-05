@@ -172,13 +172,13 @@ class DataBase:
                     Quantidade INTEGER NOT NULL,
                     "Valor do Produto"  NOT NULL,
                     Desconto,
+                    "Valor Total" TEXT,
                     "Data de Saída" TEXT,
                     "Data da Criação" TEXT,
                     "Código do Produto" TEXT,
                     Cliente TEXT,
                     "Descrição do Produto",
                     Usuário TEXT,
-                    Status TEXT,
                     'Status da Saída' TEXT,
                     Imagem BLOB
                 )
@@ -312,10 +312,10 @@ class DataBase:
 
             cursor.execute("""
                 INSERT INTO products (Produto, Quantidade, Valor_Real, Desconto,"Valor Total", "Data do Cadastro", Código_Item, 
-                        Cliente, Descrição_Produto, Imagem, Usuário) 
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?)
+                        Cliente, Descrição_Produto,"Status da Saída", Imagem, Usuário) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?,?)
             """, (produto, quantidade, valor_real, desconto,valor_total, data_cadastro, codigo_item, 
-                cliente, descricao_produto, imagem, usuario))
+                cliente, descricao_produto, 0,imagem, usuario))
             self.connection.commit()
             print("Produto inserido com sucesso!")
         except Exception as e:
@@ -764,7 +764,8 @@ class DataBase:
     def obter_produtos_base(self):
         cursor = self.connection.cursor()
         cursor.execute("""
-            SELECT Produto, Quantidade, Valor_Real, Desconto, "Data do Cadastro", Código_Item, Cliente, Descrição_Produto, Imagem, 'Status da Saída' 
+            SELECT Produto, Quantidade, Valor_Real, Desconto,"Valor Total", "Data do Cadastro", Código_Item, Cliente, 
+                       Descrição_Produto, Imagem, 'Status da Saída' 
             FROM products
         """)
         produtos = cursor.fetchall()
@@ -886,7 +887,8 @@ class DataBase:
             else:
                 query_insert = """
                 INSERT INTO products_saida 
-                (Produto, Quantidade, "Valor do Produto", Desconto, "Data de Saída", "Data da Criação", "Código do Produto", Cliente, "Descrição do Produto", Usuário, Imagem, Status, "Status da Saída")
+                (Produto, Quantidade, "Valor do Produto", Desconto,"Valor Total", "Data de Saída", 
+                "Data da Criação", "Código do Produto", Cliente, "Descrição do Produto", Usuário, Imagem,"Status da Saída")
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """
                 self.executar_comando(query_insert, produto_info)

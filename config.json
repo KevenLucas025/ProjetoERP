@@ -151,7 +151,10 @@
             "kaska",
             "dsj",
             "dsd",
-            "sds"
+            "sds",
+            "sd",
+            "assa",
+            "sasa"
         ],
         "txt_descricao_produto_3": [
             "Notebook com 16GB RAM, SSD",
@@ -166,7 +169,12 @@
             "hdhd",
             "sdsd",
             "dssds",
-            "dsdsd"
+            "dsdsd",
+            "SSDsds",
+            "sdsds",
+            "sasas",
+            "asas",
+            "asa"
         ],
         "txt_quantidade": [
             "10",
@@ -175,14 +183,18 @@
             "13",
             "14",
             "1",
-            "2"
+            "2",
+            "123"
         ],
         "txt_valor_produto_3": [
             "12",
             "120",
             "13",
             "14",
-            "123"
+            "123",
+            "43",
+            "154",
+            "10"
         ],
         "txt_produto": [
             "!Produtos",
@@ -195,7 +207,11 @@
             "Coca",
             "fdfhdhf",
             "dssd",
-            "dsdsd"
+            "dsdsd",
+            "Maça",
+            "ahjash",
+            "asas",
+            "dsds"
         ],
         "txt_cliente_3": [
             "12",

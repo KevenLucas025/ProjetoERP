@@ -234,9 +234,7 @@ class EstoqueProduto(QWidget):
             usuario = self.main_window.table_base.item(row, 9).text() or ""
             imagem = self.recuperar_imagem_produto_bd_products(codigo_produto)
 
-            status_item = self.main_window.table_base.item(row, 10)
-            status = status_item.text() if status_item else "Inativo"
-            status_saida = "1"
+            status_saida = 1
             data_saida = datetime.now().strftime("%d/%m/%Y %H:%M")
 
             if quantidade > 1:
@@ -284,8 +282,7 @@ class EstoqueProduto(QWidget):
                     descricao,
                     usuario,
                     imagem,
-                    status,
-                    status_saida
+                    1
                 )
             else:
                 produtos_saida.append((
@@ -301,8 +298,7 @@ class EstoqueProduto(QWidget):
                     descricao,
                     usuario,
                     imagem,
-                    status,
-                    status_saida
+                    1
                 ))
 
             historico_logs.append(f"Produto {produto} foi gerado saída de {quantidade_saida} unidade(s).")
@@ -587,7 +583,7 @@ class EstoqueProduto(QWidget):
 
             # Consultar todos os produtos
             query = """
-            SELECT Produto, Quantidade, Valor_Real, Desconto, "Data do Cadastro", Código_Item, Cliente, Descrição_Produto, Usuário, "Status da Saída"
+            SELECT Produto, Quantidade, Valor_Real, Desconto, "Valor Total","Data do Cadastro", Código_Item, Cliente, Descrição_Produto, Usuário, "Status da Saída"
             FROM products
             """
             produtos = self.db.executar_query(query)
@@ -635,7 +631,8 @@ class EstoqueProduto(QWidget):
                 Produto, 
                 SUM(Quantidade) as Quantidade, 
                 "Valor do Produto", 
-                Desconto, 
+                Desconto,
+                "Valor Total", 
                 "Data de Saída", 
                 "Data da Criação", 
                 "Código do Produto", 
@@ -650,7 +647,8 @@ class EstoqueProduto(QWidget):
             GROUP BY 
                 Produto, 
                 "Valor do Produto", 
-                Desconto, 
+                Desconto,
+                "Valor Total", 
                 "Data de Saída", 
                 "Data da Criação", 
                 "Código do Produto", 
