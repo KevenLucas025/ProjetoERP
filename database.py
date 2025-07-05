@@ -141,14 +141,15 @@ class DataBase:
                     Produto TEXT NOT NULL,
                     Quantidade INTEGER NOT NULL,
                     Valor_Real REAL NOT NULL,
-                    Desconto REAL,
+                    Desconto TEXT,
                     "Valor Total" TEXT,
                     "Data do Cadastro" TEXT,
                     Código_Item TEXT,
                     Cliente TEXT,
                     Descrição_Produto TEXT,
-                    Usuário,
-                    Imagem BLOB
+                    Usuário TEXT,
+                    "Status da Saída" TEXT,
+                    Imagem TEXT
                 )
             """)
             self.connection.commit()  # Confirmar a transação
@@ -301,6 +302,7 @@ class DataBase:
             quantidade = quantidade if quantidade is not None else 0
             valor_real = valor_real if valor_real is not None else 0.0
             desconto = desconto if desconto is not None else "Sem desconto"
+            valor_total = valor_total if valor_total is not None else "Não Cadastrado"
             data_cadastro = data_cadastro if data_cadastro is not None else "Não Cadastrado"
             codigo_item = codigo_item if codigo_item is not None else "Não Cadastrado"
             cliente = cliente if cliente is not None else "Não Cadastrado"
@@ -309,10 +311,10 @@ class DataBase:
             imagem = imagem if imagem is not None else "Não Cadastrado"
 
             cursor.execute("""
-                INSERT INTO products (Produto, Quantidade, Valor_Real, Desconto, "Data do Cadastro", Código_Item, 
+                INSERT INTO products (Produto, Quantidade, Valor_Real, Desconto,"Valor Total", "Data do Cadastro", Código_Item, 
                         Cliente, Descrição_Produto, Imagem, Usuário) 
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-            """, (produto, quantidade, valor_real, desconto, data_cadastro, codigo_item, 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?)
+            """, (produto, quantidade, valor_real, desconto,valor_total, data_cadastro, codigo_item, 
                 cliente, descricao_produto, imagem, usuario))
             self.connection.commit()
             print("Produto inserido com sucesso!")
@@ -429,7 +431,7 @@ class DataBase:
             print("Erro ao apagar usuário do banco de dados:", e)
 #*********************************************************************************************************************
     def atualizar_produto(self, produto_id, produto=None, quantidade=None, 
-                        valor_real=None,desconto=None, 
+                        valor_real=None,desconto=None, valor_total=None,
                         data_cadastro=None, codigo_item=None, cliente=None, descricao_produto=None, produto_imagem=None):
         try:
             # Monta a query SQL dinamicamente com base nos parâmetros fornecidos
@@ -452,6 +454,13 @@ class DataBase:
                 desconto = "Não Cadastrado"
                 columns_to_update.append("Desconto = ?")
                 values_to_update.append(desconto)
+            if valor_total is not None:
+                columns_to_update.append("Valor Total = ?")
+                values_to_update.append(valor_total)
+            else:
+                valor_total = "Não Cadastrado"
+                columns_to_update.append("Valor Total = ?")
+                values_to_update.append(valor_total)
             if data_cadastro:
                 columns_to_update.append("Data do Cadastro = ?")
                 values_to_update.append(data_cadastro)
@@ -483,6 +492,11 @@ class DataBase:
             if produto_imagem:
                 columns_to_update.append("Imagem = ?")
                 values_to_update.append(produto_imagem)
+            else:
+                produto_imagem = "Não Cadastrado"
+                columns_to_update.append("Não Cadastrado")
+                values_to_update.append(produto_imagem)
+
 
             # Converte as listas em strings separadas por vírgula
             set_clause = ", ".join(columns_to_update)
@@ -750,7 +764,7 @@ class DataBase:
     def obter_produtos_base(self):
         cursor = self.connection.cursor()
         cursor.execute("""
-            SELECT Produto, Quantidade, Valor_Real, Desconto,"Valor Total", "Data do Cadastro", Código_Item, Cliente, Descrição_Produto, Imagem, 'Status da Saída' 
+            SELECT Produto, Quantidade, Valor_Real, Desconto, "Data do Cadastro", Código_Item, Cliente, Descrição_Produto, Imagem, 'Status da Saída' 
             FROM products
         """)
         produtos = cursor.fetchall()
@@ -931,10 +945,10 @@ class DataBase:
         else:
             cursor.execute("""
                 INSERT INTO clientes_juridicos (
-                    "Nome do Cliente", "Data da Inclusão", "Status do Cliente", 
+                    "Nome do Cliente","Razão Social", "Data da Inclusão", "Status do Cliente", 
                     "Categoria do Cliente", "Última Atualização", 
                     "Origem do Cliente", "Valor Gasto Total", "Última Compra"
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?,?)
             """, (
                 nome_cliente, data_inclusao, status, categoria, ultima_atualizacao,
                 origem, valor_gasto, ultima_compra
@@ -953,17 +967,17 @@ class DataBase:
             # Atualiza os dados
             cursor.execute("""
                 UPDATE clientes_juridicos
-                SET CNPJ = ?, Telefone = ?, CEP = ?, Endereço = ?, Número = ?, Cidade = ?, Bairro = ?
+                SET CNPJ = ?, Telefone = ?, CEP = ?, Endereço = ?, Número = ?,Complemento = ?, Cidade = ?, Bairro = ?
                 WHERE "Nome do Cliente" = ?
             """, (cnpj, telefone, cep, endereco, numero, cidade, bairro, nome_cliente))
         else:
             # Cria um novo cliente com os dados básicos
             cursor.execute("""
                 INSERT INTO clientes_juridicos (
-                    "Nome do Cliente", "Data da Inclusão", CNPJ, Telefone, CEP, Endereço, Número,
+                    "Nome do Cliente", "Data da Inclusão", CNPJ, Telefone, CEP, Endereço, Número,Complemento,
                     Cidade, Bairro, "Status do Cliente", "Categoria do Cliente", "Última Atualização",
                     "Origem do Cliente", "Valor Gasto Total", "Última Compra"
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?,?)
             """, (
                 nome_cliente, datetime.now().strftime("%d/%m/%Y"), cnpj, telefone, cep, endereco, numero,
                 cidade, bairro, "Ativo", "Não informado", datetime.now().strftime("%d/%m/%Y"),
@@ -986,7 +1000,7 @@ class DataBase:
         cursor = self.connection.cursor()
         cursor.execute("""
             SELECT "Nome do Cliente", "Razão Social","Data da Inclusão", CNPJ, Telefone, CEP, Endereço, Número,
-                Complemento,Cidade, Bairro, "Status do Cliente", "Categoria do Cliente", "Última Atualização",
+                Complemento,Cidade, Bairro,Estado, "Status do Cliente", "Categoria do Cliente", "Última Atualização",
                 "Origem do Cliente", "Valor Gasto Total", "Última Compra"
             FROM clientes_juridicos
         """)

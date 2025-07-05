@@ -401,7 +401,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.btn_cadastrar_novo_usuario.clicked.connect(lambda: self.paginas_sistemas.setCurrentWidget(self.pg_cadastrar_usuario))
         self.btn_editar_massa_produtos.clicked.connect(lambda: self.paginas_sistemas.setCurrentWidget(self.pg_cadastrar_produto))
         self.btn_editar_massa_usuario.clicked.connect(lambda: self.paginas_sistemas.setCurrentWidget(self.pg_cadastrar_usuario))
-
+        
 
         self.btn_remover_imagem.clicked.connect(self.retirar_imagem_produto)
         self.btn_limpar_campos.clicked.connect(self.apagar_campos_produtos)
@@ -409,6 +409,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.btn_confirmar.clicked.connect(self.confirmar_produtos)
         self.btn_atualizar_cadastro.clicked.connect(self.atualizar_usuario_no_bd)
         self.btn_verificar_estoque.clicked.connect(self.mostrar_page_estoque)
+        self.btn_ver_clientes_juridicos.clicked.connect(self.mostrar_page_clientes)
         self.btn_apagar_cadastro.clicked.connect(self.eliminar_campos_usuarios)
         self.btn_remover_imagem_usuario.clicked.connect(self.retirar_imagem_usuario)
         self.btn_sair_modo_edicao.clicked.connect(self.sair_modo_edicao_usuarios)
@@ -644,7 +645,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         
         # Atualizar a tabela na página de estoque
         self.estoque_produtos.tabela_estoque()
-
+    def mostrar_page_clientes(self):
+        # Navegar para a página de estoque
+        self.paginas_sistemas.setCurrentWidget(self.pg_clientes)
+        
 
     # EXIBE A PÁGINA DE CONFIGURAÇÕES AO CLICAR NA OPÇÃO CONFIGURAÇÕES DENTRO DO MENU DO BOTÃO MAIS OPÇÕES
     def combobox_caixa(self):
@@ -1085,15 +1089,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         valor = self.txt_desconto_3.text()
         if valor:
             try:
-                valor_float = float(valor)
+                valor_int = int(float(valor))  # Converte para inteiro, mesmo se digitar "12.0"
             except ValueError:
                 QMessageBox.warning(self, "Erro", "Valor inválido")
                 return
-            if valor_float < 5:
+            if valor_int < 5:
                 self.mostrar_erro_desconto()
                 return
-            valor_porcentagem = valor_float / 100
-            valor_formatado = "{:.2f}%".format(valor_porcentagem)
+            valor_formatado = f"{valor_int}%"
             self.txt_desconto_3.setText(valor_formatado)
 #*********************************************************************************************************************
     def mostrar_erro_desconto(self):
@@ -1593,30 +1596,32 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.label_valor_desconto.setAlignment(Qt.AlignCenter)
         self.label_quantidade.setAlignment(Qt.AlignCenter)
 #*********************************************************************************************************************
-    def inserir_produto_no_bd(self, produto_info, registrar_historico=True):
+    def inserir_produto_no_bd(self, produto_info,registrar_historico=True):
         try:
             db = DataBase()
             db.connecta()
             cursor = db.connection.cursor()
-
-            # 1. Verificar se o cliente existe antes de continuar
+            
+             #  Verificar se o cliente existe antes de continuar
             cursor.execute("""
                 SELECT 1 FROM clientes_juridicos WHERE "Nome do Cliente" = ?
             """, (produto_info["cliente"],))
             cliente_existe = cursor.fetchone()
-
+            
+            #  Cliente existe, continuar cadastro do produto
             if not cliente_existe:
-                QMessageBox.warning(None, "Cliente não encontrado",
-                    f"O cliente '{produto_info['cliente']}' precisa estar cadastrado antes de adicionar um produto.")
-                return  # Impede o restante do código de continuar
+                QMessageBox.warning(self,"Cliente não encontrado",
+                    f"O cliente {produto_info["cliente"]} precisa estar cadastrado antes de adicionar um produto."                    
+                )
+                return # Impede o restante do código de continuar
 
-            # 2. Formatando o valor com "R$" e duas casas decimais
+            # Formatando o valor_real com o símbolo "R$" e duas casas decimais
             valor_real_formatado = produto_info['valor_produto']
 
-            # 3. Desconto: "Sem desconto" se for 0
-            desconto_formatado = "Sem desconto" if produto_info['desconto'] == 0 else f"{produto_info['desconto']:.2f}%"
+            # Se o desconto for zero, inserir "Sem desconto", caso contrário, formatar com porcentagem
+            desconto_formatado = "Sem desconto" if produto_info['desconto'] == 0 else f"{int(produto_info['desconto'])}%"
 
-            # 4. Carregar imagem (se houver)
+            # Carregar a imagem e convertê-la para bytes
             imagem_bytes = None
             if self.imagem_carregada_produto:
                 pixmap = self.label_imagem_produto.pixmap()
@@ -1626,143 +1631,149 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 pixmap.save(buffer, "PNG")
                 imagem_bytes = byte_array.toBase64().data().decode()
 
-            # 5. Obter usuário logado
-            usuario_logado = self.get_usuario_logado()
+            usuario_logado = self.get_usuario_logado()  # Obtenha o usuário logado aqui
 
-            # 6. Inserir produto
+            # Inserindo os dados formatados no banco de dados, incluindo a imagem
             db.insert_product(
                 produto_info["produto"],
                 produto_info["quantidade"],
                 valor_real_formatado,
                 desconto_formatado,
+                produto_info["valor_total"],
                 produto_info["data_cadastro"],
                 produto_info["codigo_item"],
                 produto_info["cliente"],
                 produto_info["descricao_produto"],
-                usuario_logado,
-                imagem_bytes
+                usuario_logado,  # Passando o usuário logado
+                imagem_bytes  # Adicionando a imagem aqui
             )
-
-            # 7. Atualizar cliente com valor total e última compra
-            cursor.execute("""
-                SELECT "Valor Total" FROM products WHERE Cliente = ?
-            """, (produto_info["cliente"],))
-            linhas = cursor.fetchall()
-
-            valor_total_cliente = 0.0
-            for linha in linhas:
-                valor_str = str(linha[0]).replace("R$", "").replace(".", "").replace(",", ".")
-                try:
-                    valor_total_cliente += float(valor_str)
-                except:
-                    pass
-
-            valor_total_formatado = f"R$ {valor_total_cliente:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
-
-            cursor.execute("""
-                UPDATE clientes_juridicos
-                SET "Valor Gasto Total" = ?, "Última Compra" = ?, "Última Atualização" = ?
-                WHERE "Nome do Cliente" = ?
-            """, (
-                valor_total_formatado,
-                produto_info["data_cadastro"],
-                datetime.now().strftime("%d/%m/%Y %H:%M"),
-                produto_info["cliente"]
-            ))
-
-            db.connection.commit()
-
-            # 8. Histórico
-            if registrar_historico:
-                descricao = (
-                    f"Produto {produto_info['produto']} foi cadastrado com "
-                    f"quantidade {produto_info['quantidade']} e valor {valor_real_formatado}."
-                )
-                self.registrar_historico("Cadastro de Produto", descricao)
-
         except Exception as e:
             QMessageBox.critical(self, "Erro", f"Erro ao cadastrar produto: {str(e)}")
+            
+        # Atualizar "Valor Gasto Total" e "Última Compra"   
+        cursor = db.connection.cursor()
+        cursor.execute("""
+            SELECT "Valor Total" FROM products WHERE "Cliente" = ?
+        """,(produto_info["cliente"],))
+        
+        linhas = cursor.fetchall()
+        valor_total_cliente = 0.0
+        
+        for linha in linhas:
+            valor_str = str(linha[0]).replace("R$", "").replace(".", "").replace(",", ".")
+            try:
+                valor_total_cliente += float(valor_str)
+            except:
+                pass
+            
+        # 2. Formatar para padrão BR
+        valor_total_formatado = f"R$ {valor_total_cliente:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
 
+        # 3. Atualizar a tabela clientes_juridicos
+        cursor.execute("""
+            UPDATE clientes_juridicos
+            SET "Valor Gasto Total" = ?, "Última Compra" = ?
+            WHERE "Nome do Cliente" = ?
+        """, (valor_total_formatado, produto_info["data_cadastro"], produto_info["cliente"]))
+
+        db.connection.commit()
+
+        if registrar_historico:
+            # Registrar no histórico após a inserção do produto
+            descricao = f"Produto {produto_info['produto']} foi cadastrado com quantidade {produto_info['quantidade']} e valor {valor_real_formatado}."
+            self.registrar_historico("Cadastro de Produto", descricao)
 
 #*********************************************************************************************************************
     def subscribe_produto(self): 
-        # 1. Verificar se todos os campos obrigatórios estão preenchidos
+        # Verificar se todos os campos obrigatórios estão preenchidos
         campos_nao_preenchidos = [
             campo for campo, widget in self.campos_obrigatorios.items()
             if not widget.text()
         ]
 
         if campos_nao_preenchidos:
-            self.exibir_asteriscos_produtos(campos_nao_preenchidos)
-            QMessageBox.warning(self, "Erro", "Todos os campos obrigatórios precisam ser preenchidos.")
+            self.exibir_asteriscos_produtos(campos_nao_preenchidos)  # Mostrar os asteriscos nos campos obrigatórios
+            msg = QMessageBox()
+            msg.setIcon(QMessageBox.Warning)
+            msg.setWindowTitle("Erro")
+            msg.setText("Todos os campos obrigatórios precisam ser preenchidos.")
+            msg.exec()
             return
-
-        # 2. Verificar se o nome do produto começa com número ou caractere especial
+        
+        # Verificar se o nome do produto começa com um número ou caractere especial
         if re.match(r'^[\d\W]', self.txt_produto.text()):
-            self.exibir_asteriscos_produtos(["produto"])
-            QMessageBox.warning(self, "Erro", "O nome do produto não pode começar com um número ou caractere especial.")
+            self.exibir_asteriscos_produtos(["produto"])  # Mostrar o asterisco ao lado do campo Produto
+
+            msg = QMessageBox()
+            msg.setIcon(QMessageBox.Warning)
+            msg.setWindowTitle("Erro")
+            msg.setText("O nome do produto não pode começar com um número ou caractere especial.")
+            msg.exec()
             return
         else:
-            self.esconder_asteriscos_produtos()
+            self.esconder_asteriscos_produtos()  # Esconder os asteriscos se não houver erro
 
-        # 3. Gerar código do item se não estiver editando
+        # Verificar se não estamos no modo de edição
         if not self.is_editing_produto:
             codigo_item = self.gerar_codigo_aleatorio()
             self.txt_codigo_item.setText(codigo_item)
 
-        # 4. Obter valores tratados
-        try:
-            valor_produto_str = self.txt_valor_produto_3.text().replace('R$', '').replace('.', '').replace(',', '.').strip()
-            valor_produto = float(valor_produto_str) if valor_produto_str else 0.0
-        except ValueError:
+        # Obter os valores dos campos
+        valor_produto_str = self.txt_valor_produto_3.text().replace('R$', '').replace('.', '').replace(',', '.').strip()
+        if not valor_produto_str:
+            self.txt_valor_produto_3.setText("Não Cadastrado")
             valor_produto = 0.0
+        else:
+            valor_produto = float(valor_produto_str)
 
-        try:
-            quantidade_str = self.txt_quantidade.text().strip()
-            quantidade = int(quantidade_str) if quantidade_str else 0
-        except ValueError:
+        quantidade_str = self.txt_quantidade.text().strip()
+        if not quantidade_str:
+            self.txt_quantidade.setText("Não Cadastrado")
             quantidade = 0
+        else:
+            quantidade = int(quantidade_str)
 
-        desconto_raw = self.txt_desconto_3.text().replace('%', '').replace(',', '.').strip()
-        try:
-            desconto = float(desconto_raw) if desconto_raw.lower() != 'sem desconto' and desconto_raw else 0.0
-        except ValueError:
-            desconto = 0.0
+        desconto_str = self.txt_desconto_3.text().replace('%', '').strip().replace(',', '.')  # Removendo o símbolo de porcentagem
+        desconto = float(desconto_str) if desconto_str and desconto_str != 'Sem desconto' else 0.0
 
-        # 5. Atualizar o campo de desconto visualmente
+        # Atualizar o valor do desconto na QLineEdit
+        self.txt_desconto_3.setText("Sem desconto" if desconto == 0 else f"{int(desconto)}%")
+
+        # Atualizar o valor do desconto na QLineEdit se não tiver desconto
         if desconto == 0:
             self.txt_desconto_3.setText("Sem desconto")
-        else:
-            self.txt_desconto_3.setText(f"{desconto}%")
+            desconto = 0.0  # Definir desconto como zero para cálculo e banco de dados
 
-        # 6. Cálculos de valores
+        # Calcular o valor total do produto antes do desconto
         valor_total = quantidade * valor_produto
-        valor_desconto = valor_total * desconto
+        valor_desconto = valor_total * (desconto / 100) # Cálculo usando porcentagem real
         valor_com_desconto = valor_total - valor_desconto
 
-        # 7. Formatar valor no padrão BR
+        # Formatando o valor para padrão nacional
         valor_formatado = f"R$ {valor_produto:,.2f}".replace('.', '#').replace(',', '.').replace('#', ',')
+        valor_total_formatado = f"R$ {valor_com_desconto:,.2f}".replace(',', 'X').replace('.', ',').replace('X', '.')
 
-        # 8. Montar dicionário com os dados do produto
+        # Adicionar os dados do produto aos produtos pendentes
         produto_info = {
             "produto": self.txt_produto.text(),
             "quantidade": quantidade,
-            "valor_produto": valor_formatado,
+            "valor_produto": valor_formatado,   
             "desconto": desconto,
+            "valor_total": valor_total_formatado,
             "data_cadastro": self.dateEdit_3.date().toString("dd/MM/yyyy"),
             "codigo_item": self.txt_codigo_item.text(),
             "cliente": self.txt_cliente_3.text(),
             "descricao_produto": self.txt_descricao_produto_3.text()
         }
 
-        # 9. Adicionar à lista de produtos pendentes apenas se não estiver no modo de edição
         if not self.is_editing_produto:
             if produto_info not in self.produtos_pendentes:
                 self.produtos_pendentes.append(produto_info)
-
-        # 10. Retornar valores calculados para exibição nos frames
+        else:
+            # Apenas cálculo foi feito, mas o produto não será adicionado
+            pass
+        # Retornar os valores calculados para exibição
         return quantidade, valor_desconto, valor_com_desconto
-
 #*********************************************************************************************************************
     def get_usuario_logado(self):
         # Obtenha o usuário logado das configurações
@@ -2497,7 +2508,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 "Quantidade": [10, 50, 5, 20],
                 "Valor do Produto": [4500.00, 150.00, 1200.00, 900.00],
                 "Desconto": [5, "Sem desconto", 10, "Sem desconto"],
-                "Data da Compra": ["10/05/2024", "10/04/2024", "10/03/2024", "10/02/2024"],
+                "Valor Total": ["R$ 1,000.00","R$ 1,500,00","R$ 300,00","R$ 150,00"],
+                "Data do Cadastro": ["10/05/2024", "10/04/2024", "10/03/2024", "10/02/2024"],
                 "Código do Item": ["AUTO12345", "AUTO67890", "AUTO11223", "AUTO33445"],
                 "Cliente": ["João da Silva", "Maria Oliveira", "Pedro Santos", "Carla Lima"],
                 "Descrição": [

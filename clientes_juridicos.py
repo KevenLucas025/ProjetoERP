@@ -17,6 +17,12 @@ class Clientes:
         self.imagem_line()
         self.db = DataBase("banco_de_dados.db")
         self.config = Configuracoes_Login(self)
+        self.coluna_checkboxes_clientes_adicionada = False
+        self.checkboxes_clientes = []
+        
+        
+        
+        
         self.main_window = main_window
         self.table_clientes_juridicos = self.main_window.table_clientes_juridicos  # Referência para a tabela no main window
         self.btn_adicionar_cliente_juridico = btn_adicionar_cliente_juridico
@@ -29,7 +35,10 @@ class Clientes:
         self.btn_historico_clientes = btn_historico_clientes
         self.btn_adicionar_cliente_juridico.clicked.connect(self.exibir_janela_cadastro_cliente)
         
-        # ✅ Atalho de teclado F5 para atualizar a tabela
+        self.btn_excluir_clientes.clicked.connect(self.excluir_clientes_juridicos)
+        self.btn_marcar_como_clientes.clicked.connect(self.marcar_como_clientes)
+        
+        #  Atalho de teclado F5 para atualizar a tabela
         atalho_f5 = QShortcut(QKeySequence("F5"),self.main_window)
         atalho_f5.activated.connect(self.carregar_clientes_juridicos)
 
@@ -68,29 +77,36 @@ class Clientes:
                     FROM clientes_juridicos
                     ORDER BY "Data da Inclusão" DESC
                 """)
-                
+
                 dados = cursor.fetchall()
 
                 # Limpa a tabela antes de recarregar
+                self.table_clientes_juridicos.clearContents()
                 self.table_clientes_juridicos.setRowCount(0)
-                
+
+                deslocamento = 1 if self.coluna_checkboxes_clientes_adicionada else 0
+                self.checkboxes_clientes = []
 
                 for linha_idx, linha_dados in enumerate(dados):
                     self.table_clientes_juridicos.insertRow(linha_idx)
+
+                    # Adiciona checkbox se estiver ativado
+                    if self.coluna_checkboxes_clientes_adicionada:
+                        checkbox = QCheckBox()
+                        checkbox.setStyleSheet("margin-left: 9px; margin-right: 9px;")
+                        self.table_clientes_juridicos.setCellWidget(linha_idx, 0, checkbox)
+                        self.checkboxes_clientes.append(checkbox)
+
+                    # Preenche os dados nas colunas (com deslocamento)
                     for coluna_idx, dado in enumerate(linha_dados):
                         item = self.formatar_texto_juridico(str(dado))
-                        self.table_clientes_juridicos.setItem(linha_idx, coluna_idx, item)
-                        
-                # Redimensiona apenas uma vez após preencher
+                        self.table_clientes_juridicos.setItem(linha_idx, coluna_idx + deslocamento, item)
+
                 self.table_clientes_juridicos.resizeColumnsToContents()
                 self.table_clientes_juridicos.resizeRowsToContents()
 
         except Exception as e:
-            QMessageBox.critical(None, "Erro", f"Erro ao carregar clientes: \n{e}")
-            
-    
-
-
+            QMessageBox.critical(self.main_window, "Erro", f"Erro ao carregar clientes:\n{e}")
 
     def imagem_line(self):
         # Criar botão da lupa
@@ -427,3 +443,94 @@ class Clientes:
             index_estado = estado_combobox.findText(estado)
             if index_estado != -1:
                 estado_combobox.setCurrentIndex(index_estado)
+                
+    def excluir_clientes_juridicos(self):
+        try:
+            total_linhas = self.table_clientes_juridicos.rowCount()
+            if total_linhas == 0:
+                QMessageBox.warning(self, "Aviso", "Nenhum cliente encontrado para excluir.")
+                return
+
+            clientes_para_excluir = []
+
+            if self.coluna_checkboxes_clientes_adicionada:
+                # Modo com checkbox
+                for linha in range(total_linhas):
+                    checkbox_widget = self.table_clientes_juridicos.cellWidget(linha, 0)
+                    if checkbox_widget:
+                        checkbox = checkbox_widget.findChild(QCheckBox)
+                        if checkbox and checkbox.isChecked():
+                            nome_cliente = self.table_clientes_juridicos.item(linha, 1).text()
+                            clientes_para_excluir.append((linha, nome_cliente))
+            else:
+                # Modo sem checkbox (seleção direta)
+                linha_selecionada = self.table_clientes_juridicos.currentRow()
+                if linha_selecionada >= 0:
+                    nome_cliente = self.table_clientes_juridicos.item(linha_selecionada, 0).text()
+                    clientes_para_excluir.append((linha_selecionada, nome_cliente))
+
+            if not clientes_para_excluir:
+                QMessageBox.information(None, "Aviso", "Nenhum cliente selecionado para exclusão.")
+                return
+            
+            # Mensagem personalizada
+            if len(clientes_para_excluir) == 1:
+                _, nome = clientes_para_excluir[0]
+                mensagem = f"Tem certeza que deseja excluir o cliente:\n\n• {nome}?"
+            else:
+                nomes = "\n• " + "\n• ".join(nome for _, nome in clientes_para_excluir)
+                mensagem = f"Tem certeza que deseja excluir os seguintes clientes?\n{nomes}"
+
+            # Criar QMessageBox manualmente para alterar os textos dos botões
+            msgbox = QMessageBox(self.main_window)
+            msgbox.setIcon(QMessageBox.Question)
+            msgbox.setWindowTitle("Confirmar Exclusão")
+            msgbox.setText(mensagem)
+            msgbox.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
+
+            # Renomear os botões
+            botao_sim = msgbox.button(QMessageBox.Yes)
+            botao_nao = msgbox.button(QMessageBox.No)
+            botao_sim.setText("Sim")
+            botao_nao.setText("Não")
+
+            resposta = msgbox.exec()
+
+            if resposta != QMessageBox.Yes:
+                return
+
+            db = DataBase()
+            db.connecta()
+            cursor = db.connection.cursor()
+
+            for linha, nome_cliente in reversed(clientes_para_excluir):
+                cursor.execute("""
+                    DELETE FROM clientes_juridicos WHERE "Nome do Cliente" = ?
+                """, (nome_cliente,))
+                self.table_clientes_juridicos.removeRow(linha)
+
+            db.connection.commit()
+
+            QMessageBox.information(self.main_window, "Sucesso", "Cliente(s) excluído(s) com sucesso.")
+        except Exception as e:
+            QMessageBox.critical(self.main_window, "Erro", f"Erro ao excluir clientes:\n{e}")
+
+            
+    def marcar_como_clientes(self):
+        if self.coluna_checkboxes_clientes_adicionada:
+            return  # Já foi adicionada, não faz nada
+
+        total_linhas = self.table_clientes_juridicos.rowCount()
+        self.table_clientes_juridicos.insertColumn(0)  # Adiciona a coluna de checkboxes na primeira posição
+        self.table_clientes_juridicos.setHorizontalHeaderItem(0, QTableWidgetItem(""))
+        self.table_clientes_juridicos.setColumnWidth(0,40)
+
+        self.checkboxes_clientes = []
+
+        for linha in range(total_linhas):
+            checkbox = QCheckBox()
+            checkbox.setStyleSheet("margin-left:15px; margin-right:15px;")
+            self.table_clientes_juridicos.setCellWidget(linha, 0, checkbox)
+            self.checkboxes_clientes.append(checkbox)
+
+        self.coluna_checkboxes_clientes_adicionada = True

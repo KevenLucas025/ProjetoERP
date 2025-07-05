@@ -14,9 +14,6 @@ from reportlab.platypus import SimpleDocTemplate, Table, TableStyle
 from reportlab.pdfgen import canvas
 
 
-
-
-
 class EstoqueProduto(QWidget):
     def __init__(self, main_window, btn_gerar_pdf, btn_gerar_estorno, 
                  btn_gerar_saida,btn_importar, btn_limpar_tabela, 
@@ -87,7 +84,8 @@ class EstoqueProduto(QWidget):
         
         # Carregar dados da tabela "products" usando pandas
         query = """
-        SELECT Produto, Quantidade, Valor_Real, IFNULL(Desconto, 'Sem Desconto') AS Desconto, "Data do Cadastro", Código_Item, Cliente, Descrição_Produto, Usuário
+        SELECT Produto, Quantidade, Valor_Real, IFNULL(Desconto, 'Sem Desconto') AS Desconto,"Valor Total", "Data do Cadastro", 
+        Código_Item, Cliente, Descrição_Produto, Usuário, "Status da Saída"
         FROM products
         """
         df = pd.read_sql_query(query, cn)
@@ -228,14 +226,15 @@ class EstoqueProduto(QWidget):
             quantidade = int(quantidade_str)
             valor_produto = self.main_window.table_base.item(row, 2).text() or ""
             desconto = self.main_window.table_base.item(row, 3).text() or ""
-            data_criacao = self.main_window.table_base.item(row, 4).text() or ""
-            codigo_produto = self.main_window.table_base.item(row, 5).text() or ""
-            cliente = self.main_window.table_base.item(row, 6).text() or ""
-            descricao = self.main_window.table_base.item(row, 7).text() or ""
-            usuario = self.main_window.table_base.item(row, 8).text() or ""
+            valor_total = self.main_window.table_base.item(row,4).text() or ""
+            data_cadastro = self.main_window.table_base.item(row, 5).text() or ""
+            codigo_produto = self.main_window.table_base.item(row, 6).text() or ""
+            cliente = self.main_window.table_base.item(row, 7).text() or ""
+            descricao = self.main_window.table_base.item(row, 8).text() or ""
+            usuario = self.main_window.table_base.item(row, 9).text() or ""
             imagem = self.recuperar_imagem_produto_bd_products(codigo_produto)
 
-            status_item = self.main_window.table_base.item(row, 9)
+            status_item = self.main_window.table_base.item(row, 10)
             status = status_item.text() if status_item else "Inativo"
             status_saida = "1"
             data_saida = datetime.now().strftime("%d/%m/%Y %H:%M")
@@ -277,8 +276,9 @@ class EstoqueProduto(QWidget):
                     str(nova_quantidade_saida),
                     valor_produto,
                     desconto,
+                    valor_total,
                     data_saida,
-                    data_criacao,
+                    data_cadastro,
                     codigo_produto,
                     cliente,
                     descricao,
@@ -293,8 +293,9 @@ class EstoqueProduto(QWidget):
                     str(quantidade_saida),
                     valor_produto,
                     desconto,
+                    valor_total,
                     data_saida,
-                    data_criacao,
+                    data_cadastro,
                     codigo_produto,
                     cliente,
                     descricao,
@@ -305,8 +306,6 @@ class EstoqueProduto(QWidget):
                 ))
 
             historico_logs.append(f"Produto {produto} foi gerado saída de {quantidade_saida} unidade(s).")
-
-        # <<<--- ATUALIZAÇÕES NO BANCO DE DADOS --->>>
         try:
             cursor = self.db.connection.cursor()
 
@@ -350,7 +349,6 @@ class EstoqueProduto(QWidget):
         self.reindex_table_base()
 
 
-
     def tabela_saida_preencher(self, dados_saida):
         for item in dados_saida:
             codigo_produto_novo = item[6]  # 'Código do Produto'
@@ -375,16 +373,11 @@ class EstoqueProduto(QWidget):
                 for col, valor in enumerate(item):
                     self.main_window.table_saida.setItem(row_position, col, self.criar_item(valor))
 
-
-
-
-
     def reindex_table_base(self):
         row_count = self.main_window.table_base.rowCount()
         for row in range(row_count):
             item = QTableWidgetItem(str(row + 1))
             self.main_window.table_base.setVerticalHeaderItem(row, item)
-
 
     # Função para recuperar imagem de um produto com base no código do produto
     def recuperar_imagem_produto_bd_products(self, codigo_produto):
@@ -423,16 +416,18 @@ class EstoqueProduto(QWidget):
             quantidade_item = self.main_window.table_saida.item(row, 1)
             valor_real_item = self.main_window.table_saida.item(row, 2)
             desconto_item = self.main_window.table_saida.item(row, 3)
-            data_cadastro_item = self.main_window.table_saida.item(row, 5)
-            codigo_item = self.main_window.table_saida.item(row, 6)
-            cliente_item = self.main_window.table_saida.item(row, 7)
-            descricao_item = self.main_window.table_saida.item(row, 8)
-            usuario_item = self.main_window.table_saida.item(row, 9)
+            valor_total_item = self.main_window.table_saida.item(row,5)
+            data_cadastro_item = self.main_window.table_saida.item(row, 6)
+            codigo_item = self.main_window.table_saida.item(row, 7)
+            cliente_item = self.main_window.table_saida.item(row, 8)
+            descricao_item = self.main_window.table_saida.item(row, 9)
+            usuario_item = self.main_window.table_saida.item(row, 10)
 
             produto = produto_item.text() if produto_item else ""
             quantidade = int(quantidade_item.text()) if quantidade_item else "0"
             valor_real = valor_real_item.text() if valor_real_item else ""
             desconto = desconto_item.text() if desconto_item else ""
+            valor_total = valor_total_item.text() if valor_total_item else ""
             data_cadastro = data_cadastro_item.text() if data_cadastro_item else ""
             codigo_produto = codigo_item.text() if codigo_item else ""
             cliente = cliente_item.text() if cliente_item else ""
@@ -486,9 +481,9 @@ class EstoqueProduto(QWidget):
                     # Insere como novo produto
                     cursor.execute("""
                         INSERT INTO products 
-                        (Produto, Quantidade, Valor_Real, Desconto, "Data do Cadastro", Código_Item, Cliente, Descrição_Produto, Imagem, Usuário, Status, 'Status da Saída')
-                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'Ativo', ?)
-                    """, (produto, str(quantidade_estorno), valor_real, desconto, data_cadastro, 
+                        (Produto, Quantidade, Valor_Real, Desconto, "Valor Total","Data do Cadastro", Código_Item, Cliente, Descrição_Produto, Imagem, Usuário, Status, 'Status da Saída')
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'Ativo', ?,?)
+                    """, (produto, str(quantidade_estorno), valor_real, desconto,valor_total, data_cadastro, 
                           codigo_produto, cliente, descricao, imagem, usuario, "1"))
                 cn.commit()
 
@@ -533,11 +528,12 @@ class EstoqueProduto(QWidget):
                 self.main_window.table_base.setItem(row_base, 1, self.criar_item(str(quantidade_estorno)))
                 self.main_window.table_base.setItem(row_base, 2, self.criar_item(valor_real))
                 self.main_window.table_base.setItem(row_base, 3, self.criar_item(desconto))
-                self.main_window.table_base.setItem(row_base, 4, self.criar_item(data_cadastro))
-                self.main_window.table_base.setItem(row_base, 5, self.criar_item(codigo_produto))
-                self.main_window.table_base.setItem(row_base, 6, self.criar_item(cliente))
-                self.main_window.table_base.setItem(row_base, 7, self.criar_item(descricao))
-                self.main_window.table_base.setItem(row_base, 8, self.criar_item(usuario))
+                self.main_window.table_base.setItem(row_base, 5, self.criar_item(valor_total))
+                self.main_window.table_base.setItem(row_base, 5, self.criar_item(data_cadastro))
+                self.main_window.table_base.setItem(row_base, 6, self.criar_item(codigo_produto))
+                self.main_window.table_base.setItem(row_base, 7, self.criar_item(cliente))
+                self.main_window.table_base.setItem(row_base, 8, self.criar_item(descricao))
+                self.main_window.table_base.setItem(row_base, 9, self.criar_item(usuario))
 
             # Registrar histórico
             historico_texto = f"Produto '{produto}' foi estornado."

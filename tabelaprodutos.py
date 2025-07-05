@@ -198,7 +198,6 @@ class TabelaProdutos(QDialog):
         else:
             print(f"Imagem não cadastrada ou inválida para o produto: {produto_id}")
             return None
-
 #*******************************************************************************************************
     def atualizar_tabela_produtos_filtrada(self, produtos):
     # Limpar a tabela antes de preencher com os produtos filtrados
@@ -682,8 +681,8 @@ class TabelaProdutos(QDialog):
             produto_desconto = float(desconto_str)  if desconto_str else 0
 
             # Calcular valores
-            valor_total = (produto_valor_real * produto_quantidade) 
-            valor_desconto = valor_total * produto_desconto
+            valor_total = produto_valor_real * produto_quantidade
+            valor_desconto = valor_total * (produto_desconto / 100)
             valor_com_desconto = valor_total - valor_desconto
 
             # Atualizar os frames com os valores corretos
@@ -1048,9 +1047,9 @@ class TabelaProdutos(QDialog):
     def carregar_tabela_produtos(self):
         with sqlite3.connect('banco_de_dados.db') as cn:
             cursor = cn.cursor()
-            cursor.execute('SELECT id, Produto, Quantidade, Valor_Real, Desconto, "Data do Cadastro",'
-                        '"Código_Item", Cliente, "Descrição_Produto", "Usuário" '
-                        'FROM products ORDER BY id ASC')  # <-- Ordem crescente
+            cursor.execute('SELECT id, Produto, Quantidade, Valor_Real, Desconto, "Valor Total", "Data do Cadastro", '
+                        'Código_Item, Cliente, Descrição_Produto, "Usuário" '
+                        'FROM products ORDER BY id ASC')  # Ordem crescente
 
             registros = cursor.fetchall()
 
@@ -1061,7 +1060,7 @@ class TabelaProdutos(QDialog):
         deslocamento = 1 if self.coluna_checkboxes_produtos_adicionada else 0
         self.checkboxes = []  # Zera os checkboxes
 
-        for i, (id, produto, quantidade, valor_real, desconto, data_cadastro,
+        for i, (id, produto, quantidade, valor_real, desconto, valor_total, data_cadastro,
                 codigo_item, cliente, descricao_produto, usuario) in enumerate(registros):
 
             if self.coluna_checkboxes_produtos_adicionada:
@@ -1075,15 +1074,17 @@ class TabelaProdutos(QDialog):
             self.table_widget.setItem(i, 2 + deslocamento, QTableWidgetItem(str(quantidade)))
             self.table_widget.setItem(i, 3 + deslocamento, QTableWidgetItem(str(valor_real)))
             self.table_widget.setItem(i, 4 + deslocamento, QTableWidgetItem(str(desconto)))
-            self.table_widget.setItem(i, 5 + deslocamento, QTableWidgetItem(data_cadastro))
-            self.table_widget.setItem(i, 6 + deslocamento, QTableWidgetItem(codigo_item))
-            self.table_widget.setItem(i, 7 + deslocamento, QTableWidgetItem(cliente))
-            self.table_widget.setItem(i, 8 + deslocamento, QTableWidgetItem(descricao_produto))
-            self.table_widget.setItem(i, 9 + deslocamento, QTableWidgetItem(usuario))
+            self.table_widget.setItem(i, 5 + deslocamento, QTableWidgetItem(str(valor_total)))  # Valor Total
+            self.table_widget.setItem(i, 6 + deslocamento, QTableWidgetItem(data_cadastro))
+            self.table_widget.setItem(i, 7 + deslocamento, QTableWidgetItem(codigo_item))
+            self.table_widget.setItem(i, 8 + deslocamento, QTableWidgetItem(cliente))
+            self.table_widget.setItem(i, 9 + deslocamento, QTableWidgetItem(descricao_produto))
+            self.table_widget.setItem(i, 10 + deslocamento, QTableWidgetItem(usuario))
 
         # Agora sim: organiza pela coluna de ID (em ordem crescente)
         self.table_widget.sortItems(0 + deslocamento, Qt.AscendingOrder)
         self.table_widget.setSortingEnabled(True)
+
 
     def atualizar_tabela_products(self):
         QMessageBox.information(None, "Sucesso", "Dados carregados com sucesso!")

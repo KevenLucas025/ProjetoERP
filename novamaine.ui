@@ -467,7 +467,7 @@ QPushButton:hover {
               <string/>
              </property>
              <property name="pixmap">
-              <pixmap>Projeto ERP/Projeto ERP/54206.cur</pixmap>
+              <pixmap>../../Pictures/ProjetoERP/Projeto ERP/Projeto ERP/54206.cur</pixmap>
              </property>
              <property name="scaledContents">
               <bool>true</bool>
@@ -1129,7 +1129,12 @@ QTableWidget::item:selected {
                  </column>
                  <column>
                   <property name="text">
-                   <string>Data da Compra</string>
+                   <string>Valor Total</string>
+                  </property>
+                 </column>
+                 <column>
+                  <property name="text">
+                   <string>Data do Cadastro</string>
                   </property>
                  </column>
                  <column>
@@ -1150,6 +1155,11 @@ QTableWidget::item:selected {
                  <column>
                   <property name="text">
                    <string>Usuário</string>
+                  </property>
+                 </column>
+                 <column>
+                  <property name="text">
+                   <string>Status da Saída</string>
                   </property>
                  </column>
                 </widget>
@@ -1289,12 +1299,17 @@ QTableWidget::item:selected {
                  </column>
                  <column>
                   <property name="text">
+                   <string>Valor Total</string>
+                  </property>
+                 </column>
+                 <column>
+                  <property name="text">
                    <string>Data da Saída</string>
                   </property>
                  </column>
                  <column>
                   <property name="text">
-                   <string>Data da Criação</string>
+                   <string>Data do Cadastro</string>
                   </property>
                  </column>
                  <column>
@@ -1315,6 +1330,11 @@ QTableWidget::item:selected {
                  <column>
                   <property name="text">
                    <string>Usuário</string>
+                  </property>
+                 </column>
+                 <column>
+                  <property name="text">
+                   <string>Status da Saída</string>
                   </property>
                  </column>
                 </widget>
@@ -2543,7 +2563,7 @@ QPushButton:hover {
                 </property>
                 <property name="icon">
                  <iconset>
-                  <normaloff>imagens/pngwing.com.png</normaloff>imagens/pngwing.com.png</iconset>
+                  <normaloff>../../Pictures/ProjetoERP/imagens/pngwing.com.png</normaloff>../../Pictures/ProjetoERP/imagens/pngwing.com.png</iconset>
                 </property>
                </widget>
               </item>
@@ -2583,7 +2603,7 @@ QPushButton:hover {
                 </property>
                 <property name="icon">
                  <iconset>
-                  <normaloff>imagens/editar.png</normaloff>imagens/editar.png</iconset>
+                  <normaloff>../../Pictures/ProjetoERP/imagens/editar.png</normaloff>../../Pictures/ProjetoERP/imagens/editar.png</iconset>
                 </property>
                </widget>
               </item>
@@ -2623,7 +2643,7 @@ QPushButton:hover {
                 </property>
                 <property name="icon">
                  <iconset>
-                  <normaloff>imagens/sair.png</normaloff>imagens/sair.png</iconset>
+                  <normaloff>../../Pictures/ProjetoERP/imagens/sair.png</normaloff>../../Pictures/ProjetoERP/imagens/sair.png</iconset>
                 </property>
                </widget>
               </item>
@@ -2663,7 +2683,7 @@ QPushButton:hover {
                 </property>
                 <property name="icon">
                  <iconset>
-                  <normaloff>imagens/toppng.com-update-512x512.png</normaloff>imagens/toppng.com-update-512x512.png</iconset>
+                  <normaloff>../../Pictures/ProjetoERP/imagens/toppng.com-update-512x512.png</normaloff>../../Pictures/ProjetoERP/imagens/toppng.com-update-512x512.png</iconset>
                 </property>
                </widget>
               </item>
@@ -2703,12 +2723,12 @@ QPushButton:hover {
                 </property>
                 <property name="icon">
                  <iconset>
-                  <normaloff>imagens/Delete-Button-PNG-Download-Image.png</normaloff>imagens/Delete-Button-PNG-Download-Image.png</iconset>
+                  <normaloff>../../Pictures/ProjetoERP/imagens/Delete-Button-PNG-Download-Image.png</normaloff>../../Pictures/ProjetoERP/imagens/Delete-Button-PNG-Download-Image.png</iconset>
                 </property>
                 <property name="iconSize">
                  <size>
-                  <width>16</width>
-                  <height>16</height>
+                  <width>27</width>
+                  <height>29</height>
                  </size>
                 </property>
                 <property name="checkable">
@@ -3512,7 +3532,7 @@ QPushButton:hover {
                 </property>
                 <property name="icon">
                  <iconset>
-                  <normaloff>imagens/icons8-remover-imagem-16.png</normaloff>imagens/icons8-remover-imagem-16.png</iconset>
+                  <normaloff>../../Pictures/ProjetoERP/imagens/icons8-remover-imagem-16.png</normaloff>../../Pictures/ProjetoERP/imagens/icons8-remover-imagem-16.png</iconset>
                 </property>
                </widget>
               </item>
@@ -3558,7 +3578,7 @@ QPushButton:hover {
                 </property>
                 <property name="icon">
                  <iconset>
-                  <normaloff>imagens/014upload2_99941.png</normaloff>imagens/014upload2_99941.png</iconset>
+                  <normaloff>../../Pictures/ProjetoERP/imagens/014upload2_99941.png</normaloff>../../Pictures/ProjetoERP/imagens/014upload2_99941.png</iconset>
                 </property>
                </widget>
               </item>
@@ -3781,7 +3801,53 @@ QPushButton:hover {
                 </property>
                 <property name="icon">
                  <iconset>
-                  <normaloff>imagens/confirmacao.png</normaloff>imagens/confirmacao.png</iconset>
+                  <normaloff>../../Pictures/ProjetoERP/imagens/confirmacao.png</normaloff>../../Pictures/ProjetoERP/imagens/confirmacao.png</iconset>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="btn_ver_clientes_juridicos">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>16777215</width>
+                  <height>30</height>
+                 </size>
+                </property>
+                <property name="cursor">
+                 <cursorShape>PointingHandCursor</cursorShape>
+                </property>
+                <property name="styleSheet">
+                 <string notr="true">QPushButton {
+    color: rgb(255, 255, 255);
+    border-radius: 8px;
+    font-size: 16px;
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */
+    border: 4px solid transparent;
+}
+
+QPushButton:hover {
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */
+    color: black;
+}</string>
+                </property>
+                <property name="text">
+                 <string>VER CLIENTES</string>
+                </property>
+                <property name="icon">
+                 <iconset>
+                  <normaloff>../../Pictures/ProjetoERP/imagens/Ver Clientes.png</normaloff>../../Pictures/ProjetoERP/imagens/Ver Clientes.png</iconset>
+                </property>
+                <property name="iconSize">
+                 <size>
+                  <width>25</width>
+                  <height>25</height>
+                 </size>
                 </property>
                </widget>
               </item>
@@ -3827,7 +3893,7 @@ QPushButton:hover {
                 </property>
                 <property name="icon">
                  <iconset>
-                  <normaloff>imagens/pasta.png</normaloff>imagens/pasta.png</iconset>
+                  <normaloff>../../Pictures/ProjetoERP/imagens/pasta.png</normaloff>../../Pictures/ProjetoERP/imagens/pasta.png</iconset>
                 </property>
                </widget>
               </item>
@@ -5491,7 +5557,7 @@ QPushButton:hover {
                 </property>
                 <property name="icon">
                  <iconset>
-                  <normaloff>imagens/editar.png</normaloff>imagens/editar.png</iconset>
+                  <normaloff>../../Pictures/ProjetoERP/imagens/editar.png</normaloff>../../Pictures/ProjetoERP/imagens/editar.png</iconset>
                 </property>
                 <property name="iconSize">
                  <size>
@@ -5543,7 +5609,7 @@ QPushButton:hover {
                 </property>
                 <property name="icon">
                  <iconset>
-                  <normaloff>imagens/sair.png</normaloff>imagens/sair.png</iconset>
+                  <normaloff>../../Pictures/ProjetoERP/imagens/sair.png</normaloff>../../Pictures/ProjetoERP/imagens/sair.png</iconset>
                 </property>
                 <property name="iconSize">
                  <size>
@@ -5595,7 +5661,7 @@ QPushButton:hover {
                 </property>
                 <property name="icon">
                  <iconset>
-                  <normaloff>imagens/toppng.com-update-512x512.png</normaloff>imagens/toppng.com-update-512x512.png</iconset>
+                  <normaloff>../../Pictures/ProjetoERP/imagens/toppng.com-update-512x512.png</normaloff>../../Pictures/ProjetoERP/imagens/toppng.com-update-512x512.png</iconset>
                 </property>
                 <property name="iconSize">
                  <size>
@@ -5647,7 +5713,7 @@ QPushButton:hover {
                 </property>
                 <property name="icon">
                  <iconset>
-                  <normaloff>imagens/Delete-Button-PNG-Download-Image.png</normaloff>imagens/Delete-Button-PNG-Download-Image.png</iconset>
+                  <normaloff>../../Pictures/ProjetoERP/imagens/Delete-Button-PNG-Download-Image.png</normaloff>../../Pictures/ProjetoERP/imagens/Delete-Button-PNG-Download-Image.png</iconset>
                 </property>
                 <property name="iconSize">
                  <size>
@@ -5699,7 +5765,7 @@ QPushButton:hover {
                 </property>
                 <property name="icon">
                  <iconset>
-                  <normaloff>imagens/014upload2_99941.png</normaloff>imagens/014upload2_99941.png</iconset>
+                  <normaloff>../../Pictures/ProjetoERP/imagens/014upload2_99941.png</normaloff>../../Pictures/ProjetoERP/imagens/014upload2_99941.png</iconset>
                 </property>
                 <property name="iconSize">
                  <size>
@@ -5751,7 +5817,7 @@ QPushButton:hover {
                 </property>
                 <property name="icon">
                  <iconset>
-                  <normaloff>imagens/Delete-Button-PNG-Download-Image.png</normaloff>imagens/Delete-Button-PNG-Download-Image.png</iconset>
+                  <normaloff>../../Pictures/ProjetoERP/imagens/Delete-Button-PNG-Download-Image.png</normaloff>../../Pictures/ProjetoERP/imagens/Delete-Button-PNG-Download-Image.png</iconset>
                 </property>
                 <property name="iconSize">
                  <size>
@@ -5803,7 +5869,7 @@ QPushButton:hover {
                 </property>
                 <property name="icon">
                  <iconset>
-                  <normaloff>imagens/confirmacao.png</normaloff>imagens/confirmacao.png</iconset>
+                  <normaloff>../../Pictures/ProjetoERP/imagens/confirmacao.png</normaloff>../../Pictures/ProjetoERP/imagens/confirmacao.png</iconset>
                 </property>
                 <property name="iconSize">
                  <size>
@@ -5855,7 +5921,7 @@ QPushButton:hover {
                 </property>
                 <property name="icon">
                  <iconset>
-                  <normaloff>imagens/74472.png</normaloff>imagens/74472.png</iconset>
+                  <normaloff>../../Pictures/ProjetoERP/imagens/74472.png</normaloff>../../Pictures/ProjetoERP/imagens/74472.png</iconset>
                 </property>
                 <property name="iconSize">
                  <size>
@@ -5932,39 +5998,6 @@ QPushButton:hover {
                <string>Base de Clientes Juridícos</string>
               </attribute>
               <layout class="QGridLayout" name="gridLayout_22">
-               <item row="0" column="0">
-                <widget class="QLineEdit" name="line_clientes">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="maximumSize">
-                  <size>
-                   <width>260</width>
-                   <height>30</height>
-                  </size>
-                 </property>
-                 <property name="styleSheet">
-                  <string notr="true">QLineEdit {
-	color: black;
-    background-color: rgb(240, 240, 240); /* Cor de fundo cinza claro */
-    border: 2px solid rgb(50, 150,250); /* Borda azul */
-    border-radius: 6px; /* Cantos arredondados */
-    padding: 3px; /* Espaçamento interno */
-}
-
-QLineEdit::placeholderText {
-    color: black; /* Cor do texto do placeholder */
-}
-</string>
-                 </property>
-                 <property name="placeholderText">
-                  <string>Pesquisar</string>
-                 </property>
-                </widget>
-               </item>
                <item row="0" column="1">
                 <widget class="QFrame" name="frame_7">
                  <property name="sizePolicy">
@@ -6294,6 +6327,39 @@ QPushButton:hover {
                    </layout>
                   </item>
                  </layout>
+                </widget>
+               </item>
+               <item row="0" column="0">
+                <widget class="QLineEdit" name="line_clientes">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="maximumSize">
+                  <size>
+                   <width>260</width>
+                   <height>30</height>
+                  </size>
+                 </property>
+                 <property name="styleSheet">
+                  <string notr="true">QLineEdit {
+	color: black;
+    background-color: rgb(240, 240, 240); /* Cor de fundo cinza claro */
+    border: 2px solid rgb(50, 150,250); /* Borda azul */
+    border-radius: 6px; /* Cantos arredondados */
+    padding: 3px; /* Espaçamento interno */
+}
+
+QLineEdit::placeholderText {
+    color: black; /* Cor do texto do placeholder */
+}
+</string>
+                 </property>
+                 <property name="placeholderText">
+                  <string>Pesquisar</string>
+                 </property>
                 </widget>
                </item>
                <item row="1" column="0" colspan="2">
