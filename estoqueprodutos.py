@@ -239,7 +239,7 @@ class EstoqueProduto(QWidget):
 
             if quantidade > 1:
                 quantidade_saida, ok = QInputDialog.getInt(
-                    self.main_window,
+                    None,
                     "Saída de Produto",
                     f"O produto '{produto}' tem {quantidade} unidades.\nQuantas deseja dar saída?",
                     value=1,
@@ -366,8 +366,21 @@ class EstoqueProduto(QWidget):
                 # Produto não existe ainda: adicionar nova linha
                 row_position = self.main_window.table_saida.rowCount()
                 self.main_window.table_saida.insertRow(row_position)
-                for col, valor in enumerate(item):
-                    self.main_window.table_saida.setItem(row_position, col, self.criar_item(valor))
+
+                self.main_window.table_saida.setItem(row_position, 0, self.criar_item(item[0]))   # Produto
+                self.main_window.table_saida.setItem(row_position, 1, self.criar_item(item[1]))   # Quantidade
+                self.main_window.table_saida.setItem(row_position, 2, self.criar_item(item[2]))   # Valor do Produto
+                self.main_window.table_saida.setItem(row_position, 3, self.criar_item(item[3]))   # Desconto
+                self.main_window.table_saida.setItem(row_position, 4, self.criar_item(item[4]))   # Valor Total
+                self.main_window.table_saida.setItem(row_position, 5, self.criar_item(item[5]))   # Data de Saída
+                self.main_window.table_saida.setItem(row_position, 6, self.criar_item(item[6]))   # Data da Criação
+                self.main_window.table_saida.setItem(row_position, 7, self.criar_item(item[7]))   # Código do Produto
+                self.main_window.table_saida.setItem(row_position, 8, self.criar_item(item[8]))   # Cliente
+                self.main_window.table_saida.setItem(row_position, 9, self.criar_item(item[9]))   # Descrição
+                self.main_window.table_saida.setItem(row_position, 10, self.criar_item(item[10])) # Usuário
+                self.main_window.table_saida.setItem(row_position, 11, self.criar_item(item[11])) # Imagem
+                self.main_window.table_saida.setItem(row_position, 12, self.criar_item(str(item[12]))) # Status da Saída (força string para exibir corretamente)
+
 
     def reindex_table_base(self):
         row_count = self.main_window.table_base.rowCount()
@@ -638,9 +651,7 @@ class EstoqueProduto(QWidget):
                 "Código do Produto", 
                 Cliente, 
                 "Descrição do Produto", 
-                Usuário, 
-                Imagem, 
-                Status, 
+                Usuário,  
                 "Status da Saída"
             FROM products_saida
             WHERE "Status da Saída" = 1
@@ -655,8 +666,6 @@ class EstoqueProduto(QWidget):
                 Cliente, 
                 "Descrição do Produto", 
                 Usuário, 
-                Imagem, 
-                Status, 
                 "Status da Saída"
             """
 
