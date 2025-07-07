@@ -767,12 +767,15 @@ class TabelaProdutos(QDialog):
                     checkbox.blockSignals(False)
 
 #*******************************************************************************************************
-     # Função para adicionar checkboxes selecionar_individual na tabela de histórico
+    # Função para adicionar checkboxes selecionar_individual na tabela de histórico
     def selecionar_individual(self):
         if self.table_widget.rowCount() == 0:
             QMessageBox.warning(self, "Aviso", "Nenhum histórico para selecionar.")
-            self.coluna_checkboxes_produtos_adicionada.setChecked(False)
-            return
+             # Desmarca o checkbox header visualmente
+        if hasattr(self, "checkbox_header_produtos") and isinstance(self.checkbox_header_produtos, QCheckBox):
+            QTimer.singleShot(0, lambda: self.checkbox_header_produtos.setChecked(False))
+
+            return  # Impede que o restante da função execute!
 
         if self.coluna_checkboxes_produtos_adicionada:
             self.table_widget.removeColumn(0)
@@ -780,6 +783,7 @@ class TabelaProdutos(QDialog):
             self.coluna_checkboxes_produtos_adicionada = False
 
             if hasattr(self, "checkbox_header_produtos"):
+                self.checkbox_header_produtos.setChecked(False)
                 self.checkbox_header_produtos.deleteLater()
                 del self.checkbox_header_produtos
 

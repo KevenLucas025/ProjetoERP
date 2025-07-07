@@ -168,8 +168,6 @@ class EstoqueProduto(QWidget):
             cliente = self.main_window.table_base.item(row, 7).text() or ""
             descricao = self.main_window.table_base.item(row, 8).text() or ""
             usuario = self.main_window.table_base.item(row, 9).text() or ""
-            imagem = self.recuperar_imagem_produto_bd_products(codigo_produto)
-
             status_saida = 1
             data_saida = datetime.now().strftime("%d/%m/%Y %H:%M")
 
@@ -193,14 +191,14 @@ class EstoqueProduto(QWidget):
             # Atualiza visualmente na table_base
             if nova_quantidade > 0:
                 self.main_window.table_base.item(row, 1).setText(str(nova_quantidade))
-                self.main_window.table_base.setItem(row, 10, self.criar_item("1"))  
+                self.main_window.table_base.setItem(row, 1, self.criar_item("1"))  
             else:
                 self.main_window.table_base.removeRow(row)
 
             # Verifica se já está na lista e soma
             produto_existente = None
             for i, p in enumerate(produtos_saida):
-                if p[6] == codigo_produto:
+                if p[7] == codigo_produto: # Índice 7 = Código do Produto
                     produto_existente = i
                     break
 
@@ -219,8 +217,7 @@ class EstoqueProduto(QWidget):
                     cliente,
                     descricao,
                     usuario,
-                    imagem,
-                    1
+                    status_saida # 12º item (sem imagem)
                 )
             else:
                 produtos_saida.append((
@@ -235,8 +232,7 @@ class EstoqueProduto(QWidget):
                     cliente,
                     descricao,
                     usuario,
-                    imagem,
-                    1
+                    status_saida
                 ))
 
             historico_logs.append(f"Produto {produto} foi gerado saída de {quantidade_saida} unidade(s).")
@@ -263,7 +259,10 @@ class EstoqueProduto(QWidget):
                     """, (codigo_produto,))
 
             for produto_info in produtos_saida:
-                self.db.salvar_saida_produto(produto_info)
+                # Recupera imagem separadamente e adiciona à tupla
+                imagem = self.recuperar_imagem_produto_bd_products(produto_info[7]) # Código do Produto
+                produto_info_com_imagem = produto_info[:11] + (imagem,produto_info[11]) # insere imagem no índice 11
+                self.db.salvar_saida_produto(produto_info_com_imagem)
 
             self.db.connection.commit()
 
@@ -287,7 +286,7 @@ class EstoqueProduto(QWidget):
 
     def tabela_saida_preencher(self, dados_saida):
         for item in dados_saida:
-            codigo_produto_novo = item[6]  # 'Código do Produto'
+            codigo_produto_novo = item[7]  # 'Código do Produto'
             quantidade_nova = int(item[1])
 
             linha_existente = None
@@ -318,9 +317,11 @@ class EstoqueProduto(QWidget):
                 self.main_window.table_saida.setItem(row_position, 8, self.criar_item(item[8]))   # Cliente
                 self.main_window.table_saida.setItem(row_position, 9, self.criar_item(item[9]))   # Descrição
                 self.main_window.table_saida.setItem(row_position, 10, self.criar_item(item[10])) # Usuário
-                self.main_window.table_saida.setItem(row_position, 11, self.criar_item(item[11])) # Imagem
-                status_saida = 1
-                self.main_window.table_saida.setItem(row_position, 12, self.criar_item(status_saida))
+                self.main_window.table_saida.setItem(row_position, 11, self.criar_item(str(item[11]))) # Status da Saída
+
+                self.table_saida.resizeColumnsToContents()
+                self.table_saida.resizeRowsToContents()
+
 
 
 
