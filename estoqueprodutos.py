@@ -12,6 +12,7 @@ from reportlab.lib import colors
 from reportlab.lib.pagesizes import letter,landscape,A4
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle
 from reportlab.pdfgen import canvas
+from configuracoes import Configuracoes_Login
 
 
 class EstoqueProduto(QWidget):
@@ -25,6 +26,7 @@ class EstoqueProduto(QWidget):
 
         self.db = DataBase("banco_de_dados.db")
         self.alteracoes_salvas = False
+        self.config = Configuracoes_Login(self)
 
         self.checkboxes = []  # Lista para armazenar os checkboxes
         self.coluna_checkboxes_adicionada = False
@@ -114,72 +116,6 @@ class EstoqueProduto(QWidget):
                 # Adicionando o item à QTableWidget
                 self.table_base.setItem(row_index, col_index, item)
 
-    def tabela_saida(self, produtos_selecionados):
-        # Limpa a tabela de saída antes de preencher com novos dados
-        self.main_window.table_saida.clearContents()
-        self.main_window.table_saida.setRowCount(0)
-
-
-        # Verifica se há produtos selecionados para a saída
-        if not produtos_selecionados:
-            QMessageBox.critical(self.main_window, "Aviso", "Nenhum produto selecionado para gerar saída!")
-            return False
-
-        # Preenche a table_saida com os dados dos produtos selecionados
-        for row_index, row in enumerate(produtos_selecionados):
-            self.main_window.table_saida.insertRow(row_index)
-            
-            # Produto
-            produto_item = self.main_window.table_base.item(row, 0)
-            if produto_item:
-                self.main_window.table_saida.setItem(row_index, 0, self.criar_item(produto_item.text()))
-            
-            # Quantidade
-            quantidade_item = self.main_window.table_base.item(row, 1)
-            if quantidade_item:
-                self.main_window.table_saida.setItem(row_index, 1, self.criar_item(quantidade_item.text()))
-
-            # Valor do Produto
-            valor_produto_item = self.main_window.table_base.item(row, 2)
-            if valor_produto_item:
-                self.main_window.table_saida.setItem(row_index, 2, self.criar_item(valor_produto_item.text()))
-
-            # Desconto
-            desconto_item = self.main_window.table_base.item(row, 3)
-            if desconto_item:
-                self.main_window.table_saida.setItem(row_index, 3, self.criar_item(desconto_item.text()))
-
-            # Data de Saída (data atual)
-            data_saida = datetime.now().strftime("%d/%m/%Y %H:%M")
-            self.main_window.table_saida.setItem(row_index, 4, self.criar_item(data_saida))
-
-            # Data da Criação (Data da Compra)
-            data_criacao_item = self.main_window.table_base.item(row, 4)
-            if data_criacao_item:
-                self.main_window.table_saida.setItem(row_index, 5, self.criar_item(data_criacao_item.text()))
-
-            # Código do Produto
-            codigo_item = self.main_window.table_base.item(row, 5)
-            if codigo_item:
-                self.main_window.table_saida.setItem(row_index, 6, self.criar_item(codigo_item.text()))
-
-            # Cliente
-            cliente_item = self.main_window.table_base.item(row, 6)
-            if cliente_item:
-                self.main_window.table_saida.setItem(row_index, 7, self.criar_item(cliente_item.text()))
-
-            # Descrição do Produto
-            descricao_item = self.main_window.table_base.item(row, 7)
-            if descricao_item:
-                self.main_window.table_saida.setItem(row_index, 8, self.criar_item(descricao_item.text()))
-
-            # Usuário
-            usuario_item = self.main_window.table_base.item(row, 8)
-            if usuario_item:
-                self.main_window.table_saida.setItem(row_index, 9, self.criar_item(usuario_item.text()))
-
-        return True
-
 
 
     def confirmar_saida(self):
@@ -205,7 +141,7 @@ class EstoqueProduto(QWidget):
             botao_sim.setText("Sim")
 
             resposta = caixa_dialogo.exec()
-            if resposta == QMessageBox.Yes:
+            if resposta == QMessageBox.Yes: 
                 self.gerar_saida(produtos_selecionados)
 
         else:
@@ -226,7 +162,7 @@ class EstoqueProduto(QWidget):
             quantidade = int(quantidade_str)
             valor_produto = self.main_window.table_base.item(row, 2).text() or ""
             desconto = self.main_window.table_base.item(row, 3).text() or ""
-            valor_total = self.main_window.table_base.item(row,4).text() or ""
+            valor_total = self.main_window.table_base.item(row, 4).text() or ""
             data_cadastro = self.main_window.table_base.item(row, 5).text() or ""
             codigo_produto = self.main_window.table_base.item(row, 6).text() or ""
             cliente = self.main_window.table_base.item(row, 7).text() or ""
@@ -247,15 +183,17 @@ class EstoqueProduto(QWidget):
                     maxValue=quantidade
                 )
                 if not ok:
-                    continue
+                    return
             else:
                 quantidade_saida = 1
 
             nova_quantidade = quantidade - quantidade_saida
             atualizacoes_produtos.append((nova_quantidade, codigo_produto))
 
+            # Atualiza visualmente na table_base
             if nova_quantidade > 0:
                 self.main_window.table_base.item(row, 1).setText(str(nova_quantidade))
+                self.main_window.table_base.setItem(row, 10, self.criar_item("1"))  
             else:
                 self.main_window.table_base.removeRow(row)
 
@@ -302,6 +240,7 @@ class EstoqueProduto(QWidget):
                 ))
 
             historico_logs.append(f"Produto {produto} foi gerado saída de {quantidade_saida} unidade(s).")
+
         try:
             cursor = self.db.connection.cursor()
 
@@ -345,6 +284,7 @@ class EstoqueProduto(QWidget):
         self.reindex_table_base()
 
 
+
     def tabela_saida_preencher(self, dados_saida):
         for item in dados_saida:
             codigo_produto_novo = item[6]  # 'Código do Produto'
@@ -379,7 +319,9 @@ class EstoqueProduto(QWidget):
                 self.main_window.table_saida.setItem(row_position, 9, self.criar_item(item[9]))   # Descrição
                 self.main_window.table_saida.setItem(row_position, 10, self.criar_item(item[10])) # Usuário
                 self.main_window.table_saida.setItem(row_position, 11, self.criar_item(item[11])) # Imagem
-                self.main_window.table_saida.setItem(row_position, 12, self.criar_item(str(item[12]))) # Status da Saída (força string para exibir corretamente)
+                status_saida = 1
+                self.main_window.table_saida.setItem(row_position, 12, self.criar_item(status_saida))
+
 
 
     def reindex_table_base(self):
@@ -404,8 +346,6 @@ class EstoqueProduto(QWidget):
         conexao.close()
         return imagem_blob
 
-
-
     def criar_estorno(self):
         selected_rows = self.main_window.table_base.selectionModel().selectedRows()
         produtos_selecionados = [row.row() for row in selected_rows]
@@ -425,12 +365,13 @@ class EstoqueProduto(QWidget):
             quantidade_item = self.main_window.table_saida.item(row, 1)
             valor_real_item = self.main_window.table_saida.item(row, 2)
             desconto_item = self.main_window.table_saida.item(row, 3)
-            valor_total_item = self.main_window.table_saida.item(row,5)
-            data_cadastro_item = self.main_window.table_saida.item(row, 6)
-            codigo_item = self.main_window.table_saida.item(row, 7)
-            cliente_item = self.main_window.table_saida.item(row, 8)
-            descricao_item = self.main_window.table_saida.item(row, 9)
-            usuario_item = self.main_window.table_saida.item(row, 10)
+            valor_total_item = self.main_window.table_saida.item(row, 4)         # Valor Total
+            data_cadastro_item = self.main_window.table_saida.item(row, 6)       # Data do Cadastro
+            codigo_item = self.main_window.table_saida.item(row, 7)              # Código do Produto
+            cliente_item = self.main_window.table_saida.item(row, 8)             # Cliente
+            descricao_item = self.main_window.table_saida.item(row, 9)           # Descrição
+            usuario_item = self.main_window.table_saida.item(row, 10)            # Usuário
+            status_saida_item = self.main_window.table_saida.item(row, 11)       # Status da Saída
 
             produto = produto_item.text() if produto_item else ""
             quantidade = int(quantidade_item.text()) if quantidade_item else "0"
@@ -441,7 +382,8 @@ class EstoqueProduto(QWidget):
             codigo_produto = codigo_item.text() if codigo_item else ""
             cliente = cliente_item.text() if cliente_item else ""
             descricao = descricao_item.text() if descricao_item else ""
-            usuario = usuario_item.text() if usuario_item else "Não cadastrado"
+            usuario = usuario_item.text() if usuario_item else "Não Cadastrado"
+            status_saida = status_saida_item.text() if status_saida_item else "Não Cadastrado"
 
 
             #  Verifica se a quantidade é válida
@@ -463,7 +405,7 @@ class EstoqueProduto(QWidget):
                     value=1
                 )
                 if not ok:
-                    continue
+                    return
             else:
                 quantidade_estorno = 1
 
@@ -483,17 +425,17 @@ class EstoqueProduto(QWidget):
                     nova_quantidade = int(resultado[0]) + quantidade_estorno
                     cursor.execute("""
                         UPDATE products
-                        SET Quantidade = ?, Status = 'Ativo'
+                        SET Quantidade = ?
                         WHERE Código_Item = ?
                     """, (nova_quantidade, codigo_produto))
                 else:
                     # Insere como novo produto
                     cursor.execute("""
                         INSERT INTO products 
-                        (Produto, Quantidade, Valor_Real, Desconto, "Valor Total","Data do Cadastro", Código_Item, Cliente, Descrição_Produto, Imagem, Usuário, Status, 'Status da Saída')
-                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'Ativo', ?,?)
+                        (Produto, Quantidade, Valor_Real, Desconto, "Valor Total","Data do Cadastro", Código_Item, Cliente, Descrição_Produto, Imagem, Usuário,'Status da Saída')
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?,?)
                     """, (produto, str(quantidade_estorno), valor_real, desconto,valor_total, data_cadastro, 
-                          codigo_produto, cliente, descricao, imagem, usuario, "1"))
+                          codigo_produto, cliente, descricao, imagem, usuario, 1))
                 cn.commit()
 
                 if quantidade_estorno >= quantidade:
@@ -526,9 +468,8 @@ class EstoqueProduto(QWidget):
                 nova_quantidade_visual = quantidade_atual + int(quantidade)
                 self.main_window.table_base.setItem(linha_existente, 1,self.criar_item(str(nova_quantidade_visual)))
             else:
-                # Recupera o nome do usuário da linha original da table_saida (coluna 9)
-                usuario_item = self.main_window.table_saida.item(row, 9)
-                usuario = usuario_item.text() if usuario_item else "Não cadastrado"
+                # Recupera o nome do usuário do código original
+                usuario = self.config.obter_usuario_logado()
 
                 # Atualiza a tabela base visualmente
                 row_base = self.main_window.table_base.rowCount()
@@ -537,12 +478,13 @@ class EstoqueProduto(QWidget):
                 self.main_window.table_base.setItem(row_base, 1, self.criar_item(str(quantidade_estorno)))
                 self.main_window.table_base.setItem(row_base, 2, self.criar_item(valor_real))
                 self.main_window.table_base.setItem(row_base, 3, self.criar_item(desconto))
-                self.main_window.table_base.setItem(row_base, 5, self.criar_item(valor_total))
+                self.main_window.table_base.setItem(row_base, 4, self.criar_item(valor_total))
                 self.main_window.table_base.setItem(row_base, 5, self.criar_item(data_cadastro))
                 self.main_window.table_base.setItem(row_base, 6, self.criar_item(codigo_produto))
                 self.main_window.table_base.setItem(row_base, 7, self.criar_item(cliente))
                 self.main_window.table_base.setItem(row_base, 8, self.criar_item(descricao))
                 self.main_window.table_base.setItem(row_base, 9, self.criar_item(usuario))
+                self.main_window.table_base.setItem(row_base,10,self.criar_item("1"))
 
             # Registrar histórico
             historico_texto = f"Produto '{produto}' foi estornado."
@@ -1627,9 +1569,6 @@ class EstoqueProduto(QWidget):
             # Zerando a barra de progresso
             self.progress_excel.setValue(0)
             self.progresso = 0  # Resetando a variável de progresso
-
-
-
 
     def importar_produto(self):
         # Verificar se a tabela está vazia

@@ -774,7 +774,8 @@ class DataBase:
     def obter_produtos_saida(self):
         cursor = self.connection.cursor()
         cursor.execute("""
-            SELECT Produto, Quantidade, "Valor do Produto", Desconto, "Data de Saída", "Data da Criação", "Código do Produto", Cliente, "Descrição do Produto", Usuário, Imagem 
+            SELECT Produto, Quantidade, "Valor do Produto", Desconto, "Valor Total","Data de Saída", "Data da Criação", "Código do Produto", 
+                       Cliente, "Descrição do Produto", Usuário, "Status da Saída",Imagem 
             FROM products_saida
         """)
         produtos = cursor.fetchall()
