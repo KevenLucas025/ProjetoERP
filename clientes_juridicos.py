@@ -1,5 +1,6 @@
 from PySide6.QtWidgets import (QLineEdit, QToolButton,QTableWidgetItem,
-                               QMessageBox,QMainWindow,QVBoxLayout,QWidget,QLabel,QCheckBox,QPushButton,QScrollArea,QComboBox)
+                               QMessageBox,QMainWindow,QVBoxLayout,QWidget,QLabel,QCheckBox,
+                               QPushButton,QScrollArea,QComboBox,QGridLayout)
 from PySide6.QtGui import QPixmap, QIcon,QColor,QBrush,QGuiApplication
 from PySide6.QtCore import Qt
 from database import DataBase
@@ -34,6 +35,7 @@ class Clientes:
         self.btn_marcar_como_clientes = btn_marcar_como_clientes
         self.btn_historico_clientes = btn_historico_clientes
         self.btn_adicionar_cliente_juridico.clicked.connect(self.exibir_janela_cadastro_cliente)
+        self.btn_editar_clientes.clicked.connect(self.editar_cliente_juridico)
         
         self.btn_excluir_clientes.clicked.connect(self.excluir_clientes_juridicos)
         self.btn_marcar_como_clientes.clicked.connect(self.marcar_como_clientes)
@@ -146,6 +148,198 @@ class Clientes:
             "Aviso",
             "Essa função ainda não está disponível"
         )
+    def exibir_edicao_clientes(self, dados_cliente: dict):
+        self.dados_originais_cliente = dados_cliente.copy()
+        self.alteracoes_realizadas = False
+        self.janela_editar_cliente = QMainWindow()
+        self.janela_editar_cliente.setWindowTitle("Editar Cliente")
+        self.janela_editar_cliente.resize(700, 500)
+        self.janela_editar_cliente.setStyleSheet("background-color: rgb(0, 80, 121);")
+
+        screen = QGuiApplication.primaryScreen()
+        screen_geometry = screen.availableGeometry()
+        window_geometry = self.janela_editar_cliente.frameGeometry()
+        window_geometry.moveCenter(screen_geometry.center())
+        self.janela_editar_cliente.move(window_geometry.topLeft())
+
+        central_widget = QWidget()
+        layout = QGridLayout(central_widget)
+        layout.setSpacing(10)
+        layout.setContentsMargins(30, 30, 30, 30)
+
+        colunas = list(dados_cliente.keys())
+        self.campos_cliente = {}
+
+        for i, campo in enumerate(colunas):
+            label = QLabel(campo + ":")
+            label.setStyleSheet("color: white; font-weight: bold;")
+            label.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
+
+            if campo in ["Estado", "Status do Cliente"]:
+                entrada = QComboBox()
+                entrada.setStyleSheet("""
+                    QComboBox {
+                        background-color: white;
+                        border: 2px solid rgb(50,150,250);
+                        border-radius: 5px;
+                        color: black;
+                        padding: 5px;
+                    }
+                """)
+                if campo == "Estado":
+                    entrada.addItems(["Selecione", "AC", "AL", "AP", "AM", "BA", "CE", "DF", "ES", "GO", "MA",
+                                    "MT", "MS", "MG", "PA", "PB", "PR", "PE", "PI", "RJ", "RN", "RS", "RO",
+                                    "RR", "SC", "SP", "SE", "TO"])
+                elif campo == "Status do Cliente":
+                    entrada.addItems(["Selecione", "Ativo", "Inativo", "Pendente", "Bloqueado"])
+                index = entrada.findText(dados_cliente[campo])
+                entrada.setCurrentIndex(index if index >= 0 else 0)
+            else:
+                entrada = QLineEdit()
+                entrada.setText(dados_cliente[campo])
+            if isinstance(entrada,QComboBox):
+                entrada.currentTextChanged.connect(self.marcar_alteracao)
+            else:
+                entrada.textChanged.connect(self.marcar_alteracao)
+                entrada.setStyleSheet("""
+                    QLineEdit {
+                        color: black;
+                        background-color: rgb(240, 240, 240);
+                        border: 2px solid rgb(50, 150,250);
+                        border-radius: 6px;
+                        padding: 3px;
+                    }
+                    QLineEdit::placeholderText {
+                        color: black;
+                    }
+                """)
+            if campo == "CNPJ":
+                entrada.textChanged.connect(lambda texto, w=entrada: self.main_window.formatar_cnpj(texto,w))
+            elif campo == "Telefone":
+                entrada.textChanged.connect(lambda texto, w=entrada: self.main_window.formatar_telefone(texto, w))
+            elif campo == "CEP":
+                entrada.textChanged.connect(lambda texto, w=entrada: self.main_window.formatar_cep(texto,w))
+                entrada.editingFinished.connect(lambda e=entrada: self.formatar_e_buscar_cep(e))
+                
+
+            layout.addWidget(label, i, 0)
+            layout.addWidget(entrada, i, 1)
+            self.campos_cliente[campo] = entrada
+
+        # Botão atualizar
+        botao_atualizar = QPushButton("Atualizar")
+        botao_atualizar.setStyleSheet("""
+            QPushButton {
+                background-color: white;
+                padding: 8px;
+                font-weight: bold;
+                border-radius: 10px;
+            }
+            QPushButton:hover {
+                background-color: lightgray;
+            }
+        """)
+        botao_atualizar.clicked.connect(self.atualizar_dados_clientes)
+        layout.addWidget(botao_atualizar, len(colunas), 0, 1, 2, alignment=Qt.AlignCenter)
+
+        self.janela_editar_cliente.setCentralWidget(central_widget)
+        self.janela_editar_cliente.show()
+
+        
+    def editar_cliente_juridico(self):
+        linha_selecionada = self.table_clientes_juridicos.currentRow()
+        if linha_selecionada < 0:
+            QMessageBox.warning(None, "Aviso", "Nenhum cliente selecionado para edição.")
+            return
+
+        colunas = [
+            "Nome do Cliente", "Razão Social", "Data da Inclusão", "CNPJ", "Telefone",
+            "CEP", "Endereço", "Número", "Complemento", "Cidade", "Bairro",
+            "Estado", "Status do Cliente", "Categoria do Cliente",
+            "Última Atualização", "Origem do Cliente", "Valor Gasto Total", "Última Compra"
+        ]
+
+        dados_cliente = {}
+        for col, nome_coluna in enumerate(colunas):
+            item = self.table_clientes_juridicos.item(linha_selecionada, col)
+            dados_cliente[nome_coluna] = item.text() if item else ""
+
+        self.exibir_edicao_clientes(dados_cliente)
+
+    def formatar_e_buscar_cep(self, widget):
+        texto_cep = widget.text()
+        self.main_window.formatar_cep(texto_cep, widget)
+
+        dados = self.main_window.buscar_cep(texto_cep)
+        if dados:
+            self.campos_cliente["Endereço"].setText(dados.get("logradouro", ""))
+            self.campos_cliente["Complemento"].setText(dados.get("complemento", ""))
+            self.campos_cliente["Bairro"].setText(dados.get("bairro", ""))
+            self.campos_cliente["Cidade"].setText(dados.get("localidade", ""))
+            
+            estado = dados.get("uf", "")
+            index_estado = self.campos_cliente["Estado"].findText(estado)
+            if index_estado >= 0:
+                self.campos_cliente["Estado"].setCurrentIndex(index_estado)
+       
+
+    def atualizar_dados_clientes(self):
+        if not self.alteracoes_realizadas:
+            QMessageBox.information(None, "Sem alterações", "Nenhuma modificação foi feita.")
+            return
+        
+        dados_atualizados = {}
+        for campo, widget in self.campos_cliente.items():
+            if isinstance(widget, QComboBox):
+                dados_atualizados[campo] = widget.currentText()
+            else:
+                dados_atualizados[campo] = widget.text()
+
+
+        try:
+            cursor = self.db.connection.cursor()
+            cnpj = dados_atualizados["CNPJ"]  # Supondo que o CNPJ seja identificador único
+
+            query = """
+            UPDATE clientes_juridicos
+            SET
+                `Nome do Cliente` = ?, `Razão Social` = ?, `Data da Inclusão` = ?, Telefone = ?,
+                CEP = ?, Endereço = ?, Número = ?, Complemento = ?, Cidade = ?, Bairro = ?,
+                Estado = ?, `Status do Cliente` = ?, `Categoria do Cliente` = ?, `Última Atualização` = ?,
+                `Origem do Cliente` = ?, `Valor Gasto Total` = ?, `Última Compra` = ?
+            WHERE CNPJ = ?
+            """
+
+            valores = (
+                dados_atualizados["Nome do Cliente"],
+                dados_atualizados["Razão Social"],
+                dados_atualizados["Data da Inclusão"],
+                dados_atualizados["Telefone"],
+                dados_atualizados["CEP"],
+                dados_atualizados["Endereço"],
+                dados_atualizados["Número"],
+                dados_atualizados["Complemento"],
+                dados_atualizados["Cidade"],
+                dados_atualizados["Bairro"],
+                dados_atualizados["Estado"],
+                dados_atualizados["Status do Cliente"],
+                dados_atualizados["Categoria do Cliente"],
+                dados_atualizados["Última Atualização"],
+                dados_atualizados["Origem do Cliente"],
+                dados_atualizados["Valor Gasto Total"],
+                dados_atualizados["Última Compra"],
+                cnpj
+            )
+
+            cursor.execute(query, valores)
+            self.db.connection.commit()
+            QMessageBox.information(None, "Sucesso", "Cliente atualizado com sucesso.")
+            self.janela_editar_cliente.close()
+            self.carregar_clientes_juridicos()  # Se quiser recarregar a tabela
+        except Exception as e:
+            QMessageBox.critical(None, "Erro", f"Erro ao atualizar cliente: {e}")
+
+    
 
     def exibir_janela_cadastro_cliente(self):
         self.campos_cliente_juridico = {}
@@ -534,3 +728,6 @@ class Clientes:
             self.checkboxes_clientes.append(checkbox)
 
         self.coluna_checkboxes_clientes_adicionada = True
+    
+    def marcar_alteracao(self):
+        self.alteracoes_realizadas = True

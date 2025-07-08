@@ -1449,7 +1449,7 @@ class Ui_MainWindow(object):
 "    color: black;\n"
 "}")
         icon = QIcon()
-        icon.addFile(u"../../Pictures/ProjetoERP/imagens/pngwing.com.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        icon.addFile(u"imagens/pngwing.com.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
         self.btn_adicionar_produto.setIcon(icon)
 
         self.verticalLayout_12.addWidget(self.btn_adicionar_produto)
@@ -1473,7 +1473,7 @@ class Ui_MainWindow(object):
 "    color: black;\n"
 "}")
         icon1 = QIcon()
-        icon1.addFile(u"../../Pictures/ProjetoERP/imagens/editar.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        icon1.addFile(u"imagens/editar.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
         self.btn_editar.setIcon(icon1)
 
         self.verticalLayout_12.addWidget(self.btn_editar)
@@ -1497,7 +1497,7 @@ class Ui_MainWindow(object):
 "    color: black;\n"
 "}")
         icon2 = QIcon()
-        icon2.addFile(u"../../Pictures/ProjetoERP/imagens/sair.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        icon2.addFile(u"imagens/sair.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
         self.btn_sair_modo_edicao_produtos.setIcon(icon2)
 
         self.verticalLayout_12.addWidget(self.btn_sair_modo_edicao_produtos)
@@ -1521,7 +1521,7 @@ class Ui_MainWindow(object):
 "    color: black;\n"
 "}")
         icon3 = QIcon()
-        icon3.addFile(u"../../Pictures/ProjetoERP/imagens/toppng.com-update-512x512.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        icon3.addFile(u"imagens/toppng.com-update-512x512.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
         self.btn_atualizar_produto.setIcon(icon3)
 
         self.verticalLayout_12.addWidget(self.btn_atualizar_produto)
@@ -1545,7 +1545,7 @@ class Ui_MainWindow(object):
 "    color: black;\n"
 "}")
         icon4 = QIcon()
-        icon4.addFile(u"../../Pictures/ProjetoERP/imagens/Delete-Button-PNG-Download-Image.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        icon4.addFile(u"imagens/Delete-Button-PNG-Download-Image.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
         self.btn_limpar_campos.setIcon(icon4)
         self.btn_limpar_campos.setIconSize(QSize(27, 29))
         self.btn_limpar_campos.setCheckable(False)
@@ -2030,7 +2030,7 @@ class Ui_MainWindow(object):
 "    color: black;\n"
 "}")
         icon5 = QIcon()
-        icon5.addFile(u"../../Pictures/ProjetoERP/imagens/icons8-remover-imagem-16.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        icon5.addFile(u"imagens/icons8-remover-imagem-16.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
         self.btn_remover_imagem.setIcon(icon5)
 
         self.verticalLayout_13.addWidget(self.btn_remover_imagem)
@@ -2055,7 +2055,7 @@ class Ui_MainWindow(object):
 "    color: black;\n"
 "}")
         icon6 = QIcon()
-        icon6.addFile(u"../../Pictures/ProjetoERP/imagens/014upload2_99941.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        icon6.addFile(u"imagens/014upload2_99941.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
         self.btn_carregar_imagem.setIcon(icon6)
 
         self.verticalLayout_13.addWidget(self.btn_carregar_imagem)
@@ -2157,7 +2157,7 @@ class Ui_MainWindow(object):
 "}\n"
 "")
         icon7 = QIcon()
-        icon7.addFile(u"../../Pictures/ProjetoERP/imagens/confirmacao.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        icon7.addFile(u"imagens/confirmacao.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
         self.btn_confirmar.setIcon(icon7)
 
         self.verticalLayout_20.addWidget(self.btn_confirmar)
@@ -2181,9 +2181,9 @@ class Ui_MainWindow(object):
 "    color: black;\n"
 "}")
         icon8 = QIcon()
-        icon8.addFile(u"../../Pictures/ProjetoERP/imagens/Ver Clientes.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        icon8.addFile(u"imagens/74472.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
         self.btn_ver_clientes_juridicos.setIcon(icon8)
-        self.btn_ver_clientes_juridicos.setIconSize(QSize(25, 25))
+        self.btn_ver_clientes_juridicos.setIconSize(QSize(21, 25))
 
         self.verticalLayout_20.addWidget(self.btn_ver_clientes_juridicos)
 
@@ -2207,7 +2207,7 @@ class Ui_MainWindow(object):
 "    color: black;\n"
 "}")
         icon9 = QIcon()
-        icon9.addFile(u"../../Pictures/ProjetoERP/imagens/pasta.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        icon9.addFile(u"imagens/pasta.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
         self.btn_ver_item.setIcon(icon9)
 
         self.verticalLayout_20.addWidget(self.btn_ver_item)
@@ -3323,7 +3323,7 @@ class Ui_MainWindow(object):
 "    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */\n"
 "    color: black;\n"
 "}")
-        self.btn_remover_imagem_usuario.setIcon(icon4)
+        self.btn_remover_imagem_usuario.setIcon(icon5)
         self.btn_remover_imagem_usuario.setIconSize(QSize(24, 31))
 
         self.verticalLayout_16.addWidget(self.btn_remover_imagem_usuario)
@@ -3371,9 +3371,7 @@ class Ui_MainWindow(object):
 "    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */\n"
 "    color: black;\n"
 "}")
-        icon10 = QIcon()
-        icon10.addFile(u"../../Pictures/ProjetoERP/imagens/74472.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
-        self.btn_ver_usuario.setIcon(icon10)
+        self.btn_ver_usuario.setIcon(icon8)
         self.btn_ver_usuario.setIconSize(QSize(20, 28))
 
         self.verticalLayout_16.addWidget(self.btn_ver_usuario)

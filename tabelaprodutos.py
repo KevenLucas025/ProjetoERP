@@ -772,8 +772,8 @@ class TabelaProdutos(QDialog):
         if self.table_widget.rowCount() == 0:
             QMessageBox.warning(self, "Aviso", "Nenhum histórico para selecionar.")
              # Desmarca o checkbox header visualmente
-        if hasattr(self, "checkbox_header_produtos") and isinstance(self.checkbox_header_produtos, QCheckBox):
-            QTimer.singleShot(0, lambda: self.checkbox_header_produtos.setChecked(False))
+            if hasattr(self, "checkbox_selecionar_produtos") and isinstance(self.checkbox_selecionar_produtos, QCheckBox):
+                QTimer.singleShot(0, lambda: self.checkbox_selecionar_produtos.setChecked(False))
 
             return  # Impede que o restante da função execute!
 
