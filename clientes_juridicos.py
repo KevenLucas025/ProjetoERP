@@ -1,8 +1,8 @@
 from PySide6.QtWidgets import (QLineEdit, QToolButton,QTableWidgetItem,
                                QMessageBox,QMainWindow,QVBoxLayout,QWidget,QLabel,QCheckBox,
-                               QPushButton,QScrollArea,QComboBox,QGridLayout)
+                               QPushButton,QScrollArea,QComboBox,QGridLayout,QHeaderView,QHBoxLayout)
 from PySide6.QtGui import QPixmap, QIcon,QColor,QBrush,QGuiApplication
-from PySide6.QtCore import Qt
+from PySide6.QtCore import Qt,QTimer
 from database import DataBase
 import sqlite3
 import pandas as pd
@@ -12,8 +12,8 @@ from PySide6.QtGui import QKeySequence, QShortcut
 
 class Clientes:
     def __init__(self, line_clientes: QLineEdit,main_window,btn_adicionar_cliente_juridico,
-                 btn_editar_clientes,btn_excluir_clientes,btn_visualizar_clientes,btn_enviaremail_clientes,
-                 btn_gerar_relatorio_clientes,btn_marcar_como_clientes,btn_historico_clientes):
+                 btn_editar_clientes,btn_excluir_clientes,btn_gerar_relatorio_clientes,btn_marcar_como_clientes,
+                 btn_historico_clientes):
         self.line_clientes = line_clientes
         self.imagem_line()
         self.db = DataBase("banco_de_dados.db")
@@ -29,8 +29,6 @@ class Clientes:
         self.btn_adicionar_cliente_juridico = btn_adicionar_cliente_juridico
         self.btn_editar_clientes = btn_editar_clientes
         self.btn_excluir_clientes = btn_excluir_clientes
-        self.btn_visualizar_clientes = btn_visualizar_clientes
-        self.btn_enviaremail_clientes = btn_enviaremail_clientes
         self.btn_gerar_relatorio_clientes = btn_gerar_relatorio_clientes
         self.btn_marcar_como_clientes = btn_marcar_como_clientes
         self.btn_historico_clientes = btn_historico_clientes
@@ -676,7 +674,7 @@ class Clientes:
                 mensagem = f"Tem certeza que deseja excluir os seguintes clientes?\n{nomes}"
 
             # Criar QMessageBox manualmente para alterar os textos dos botões
-            msgbox = QMessageBox(self.main_window)
+            msgbox = QMessageBox()
             msgbox.setIcon(QMessageBox.Question)
             msgbox.setWindowTitle("Confirmar Exclusão")
             msgbox.setText(mensagem)
@@ -708,26 +706,115 @@ class Clientes:
             QMessageBox.information(self.main_window, "Sucesso", "Cliente(s) excluído(s) com sucesso.")
         except Exception as e:
             QMessageBox.critical(self.main_window, "Erro", f"Erro ao excluir clientes:\n{e}")
-
             
     def marcar_como_clientes(self):
-        if self.coluna_checkboxes_clientes_adicionada:
-            return  # Já foi adicionada, não faz nada
+        if self.table_clientes_juridicos.rowCount() == 0:
+            QMessageBox.warning(None,"Aviso","Nenhum cliente cadastrado para selecionar.")
+             # Desmarca o checkbox header visualmente
+            if hasattr(self, "checkbox_header_clientes") and isinstance(self.checkbox_header_clientes, QCheckBox):
+                QTimer.singleShot(0, lambda: self.checkbox_header_clientes.setChecked(False))
 
-        total_linhas = self.table_clientes_juridicos.rowCount()
-        self.table_clientes_juridicos.insertColumn(0)  # Adiciona a coluna de checkboxes na primeira posição
+            return  # Impede que o restante da função execute!
+
+        if self.coluna_checkboxes_clientes_adicionada:
+            self.table_clientes_juridicos.removeColumn(0)
+            self.table_clientes_juridicos.verticalHeader().setVisible(True)
+            self.coluna_checkboxes_clientes_adicionada = False
+
+            if hasattr(self, "checkbox_header_clientes"):
+                self.checkbox_header_clientes.setChecked(False)
+                self.checkbox_header_clientes.deleteLater()
+                del self.checkbox_header_clientes
+
+            self.checkboxes_clientes.clear()
+            return
+
+        # Adiciona a coluna de checkboxes
+        self.table_clientes_juridicos.insertColumn(0)
         self.table_clientes_juridicos.setHorizontalHeaderItem(0, QTableWidgetItem(""))
-        self.table_clientes_juridicos.setColumnWidth(0,40)
+        self.table_clientes_juridicos.setColumnWidth(0, 30)
+        self.table_clientes_juridicos.horizontalHeader().setMinimumSectionSize(30)
+        self.table_clientes_juridicos.horizontalHeader().setSectionResizeMode(0, QHeaderView.Fixed)
+
+        # Checkbox no cabeçalho
+        self.checkbox_header_clientes = QCheckBox(self.table_clientes_juridicos)
+        self.checkbox_header_clientes.setToolTip("Selecionar todos")
+        self.checkbox_header_clientes.setChecked(False)
+        self.checkbox_header_clientes.stateChanged.connect(self.selecionar_todos_clientes)
+        self.checkbox_header_clientes.setFixedSize(20, 20)
+        self.checkbox_header_clientes.setStyleSheet("background-color: transparent; border: none;")
+        self.checkbox_header_clientes.show()
+
+        header = self.table_clientes_juridicos.horizontalHeader()
+        header.sectionResized.connect(self.atualizar_posicao_checkbox_header_clientes)
 
         self.checkboxes_clientes = []
 
-        for linha in range(total_linhas):
+        for linha in range(self.table_clientes_juridicos.rowCount()):
             checkbox = QCheckBox()
-            checkbox.setStyleSheet("margin-left:15px; margin-right:15px;")
-            self.table_clientes_juridicos.setCellWidget(linha, 0, checkbox)
+            checkbox.stateChanged.connect(self.atualizar_selecao_todos_clientes)
+
+            container = QWidget()
+            layout = QHBoxLayout(container)
+            layout.addWidget(checkbox)
+            layout.setAlignment(Qt.AlignCenter)
+            layout.setContentsMargins(0, 0, 0, 0)
+
+            self.table_clientes_juridicos.setCellWidget(linha, 0, container)
             self.checkboxes_clientes.append(checkbox)
 
+        QTimer.singleShot(0, self.atualizar_posicao_checkbox_header_clientes)
+
         self.coluna_checkboxes_clientes_adicionada = True
+        
+    def selecionar_todos_clientes(self):
+        if not self.coluna_checkboxes_clientes_adicionada:
+            QMessageBox.warning(self, "Aviso", "Ative a opção 'Marcar como' antes.")
+            if hasattr(self, "checkbox_header_clientes"):
+                self.checkbox_header_clientes.setChecked(False)
+            return
+
+        estado = self.checkbox_header_clientes.checkState() == Qt.Checked
+        self.checkboxes_clientes.clear()
+
+        for row in range(self.table_clientes_juridicos.rowCount()):
+            widget = self.table_clientes_juridicos.cellWidget(row, 0)
+            if widget is not None:
+                checkbox = widget.findChild(QCheckBox)
+                if checkbox:
+                    checkbox.blockSignals(True)
+                    checkbox.setChecked(estado)
+                    checkbox.blockSignals(False)
+                    self.checkboxes_clientes.append(checkbox)
+
+    def atualizar_selecao_todos_clientes(self):
+        self.checkbox_header_clientes.blockSignals(True)
+
+        all_checked = all(cb.isChecked() for cb in self.checkboxes_clientes if cb)
+        any_checked = any(cb.isChecked() for cb in self.checkboxes_clientes if cb)
+
+        if all_checked:
+            self.checkbox_header_clientes.setCheckState(Qt.Checked)
+        elif any_checked:
+            self.checkbox_header_clientes.setCheckState(Qt.PartiallyChecked)
+        else:
+            self.checkbox_header_clientes.setCheckState(Qt.Unchecked)
+
+        self.checkbox_header_clientes.blockSignals(False)
+
+    def atualizar_posicao_checkbox_header_clientes(self):
+        if hasattr(self, "checkbox_header_clientes") and self.coluna_checkboxes_clientes_adicionada:
+            header = self.table_clientes_juridicos.horizontalHeader()
+            x = header.sectionViewportPosition(0) + (header.sectionSize(0) - self.checkbox_header_clientes.width()) // 2 + 20
+            y = (header.height() - self.checkbox_header_clientes.height()) // 2
+            self.checkbox_header_clientes.move(x, y)
+
     
     def marcar_alteracao(self):
         self.alteracoes_realizadas = True
+
+    def gerar_relatorio(self):
+        pass
+
+    def historico_clientes_juridicos(self):
+        pass

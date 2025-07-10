@@ -168,8 +168,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.selected_produto_id = None
 
         self.pagina_clientes = Clientes(self.line_clientes,self,self.btn_adicionar_cliente_juridico,self.btn_editar_clientes,
-                                        self.btn_excluir_clientes,self.btn_visualizar_clientes,self.btn_enviaremail_clientes,
-                                        self.btn_gerar_relatorio_clientes,self.btn_marcar_como_clientes,self.btn_historico_clientes)
+                                        self.btn_excluir_clientes,self.btn_gerar_relatorio_clientes,self.btn_marcar_como_clientes,
+                                        self.btn_historico_clientes)
 
         # Crie o layout para o frame_imagem_cadastro e adicione o QLabel
         self.label_imagem_usuario = QLabel(self)

@@ -3492,50 +3492,6 @@ class Ui_MainWindow(object):
 
         self.horizontalLayout_25.addWidget(self.btn_excluir_clientes)
 
-        self.btn_visualizar_clientes = QPushButton(self.frame_7)
-        self.btn_visualizar_clientes.setObjectName(u"btn_visualizar_clientes")
-        sizePolicy.setHeightForWidth(self.btn_visualizar_clientes.sizePolicy().hasHeightForWidth())
-        self.btn_visualizar_clientes.setSizePolicy(sizePolicy)
-        self.btn_visualizar_clientes.setMaximumSize(QSize(145, 27))
-        self.btn_visualizar_clientes.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
-        self.btn_visualizar_clientes.setAutoFillBackground(False)
-        self.btn_visualizar_clientes.setStyleSheet(u"QPushButton {\n"
-"    color: rgb(255, 255, 255);\n"
-"    border-radius: 8px;\n"
-"    font-size: 16px;\n"
-"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */\n"
-"    border: 4px solid transparent;\n"
-"}\n"
-"\n"
-"QPushButton:hover {\n"
-"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */\n"
-"    color: black;\n"
-"}")
-
-        self.horizontalLayout_25.addWidget(self.btn_visualizar_clientes)
-
-        self.btn_enviaremail_clientes = QPushButton(self.frame_7)
-        self.btn_enviaremail_clientes.setObjectName(u"btn_enviaremail_clientes")
-        sizePolicy.setHeightForWidth(self.btn_enviaremail_clientes.sizePolicy().hasHeightForWidth())
-        self.btn_enviaremail_clientes.setSizePolicy(sizePolicy)
-        self.btn_enviaremail_clientes.setMaximumSize(QSize(145, 27))
-        self.btn_enviaremail_clientes.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
-        self.btn_enviaremail_clientes.setAutoFillBackground(False)
-        self.btn_enviaremail_clientes.setStyleSheet(u"QPushButton {\n"
-"    color: rgb(255, 255, 255);\n"
-"    border-radius: 8px;\n"
-"    font-size: 16px;\n"
-"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */\n"
-"    border: 4px solid transparent;\n"
-"}\n"
-"\n"
-"QPushButton:hover {\n"
-"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */\n"
-"    color: black;\n"
-"}")
-
-        self.horizontalLayout_25.addWidget(self.btn_enviaremail_clientes)
-
         self.btn_gerar_relatorio_clientes = QPushButton(self.frame_7)
         self.btn_gerar_relatorio_clientes.setObjectName(u"btn_gerar_relatorio_clientes")
         sizePolicy.setHeightForWidth(self.btn_gerar_relatorio_clientes.sizePolicy().hasHeightForWidth())
@@ -3732,7 +3688,7 @@ class Ui_MainWindow(object):
         self.table_clientes_juridicos.setGridStyle(Qt.SolidLine)
         self.table_clientes_juridicos.setCornerButtonEnabled(False)
         self.table_clientes_juridicos.horizontalHeader().setDefaultSectionSize(118)
-        self.table_clientes_juridicos.verticalHeader().setVisible(False)
+        self.table_clientes_juridicos.verticalHeader().setVisible(True)
 
         self.gridLayout_22.addWidget(self.table_clientes_juridicos, 1, 0, 1, 2)
 
@@ -3835,50 +3791,6 @@ class Ui_MainWindow(object):
 "}")
 
         self.horizontalLayout_29.addWidget(self.btn_excluir_clientes_fisicos)
-
-        self.btn_visualizar_clientes_fisicos = QPushButton(self.frame_12)
-        self.btn_visualizar_clientes_fisicos.setObjectName(u"btn_visualizar_clientes_fisicos")
-        sizePolicy.setHeightForWidth(self.btn_visualizar_clientes_fisicos.sizePolicy().hasHeightForWidth())
-        self.btn_visualizar_clientes_fisicos.setSizePolicy(sizePolicy)
-        self.btn_visualizar_clientes_fisicos.setMaximumSize(QSize(145, 27))
-        self.btn_visualizar_clientes_fisicos.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
-        self.btn_visualizar_clientes_fisicos.setAutoFillBackground(False)
-        self.btn_visualizar_clientes_fisicos.setStyleSheet(u"QPushButton {\n"
-"    color: rgb(255, 255, 255);\n"
-"    border-radius: 8px;\n"
-"    font-size: 16px;\n"
-"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */\n"
-"    border: 4px solid transparent;\n"
-"}\n"
-"\n"
-"QPushButton:hover {\n"
-"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */\n"
-"    color: black;\n"
-"}")
-
-        self.horizontalLayout_29.addWidget(self.btn_visualizar_clientes_fisicos)
-
-        self.btn_enviaremail_clientes_fisicos = QPushButton(self.frame_12)
-        self.btn_enviaremail_clientes_fisicos.setObjectName(u"btn_enviaremail_clientes_fisicos")
-        sizePolicy.setHeightForWidth(self.btn_enviaremail_clientes_fisicos.sizePolicy().hasHeightForWidth())
-        self.btn_enviaremail_clientes_fisicos.setSizePolicy(sizePolicy)
-        self.btn_enviaremail_clientes_fisicos.setMaximumSize(QSize(145, 27))
-        self.btn_enviaremail_clientes_fisicos.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
-        self.btn_enviaremail_clientes_fisicos.setAutoFillBackground(False)
-        self.btn_enviaremail_clientes_fisicos.setStyleSheet(u"QPushButton {\n"
-"    color: rgb(255, 255, 255);\n"
-"    border-radius: 8px;\n"
-"    font-size: 16px;\n"
-"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */\n"
-"    border: 4px solid transparent;\n"
-"}\n"
-"\n"
-"QPushButton:hover {\n"
-"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */\n"
-"    color: black;\n"
-"}")
-
-        self.horizontalLayout_29.addWidget(self.btn_enviaremail_clientes_fisicos)
 
         self.btn_gerar_relatorio_clientes_fisicos = QPushButton(self.frame_12)
         self.btn_gerar_relatorio_clientes_fisicos.setObjectName(u"btn_gerar_relatorio_clientes_fisicos")
@@ -4053,6 +3965,7 @@ class Ui_MainWindow(object):
         self.table_clientes_fisicos.setEditTriggers(QAbstractItemView.NoEditTriggers)
         self.table_clientes_fisicos.setGridStyle(Qt.SolidLine)
         self.table_clientes_fisicos.setCornerButtonEnabled(False)
+        self.table_clientes_fisicos.horizontalHeader().setCascadingSectionResizes(False)
         self.table_clientes_fisicos.horizontalHeader().setDefaultSectionSize(118)
         self.table_clientes_fisicos.verticalHeader().setVisible(False)
 
@@ -5105,8 +5018,6 @@ class Ui_MainWindow(object):
         self.btn_adicionar_cliente_juridico.setText(QCoreApplication.translate("MainWindow", u"Criar cliente", None))
         self.btn_editar_clientes.setText(QCoreApplication.translate("MainWindow", u"Editar", None))
         self.btn_excluir_clientes.setText(QCoreApplication.translate("MainWindow", u"Excluir", None))
-        self.btn_visualizar_clientes.setText(QCoreApplication.translate("MainWindow", u"Visualizar Detalhes", None))
-        self.btn_enviaremail_clientes.setText(QCoreApplication.translate("MainWindow", u"Enviar E-mail", None))
         self.btn_gerar_relatorio_clientes.setText(QCoreApplication.translate("MainWindow", u"Gerar Relat\u00f3rio", None))
         self.btn_marcar_como_clientes.setText(QCoreApplication.translate("MainWindow", u"Marcar como", None))
         self.btn_historico_clientes.setText(QCoreApplication.translate("MainWindow", u"Hist\u00f3rico", None))
@@ -5152,8 +5063,6 @@ class Ui_MainWindow(object):
         self.btn_adicionar_cliente_fisico.setText(QCoreApplication.translate("MainWindow", u"Criar cliente", None))
         self.btn_editar_clientes_fisicos.setText(QCoreApplication.translate("MainWindow", u"Editar", None))
         self.btn_excluir_clientes_fisicos.setText(QCoreApplication.translate("MainWindow", u"Excluir", None))
-        self.btn_visualizar_clientes_fisicos.setText(QCoreApplication.translate("MainWindow", u"Visualizar Detalhes", None))
-        self.btn_enviaremail_clientes_fisicos.setText(QCoreApplication.translate("MainWindow", u"Enviar E-mail", None))
         self.btn_gerar_relatorio_clientes_fisicos.setText(QCoreApplication.translate("MainWindow", u"Gerar Relat\u00f3rio", None))
         self.btn_marcar_como_clientes_fisicos.setText(QCoreApplication.translate("MainWindow", u"Marcar como", None))
         self.btn_historico_clientes_fisicos.setText(QCoreApplication.translate("MainWindow", u"Hist\u00f3rico", None))
