@@ -928,7 +928,7 @@ class Clientes(QWidget):
 
         # Criar checkbox "Selecionar Individualmente" toda vez que a janela for aberta
         self.checkbox_selecionar = QCheckBox("Selecionar")
-        #self.checkbox_selecionar.stateChanged.connect(self.selecionar_individual)
+        self.checkbox_selecionar.stateChanged.connect(self.selecionar_individual_juridicos)
 
         # Adicionar outros botões ao layout
         layout.addWidget(botao_atualizar)
@@ -1104,3 +1104,106 @@ class Clientes(QWidget):
             self.tabela_historico_clientes.removeRow(linha_selecionada)
 
             QMessageBox.information(self, "Sucesso", "Item removido com sucesso!")
+
+    def selecionar_todos_clientes_juridicos(self):
+        if not self.coluna_checkboxes_clientes_adicionada:
+            QMessageBox.warning(self, "Aviso", "Ative a opção 'Selecionar Individualmente' antes.")
+            if hasattr(self, "checkbox_header"):
+                self.checkbox_header_juridicos.setChecked(False)
+            return
+
+        estado = self.checkbox_header_juridicos.checkState() == Qt.Checked
+        self.checkboxes.clear()  # Reinicia a lista para manter consistência
+        
+        for row in range(self.tabela_historico_clientes.rowCount()):
+            widget = self.tabela_historico_clientes.cellWidget(row, 0)
+            if widget is not None:
+                checkbox = widget.findChild(QCheckBox)
+                if checkbox:
+                    checkbox.blockSignals(True)
+                    checkbox.setChecked(estado)
+                    checkbox.blockSignals(False)
+
+
+
+     # Função para adicionar checkboxes selecionar_individual na tabela de histórico
+    def selecionar_individual_juridicos(self):
+        if self.tabela_historico_clientes.rowCount() == 0:
+            QMessageBox.warning(self, "Aviso", "Nenhum histórico para selecionar.")
+            self.checkbox_selecionar_individual.setChecked(False)
+            return
+
+        if self.coluna_checkboxes_clientes_adicionada:
+            self.tabela_historico_clientes.removeColumn(0)
+            self.tabela_historico_clientes.verticalHeader().setVisible(True)
+            self.coluna_checkboxes_clientes_adicionada = False
+
+            if hasattr(self, "checkbox_header_juridicos"):
+                self.checkbox_header_juridicos.deleteLater()
+                del self.checkbox_header_juridicos
+
+            self.checkboxes.clear()
+            return
+
+        self.tabela_historico_clientes.insertColumn(0)
+        self.tabela_historico_clientes.setHorizontalHeaderItem(0, QTableWidgetItem(""))
+        self.tabela_historico_clientes.setColumnWidth(0, 30)
+        self.tabela_historico_clientes.horizontalHeader().setMinimumSectionSize(30)
+        self.tabela_historico_clientes.horizontalHeader().setSectionResizeMode(0, QHeaderView.Fixed)
+
+        # Checkbox do cabeçalho
+        self.checkbox_header_juridicos = QCheckBox(self.tabela_historico_clientes)
+        self.checkbox_header_juridicos.setToolTip("Selecionar todos")
+        self.checkbox_header_juridicos.setChecked(False)
+        self.checkbox_header_juridicos.stateChanged.connect(self.selecionar_todos_clientes_juridicos)
+        self.checkbox_header_juridicos.setFixedSize(20, 20)
+        self.checkbox_header_juridicos.show()
+
+        header = self.tabela_historico_clientes.horizontalHeader()
+        self.atualizar_posicao_checkbox_header_juridicos()
+        header.sectionResized.connect(self.atualizar_posicao_checkbox_header_juridicos)
+
+        self.checkboxes.clear()
+
+        QTimer.singleShot(0,self.atualizar_posicao_checkbox_header_juridicos)
+
+        for row in range(self.tabela_historico_clientes.rowCount()):
+            checkbox = QCheckBox()
+            checkbox.stateChanged.connect(self.atualizar_selecao_todos)
+
+            container = QWidget()
+            layout = QHBoxLayout(container)
+            layout.addWidget(checkbox)
+            layout.setAlignment(Qt.AlignCenter)
+            layout.setContentsMargins(0, 0, 0, 0)
+
+            self.tabela_historico_clientes_clientes.setCellWidget(row, 0, container)
+            self.checkboxes.append(checkbox)
+
+        self.tabela_historico_clientes.verticalHeader().setVisible(False)
+        self.coluna_checkboxes_clientes_adicionada = True
+
+    def atualizar_selecao_todos(self):
+        self.checkbox_header_juridicos.blockSignals(True)
+
+        all_checked = all(checkbox.isChecked() for checkbox in self.checkboxes if checkbox)
+        any_checked = any(checkbox.isChecked() for checkbox in self.checkboxes if checkbox)
+
+        if all_checked:
+            self.checkbox_header_juridicos.setCheckState(Qt.Checked)
+        elif any_checked:
+            self.checkbox_header_juridicos.setCheckState(Qt.PartiallyChecked)
+        else:
+            self.checkbox_header_juridicos.setCheckState(Qt.Unchecked)
+
+        self.checkbox_header_juridicos.blockSignals(False)
+
+        
+    def atualizar_posicao_checkbox_header_juridicos(self):
+        if hasattr(self, "checkbox_header_juridicos") and self.coluna_checkboxes_clientes_adicionada:
+            header = self.tabela_historico_clientes.horizontalHeader()
+
+            x = header.sectionViewportPosition(0) + (header.sectionSize(0) - self.checkbox_header_juridicos.width()) // 2 + 4
+            y = (header.height() - self.checkbox_header_juridicos.height()) // 2
+
+            self.checkbox_header_juridicos.move(x, y)
