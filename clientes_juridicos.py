@@ -1,8 +1,9 @@
 from PySide6.QtWidgets import (QLineEdit, QToolButton,QTableWidgetItem,
                                QMessageBox,QMainWindow,QVBoxLayout,QWidget,QLabel,QCheckBox,
-                               QPushButton,QScrollArea,QComboBox,QGridLayout,QHeaderView,QHBoxLayout)
+                               QPushButton,QScrollArea,QComboBox,QGridLayout,QHeaderView,QHBoxLayout,
+                               QGraphicsOpacityEffect,QTableWidget)
 from PySide6.QtGui import QPixmap, QIcon,QColor,QBrush,QGuiApplication
-from PySide6.QtCore import Qt,QTimer
+from PySide6.QtCore import Qt,QTimer,QPropertyAnimation,QEvent
 from database import DataBase
 import sqlite3
 import pandas as pd
@@ -10,10 +11,11 @@ from configuracoes import Configuracoes_Login
 from datetime import datetime
 from PySide6.QtGui import QKeySequence, QShortcut
 
-class Clientes:
+class Clientes(QWidget):
     def __init__(self, line_clientes: QLineEdit,main_window,btn_adicionar_cliente_juridico,
                  btn_editar_clientes,btn_excluir_clientes,btn_gerar_relatorio_clientes,btn_marcar_como_clientes,
                  btn_historico_clientes):
+        super().__init__()
         self.line_clientes = line_clientes
         self.imagem_line()
         self.db = DataBase("banco_de_dados.db")
@@ -32,15 +34,24 @@ class Clientes:
         self.btn_gerar_relatorio_clientes = btn_gerar_relatorio_clientes
         self.btn_marcar_como_clientes = btn_marcar_como_clientes
         self.btn_historico_clientes = btn_historico_clientes
-        self.btn_adicionar_cliente_juridico.clicked.connect(self.exibir_janela_cadastro_cliente)
-        self.btn_editar_clientes.clicked.connect(self.editar_cliente_juridico)
+        
+        
         
         self.btn_excluir_clientes.clicked.connect(self.excluir_clientes_juridicos)
         self.btn_marcar_como_clientes.clicked.connect(self.marcar_como_clientes)
+        self.btn_adicionar_cliente_juridico.clicked.connect(self.exibir_janela_cadastro_cliente)
+        self.btn_editar_clientes.clicked.connect(self.editar_cliente_juridico)
+        self.btn_historico_clientes.clicked.connect(self.historico_clientes_juridicos)
+        
         
         #  Atalho de teclado F5 para atualizar a tabela
         atalho_f5 = QShortcut(QKeySequence("F5"),self.main_window)
         atalho_f5.activated.connect(self.carregar_clientes_juridicos)
+        
+        self.installEventFilter(self)
+        self.table_clientes_juridicos.viewport().installEventFilter(self)
+        
+        
 
     # Função auxiliar para criar um QTableWidgetItem com texto centralizado
     def formatar_texto_juridico(self, text):
@@ -656,10 +667,15 @@ class Clientes:
                             clientes_para_excluir.append((linha, nome_cliente))
             else:
                 # Modo sem checkbox (seleção direta)
-                linha_selecionada = self.table_clientes_juridicos.currentRow()
-                if linha_selecionada >= 0:
-                    nome_cliente = self.table_clientes_juridicos.item(linha_selecionada, 0).text()
-                    clientes_para_excluir.append((linha_selecionada, nome_cliente))
+                linha_selecionadas = self.table_clientes_juridicos.selectionModel().selectedRows()
+                if not linha_selecionadas:
+                    QMessageBox.information(None, "Aviso", "Nenhum cliente selecionado para exclusão.")
+                    return
+                
+                for index in linha_selecionadas:
+                    linha = index.row()
+                    nome_cliente = self.table_clientes_juridicos.item(linha,0).text()
+                    clientes_para_excluir.append((linha,nome_cliente))
 
             if not clientes_para_excluir:
                 QMessageBox.information(None, "Aviso", "Nenhum cliente selecionado para exclusão.")
@@ -690,7 +706,8 @@ class Clientes:
 
             if resposta != QMessageBox.Yes:
                 return
-
+            
+            # Executa exclusão no banco e remove as linhas da tabela
             db = DataBase()
             db.connecta()
             cursor = db.connection.cursor()
@@ -717,16 +734,9 @@ class Clientes:
             return  # Impede que o restante da função execute!
 
         if self.coluna_checkboxes_clientes_adicionada:
-            self.table_clientes_juridicos.removeColumn(0)
-            self.table_clientes_juridicos.verticalHeader().setVisible(True)
-            self.coluna_checkboxes_clientes_adicionada = False
-
-            if hasattr(self, "checkbox_header_clientes"):
-                self.checkbox_header_clientes.setChecked(False)
-                self.checkbox_header_clientes.deleteLater()
-                del self.checkbox_header_clientes
-
-            self.checkboxes_clientes.clear()
+            # Animação de saída (fade out)
+            self.animar_coluna_checkbox(mostrar=False)
+            QTimer.singleShot(300, lambda: self.remover_coluna_checkboxes())
             return
 
         # Adiciona a coluna de checkboxes
@@ -767,12 +777,45 @@ class Clientes:
 
         self.coluna_checkboxes_clientes_adicionada = True
         
+        # Animação de entrada (fade in)
+        self.animar_coluna_checkbox(mostrar=True)
+        
+    def animar_coluna_checkbox(self, mostrar=True):
+        self.animacoes_clientes = []
+
+        for row in range(self.table_clientes_juridicos.rowCount()):
+            widget = self.table_clientes_juridicos.cellWidget(row, 0)
+            if widget:
+                efeito = QGraphicsOpacityEffect(widget)
+                widget.setGraphicsEffect(efeito)
+
+                # Cria animação corretamente
+                anim = QPropertyAnimation(efeito, b"opacity")
+                anim.setDuration(300)
+                anim.setStartValue(0.0 if mostrar else 1.0)
+                anim.setEndValue(1.0 if mostrar else 0.0)
+                anim.start()
+
+                self.animacoes_clientes.append(anim)
+
+                
+    def remover_coluna_checkboxes(self):
+        self.table_clientes_juridicos.removeColumn(0)
+        self.table_clientes_juridicos.verticalHeader().setVisible(True)
+        self.coluna_checkboxes_clientes_adicionada = False
+
+        if hasattr(self, "checkbox_header_clientes"):
+            self.checkbox_header_clientes.setChecked(False)
+            self.checkbox_header_clientes.deleteLater()
+            del self.checkbox_header_clientes
+
+        self.checkboxes_clientes.clear()
+
+        
     def selecionar_todos_clientes(self):
-        if not self.coluna_checkboxes_clientes_adicionada:
-            QMessageBox.warning(self, "Aviso", "Ative a opção 'Marcar como' antes.")
-            if hasattr(self, "checkbox_header_clientes"):
-                self.checkbox_header_clientes.setChecked(False)
-            return
+        # Evita erro ao clicar quando a coluna já foi removida
+        if not getattr(self, "coluna_checkboxes_clientes_adicionada", False):
+            return  # Simplesmente sai sem mostrar mensagem
 
         estado = self.checkbox_header_clientes.checkState() == Qt.Checked
         self.checkboxes_clientes.clear()
@@ -786,6 +829,7 @@ class Clientes:
                     checkbox.setChecked(estado)
                     checkbox.blockSignals(False)
                     self.checkboxes_clientes.append(checkbox)
+
 
     def atualizar_selecao_todos_clientes(self):
         self.checkbox_header_clientes.blockSignals(True)
@@ -805,10 +849,23 @@ class Clientes:
     def atualizar_posicao_checkbox_header_clientes(self):
         if hasattr(self, "checkbox_header_clientes") and self.coluna_checkboxes_clientes_adicionada:
             header = self.table_clientes_juridicos.horizontalHeader()
+            
             x = header.sectionViewportPosition(0) + (header.sectionSize(0) - self.checkbox_header_clientes.width()) // 2 + 20
             y = (header.height() - self.checkbox_header_clientes.height()) // 2
             self.checkbox_header_clientes.move(x, y)
-
+            
+    # Limpa a coluna selecionada clicando em qualquer lugar da tabela
+    def eventFilter(self, source, event):
+        if event.type() == QEvent.MouseButtonPress:
+            if source == self.table_clientes_juridicos.viewport():
+                index = self.table_clientes_juridicos.indexAt(event.pos())
+                if not index.isValid():
+                    self.table_clientes_juridicos.clearSelection() # remove a linha selecinada da tabela
+                    self.table_clientes_juridicos.clearFocus() # remove o foco da tabela      
+        return super().eventFilter(source,event)
+    
+    def exibir_janela_historico_clientes(self):
+        pass
     
     def marcar_alteracao(self):
         self.alteracoes_realizadas = True
@@ -817,4 +874,233 @@ class Clientes:
         pass
 
     def historico_clientes_juridicos(self):
-        pass
+        self.janela_historico_clientes = QMainWindow()
+        self.janela_historico_clientes.resize(800,650)
+        self.janela_historico_clientes.setWindowTitle("Histórico de Clientes")
+
+        # Centralizar a janela na tela
+        screen = QGuiApplication.primaryScreen()
+        screen_geometry = screen.availableGeometry()
+        window_geometry = self.janela_historico_clientes.frameGeometry()
+        window_geometry.moveCenter(screen_geometry.center())
+        self.janela_historico_clientes.move(window_geometry.topLeft())
+
+        # Criação do layout e tabela para exibir o histórico
+        central_widget = QWidget()
+        layout = QVBoxLayout(central_widget)
+
+        # Tabela do histórico
+        self.tabela_historico_clientes = QTableWidget()
+        self.tabela_historico_clientes.setColumnCount(4)
+        self.tabela_historico_clientes.setHorizontalHeaderLabels(["Data/Hora", "Usuário", "Ação", "Descrição"])
+
+        # Botão Atualizar
+        botao_atualizar = QPushButton("Atualizar Histórico")
+        botao_atualizar.clicked.connect(self.atualizar_historico_clientes_jurididos)
+
+        # Botão Apagar
+        botao_apagar = QPushButton("Apagar Histórico")
+        #botao_apagar.clicked.connect(self.apagar_historico)
+
+        # Botão Exportar CSV
+        botao_exportar_csv = QPushButton("Exportar para CSV")
+        #botao_exportar_csv.clicked.connect(self.exportar_csv)
+
+        
+        # Botão Exportar Excel
+        botao_exportar_excel = QPushButton("Exportar para Excel")
+        #botao_exportar_excel.clicked.connect(self.exportar_excel)
+
+        # Botão PDF
+        botao_exportar_pdf = QPushButton("Exportar PDF")
+        #botao_exportar_pdf.clicked.connect(self.exportar_pdf)
+
+        botao_pausar_historico = QPushButton("Pausar Histórico")
+        #$botao_pausar_historico.clicked.connect(self.pausar_historico)
+
+
+        botao_filtrar_historico = QPushButton("Filtrar Histórico")
+        #botao_filtrar_historico.clicked.connect(self.filtrar_historico)
+
+        botao_ordenar_historico = QPushButton("Ordenar Histórico")
+        #botao_ordenar_historico.clicked.connect(self.ordenar_historico)
+
+
+        # Criar checkbox "Selecionar Individualmente" toda vez que a janela for aberta
+        self.checkbox_selecionar = QCheckBox("Selecionar")
+        #self.checkbox_selecionar.stateChanged.connect(self.selecionar_individual)
+
+        # Adicionar outros botões ao layout
+        layout.addWidget(botao_atualizar)
+        layout.addWidget(botao_apagar)
+        layout.addWidget(botao_exportar_csv)
+        layout.addWidget(botao_exportar_excel)
+        layout.addWidget(botao_exportar_pdf)
+        layout.addWidget(botao_pausar_historico)
+        layout.addWidget(botao_ordenar_historico)
+        layout.addWidget(botao_filtrar_historico)
+        layout.addWidget(self.checkbox_selecionar)
+        layout.addWidget(self.tabela_historico_clientes)
+        
+
+
+        # Configurar o widget central e exibir a janela
+        self.janela_historico_clientes.setCentralWidget(central_widget)
+        self.janela_historico_clientes.show()
+
+         # Redimensionar colunas e linhas
+        self.carregar_historico_clientes_juridicos()
+        self.tabela_historico_clientes.resizeColumnsToContents()
+        self.tabela_historico_clientes.resizeRowsToContents()
+
+    def carregar_historico_clientes_juridicos(self):
+            with sqlite3.connect('banco_de_dados.db') as cn:
+                cursor = cn.cursor()
+                cursor.execute('SELECT * FROM historico_clientes_juridicos ORDER BY "Data e Hora" DESC')
+                registros = cursor.fetchall()
+
+            self.tabela_historico_clientes.clearContents()
+            self.tabela_historico_clientes.setRowCount(len(registros))
+
+            deslocamento = 1 if self.coluna_checkboxes_clientes_adicionada else 0
+            self.checkboxes_clientes = []  # Zerar e recriar lista de checkboxes
+
+            for i, (data, usuario, acao, descricao) in enumerate(registros):
+                if self.coluna_checkboxes_clientes_adicionada:
+                    checkbox = QCheckBox()
+                    checkbox.setStyleSheet("margin-left:9px; margin-right:9px;")
+                    self.tabela_historico_clientes.setCellWidget(i,0,checkbox)
+                    self.checkboxes_clientes.append(checkbox)
+                self.tabela_historico_clientes.setItem(i, 0 + deslocamento, QTableWidgetItem(data))
+                self.tabela_historico_clientes.setItem(i, 1 + deslocamento, QTableWidgetItem(usuario))
+                self.tabela_historico_clientes.setItem(i, 2 + deslocamento, QTableWidgetItem(acao))
+                self.tabela_historico_clientes.setItem(i, 3 + deslocamento, QTableWidgetItem(descricao))
+
+    def atualizar_historico_clientes_jurididos(self):
+        QMessageBox.information(None, "Sucesso", "Dados carregados com sucesso!")
+        self.carregar_historico_clientes_juridicos()
+
+    def confirmar_historico_cliente_juridicos_apagado(self, mensagem):
+        msgbox = QMessageBox(self)
+        msgbox.setWindowTitle("Confirmação")
+        msgbox.setText(mensagem)
+
+        btn_sim = QPushButton("Sim")
+        btn_nao = QPushButton("Não")
+        msgbox.addButton(btn_sim, QMessageBox.ButtonRole.YesRole)
+        msgbox.addButton(btn_nao, QMessageBox.ButtonRole.NoRole)
+
+        msgbox.setDefaultButton(btn_nao)
+        resposta = msgbox.exec()
+
+        return msgbox.clickedButton() == btn_sim
+    
+    def apagar_historico_cliente_juridicos(self):
+        # Caso checkboxes estejam ativados
+        if self.coluna_checkboxes_clientes_adicionada and self.checkboxes_clientes:
+            linhas_para_remover = []
+            ids_para_remover = []
+
+            # Identificar as linhas com checkboxes selecionados
+            for row, checkbox in enumerate(self.checkboxes_clientes):
+                if checkbox and checkbox.isChecked():
+                    linhas_para_remover.append(row)
+                    coluna_data_hora = 1 if not self.coluna_checkboxes_clientes_adicionada else 2
+                    item_data_widget = self.tabela_historico_clientes.item(row, coluna_data_hora)  # Coluna de Data/Hora
+                    if item_data_widget:
+                        item_data_text = item_data_widget.text().strip()
+                        # Excluir com base na data e hora
+                        if item_data_text:
+                            ids_para_remover.append(item_data_text)
+                        else:
+                            print(f"Erro ao capturar ID para a data/hora: '{item_data_text}'")
+                    else:
+                        print(f"Erro ao capturar Data/Hora na linha {row}")
+
+            if not ids_para_remover:
+                QMessageBox.warning(self, "Erro", "Nenhum item válido foi selecionado para apagar!")
+                return
+
+            # Confirmar exclusão
+            mensagem = (
+                f"Você tem certeza que deseja apagar os {len(ids_para_remover)} itens selecionados?"
+                if len(ids_para_remover) > 1
+                else "Você tem certeza que deseja apagar o item selecionado?"
+            )
+
+            if not self.confirmar_historico_apagado(mensagem):
+                return
+
+            # Excluir do banco de dados
+            with sqlite3.connect('banco_de_dados.db') as cn:
+                cursor = cn.cursor()
+                try:
+                    for data_hora in ids_para_remover:
+                        cursor.execute("DELETE FROM historico WHERE 'Data e Hora' = ?", (data_hora,))
+                    cn.commit()
+                except Exception as e:
+                    QMessageBox.critical(self, "Erro", f"Erro ao excluir do banco de dados: {e}")
+                    return
+
+            # Remover as linhas na interface
+            for row in sorted(linhas_para_remover, reverse=True):
+                self.tabela_historico_clientes.removeRow(row)
+
+            QMessageBox.information(self, "Sucesso", "Itens removidos com sucesso!")
+
+        # Caso sem checkboxes (seleção manual)
+        else:
+            linha_selecionada = self.tabela_historico_clientes.currentRow()
+
+            if linha_selecionada < 0:
+                QMessageBox.warning(self, "Erro", "Nenhum item foi selecionado para apagar!")
+                return
+
+            # Capturar a Data/Hora da célula correspondente (coluna 0)
+            coluna_data_hora = 0 if not self.coluna_checkboxes_clientes_adicionada else 1
+            item_data_widget = self.tabela_historico_clientes.item(linha_selecionada, coluna_data_hora)  # Coluna de Data/Hora
+            if not item_data_widget:
+                QMessageBox.warning(self, "Erro", "Não foi possível identificar a Data/Hora do item a ser apagado!")
+                return
+
+            item_data_text = item_data_widget.text().strip()
+
+            # Conectar ao banco de dados para buscar o ID relacionado à Data/Hora
+            with sqlite3.connect('banco_de_dados.db') as cn:
+                cursor = cn.cursor()
+                try:
+                    # Buscar o ID com base na Data/Hora, removendo espaços ou caracteres extras
+                    cursor.execute('SELECT id FROM historico_clientes_juridicos WHERE "Data e Hora" = ?', (item_data_text,))
+                    resultado = cursor.fetchone()
+
+                    if item_data_text:
+                        item_id = resultado[0]  # Pegamos o ID encontrado
+                    else:
+                        QMessageBox.warning(self, "Erro", f"Não foi encontrado um item para a Data/Hora: {item_data_text}")
+                        return
+
+                except Exception as e:
+                    QMessageBox.critical(self, "Erro", f"Erro ao buscar ID: {e}")
+                    return
+
+            # Confirmar exclusão
+            mensagem = "Você tem certeza que deseja apagar o item selecionado?"
+
+            if not self.confirmar_historico_cliente_juridicos_apagado(mensagem):
+                return
+
+            # Excluir do banco de dados
+            with sqlite3.connect('banco_de_dados.db') as cn:
+                cursor = cn.cursor()
+                try:
+                    cursor.execute("DELETE FROM historico_clientes_juridicos WHERE 'Data e Hora' = ?", (item_id,))
+                    print(f"Item removido do banco de dados: ID {item_id}")
+                    cn.commit()
+                except Exception as e:
+                    QMessageBox.critical(self, "Erro", f"Erro ao excluir do banco de dados: {e}")
+                    return
+
+            # Remover a linha da interface
+            self.tabela_historico_clientes.removeRow(linha_selecionada)
+
+            QMessageBox.information(self, "Sucesso", "Item removido com sucesso!")

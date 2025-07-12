@@ -84,6 +84,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.db.create_table_historico_usuario()
         self.db.create_table_clientes_juridicos()
         self.db.create_table_clientes_fisicos()
+        self.db.create_table_historico_fisico()
+        self.db.create_table_historico_juridico()
 
         # Mapeia os campos com identificadores únicos
         self.campos_com_autocomplete = {

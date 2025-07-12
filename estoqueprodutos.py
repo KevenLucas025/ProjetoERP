@@ -1683,11 +1683,13 @@ class EstoqueProduto(QWidget):
                 index = self.main_window.table_base.indexAt(event.pos())
                 if not index.isValid():
                     self.main_window.table_base.clearSelection()
+                    self.main_window.table_base.clearFocus()
 
             elif source == self.main_window.table_saida.viewport():
                 index = self.main_window.table_saida.indexAt(event.pos())
                 if not index.isValid():
                     self.main_window.table_saida.clearSelection()
+                    self.main_window.table_saida.clearFocus()
 
         return super().eventFilter(source, event)
 

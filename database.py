@@ -291,6 +291,43 @@ class DataBase:
             print("Tabela de clientes fisícos criada com sucesso! ")
         except Exception as e:
             print("Erro ao criar tabela de clientes_fisicos: ", e)
+    def create_table_historico_juridico(self):
+        try:
+            if self.tabela_existe("historico_clientes_juridicos"):
+                print("A tabela 'historico_clientes_juridicos' já está criada")
+                return
+            cursor = self.connection.cursor()
+            cursor.execute("""
+                CREATE TABLE IF NOT EXISTS historico_clientes_juridicos(
+                    'Data e Hora' TEXT,
+                    Usuário TEXT,
+                    Ação TEXT,
+                    Descrição TEXT                                   
+                )           
+            """)
+            self.connection.commit()
+            print("Tabela de histórico usuários criada com sucesso! ")
+        except Exception as e:
+            print("Erro ao criar tabela de historico_clientes_juridicos: ", e)
+
+    def create_table_historico_fisico(self):
+        try:
+            if self.tabela_existe("historico_clientes_fisicos"):
+                print("A tabela 'historico_clientes_fisicos' já está criada")
+                return
+            cursor = self.connection.cursor()
+            cursor.execute("""
+                CREATE TABLE IF NOT EXISTS historico_clientes_fisicos(
+                    'Data e Hora' TEXT,
+                    Usuário TEXT,
+                    Ação TEXT,
+                    Descrição TEXT                                   
+                )           
+            """)
+            self.connection.commit()
+            print("Tabela de histórico usuários criada com sucesso! ")
+        except Exception as e:
+            print("Erro ao criar tabela de historico_clientes_fisicos: ", e)
 #*********************************************************************************************************************
     def insert_product(self, produto, quantidade, valor_real, desconto,valor_total, data_cadastro, 
                     codigo_item, cliente, descricao_produto, usuario, imagem=None):

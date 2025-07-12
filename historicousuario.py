@@ -415,11 +415,13 @@ class Pagina_Usuarios(QWidget):
                 index = self.main_window.table_ativos.indexAt(event.pos())
                 if not index.isValid():
                     self.main_window.table_ativos.clearSelection()
+                    self.main_window.table_ativos.clearFocus()
 
             elif source == self.main_window.table_inativos.viewport():
                 index = self.main_window.table_inativos.indexAt(event.pos())
                 if not index.isValid():
                     self.main_window.table_inativos.clearSelection()
+                    self.main_window.table_inativos.clearFocus()
 
         return super().eventFilter(source, event)
 
