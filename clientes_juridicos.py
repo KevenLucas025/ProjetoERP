@@ -1,15 +1,22 @@
 from PySide6.QtWidgets import (QLineEdit, QToolButton,QTableWidgetItem,
                                QMessageBox,QMainWindow,QVBoxLayout,QWidget,QLabel,QCheckBox,
                                QPushButton,QScrollArea,QComboBox,QGridLayout,QHeaderView,QHBoxLayout,
-                               QGraphicsOpacityEffect,QTableWidget)
+                               QGraphicsOpacityEffect,QTableWidget,QInputDialog,QDialog,
+                               QRadioButton,QGroupBox,QFileDialog,QFormLayout,QDateEdit)
 from PySide6.QtGui import QPixmap, QIcon,QColor,QBrush,QGuiApplication
-from PySide6.QtCore import Qt,QTimer,QPropertyAnimation,QEvent
+from PySide6.QtCore import Qt,QTimer,QPropertyAnimation,QEvent,QDate
 from database import DataBase
 import sqlite3
 import pandas as pd
 from configuracoes import Configuracoes_Login
 from datetime import datetime
 from PySide6.QtGui import QKeySequence, QShortcut
+import csv
+from reportlab.lib import colors
+from reportlab.lib.pagesizes import letter
+from reportlab.lib.pagesizes import letter,landscape,A4
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle
+from fpdf import FPDF
 
 class Clientes(QWidget):
     def __init__(self, line_clientes: QLineEdit,main_window,btn_adicionar_cliente_juridico,
@@ -42,6 +49,7 @@ class Clientes(QWidget):
         self.btn_adicionar_cliente_juridico.clicked.connect(self.exibir_janela_cadastro_cliente)
         self.btn_editar_clientes.clicked.connect(self.editar_cliente_juridico)
         self.btn_historico_clientes.clicked.connect(self.historico_clientes_juridicos)
+        self.btn_gerar_relatorio_clientes.clicked.connect(self.gerar_relatorio_clientes_juridicos)
         
         
         #  Atalho de teclado F5 para atualizar a tabela
@@ -900,30 +908,30 @@ class Clientes(QWidget):
 
         # Botão Apagar
         botao_apagar = QPushButton("Apagar Histórico")
-        #botao_apagar.clicked.connect(self.apagar_historico)
+        botao_apagar.clicked.connect(self.apagar_historico_cliente_juridicos)
 
         # Botão Exportar CSV
         botao_exportar_csv = QPushButton("Exportar para CSV")
-        #botao_exportar_csv.clicked.connect(self.exportar_csv)
+        botao_exportar_csv.clicked.connect(self.exportar_csv_juridicos)
 
         
         # Botão Exportar Excel
         botao_exportar_excel = QPushButton("Exportar para Excel")
-        #botao_exportar_excel.clicked.connect(self.exportar_excel)
+        botao_exportar_excel.clicked.connect(self.exportar_excel_juridicos)
 
         # Botão PDF
         botao_exportar_pdf = QPushButton("Exportar PDF")
-        #botao_exportar_pdf.clicked.connect(self.exportar_pdf)
+        botao_exportar_pdf.clicked.connect(self.exportar_pdf_juridicos)
 
         botao_pausar_historico = QPushButton("Pausar Histórico")
-        #$botao_pausar_historico.clicked.connect(self.pausar_historico)
+        botao_pausar_historico.clicked.connect(self.pausar_historico_juridicos)
 
 
         botao_filtrar_historico = QPushButton("Filtrar Histórico")
-        #botao_filtrar_historico.clicked.connect(self.filtrar_historico)
+        botao_filtrar_historico.clicked.connect(self.filtrar_historico_clientes_juridicos)
 
         botao_ordenar_historico = QPushButton("Ordenar Histórico")
-        #botao_ordenar_historico.clicked.connect(self.ordenar_historico)
+        botao_ordenar_historico.clicked.connect(self.ordenar_historico_clientes_juridicos)
 
 
         # Criar checkbox "Selecionar Individualmente" toda vez que a janela for aberta
@@ -1207,3 +1215,628 @@ class Clientes(QWidget):
             y = (header.height() - self.checkbox_header_juridicos.height()) // 2
 
             self.checkbox_header_juridicos.move(x, y)
+            
+    def ordenar_historico_clientes_juridicos(self):
+        if hasattr(self, "checkbox_header_juridicos"):
+            QMessageBox.warning(
+                None,
+                "Aviso",
+                "Desmarque o checkbox antes de ordenar o histórico."
+            )
+            return
+        # Obter a coluna pela qual o usuário deseja ordenar
+        coluna = self.obter_coluna_para_ordenar_clientes_juridicos()  # Função fictícia para capturar escolha
+        if coluna is None:
+            return  # Cancela o processo todo
+        
+        # Determinar a direção de ordenação (ascendente ou descendente)
+        direcao = self.obter_direcao_ordenacao_clientes_juridicos()  # Função fictícia para capturar escolha
+        if direcao is None:
+            return  # Cancela o processo todo
+        
+        # Mapeamento de colunas para índices (ajustar conforme sua tabela)
+        colunas_para_indices = {
+            "Data/Hora": 0,
+            "Usuário": 1,
+            "Ação": 2,
+            "Descrição": 3
+        }
+        
+        # Verificar se a coluna escolhida é válida
+        if coluna not in colunas_para_indices:
+            QMessageBox.warning(self, "Erro", "Coluna inválida para ordenação!")
+            return
+        
+        # Obter o índice da coluna escolhida
+        indice_coluna = colunas_para_indices[coluna]
+        
+        # Obter os dados atuais da tabela
+        dados = []
+        for row in range(self.tabela_historico_clientes.rowCount()):
+            linha = [
+                self.tabela_historico_clientes.item(row, col).text() if self.tabela_historico_clientes.item(row, col) else ""
+                for col in range(self.tabela_historico_clientes.columnCount())
+            ]
+            dados.append(linha)
+        
+        # Ordenar os dados com base na coluna escolhida e direção
+        dados.sort(key=lambda x: x[indice_coluna], reverse=(direcao == "Decrescente"))
+        
+        # Atualizar a tabela com os dados ordenados
+        self.tabela_historico_clientes.setRowCount(0)  # Limpar tabela
+        for row_data in dados:
+            row = self.tabela_historico_clientes.rowCount()
+            self.tabela_historico_clientes.insertRow(row)
+            for col, value in enumerate(row_data):
+                self.tabela_historico_clientes.setItem(row, col, QTableWidgetItem(value))
+
+    def obter_coluna_para_ordenar_clientes_juridicos(self):
+        colunas = ["Data/Hora", "Usuário", "Ação", "Descrição"]
+        coluna, ok = QInputDialog.getItem(self, "Ordenar por", "Escolha a coluna:", colunas, 0, False)
+        return coluna if ok else None
+
+    def obter_direcao_ordenacao_clientes_juridicos(self):
+        direcoes = ["Crescente", "Decrescente"]
+        direcao, ok = QInputDialog.getItem(self, "Direção da Ordenação", "Escolha a direção:", direcoes, 0, False)
+        return direcao if ok else None
+
+    def filtrar_historico_clientes_juridicos(self):
+        if hasattr(self,"checkbox_header_juridicos"):
+            QMessageBox.warning(
+                None,
+                "Aviso",
+                "Desmarque o checkbox antes de filtrar o histórico."
+            )
+            return
+        
+        # Criar a janela de filtro
+        janela_filtro = QDialog(self)
+        janela_filtro.setWindowTitle("Filtrar Histórico")
+        layout = QVBoxLayout(janela_filtro)
+
+        # Campo para inserir a data
+        campo_data = QLineEdit()
+        campo_data.setPlaceholderText("Digite a data no formato DD/MM/AAAA")
+        
+        # Conectar ao método de formatação, passando o texto
+        campo_data.textChanged.connect(lambda: self.formatar_data(campo_data))
+
+
+        # Campo para selecionar se quer o mais recente ou mais antigo (filtro por hora)
+        grupo_hora = QGroupBox("Filtrar por Hora")
+        layout_hora = QVBoxLayout(grupo_hora)
+
+        radio_mais_novo = QRadioButton("Mais Recente")
+        radio_mais_velho = QRadioButton("Mais Antigo")
+
+        layout_hora.addWidget(radio_mais_novo)
+        layout_hora.addWidget(radio_mais_velho)
+        grupo_hora.setLayout(layout_hora)
+
+        # Botão para aplicar o filtro
+        botao_filtrar = QPushButton("Aplicar Filtro")
+        botao_filtrar.clicked.connect(
+            lambda: self.aplicar_filtro_clientes_juridicos(
+                campo_data.text(),
+                radio_mais_novo.isChecked(),
+                radio_mais_velho.isChecked()
+            )
+        )
+
+        # Adicionar widgets ao layout
+        layout.addWidget(QLabel("Filtros Disponíveis"))
+        layout.addWidget(campo_data)
+        layout.addWidget(grupo_hora)
+        layout.addWidget(botao_filtrar)
+
+        # Exibir a janela de filtro
+        janela_filtro.setLayout(layout)
+        janela_filtro.exec()
+
+    def formatar_data_clientes_juridicos(self, campo_data):
+        # Obter o texto do campo de data
+        texto_data = campo_data.text().replace("/", "")  # Remover as barras existentes
+        texto_data = ''.join(filter(str.isdigit, texto_data))  # Permite apenas números
+
+        # Verificar se há caracteres alfabéticos (letras)
+        if any(char.isalpha() for char in texto_data):
+            # Mostrar mensagem de erro caso haja letras
+            QMessageBox.warning(self, "Erro", "Somente números são permitidos.")
+            campo_data.clear()
+            return  # Não aplica a formatação se houver letras
+
+        # Limitar a entrada para no máximo 8 dígitos
+        if len(texto_data) > 8:
+            texto_data = texto_data[:8]
+
+         # Formatar a data no formato DD/MM/AAAA
+        if len(texto_data) >= 8:
+            data_formatada = "{}/{}/{}".format(texto_data[:2], texto_data[2:4], texto_data[4:])  # DD/MM/AAAA
+        elif len(texto_data) > 6:
+            data_formatada = "{}/{}".format(texto_data[:2], texto_data[2:8])  # DD/MM
+        else:
+            data_formatada = texto_data[:8]  # Apenas o DD
+
+        # Atualizar o texto do campo de data se houver mudança
+        if campo_data.text() != data_formatada:
+            campo_data.setText(data_formatada)  # Atualiza o texto do campo de data
+            campo_data.setCursorPosition(len(data_formatada))  # Move o cursor para o final do texto
+
+    def aplicar_filtro_clientes_juridicos(self, data, filtrar_novo, filtrar_velho):
+        with sqlite3.connect('banco_de_dados.db') as cn:
+            cursor = cn.cursor()
+
+            query = "SELECT * FROM historico_clientes_juridicos"
+            params = []
+
+            # Filtrar pela data, se fornecida
+            if data:
+                try:
+                    # Garantir que a data seja no formato correto (DD/MM/AAAA)
+                    data_formatada = datetime.strptime(data, "%d/%m/%Y").strftime("%d/%m/%Y")  # Formato DD/MM/YYYY
+                    query += " WHERE SUBSTR([Data e Hora], 1, 10) = ?"
+                    params.append(data_formatada)
+                except ValueError:
+                    QMessageBox.warning(self, "Erro", "Data inválida. Use o formato DD/MM/AAAA.")
+                    return
+
+            # Ordenar por hora, se aplicável
+            if filtrar_novo:
+                query += " ORDER BY [Data e Hora] DESC LIMIT 1"
+            elif filtrar_velho:
+                query += " ORDER BY [Data e Hora] ASC LIMIT 1"
+
+            # Executar a consulta
+            cursor.execute(query, params)
+            registros = cursor.fetchall()
+
+        # Atualizar a tabela com os registros filtrados
+        self.tabela_historico_clientes.clearContents()
+        self.tabela_historico_clientes.setRowCount(len(registros))
+
+        for i, row in enumerate(registros):
+            self.tabela_historico_clientes.setItem(i, 0, QTableWidgetItem(row[0]))  # Data/Hora
+            self.tabela_historico_clientes.setItem(i, 1, QTableWidgetItem(row[1]))  # Usuário
+            self.tabela_historico_clientes.setItem(i, 2, QTableWidgetItem(row[2]))  # Ação
+            self.tabela_historico_clientes.setItem(i, 3, QTableWidgetItem(row[3]))  # Descrição
+
+        QMessageBox.information(self, "Filtro Aplicado", f"{len(registros)} registro(s) encontrado(s)!")
+    
+    def exportar_csv_juridicos(self):
+        num_linhas = self.tabela_historico_clientes.rowCount()
+        num_colunas = self.tabela_historico_clientes.columnCount()
+
+        # Verificar se a tabela está vazia
+        if self.tabela_historico_clientes.rowCount() == 0:
+            QMessageBox.warning(self, "Aviso", "Nenhum histórico encontrado para gerar arquivo CSV.")
+            return  # Se a tabela estiver vazia, encerra a função sem prosseguir
+
+        nome_arquivo, _ = QFileDialog.getSaveFileName(
+            self,
+            "Salvar Arquivo CSV",
+            "historico.csv",
+            "Arquivos CSV (*.csv)"
+
+        )
+
+        if not nome_arquivo:
+            return
+        
+        #Criar o arquivo CSV
+        try:
+            with open(nome_arquivo, mode="w",newline="",encoding="utf-8-sig") as arquivo_csv:
+                escritor = csv.writer(arquivo_csv, delimiter=";")
+
+                 # Adicionar cabeçalhos ao CSV
+                cabecalhos = [self.tabela_historico_clientes.horizontalHeaderItem(col).text() for col in range (num_colunas)]
+                escritor.writerow(cabecalhos)
+
+                # Adicionar os dados da tabela ao CSV
+                for linha in range(num_linhas):
+                    dados_linhas = [
+                        self.tabela_historico_clientes.item(linha, col).text() if self.tabela_historico_clientes.item(linha, col) else ""
+                        for col in range(num_colunas)
+
+                    ]
+                    escritor.writerow(dados_linhas)
+
+                    QMessageBox.information(self, "Sucesso", f"Arquivo CSV salvo com sucesso em:\n{nome_arquivo}")
+
+        except Exception as e:
+            QMessageBox.critical(self, "Erro", f"Falha ao salvar o arquivo CSV:\n{str(e)}")
+
+    def exportar_excel_juridicos(self):
+        num_linhas = self.tabela_historico_clientes.rowCount()
+        num_colunas = self.tabela_historico_clientes.columnCount()
+
+        # Verificar se a tabela está vazia
+        if self.tabela_historico_clientes.rowCount() == 0:
+            QMessageBox.warning(self, "Aviso", "Nenhum histórico encontrado para gerar arquivo Excel.")
+            return  # Se a tabela estiver vazia, encerra a função sem prosseguir
+        
+        nome_arquivo, _ = QFileDialog.getSaveFileName(
+            self,
+            "Salvar Arquivo Excel",
+            "historico.xlsx",
+            "Arquivos Excel (*.xlsx)"
+
+        )
+
+        if not nome_arquivo:
+            return
+        
+        # Garantir que o arquivo tenha extensão .xlsx
+        if not nome_arquivo.endswith(".xlsx"):
+            nome_arquivo += ".xlsx"
+
+        # Criar uma lista para armazenar os dados da tabela
+        dados = []
+
+
+        for linha in range(num_linhas):
+            linha_dados = []
+            for coluna in range(num_colunas):
+                item = self.tabela_historico_clientes.item(linha, coluna)
+                linha_dados.append(item.text() if item else "") # Adicionar o texto ou vazio se o item for None
+            dados.append(linha_dados)
+
+        # Obter os cabeçalhos da tabela        
+        cabecalhos = [self.tabela_historico_clientes.horizontalHeaderItem(coluna).text() for coluna in range (num_colunas)]
+
+        try:
+            # Criar um DataFrame do pandas com os dados e cabeçalhos
+            df = pd.DataFrame(dados, columns=cabecalhos)
+
+            # Exportar para Excel
+            df.to_excel(nome_arquivo, index=False,engine="openpyxl")
+            QMessageBox.information(self, "Sucesso",f"Arquivo Excel gerado com sucesso em: \n{nome_arquivo}")
+        except Exception as e:
+            QMessageBox.critical(self, "Erro",f"Erro ao salvar arquivo Excel: {str(e)}")
+
+    def exportar_pdf_juridicos(self):
+        num_linhas = self.tabela_historico_clientes.rowCount()
+        num_colunas = self.tabela_historico_clientes.columnCount()
+
+        # Verificar se a tabela está vazia
+        if self.tabela_historico_clientes.rowCount() == 0:
+            QMessageBox.warning(self, "Aviso", "Nenhum histórico encontrado para gerar arquivo PDF.")
+            return  # Se a tabela estiver vazia, encerra a função sem prosseguir
+
+        nome_arquivo, _ = QFileDialog.getSaveFileName(
+            self,
+            "Salvar Arquivo PDF",
+            "historico.pdf",
+            "Arquivos PDF (*.pdf)"
+        )
+
+        if not nome_arquivo:
+            return
+
+        # Garantir que o arquivo tenha extensão .pdf
+        if not nome_arquivo.endswith(".pdf"):
+            nome_arquivo += ".pdf"
+
+        # Criar uma lista para armazenar os dados da tabela
+        dados = []
+
+        # Obter os cabeçalhos da tabela
+        cabecalhos = [self.tabela_historico_clientes.horizontalHeaderItem(coluna).text() for coluna in range(num_colunas)]
+        dados.append(cabecalhos)  # Adicionar os cabeçalhos como a primeira linha do PDF
+
+        # Adicionar os dados da tabela
+        for linha in range(num_linhas):
+            linha_dados = []
+            for coluna in range(num_colunas):
+                item = self.tabela_historico_clientes.item(linha, coluna)
+                linha_dados.append(item.text() if item else "")  # Adicionar o texto ou vazio se o item for None
+            dados.append(linha_dados)
+
+        try:
+            # Criar o PDF
+            pdf = SimpleDocTemplate(nome_arquivo, pagesize=landscape(letter))
+            tabela = Table(dados)
+
+            # Adicionar estilo à tabela
+            estilo = TableStyle([
+                ('BACKGROUND', (0, 0), (-1, 0), colors.grey),  # Cabeçalho com fundo cinza
+                ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),  # Texto do cabeçalho branco
+                ('ALIGN', (0, 0), (-1, -1), 'CENTER'),  # Centralizar texto
+                ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),  # Fonte do cabeçalho
+                ('BOTTOMPADDING', (0, 0), (-1, 0), 12),  # Espaçamento inferior no cabeçalho
+                ('BACKGROUND', (0, 1), (-1, -1), colors.beige),  # Fundo das linhas de dados
+                ('GRID', (0, 0), (-1, -1), 1, colors.black)  # Bordas da tabela
+            ])
+            tabela.setStyle(estilo)
+
+            # Gerar o PDF
+            pdf.build([tabela])
+            QMessageBox.information(self, "Sucesso", f"Arquivo PDF gerado com sucesso em: \n{nome_arquivo}")
+
+        except Exception as e:
+            QMessageBox.critical(self, "Erro", f"Erro ao salvar arquivo PDF: {str(e)}")
+
+    def pausar_historico_juridicos(self):
+        # Criação da nova janela de histórico como QMainWindow
+        self.janela_escolha = QMainWindow()
+        self.janela_escolha.setWindowTitle("Pausar Histórico")
+        self.janela_escolha.resize(255, 150)
+
+
+        # Botão "Sim"
+        botao_sim = QPushButton("Sim")
+        botao_sim.clicked.connect(self.historico_ativo_juridicos)
+
+        # Botão "Não"
+        botao_nao = QPushButton("Não")
+        botao_nao.clicked.connect(self.historico_inativo_juridicos)
+
+
+        # Criação do layout e tabela para exibir o histórico
+        central_widget = QWidget()
+        layout = QVBoxLayout(central_widget)
+
+        # Texto centralizado
+        label = QLabel("Deseja pausar o histórico?")
+        label.setAlignment(Qt.AlignmentFlag.AlignCenter)  # Alinha o texto ao centro
+
+        layout.addWidget(label)  # Adiciona o texto centralizado
+        layout.addWidget(botao_sim)
+        layout.addWidget(botao_nao)
+
+        self.janela_escolha.setCentralWidget(central_widget)
+        self.janela_escolha.show()
+
+
+    def historico_ativo_juridicos(self):
+        # Atualiza o estado do histórico para ativo
+        self.main_window.historico_pausado = True  # Atualiza a variável no MainWindow
+        QMessageBox.information(self, "Histórico", "O registro do histórico foi pausado.")
+        self.janela_escolha.close()
+
+    def historico_inativo_juridicos(self):
+        # Atualiza o estado do histórico para inativo (continua registrando)
+        self.main_window.historico_pausado = False  # Atualiza a variável no MainWindow
+        QMessageBox.information(self, "Histórico", "O registro do histórico continua ativo.")
+        self.janela_escolha.close()
+        
+
+    def gerar_relatorio_clientes_juridicos(self):
+        self.janela_historico_clientes = QMainWindow()
+        self.janela_historico_clientes.setWindowTitle("Relatório de Clientes Jurídicos")
+        self.janela_historico_clientes.resize(800, 600)
+
+        scroll = QScrollArea()
+        scroll.setWidgetResizable(True)
+
+        central_widget = QWidget()
+        layout_principal = QVBoxLayout(central_widget)
+
+        grupo_filtros = QGroupBox("Filtros do Relatório")
+        layout_filtros = QFormLayout()
+
+        
+        
+
+        # Status
+        self.combo_status = QComboBox()
+        self.combo_status.addItems(["Todos","Ativo","Inativo","Bloqueado","Pendente"])
+        layout_filtros.addRow("Status do Cliente:", self.combo_status)
+
+        # Categoria
+        self.combo_categoria = QComboBox()
+        layout_filtros.addRow("Categoria do Cliente:", self.combo_categoria)
+
+        # Período
+        self.date_de = QDateEdit()
+        self.date_de.setDate(QDate.currentDate().addMonths(-1))
+        self.date_de.setCalendarPopup(True)
+
+        self.date_ate = QDateEdit()
+        self.date_ate.setDate(QDate.currentDate())
+        self.date_ate.setCalendarPopup(True)
+
+        layout_filtros.addRow("Última Compra - De:", self.date_de)
+        layout_filtros.addRow("Última Compra - Até:", self.date_ate)
+
+        # Origem
+        self.combo_origem = QComboBox()
+        layout_filtros.addRow("Origem do Cliente:", self.combo_origem)
+
+        grupo_filtros.setLayout(layout_filtros)
+        layout_principal.addWidget(grupo_filtros)
+
+        # Preenche os combos dinamicamente:
+        self.carregar_opcoes_combo("Categoria do Cliente", self.combo_categoria)
+        self.carregar_opcoes_combo("Origem do Cliente", self.combo_origem)
+
+        # Campos do relatório
+        grupo_campos = QGroupBox("Informações a Incluir no Relatório")
+        layout_campos = QVBoxLayout()
+
+        self.combo_selecionar_todos = QCheckBox("Selecionar Todos")
+        self.combo_selecionar_todos.setChecked(True)
+        self.combo_selecionar_todos.stateChanged.connect(self.selecionar_todos_checkboxes)
+        layout_campos.addWidget(self.combo_selecionar_todos)
+
+        checks = [
+            "Nome do Cliente", "Razão Social", "Data de Inclusão", "CNPJ",
+            "Contato do Cliente", "CEP do Cliente", "Endereço do Cliente",
+            "Número do Cliente", "Complemento do Cliente", "Cidade do Cliente",
+            "Bairro do Cliente", "Estado do Cliente", "Status do Cliente",
+            "Categoria do Cliente", "Data da Última Atualização", "Origem do Cliente",
+            "Valor Gasto Total", "Data da Última Compra"
+        ]
+
+        self.checkboxes_relatorio = []
+
+        for texto in checks:
+            check = QCheckBox(texto)
+            check.setChecked(True)
+            self.checkboxes_relatorio.append(check)
+            layout_campos.addWidget(check)
+
+        grupo_campos.setLayout(layout_campos)
+        layout_principal.addWidget(grupo_campos)
+
+        layout_botoes = QHBoxLayout()
+        btn_gerar = QPushButton("Gerar Relatório em PDF")
+        btn_cancelar = QPushButton("Cancelar")
+
+        layout_botoes.addStretch()
+        layout_botoes.addWidget(btn_gerar)
+        layout_botoes.addWidget(btn_cancelar)
+
+        layout_principal.addLayout(layout_botoes)
+
+
+        btn_cancelar.clicked.connect(self.janela_historico_clientes.close)
+        btn_gerar.clicked.connect(self.gerar_pdf_clientes_juridicos)
+
+        scroll.setWidget(central_widget)
+        self.janela_historico_clientes.setCentralWidget(scroll)
+        self.janela_historico_clientes.show()
+
+    def selecionar_todos_checkboxes(self,estado):
+        for checkbox in self.checkboxes_relatorio:
+            checkbox.setChecked(bool(estado))
+
+    def carregar_opcoes_combo(self, nome_coluna, combo_box):
+        try:
+            conn = sqlite3.connect("banco_de_dados.db")  # substitua com seu caminho
+            cursor = conn.cursor()
+
+            # Aspas duplas se o nome da coluna tiver espaços
+            cursor.execute(f'''
+                SELECT DISTINCT "{nome_coluna}"
+                FROM clientes_juridicos
+                WHERE "{nome_coluna}" IS NOT NULL AND "{nome_coluna}" != ''
+            ''')
+            resultados = cursor.fetchall()
+
+            opcoes = sorted(set([row[0] for row in resultados]))
+            combo_box.clear()
+            combo_box.addItem("Todos")
+            combo_box.addItems(opcoes)
+
+        except Exception as e:
+            print(f"Erro ao carregar opções de {nome_coluna}:", e)
+
+    def gerar_pdf_clientes_juridicos(self):
+        # Obter filtros selecionados
+        status = self.combo_status.currentText()
+        categoria = self.combo_categoria.currentText()
+        origem = self.combo_origem.currentText()
+        data_de = self.date_de.date().toPython()
+        data_ate = self.date_ate.date().toPython()
+
+        # Obter os campos marcados nos checkboxes
+        campos_selecionados = [
+            checkbox.text()
+            for checkbox in self.checkboxes_relatorio
+            if checkbox.isChecked()
+        ]
+
+        if not campos_selecionados:
+            QMessageBox.warning(None,"Aviso","Selecione ao menos um campo para incluir no relatório. ")
+            return
+        
+        mapeamento_colunas = {
+            "Nome do Cliente": "Nome do Cliente",
+            "Razão Social": "Razão Social",
+            "Data de Inclusão": "Data de Inclusao",
+            "CNPJ": "CNPJ",
+            "Contato do Cliente": "Telefone",
+            "CEP do Cliente": "CEP",
+            "Endereço do Cliente": "Endereco",
+            "Número do Cliente": "Numero",
+            "Complemento do Cliente": "Complemento",
+            "Cidade do Cliente": "Cidade",
+            "Bairro do Cliente": "Bairro",
+            "Estado do Cliente": "Estado",
+            "Status do Cliente": "Status do Cliente",
+            "Categoria do Cliente": "Categoria do Cliente",
+            "Data da Última Atualização": "Ultima Atualizacao",
+            "Origem do Cliente": "Origem do Cliente",
+            "Valor Gasto Total": "Valor Gasto Total",
+            "Data da Última Compra": "Última Compra"
+        }
+
+        colunas_sql = [f'"{mapeamento_colunas[nome]}"' for nome in campos_selecionados]
+        sql = f"SELECT {', '.join(colunas_sql)} FROM clientes_juridicos WHERE 1=1 "
+
+        params = []
+
+        if status != "Todos":
+            sql += " AND `Status do Cliente` = ?"
+            params.append(status)
+        if categoria != "Todos":
+            sql += " AND `Categoria do Cliente` = ?"
+            params.append(categoria)
+
+        if origem != "Todos":
+            sql += " AND `Origem do Cliente` = ?"
+            params.append(origem)
+
+        sql += """
+            AND 
+                substr(`Última Compra`, 7, 4) || '-' || 
+                substr(`Última Compra`, 4, 2) || '-' || 
+                substr(`Última Compra`, 1, 2) 
+            BETWEEN ? AND ?
+            """
+        params.append(data_de.strftime("%Y-%m-%d"))
+        params.append(data_ate.strftime("%Y-%m-%d"))
+
+        try:
+            conn =  sqlite3.connect("banco_de_dados.db")
+            cursor = conn.cursor()
+            cursor.execute(sql,params)
+            resultados = cursor.fetchall()
+
+        except Exception as e:
+            QMessageBox.critical(None,"Erro",f"Erro ao buscar dados: \n {e}")
+            return
+        
+        if not resultados:
+            QMessageBox.information(None,"Aviso","Nenhum cliente encontrado com os filtros aplicados")
+            return
+        
+        caminho_pdf, _ = QFileDialog.getSaveFileName(
+            None,
+            "Salvar Relatório",
+            "relatorio_clientes_juridicos.pdf",
+            "Arquivos PDF (*.pdf)"
+        )
+
+        if not caminho_pdf:
+            return  # Cancelado
+        
+        try:
+            # Geração do PDF
+            pdf = FPDF(orientation="L",unit="mm",format="A4")
+            pdf.add_page()
+            pdf.set_font("Arial", size=12)
+            pdf.cell(0,10,"Relatório de Clientes Jurídicos",ln=True,align="C")
+            pdf.ln(10)
+
+            pdf.set_font("Arial",size=10)
+
+            # Cabeçalho
+            for campo in campos_selecionados:
+                pdf.cell(60,8,campo,border=1)
+            pdf.ln()
+
+            # Dados
+            for linha in resultados:
+                for item in linha:
+                    pdf.cell(60,8,str(item),border=1)
+                pdf.ln()
+            pdf.output(caminho_pdf)
+            QMessageBox.information(None,"Sucesso","Relatório gerado com sucesso. ")
+
+        except Exception as e:
+             QMessageBox.critical(self, "Erro", f"Erro ao gerar PDF:\n{e}")
+
+
+        
+

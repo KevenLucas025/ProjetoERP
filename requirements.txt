@@ -1,2 +1,9 @@
-PySide6==6.2.2
-PyQt6==6.2.3
+PySide6
+fpdf
+reportlab
+pandas
+requests
+openpyxl
+plyer
+subprocess
+qrcode
