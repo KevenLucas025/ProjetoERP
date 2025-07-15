@@ -1660,10 +1660,8 @@ class Clientes(QWidget):
 
         checks = [
             "Nome do Cliente", "Razão Social", "Data de Inclusão", "CNPJ",
-            "Contato do Cliente", "CEP do Cliente", "Endereço do Cliente",
-            "Número do Cliente", "Complemento do Cliente", "Cidade do Cliente",
-            "Bairro do Cliente", "Estado do Cliente", "Status do Cliente",
-            "Categoria do Cliente", "Data da Última Atualização", "Origem do Cliente",
+            "Contato", "CEP", "Endereço","Número", "Complemento", "Cidade","Bairro", "Estado", 
+            "Status do Cliente","Categoria do Cliente", "Data da Última Atualização", "Origem do Cliente",
             "Valor Gasto Total", "Data da Última Compra"
         ]
 
@@ -1743,16 +1741,16 @@ class Clientes(QWidget):
         mapeamento_colunas = {
             "Nome do Cliente": "Nome do Cliente",
             "Razão Social": "Razão Social",
-            "Data de Inclusão": "Data de Inclusao",
+            "Data de Inclusão": "Data de Inclusão",
             "CNPJ": "CNPJ",
-            "Contato do Cliente": "Telefone",
-            "CEP do Cliente": "CEP",
-            "Endereço do Cliente": "Endereco",
-            "Número do Cliente": "Numero",
-            "Complemento do Cliente": "Complemento",
-            "Cidade do Cliente": "Cidade",
-            "Bairro do Cliente": "Bairro",
-            "Estado do Cliente": "Estado",
+            "Contato": "Telefone",
+            "CEP": "CEP",
+            "Endereço": "Endereco",
+            "Número": "Número",
+            "Complemento": "Complemento",
+            "Cidade": "Cidade",
+            "Bairro": "Bairro",
+            "Estado": "Estado",
             "Status do Cliente": "Status do Cliente",
             "Categoria do Cliente": "Categoria do Cliente",
             "Data da Última Atualização": "Ultima Atualizacao",
@@ -1810,27 +1808,38 @@ class Clientes(QWidget):
 
         if not caminho_pdf:
             return  # Cancelado
-        
+
         try:
             # Geração do PDF
             pdf = FPDF(orientation="L",unit="mm",format="A4")
             pdf.add_page()
-            pdf.set_font("Arial", size=12)
+            pdf.set_font("Arial", size=10)
             pdf.cell(0,10,"Relatório de Clientes Jurídicos",ln=True,align="C")
             pdf.ln(10)
 
             pdf.set_font("Arial",size=10)
 
+            # Calcular largura ideal de cada coluna
+            col_widths = []
+            for i, campo in enumerate(campos_selecionados):
+                max_width = pdf.get_string_width(campo) + 3
+                for linha in resultados:
+                    item_width = pdf.get_string_width(str(linha[i])) + 3
+                    if item_width > max_width:
+                        max_width = item_width
+                col_widths.append(max_width)
+
+
             # Cabeçalho
-            for campo in campos_selecionados:
-                pdf.cell(60,8,campo,border=1)
-            pdf.ln()
+            for i,campo in  enumerate(campos_selecionados):
+                pdf.cell(col_widths[i],6,campo,border=1)
+            pdf.ln(6)
 
             # Dados
             for linha in resultados:
-                for item in linha:
-                    pdf.cell(60,8,str(item),border=1)
-                pdf.ln()
+                for i,item in enumerate(linha):
+                    pdf.cell(col_widths[i],6,str(item),border=1)
+                pdf.ln(6)
             pdf.output(caminho_pdf)
             QMessageBox.information(None,"Sucesso","Relatório gerado com sucesso. ")
 
