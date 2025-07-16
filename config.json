@@ -4,6 +4,7 @@
     "mantem_conectado": false,
     "nao_mostrar_mensagem_boas_vindas": true,
     "nao_mostrar_aviso_irreversivel": true,
+    "nao_mostrar_mensagem_arquivo_excel": true,
     "historico_autocompletes": {
         "txt_nome": [
             "Keven",

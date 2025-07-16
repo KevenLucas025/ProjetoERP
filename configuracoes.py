@@ -8,6 +8,7 @@ class Configuracoes_Login:
         self.mantem_conectado = False
         self.nao_mostrar_mensagem_boas_vindas = False
         self.nao_mostrar_aviso_irreversivel = False
+        self.nao_mostrar_mensagem_arquivo_excel = False
         self.historico_autocompletes = {}
         self.carregar()
 
@@ -20,6 +21,7 @@ class Configuracoes_Login:
                 self.mantem_conectado = config.get("mantem_conectado", False)
                 self.nao_mostrar_mensagem_boas_vindas = config.get("nao_mostrar_mensagem_boas_vindas", False)
                 self.nao_mostrar_aviso_irreversivel = config.get("nao_mostrar_aviso_irreversivel", False)
+                self.nao_mostrar_mensagem_arquivo_excel = config.get("nao_mostrar_mensagem_arquivo_excel", False)
                 self.historico_autocompletes = config.get("historico_autocompletes", {})
         except FileNotFoundError:
             print("Arquivo config.json não encontrado")
@@ -33,6 +35,7 @@ class Configuracoes_Login:
             "mantem_conectado": mantem_conectado,
             "nao_mostrar_mensagem_boas_vindas": self.nao_mostrar_mensagem_boas_vindas,
             "nao_mostrar_aviso_irreversivel": self.nao_mostrar_aviso_irreversivel,
+            "nao_mostrar_mensagem_arquivo_excel": self.nao_mostrar_mensagem_arquivo_excel,
             "historico_autocompletes": self.historico_autocompletes
         }
         with open("config.json", "w") as f:
@@ -51,6 +54,7 @@ class Configuracoes_Login:
         # Lógica para desconectar o usuário e limpar as configurações
         self.nao_mostrar_mensagem_boas_vindas = False
         self.nao_mostrar_aviso_irreversivel = False
+        self.nao_mostrar_mensagem_arquivo_excel = False
         self.salvar(None, None, False)
         self.usuario = ""
         self.senha = None

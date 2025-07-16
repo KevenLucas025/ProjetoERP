@@ -16,7 +16,11 @@ from reportlab.lib import colors
 from reportlab.lib.pagesizes import letter
 from reportlab.lib.pagesizes import letter,landscape,A4
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle
+from openpyxl import load_workbook
+from openpyxl.utils import get_column_letter
+from openpyxl.styles import Alignment
 from fpdf import FPDF
+
 
 class Clientes(QWidget):
     def __init__(self, line_clientes: QLineEdit,main_window,btn_adicionar_cliente_juridico,
@@ -49,7 +53,7 @@ class Clientes(QWidget):
         self.btn_adicionar_cliente_juridico.clicked.connect(self.exibir_janela_cadastro_cliente)
         self.btn_editar_clientes.clicked.connect(self.editar_cliente_juridico)
         self.btn_historico_clientes.clicked.connect(self.historico_clientes_juridicos)
-        self.btn_gerar_relatorio_clientes.clicked.connect(self.gerar_relatorio_clientes_juridicos)
+        self.btn_gerar_relatorio_clientes.clicked.connect(self.abrir_janela_relatorio_clientes_juridicos)
         
         
         #  Atalho de teclado F5 para atualizar a tabela
@@ -1600,7 +1604,7 @@ class Clientes(QWidget):
         self.janela_escolha.close()
         
 
-    def gerar_relatorio_clientes_juridicos(self):
+    def abrir_janela_relatorio_clientes_juridicos(self):
         self.janela_historico_clientes = QMainWindow()
         self.janela_historico_clientes.setWindowTitle("Relatório de Clientes Jurídicos")
         self.janela_historico_clientes.resize(800, 600)
@@ -1614,19 +1618,13 @@ class Clientes(QWidget):
         grupo_filtros = QGroupBox("Filtros do Relatório")
         layout_filtros = QFormLayout()
 
-        
-        
-
-        # Status
         self.combo_status = QComboBox()
-        self.combo_status.addItems(["Todos","Ativo","Inativo","Bloqueado","Pendente"])
+        self.combo_status.addItems(["Todos", "Ativo", "Inativo", "Bloqueado", "Pendente"])
         layout_filtros.addRow("Status do Cliente:", self.combo_status)
 
-        # Categoria
         self.combo_categoria = QComboBox()
         layout_filtros.addRow("Categoria do Cliente:", self.combo_categoria)
 
-        # Período
         self.date_de = QDateEdit()
         self.date_de.setDate(QDate.currentDate().addMonths(-1))
         self.date_de.setCalendarPopup(True)
@@ -1638,18 +1636,15 @@ class Clientes(QWidget):
         layout_filtros.addRow("Última Compra - De:", self.date_de)
         layout_filtros.addRow("Última Compra - Até:", self.date_ate)
 
-        # Origem
         self.combo_origem = QComboBox()
         layout_filtros.addRow("Origem do Cliente:", self.combo_origem)
 
         grupo_filtros.setLayout(layout_filtros)
         layout_principal.addWidget(grupo_filtros)
 
-        # Preenche os combos dinamicamente:
         self.carregar_opcoes_combo("Categoria do Cliente", self.combo_categoria)
         self.carregar_opcoes_combo("Origem do Cliente", self.combo_origem)
 
-        # Campos do relatório
         grupo_campos = QGroupBox("Informações a Incluir no Relatório")
         layout_campos = QVBoxLayout()
 
@@ -1659,10 +1654,10 @@ class Clientes(QWidget):
         layout_campos.addWidget(self.combo_selecionar_todos)
 
         checks = [
-            "Nome do Cliente", "Razão Social", "Data de Inclusão", "CNPJ",
-            "Contato", "CEP", "Endereço","Número", "Complemento", "Cidade","Bairro", "Estado", 
-            "Status do Cliente","Categoria do Cliente", "Data da Última Atualização", "Origem do Cliente",
-            "Valor Gasto Total", "Data da Última Compra"
+            "Nome", "Razão Social", "Data da Inclusão", "CNPJ",
+            "Contato", "CEP", "Endereço", "Número", "Complemento", "Cidade", "Bairro", "Estado",
+            "Status", "Categoria", "Última Atualização", "Origem",
+            "Valor Gasto Total", "Última Compra"
         ]
 
         self.checkboxes_relatorio = []
@@ -1678,21 +1673,318 @@ class Clientes(QWidget):
 
         layout_botoes = QHBoxLayout()
         btn_gerar = QPushButton("Gerar Relatório em PDF")
+        btn_gerar_excel = QPushButton("Gerar Relatório em Excel")
         btn_cancelar = QPushButton("Cancelar")
 
         layout_botoes.addStretch()
         layout_botoes.addWidget(btn_gerar)
+        layout_botoes.addWidget(btn_gerar_excel)
         layout_botoes.addWidget(btn_cancelar)
-
         layout_principal.addLayout(layout_botoes)
-
 
         btn_cancelar.clicked.connect(self.janela_historico_clientes.close)
         btn_gerar.clicked.connect(self.gerar_pdf_clientes_juridicos)
+        btn_gerar_excel.clicked.connect(self.gerar_excel_clientes_juridicos)
 
         scroll.setWidget(central_widget)
         self.janela_historico_clientes.setCentralWidget(scroll)
         self.janela_historico_clientes.show()
+        
+        configuracoes = Configuracoes_Login(self.main_window)
+        if  configuracoes.nao_mostrar_mensagem_arquivo_excel:
+            return
+        
+        # AVISO: Recomendação
+        aviso = QMessageBox()
+        aviso.setWindowTitle("Aviso")
+        aviso.setIcon(QMessageBox.Information) # Ícone de aviso
+        aviso.setText("Para uma melhor experiência recomendamos a geração do relatório em Excel.")
+        aviso.setStandardButtons(QMessageBox.Ok)
+        
+        checkbox_nao_mostrar = QCheckBox("Não mostrar essa mensagem novamente")
+        aviso.setCheckBox(checkbox_nao_mostrar)
+        aviso.exec()
+
+        # Verifica se o usuário marcou a opção para não mostrar novamente
+        if checkbox_nao_mostrar.isChecked():
+                configuracoes.nao_mostrar_mensagem_arquivo_excel = True # Define que o usuário não quer mais ver este aviso
+                configuracoes.salvar(configuracoes.usuario,configuracoes.senha,configuracoes.mantem_conectado)
+
+
+    def gerar_pdf_clientes_juridicos(self):
+        status = self.combo_status.currentText()
+        categoria = self.combo_categoria.currentText()
+        origem = self.combo_origem.currentText()
+        data_de = self.date_de.date().toPython()
+        data_ate = self.date_ate.date().toPython()
+
+        campos_selecionados = [
+            checkbox.text()
+            for checkbox in self.checkboxes_relatorio
+            if checkbox.isChecked()
+        ]
+
+        if not campos_selecionados:
+            QMessageBox.warning(None, "Aviso", "Selecione ao menos um campo para incluir no relatório.")
+            return
+
+        mapeamento_colunas = {
+            "Nome": "Nome",
+            "Razão Social": "Razão Social",
+            "Data da Inclusão": "Data da Inclusão",
+            "CNPJ": "CNPJ",
+            "Contato": "Telefone",
+            "CEP": "CEP",
+            "Endereço": "Endereço",
+            "Número": "Número",
+            "Complemento": "Complemento",
+            "Cidade": "Cidade",
+            "Bairro": "Bairro",
+            "Estado": "Estado",
+            "Status": "Status",
+            "Categoria": "Categoria",
+            "Última Atualização": "Última Atualização",
+            "Origem": "Origem",
+            "Valor Gasto Total": "Valor Gasto Total",
+            "Última Compra": "Última Compra"
+        }
+
+        colunas_sql = [f'"{mapeamento_colunas[nome]}"' for nome in campos_selecionados]
+        sql = f"SELECT {', '.join(colunas_sql)} FROM clientes_juridicos WHERE 1=1 "
+
+        params = []
+        if status != "Todos":
+            sql += " AND `Status do Cliente` = ?"
+            params.append(status)
+        if categoria != "Todos":
+            sql += " AND `Categoria do Cliente` = ?"
+            params.append(categoria)
+        if origem != "Todos":
+            sql += " AND `Origem do Cliente` = ?"
+            params.append(origem)
+
+        sql += """
+            AND (
+                `Última Compra` IS NULL OR
+                substr(`Última Compra`, 7, 4) || '-' || 
+                substr(`Última Compra`, 4, 2) || '-' || 
+                substr(`Última Compra`, 1, 2) 
+            BETWEEN ? AND ?
+            )
+        """
+        params.append(data_de.strftime("%Y-%m-%d"))
+        params.append(data_ate.strftime("%Y-%m-%d"))
+
+        try:
+            conn = sqlite3.connect("banco_de_dados.db")
+            cursor = conn.cursor()
+            cursor.execute(sql, params)
+            resultados = cursor.fetchall()
+        except Exception as e:
+            QMessageBox.critical(None, "Erro", f"Erro ao buscar dados: \n{e}")
+            return
+
+        if not resultados:
+            QMessageBox.information(None, "Aviso", "Nenhum cliente encontrado com os filtros aplicados")
+            return
+
+        caminho_pdf, _ = QFileDialog.getSaveFileName(
+            None,
+            "Salvar Relatório",
+            "relatorio_clientes_juridicos.pdf",
+            "Arquivos PDF (*.pdf)"
+        )
+
+        if not caminho_pdf:
+            return
+
+        try:
+            pdf = FPDF(orientation="L", format="A4")  # Cria um objeto PDF com orientação paisagem ("L") e tamanho A4
+            pdf.set_left_margin(5) # Define as margens do PDF
+            pdf.set_right_margin(5) # Define as margens do PDF
+            pdf.add_page() # Adiciona uma página ao PDF, obrigatória antes de começar a escrever
+            pdf.set_font("Arial", size=8) # Define a fonte para o texto:
+            # Cria uma célula que ocupa toda a largura (0 = largura total da página),
+            # com altura 10, com o texto "Relatório de Clientes Jurídicos",
+            # quebra de linha após a célula (ln=True) e alinhamento centralizado
+            pdf.cell(0, 10, "Relatório de Clientes Jurídicos", ln=True, align="C")
+            pdf.ln(5) # Insere uma linha em branco com altura 5 para espaçamento vertical
+
+            pdf.set_font("Arial", size=5) # tamanho da fonte
+            cel_height = 5 # Define a altura das células que serão usadas para o cabeçalho da tabela
+
+
+            larguras_automaticas = {}
+            margem = 4  # margem interna da célula, para deixar texto mais confortável
+            largura_minima = 10
+            largura_maxima = 80  # máximo para evitar colunas absurdamente largas
+
+            for i, campo in enumerate(campos_selecionados):
+                # largura do cabeçalho
+                largura_cabecalho = pdf.get_string_width(campo) + margem
+
+                # largura máxima entre todos os textos daquela coluna
+                largura_max = largura_cabecalho
+
+                for linha in resultados:
+                    item = linha[i]
+                    texto = str(item) if item is not None else ""
+                    largura_texto = pdf.get_string_width(texto) + margem
+                    if largura_texto > largura_max:
+                        largura_max = largura_texto
+
+                # Limita largura para mínimo e máximo
+                if largura_max < largura_minima:
+                    largura_max = largura_minima
+                elif largura_max > largura_maxima:
+                    largura_max = largura_maxima
+
+                larguras_automaticas[campo] = largura_max
+
+            # Cabeçalho
+            for campo in campos_selecionados:
+                pdf.cell(larguras_automaticas[campo], cel_height, campo, border=1, align="C")
+            pdf.ln()
+
+            # Dados
+            for linha in resultados:
+                y_inicial = pdf.get_y()
+                max_altura = cel_height
+                for i, item in enumerate(linha):
+                    campo = campos_selecionados[i]
+                    largura = larguras_automaticas[campo]
+                    texto = str(item) if item is not None else ""
+                    x = pdf.get_x()
+                    y = pdf.get_y()
+
+                    # Usar multi_cell para texto que possa ter quebras, mas com largura suficiente para minimizar linhas
+                    pdf.multi_cell(largura, cel_height, texto, border=1, align="L")
+                    altura = pdf.get_y() - y
+                    if altura > max_altura:
+                        max_altura = altura
+                    pdf.set_xy(x + largura, y)
+                pdf.set_y(y_inicial + max_altura)
+            pdf.output(caminho_pdf)
+            QMessageBox.information(None, "Sucesso", "Relatório gerado com sucesso.")
+
+        except Exception as e:
+            QMessageBox.critical(self, "Erro", f"Erro ao gerar PDF:\n{e}")
+
+    def gerar_excel_clientes_juridicos(self):
+        status = self.combo_status.currentText()
+        categoria = self.combo_categoria.currentText()
+        origem = self.combo_origem.currentText()
+        data_de = self.date_de.date().toPython()
+        data_ate = self.date_ate.date().toPython()
+
+        campos_selecionados = [
+            checkbox.text()
+            for checkbox in self.checkboxes_relatorio
+            if checkbox.isChecked()
+        ]
+
+        if not campos_selecionados:
+            QMessageBox.warning(None, "Aviso", "Selecione ao menos um campo para incluir no relatório.")
+            return
+
+        mapeamento_colunas = {
+            "Nome": "Nome",
+            "Razão Social": "Razão Social",
+            "Data da Inclusão": "Data da Inclusão",
+            "CNPJ": "CNPJ",
+            "Contato": "Telefone",
+            "CEP": "CEP",
+            "Endereço": "Endereço",
+            "Número": "Número",
+            "Complemento": "Complemento",
+            "Cidade": "Cidade",
+            "Bairro": "Bairro",
+            "Estado": "Estado",
+            "Status": "Status",
+            "Categoria": "Categoria",
+            "Última Atualização": "Última Atualização",
+            "Origem": "Origem",
+            "Valor Gasto Total": "Valor Gasto Total",
+            "Última Compra": "Última Compra"
+        }
+
+        colunas_sql = [f'"{mapeamento_colunas[nome]}"' for nome in campos_selecionados]
+        sql = f"SELECT {', '.join(colunas_sql)} FROM clientes_juridicos WHERE 1=1 "
+
+        params = []
+        
+        if status != "Todos":
+            sql += " AND `Status do Cliente` = ?"
+            params.append(status)
+        if categoria != "Todos":
+            sql += " AND `Categoria do Cliente` = ?"
+            params.append(categoria)
+        if origem != "Todos":
+            sql += " AND `Origem do Cliente` = ?"
+            params.append(origem)
+
+        sql += """
+            AND (
+                `Última Compra` IS NULL OR
+                substr(`Última Compra`, 7, 4) || '-' || 
+                substr(`Última Compra`, 4, 2) || '-' || 
+                substr(`Última Compra`, 1, 2) 
+            BETWEEN ? AND ?
+            )
+        """
+        params.append(data_de.strftime("%Y-%m-%d"))
+        params.append(data_ate.strftime("%Y-%m-%d"))
+
+        try:
+            conn = sqlite3.connect("banco_de_dados.db")
+            cursor = conn.cursor()
+            cursor.execute(sql, params)
+            resultados = cursor.fetchall()
+        except Exception as e:
+            QMessageBox.critical(None, "Erro", f"Erro ao buscar dados: \n{e}")
+            return
+
+        if not resultados:
+            QMessageBox.information(None, "Aviso", "Nenhum cliente encontrado com os filtros aplicados")
+            return
+
+        caminho_excel, _ = QFileDialog.getSaveFileName(
+            None,
+            "Salvar Relatório",
+            "relatorio_clientes_juridicos.xlsx",
+            "Arquivos Excel (*.xlsx)"
+        )
+
+        if not caminho_excel:
+            return
+
+        try:
+            # Criar um DataFrame do pandas com os dados
+            df = pd.DataFrame(resultados,columns=campos_selecionados)
+            
+            # Salva como Excel usando openpyxl
+            sheet_name = "Relatório de Clientes Jurídicos"
+            df.to_excel(caminho_excel,index=False,engine='openpyxl',sheet_name=sheet_name)
+            
+            # Reabre o Excel com openpyxl para aplicar formatações
+            wb = load_workbook(caminho_excel)
+            ws = wb[sheet_name]
+            
+            for col in ws.columns:
+                max_length = 0
+                col_letter = get_column_letter(col[0].column)
+                for cell in col:
+                    try:
+                        if cell.value:
+                            max_length = max(max_length,len(str(cell.value)))
+                    except:
+                        pass
+                ws.column_dimensions[col_letter].width = max_length + 2  # Ajusta a largura da coluna    
+            wb.save(caminho_excel)
+            QMessageBox.information(None, "Sucesso", "Relatório Excel gerado com sucesso.")
+        except Exception as e:
+            QMessageBox.critical(None, "Erro", f"Erro ao gerar Excel:\n{e}")
+
 
     def selecionar_todos_checkboxes(self,estado):
         for checkbox in self.checkboxes_relatorio:
@@ -1718,134 +2010,4 @@ class Clientes(QWidget):
 
         except Exception as e:
             print(f"Erro ao carregar opções de {nome_coluna}:", e)
-
-    def gerar_pdf_clientes_juridicos(self):
-        # Obter filtros selecionados
-        status = self.combo_status.currentText()
-        categoria = self.combo_categoria.currentText()
-        origem = self.combo_origem.currentText()
-        data_de = self.date_de.date().toPython()
-        data_ate = self.date_ate.date().toPython()
-
-        # Obter os campos marcados nos checkboxes
-        campos_selecionados = [
-            checkbox.text()
-            for checkbox in self.checkboxes_relatorio
-            if checkbox.isChecked()
-        ]
-
-        if not campos_selecionados:
-            QMessageBox.warning(None,"Aviso","Selecione ao menos um campo para incluir no relatório. ")
-            return
         
-        mapeamento_colunas = {
-            "Nome do Cliente": "Nome do Cliente",
-            "Razão Social": "Razão Social",
-            "Data de Inclusão": "Data de Inclusão",
-            "CNPJ": "CNPJ",
-            "Contato": "Telefone",
-            "CEP": "CEP",
-            "Endereço": "Endereco",
-            "Número": "Número",
-            "Complemento": "Complemento",
-            "Cidade": "Cidade",
-            "Bairro": "Bairro",
-            "Estado": "Estado",
-            "Status do Cliente": "Status do Cliente",
-            "Categoria do Cliente": "Categoria do Cliente",
-            "Data da Última Atualização": "Ultima Atualizacao",
-            "Origem do Cliente": "Origem do Cliente",
-            "Valor Gasto Total": "Valor Gasto Total",
-            "Data da Última Compra": "Última Compra"
-        }
-
-        colunas_sql = [f'"{mapeamento_colunas[nome]}"' for nome in campos_selecionados]
-        sql = f"SELECT {', '.join(colunas_sql)} FROM clientes_juridicos WHERE 1=1 "
-
-        params = []
-
-        if status != "Todos":
-            sql += " AND `Status do Cliente` = ?"
-            params.append(status)
-        if categoria != "Todos":
-            sql += " AND `Categoria do Cliente` = ?"
-            params.append(categoria)
-
-        if origem != "Todos":
-            sql += " AND `Origem do Cliente` = ?"
-            params.append(origem)
-
-        sql += """
-            AND 
-                substr(`Última Compra`, 7, 4) || '-' || 
-                substr(`Última Compra`, 4, 2) || '-' || 
-                substr(`Última Compra`, 1, 2) 
-            BETWEEN ? AND ?
-            """
-        params.append(data_de.strftime("%Y-%m-%d"))
-        params.append(data_ate.strftime("%Y-%m-%d"))
-
-        try:
-            conn =  sqlite3.connect("banco_de_dados.db")
-            cursor = conn.cursor()
-            cursor.execute(sql,params)
-            resultados = cursor.fetchall()
-
-        except Exception as e:
-            QMessageBox.critical(None,"Erro",f"Erro ao buscar dados: \n {e}")
-            return
-        
-        if not resultados:
-            QMessageBox.information(None,"Aviso","Nenhum cliente encontrado com os filtros aplicados")
-            return
-        
-        caminho_pdf, _ = QFileDialog.getSaveFileName(
-            None,
-            "Salvar Relatório",
-            "relatorio_clientes_juridicos.pdf",
-            "Arquivos PDF (*.pdf)"
-        )
-
-        if not caminho_pdf:
-            return  # Cancelado
-
-        try:
-            # Geração do PDF
-            pdf = FPDF(orientation="L",unit="mm",format="A4")
-            pdf.add_page()
-            pdf.set_font("Arial", size=10)
-            pdf.cell(0,10,"Relatório de Clientes Jurídicos",ln=True,align="C")
-            pdf.ln(10)
-
-            pdf.set_font("Arial",size=10)
-
-            # Calcular largura ideal de cada coluna
-            col_widths = []
-            for i, campo in enumerate(campos_selecionados):
-                max_width = pdf.get_string_width(campo) + 3
-                for linha in resultados:
-                    item_width = pdf.get_string_width(str(linha[i])) + 3
-                    if item_width > max_width:
-                        max_width = item_width
-                col_widths.append(max_width)
-
-
-            # Cabeçalho
-            for i,campo in  enumerate(campos_selecionados):
-                pdf.cell(col_widths[i],6,campo,border=1)
-            pdf.ln(6)
-
-            # Dados
-            for linha in resultados:
-                for i,item in enumerate(linha):
-                    pdf.cell(col_widths[i],6,str(item),border=1)
-                pdf.ln(6)
-            pdf.output(caminho_pdf)
-            QMessageBox.information(None,"Sucesso","Relatório gerado com sucesso. ")
-
-        except Exception as e:
-             QMessageBox.critical(self, "Erro", f"Erro ao gerar PDF:\n{e}")
-
-
-        
-
