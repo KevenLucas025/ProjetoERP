@@ -54,6 +54,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.setupUi(self)
         self.setWindowTitle("Sistema de Gerenciamento")
         self.historico_pausado = False
+        self.historico_pausado_clientes_juridicos = False
         self.historico_usuario_pausado = False
         self.imagem_removida_usuario = False
         self.usuario_tem_imagem_salva = False
@@ -1612,9 +1613,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             
             #  Cliente existe, continuar cadastro do produto
             if not cliente_existe:
-                QMessageBox.warning(self,"Cliente não encontrado",
-                    f"O cliente {produto_info["cliente"]} precisa estar cadastrado antes de adicionar um produto."                    
-                )
                 return # Impede o restante do código de continuar
 
             # Formatando o valor_real com o símbolo "R$" e duas casas decimais
@@ -1770,6 +1768,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         if not self.is_editing_produto:
             if produto_info not in self.produtos_pendentes:
+                self.produtos_pendentes.clear() # Limpa produtos anteriores inválidos
                 self.produtos_pendentes.append(produto_info)
         else:
             # Apenas cálculo foi feito, mas o produto não será adicionado
@@ -1875,7 +1874,21 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # Verificar se todos os campos obrigatórios estão preenchidos
         if not self.campos_obrigatorios_preenchidos():
             return
+        
+        db = DataBase()
+        db.connecta()
+        cursor = db.connection.cursor()
 
+        for produto in self.produtos_pendentes:
+            cursor.execute("""
+                SELECT 1 FROM clientes_juridicos WHERE "Nome do Cliente" = ?
+            """, (produto["cliente"],))
+            cliente_existe = cursor.fetchone()
+            if not cliente_existe:
+                QMessageBox.warning(None, "Cliente não encontrado",
+                    f"O cliente '{produto['cliente']}' precisa estar cadastrado antes de adicionar o produto.")
+                return  # Interrompe o processo imediatamente se um cliente não existir
+            
         # Verificar se a imagem está carregada
         if not self.imagem_carregada_produto:
             # Perguntar ao usuário se ele deseja seguir sem uma imagem
@@ -2178,6 +2191,22 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 VALUES (?,?,?,?)
         """,(data_hora,usuario,acao,descricao))
         cn.commit()
+#*******************************************************************************************************        
+    def registrar_historico_clientes_juridicos(self,acao,descricao):
+        # Verifica se o histórico está pausado
+        if self.historico_pausado_clientes_juridicos:
+            print("Histórico pausado. Registro não será feito")
+            return # Se o histórico estiver pausado, não faz nada
+        usuario = self.get_usuario_logado()  # Obtenha o usuário logado
+        data_hora = datetime.now().strftime("%d/%m/%Y %H:%M")
+        
+        with sqlite3.connect('banco_de_dados.db') as cn:
+            cursor = cn.cursor()
+            cursor.execute("""
+                INSERT INTO historico_clientes_juridicos ('Data e Hora', Usuário, Ação, Descrição)
+                VALUES (?,?,?,?)
+            """,(data_hora,usuario,acao,descricao))
+            cn.commit()
 #*******************************************************************************************************
     def campos_obrigatorios_preenchidos(self):
         # Verificar se todos os campos obrigatórios estão preenchidos
@@ -2737,9 +2766,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         except Exception as e:
             QMessageBox.critical(self, "Erro", f"Erro ao resetar configurações: {str(e)}")
 
-    
-
-
 # Função principal
 if __name__ == '__main__':
     app = QApplication(sys.argv)
@@ -2753,4 +2779,3 @@ if __name__ == '__main__':
     
     login_window.show()
     sys.exit(app.exec())
-

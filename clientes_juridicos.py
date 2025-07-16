@@ -584,25 +584,37 @@ class Clientes(QWidget):
                     
 
                 data_inclusao = datetime.now().strftime("%d/%m/%Y %H:%M")
+                
+                # Valores padrão para os campos não preenchidos manualmente
+                valor_gasto_total = "Não Cadastrado"
+                ultima_compra = "Não Cadastrado"
+                ultima_atualizacao = "Não Cadastrado"
+                
                 # Inserir no banco
                 cursor.execute("""
                     INSERT INTO clientes_juridicos(
                         "Nome do Cliente", "Razão Social", "Data da Inclusão", CNPJ, Telefone, CEP, Endereço, Número,
-                        Complemento, Cidade, Bairro, Estado, "Status do Cliente", "Categoria do Cliente", "Origem do Cliente"
+                        Complemento, Cidade, Bairro, Estado, "Status do Cliente", "Categoria do Cliente","Última Atualização", 
+                        "Origem do Cliente","Valor Gasto Total", "Última Compra"
                     )
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?,?,?)
                 """, (
                     nome,razao_social, data_inclusao, cnpj, telefone, cep, endereco, numero,complemento, cidade,
-                    bairro,estado, status, categoria, nacionalidade 
+                    bairro,estado, status, categoria, ultima_atualizacao,nacionalidade, valor_gasto_total, ultima_compra,
                 ))
-
                 conexao.commit()
+
+                self.main_window.registrar_historico_clientes_juridicos(
+                    "Cadastro de Cliente", f"Cliente {nome} cadastrado com sucesso"
+                )
+                
                 QMessageBox.information(None, "Sucesso", "Cliente cadastrado com sucesso!")
                 # Redimensiona apenas uma vez após preencher
                 self.table_clientes_juridicos.resizeColumnsToContents()
                 self.table_clientes_juridicos.resizeRowsToContents()
                 self.limpar_campos_clientes()
                 self.carregar_clientes_juridicos()
+                
 
         except Exception as e:
             QMessageBox.critical(None, "Erro", f"Erro ao cadastrar cliente: \n{e}")
@@ -731,7 +743,12 @@ class Clientes(QWidget):
                 self.table_clientes_juridicos.removeRow(linha)
 
             db.connection.commit()
-
+            
+            nomes_excluidos = ", ".join(nome for _, nome in clientes_para_excluir)
+            self.main_window.registrar_historico_clientes_juridicos(
+                "Exclusão de Cliente(s)",
+                f"Cliente(s) excluído(s): {nomes_excluidos}"
+            )
             QMessageBox.information(self.main_window, "Sucesso", "Cliente(s) excluído(s) com sucesso.")
         except Exception as e:
             QMessageBox.critical(self.main_window, "Erro", f"Erro ao excluir clientes:\n{e}")
@@ -1593,13 +1610,13 @@ class Clientes(QWidget):
 
     def historico_ativo_juridicos(self):
         # Atualiza o estado do histórico para ativo
-        self.main_window.historico_pausado = True  # Atualiza a variável no MainWindow
+        self.main_window.historico_pausado_clientes_juridicos = True  # Atualiza a variável no MainWindow
         QMessageBox.information(self, "Histórico", "O registro do histórico foi pausado.")
         self.janela_escolha.close()
 
     def historico_inativo_juridicos(self):
         # Atualiza o estado do histórico para inativo (continua registrando)
-        self.main_window.historico_pausado = False  # Atualiza a variável no MainWindow
+        self.main_window.historico_pausado_clientes_juridicos = False  # Atualiza a variável no MainWindow
         QMessageBox.information(self, "Histórico", "O registro do histórico continua ativo.")
         self.janela_escolha.close()
         
@@ -1765,13 +1782,19 @@ class Clientes(QWidget):
 
         sql += """
             AND (
-                `Última Compra` IS NULL OR
-                substr(`Última Compra`, 7, 4) || '-' || 
-                substr(`Última Compra`, 4, 2) || '-' || 
-                substr(`Última Compra`, 1, 2) 
-            BETWEEN ? AND ?
+                `Última Compra` = 'Não Cadastrado' OR
+                (
+                    length(`Última Compra`) = 10 AND
+                    substr(`Última Compra`, 3, 1) = '/' AND
+                    substr(`Última Compra`, 6, 1) = '/' AND
+                    substr(`Última Compra`, 7, 4) || '-' || 
+                    substr(`Última Compra`, 4, 2) || '-' || 
+                    substr(`Última Compra`, 1, 2)
+                    BETWEEN ? AND ?
+                )
             )
         """
+
         params.append(data_de.strftime("%Y-%m-%d"))
         params.append(data_ate.strftime("%Y-%m-%d"))
 
@@ -1925,11 +1948,16 @@ class Clientes(QWidget):
 
         sql += """
             AND (
-                `Última Compra` IS NULL OR
-                substr(`Última Compra`, 7, 4) || '-' || 
-                substr(`Última Compra`, 4, 2) || '-' || 
-                substr(`Última Compra`, 1, 2) 
-            BETWEEN ? AND ?
+                `Última Compra` = 'Não Cadastrado' OR
+                (
+                    length(`Última Compra`) = 10 AND
+                    substr(`Última Compra`, 3, 1) = '/' AND
+                    substr(`Última Compra`, 6, 1) = '/' AND
+                    substr(`Última Compra`, 7, 4) || '-' || 
+                    substr(`Última Compra`, 4, 2) || '-' || 
+                    substr(`Última Compra`, 1, 2)
+                    BETWEEN ? AND ?
+                )
             )
         """
         params.append(data_de.strftime("%Y-%m-%d"))
