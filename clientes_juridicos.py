@@ -422,6 +422,7 @@ class Clientes(QWidget):
         add_linha("Endereço")
         add_linha("Número")
         add_linha("Complemento")
+        self.campos_cliente_juridico["Complemento"].setPlaceholderText("Opcional")
         add_linha("Cidade")
         add_linha("Bairro")
 

@@ -1599,6 +1599,76 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.label_valor_desconto.setAlignment(Qt.AlignCenter)
         self.label_quantidade.setAlignment(Qt.AlignCenter)
 #*********************************************************************************************************************
+    def confirmar_produtos(self):
+        if self.is_editing_produto:
+            QMessageBox.warning(None, "Modo de Edição Ativo",
+                                "Você está editando um produto.\nAtualize o produto em vez de criar um novo.")
+            return
+        # Verificar se há produtos pendentes para confirmar
+        if not self.produtos_pendentes:
+            msg = QMessageBox()
+            msg.setIcon(QMessageBox.Warning)
+            msg.setWindowTitle("Erro")  
+            msg.setText("Não há produtos preenchidos para confirmar.")
+            msg.exec()
+            return None
+        
+        
+
+        # Verificar se todos os campos obrigatórios estão preenchidos
+        if not self.campos_obrigatorios_preenchidos():
+            return
+            
+        # Verificar se a imagem está carregada
+        if not self.imagem_carregada_produto:
+            # Perguntar ao usuário se ele deseja seguir sem uma imagem
+            msgBox = QMessageBox()
+            msgBox.setIcon(QMessageBox.Question)
+            msgBox.setText("O produto não contém imagem. Deseja confirmar mesmo assim?")
+            msgBox.setWindowTitle("Aviso")
+
+            # Adicionando os botões de forma apropriada
+            button_sim = msgBox.addButton("Sim", QMessageBox.YesRole)
+            button_nao = msgBox.addButton("Não", QMessageBox.NoRole)
+
+            resposta = msgBox.exec()
+
+            if msgBox.clickedButton() == button_nao:
+                return
+                
+        # Perguntar ao usuário se ele tem certeza de que deseja cadastrar o produto
+        confirmar_msg = QMessageBox()
+        confirmar_msg.setIcon(QMessageBox.Question)
+        confirmar_msg.setWindowTitle("Confirmação")
+        confirmar_msg.setText("Tem certeza de que deseja cadastrar o produto?")
+
+        button_sim = confirmar_msg.addButton("Sim", QMessageBox.YesRole)
+        button_nao = confirmar_msg.addButton("Não", QMessageBox.NoRole)
+        
+        resposta = confirmar_msg.exec()
+
+        if confirmar_msg.clickedButton() == button_nao:
+            return
+                
+        # Salvar os produtos pendentes no banco de dados
+        for produto in self.produtos_pendentes:
+            self.inserir_produto_no_bd(produto)
+
+        # Limpar a lista de produtos pendentes
+        self.produtos_pendentes.clear()
+
+        # Limpar os campos de entrada
+        self.limpar_campos_produtos()
+        
+        # Limpar a imagem
+        self.label_imagem_produto.clear()
+        self.imagem_carregada_produto = None
+
+        self.dateEdit_3.setDate(QDate.currentDate())  # Define a data atual
+
+        # Exibir mensagem de sucesso apenas se todos os campos estiverem preenchidos
+        self.mostrar_mensagem_sucesso()
+#*********************************************************************************************************************
     def inserir_produto_no_bd(self, produto_info,registrar_historico=True):
         try:
             db = DataBase()
@@ -1765,11 +1835,26 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             "cliente": self.txt_cliente_3.text(),
             "descricao_produto": self.txt_descricao_produto_3.text()
         }
+         # Verificar se o cliente existe antes de adicionar
+        db = DataBase()
+        db.connecta()
+        cursor = db.connection.cursor()
+        cursor.execute("""
+                SELECT 1 FROM clientes_juridicos WHERE "Nome do Cliente" = ?
+        """,(produto_info["cliente"],))
+        clientes_existe = cursor.fetchone()
+
+        if not clientes_existe:
+            QMessageBox.warning(
+                None,"Cliente não Encontrado",
+                f"O cliente {produto_info["cliente"]} precisa estar cadastrado antes de adicionar um produto"
+            )
+            return
+            
 
         if not self.is_editing_produto:
-            if produto_info not in self.produtos_pendentes:
-                self.produtos_pendentes.clear() # Limpa produtos anteriores inválidos
-                self.produtos_pendentes.append(produto_info)
+            self.produtos_pendentes.clear() # Limpa produtos anteriores inválidos
+            self.produtos_pendentes.append(produto_info)
         else:
             # Apenas cálculo foi feito, mas o produto não será adicionado
             pass
@@ -1854,91 +1939,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
             # Limpar produto selecionado após a adição
             self.produto_selecionado = None
-#*********************************************************************************************************************
-    def confirmar_produtos(self):
-        if self.is_editing_produto:
-            QMessageBox.warning(None, "Modo de Edição Ativo",
-                                "Você está editando um produto.\nAtualize o produto em vez de criar um novo.")
-            return
-        # Verificar se há produtos pendentes para confirmar
-        if not self.produtos_pendentes:
-            msg = QMessageBox()
-            msg.setIcon(QMessageBox.Warning)
-            msg.setWindowTitle("Erro")  
-            msg.setText("Não há produtos preenchidos para confirmar.")
-            msg.exec()
-            return None
-        
-        
-
-        # Verificar se todos os campos obrigatórios estão preenchidos
-        if not self.campos_obrigatorios_preenchidos():
-            return
-        
-        db = DataBase()
-        db.connecta()
-        cursor = db.connection.cursor()
-
-        for produto in self.produtos_pendentes:
-            cursor.execute("""
-                SELECT 1 FROM clientes_juridicos WHERE "Nome do Cliente" = ?
-            """, (produto["cliente"],))
-            cliente_existe = cursor.fetchone()
-            if not cliente_existe:
-                QMessageBox.warning(None, "Cliente não encontrado",
-                    f"O cliente '{produto['cliente']}' precisa estar cadastrado antes de adicionar o produto.")
-                return  # Interrompe o processo imediatamente se um cliente não existir
-            
-        # Verificar se a imagem está carregada
-        if not self.imagem_carregada_produto:
-            # Perguntar ao usuário se ele deseja seguir sem uma imagem
-            msgBox = QMessageBox()
-            msgBox.setIcon(QMessageBox.Question)
-            msgBox.setText("O produto não contém imagem. Deseja confirmar mesmo assim?")
-            msgBox.setWindowTitle("Aviso")
-
-            # Adicionando os botões de forma apropriada
-            button_sim = msgBox.addButton("Sim", QMessageBox.YesRole)
-            button_nao = msgBox.addButton("Não", QMessageBox.NoRole)
-
-            resposta = msgBox.exec()
-
-            if msgBox.clickedButton() == button_nao:
-                return
-                
-        # Perguntar ao usuário se ele tem certeza de que deseja cadastrar o produto
-        confirmar_msg = QMessageBox()
-        confirmar_msg.setIcon(QMessageBox.Question)
-        confirmar_msg.setWindowTitle("Confirmação")
-        confirmar_msg.setText("Tem certeza de que deseja cadastrar o produto?")
-
-        button_sim = confirmar_msg.addButton("Sim", QMessageBox.YesRole)
-        button_nao = confirmar_msg.addButton("Não", QMessageBox.NoRole)
-        
-        resposta = confirmar_msg.exec()
-
-        if confirmar_msg.clickedButton() == button_nao:
-            return
-                
-        # Salvar os produtos pendentes no banco de dados
-        for produto in self.produtos_pendentes:
-            self.inserir_produto_no_bd(produto)
-
-        # Limpar a lista de produtos pendentes
-        self.produtos_pendentes.clear()
-
-        # Limpar os campos de entrada
-        self.limpar_campos_produtos()
-        
-        # Limpar a imagem
-        self.label_imagem_produto.clear()
-        self.imagem_carregada_produto = None
-
-        self.dateEdit_3.setDate(QDate.currentDate())  # Define a data atual
-        self.dateEdit_3.clear()
-
-        # Exibir mensagem de sucesso apenas se todos os campos estiverem preenchidos
-        self.mostrar_mensagem_sucesso()
+    
 #*********************************************************************************************************************    
     def gerar_codigo_aleatorio(self, length=12):
         caracteres = string.ascii_uppercase + string.digits
