@@ -28,7 +28,6 @@ class Clientes(QWidget):
                  btn_historico_clientes):
         super().__init__()
         self.line_clientes = line_clientes
-        self.imagem_line()
         self.db = DataBase("banco_de_dados.db")
         self.config = Configuracoes_Login(self)
         self.coluna_checkboxes_clientes_adicionada = False
@@ -55,7 +54,9 @@ class Clientes(QWidget):
         self.btn_historico_clientes.clicked.connect(self.historico_clientes_juridicos)
         self.btn_gerar_relatorio_clientes.clicked.connect(self.abrir_janela_relatorio_clientes_juridicos)
         
-        
+        self.line_clientes.returnPressed.connect(self.buscar)
+        self.imagem_line()
+
         #  Atalho de teclado F5 para atualizar a tabela
         atalho_f5 = QShortcut(QKeySequence("F5"),self.main_window)
         atalho_f5.activated.connect(self.carregar_clientes_juridicos)
@@ -135,7 +136,7 @@ class Clientes(QWidget):
         # Criar botão da lupa
         self.botao_lupa = QToolButton(self.line_clientes)
         self.botao_lupa.setCursor(Qt.PointingHandCursor)  # Muda o cursor ao passar o mouse
-        self.botao_lupa.setIcon(QIcon(QPixmap("imagens/pngegg.png")))  # Substitua pelo caminho correto
+        self.botao_lupa.setIcon(QIcon(QPixmap("imagens/botão_lupa.png")))  # Substitua pelo caminho correto
         self.botao_lupa.setStyleSheet("border: none; background: transparent;")  # Sem fundo e sem borda
         
         # Definir tamanho do botão
@@ -143,7 +144,7 @@ class Clientes(QWidget):
         self.botao_lupa.setFixedSize(altura, altura)
 
         # Posicionar o botão no canto direito da LineEdit
-        self.botao_lupa.move(self.line_clientes.width() - altura + 45, 2)
+        self.botao_lupa.move(self.line_clientes.width() - altura + 1, 2)
 
         # Ajustar padding para o texto não sobrepor o botão
         self.line_clientes.setStyleSheet(
@@ -164,17 +165,73 @@ class Clientes(QWidget):
         self.botao_lupa.clicked.connect(self.buscar)
 
     def buscar(self):
-        QMessageBox.information(
-            None,
-            "Aviso",
-            "Essa função ainda não está disponível"
-        )
+        texto = self.line_clientes.text().strip()
+
+        if not texto:
+            QMessageBox.warning(self, "Aviso", "Digite algo para buscar.")
+            return
+
+        # Conectar ao banco de dados
+        with sqlite3.connect('banco_de_dados.db') as conn:
+            cursor = conn.cursor()
+
+            try:
+                # Buscar em múltiplas colunas
+                cursor.execute("""
+                    SELECT * FROM clientes_juridicos
+                    WHERE
+                        "Nome do Cliente" LIKE ? OR
+                        "Razão Social" LIKE ? OR
+                        CNPJ LIKE ? OR
+                        Telefone LIKE ?
+                """, (f'%{texto}%', f'%{texto}%', f'%{texto}%', f'%{texto}%'))
+
+                resultados = cursor.fetchall()
+
+                if not resultados:
+                    QMessageBox.information(self, "Resultado", "Nenhum cliente encontrado.")
+                    return
+
+                # Atualizar sua tabela ou interface com os resultados
+                self.preencher_resultado_busca(resultados)
+                
+
+            except Exception as e:
+                QMessageBox.critical(self, "Erro", f"Erro ao buscar cliente: {e}")
+
+    def preencher_resultado_busca(self, resultados):
+        self.table_clientes_juridicos.setRowCount(0)
+
+        for row_data in resultados:
+            row_index = self.table_clientes_juridicos.rowCount()
+            self.table_clientes_juridicos.insertRow(row_index)
+            for col_index, data in enumerate(row_data):
+                item = self.formatar_texto_juridico(str(data))
+                self.table_clientes_juridicos.setItem(row_index, col_index, item)
+
+
+    def formatar_e_buscar_cep(self, widget):
+        texto_cep = widget.text()
+        self.main_window.formatar_cep(texto_cep, widget)
+
+        dados = self.main_window.buscar_cep(texto_cep)
+        if dados:
+            self.campos_cliente["Endereço"].setText(dados.get("logradouro", ""))
+            self.campos_cliente["Complemento"].setText(dados.get("complemento", ""))
+            self.campos_cliente["Bairro"].setText(dados.get("bairro", ""))
+            self.campos_cliente["Cidade"].setText(dados.get("localidade", ""))
+            
+            estado = dados.get("uf", "")
+            index_estado = self.campos_cliente["Estado"].findText(estado)
+            if index_estado >= 0:
+                self.campos_cliente["Estado"].setCurrentIndex(index_estado)
+                
     def exibir_edicao_clientes(self, dados_cliente: dict):
         self.dados_originais_cliente = dados_cliente.copy()
         self.alteracoes_realizadas = False
         self.janela_editar_cliente = QMainWindow()
         self.janela_editar_cliente.setWindowTitle("Editar Cliente")
-        self.janela_editar_cliente.resize(700, 500)
+        self.janela_editar_cliente.resize(683, 600)
         self.janela_editar_cliente.setStyleSheet("background-color: rgb(0, 80, 121);")
 
         screen = QGuiApplication.primaryScreen()
@@ -187,8 +244,43 @@ class Clientes(QWidget):
         layout = QGridLayout(central_widget)
         layout.setSpacing(10)
         layout.setContentsMargins(30, 30, 30, 30)
+        
+        scroll_area = QScrollArea()
+        scroll_area.setWidgetResizable(True)
+        scroll_area.setWidget(central_widget)
+        scroll_area.setStyleSheet("""
+            QScrollBar:vertical {
+                background: white;
+                width: 6px;
+                margin: 2px 0;
+                border: none;
+            }
 
-        colunas = list(dados_cliente.keys())
+            QScrollBar::handle:vertical {
+                background: gray;
+                min-height: 20px;
+                border-radius: 3px;
+            }
+
+            QScrollBar::add-line:vertical,
+            QScrollBar::sub-line:vertical {
+                height: 0;
+            }
+
+            QScrollBar::add-page:vertical,
+            QScrollBar::sub-page:vertical {
+                background: transparent;
+            }
+        """)
+
+
+        colunas = [
+            "Nome do Cliente", "Razão Social", "Data da Inclusão", "CNPJ", "Telefone",
+            "CEP", "Endereço", "Número", "Complemento", "Cidade", "Bairro",
+            "Estado", "Status do Cliente", "Categoria do Cliente",
+            "Última Atualização", "Origem do Cliente", "Valor Gasto Total", "Última Compra"
+        ]
+
         self.campos_cliente = {}
 
         for i, campo in enumerate(colunas):
@@ -206,7 +298,38 @@ class Clientes(QWidget):
                         color: black;
                         padding: 5px;
                     }
+
+                    QComboBox QAbstractItemView {
+                        background-color: white;
+                        color: black;
+                        selection-background-color: rgb(220, 220, 220);
+                        border: 1px solid lightgray;
+                    }
+
+                    QComboBox QScrollBar:vertical {
+                        border: none;
+                        background: transparent;
+                        width: 6px;
+                        margin: 2px 0 2px 0;
+                    }
+
+                    QComboBox QScrollBar::handle:vertical {
+                        background: gray;
+                        min-height: 20px;
+                        border-radius: 3px;
+                    }
+
+                    QComboBox QScrollBar::add-line:vertical,
+                    QComboBox QScrollBar::sub-line:vertical {
+                        height: 0;
+                    }
+
+                    QComboBox QScrollBar::add-page:vertical,
+                    QComboBox QScrollBar::sub-page:vertical {
+                        background: white;
+                    }
                 """)
+
                 if campo == "Estado":
                     entrada.addItems(["Selecione", "AC", "AL", "AP", "AM", "BA", "CE", "DF", "ES", "GO", "MA",
                                     "MT", "MS", "MG", "PA", "PB", "PR", "PE", "PI", "RJ", "RN", "RS", "RO",
@@ -263,15 +386,17 @@ class Clientes(QWidget):
         botao_atualizar.clicked.connect(self.atualizar_dados_clientes)
         layout.addWidget(botao_atualizar, len(colunas), 0, 1, 2, alignment=Qt.AlignCenter)
 
-        self.janela_editar_cliente.setCentralWidget(central_widget)
-        self.janela_editar_cliente.show()
-
-        
+        self.janela_editar_cliente.setCentralWidget(scroll_area)
+        self.janela_editar_cliente.show()  
+    
+                
     def editar_cliente_juridico(self):
         linha_selecionada = self.table_clientes_juridicos.currentRow()
         if linha_selecionada < 0:
             QMessageBox.warning(None, "Aviso", "Nenhum cliente selecionado para edição.")
             return
+        
+        coluna_offset = 1 if self.coluna_checkboxes_clientes_adicionada else 0
 
         colunas = [
             "Nome do Cliente", "Razão Social", "Data da Inclusão", "CNPJ", "Telefone",
@@ -279,30 +404,14 @@ class Clientes(QWidget):
             "Estado", "Status do Cliente", "Categoria do Cliente",
             "Última Atualização", "Origem do Cliente", "Valor Gasto Total", "Última Compra"
         ]
+        
 
         dados_cliente = {}
         for col, nome_coluna in enumerate(colunas):
-            item = self.table_clientes_juridicos.item(linha_selecionada, col)
+            item = self.table_clientes_juridicos.item(linha_selecionada, col + coluna_offset)
             dados_cliente[nome_coluna] = item.text() if item else ""
 
-        self.exibir_edicao_clientes(dados_cliente)
-
-    def formatar_e_buscar_cep(self, widget):
-        texto_cep = widget.text()
-        self.main_window.formatar_cep(texto_cep, widget)
-
-        dados = self.main_window.buscar_cep(texto_cep)
-        if dados:
-            self.campos_cliente["Endereço"].setText(dados.get("logradouro", ""))
-            self.campos_cliente["Complemento"].setText(dados.get("complemento", ""))
-            self.campos_cliente["Bairro"].setText(dados.get("bairro", ""))
-            self.campos_cliente["Cidade"].setText(dados.get("localidade", ""))
-            
-            estado = dados.get("uf", "")
-            index_estado = self.campos_cliente["Estado"].findText(estado)
-            if index_estado >= 0:
-                self.campos_cliente["Estado"].setCurrentIndex(index_estado)
-       
+        self.exibir_edicao_clientes(dados_cliente)   
 
     def atualizar_dados_clientes(self):
         if not self.alteracoes_realizadas:
@@ -473,7 +582,7 @@ class Clientes(QWidget):
         add_linha("Categoria do Cliente")
 
         combobox_status_cliente = QComboBox()
-        combobox_status_cliente.addItems(["Selecionar","Ativo","Inativo"])
+        combobox_status_cliente.addItems(["Selecionar","Ativo","Inativo","Pendente","Bloqueado"])
         combobox_status_cliente.setCurrentIndex(0) # Seleciona "Selecionar" por padrão
         combobox_status_cliente.setStyleSheet("""
             QComboBox { 
@@ -532,6 +641,30 @@ class Clientes(QWidget):
         scroll_area = QScrollArea()
         scroll_area.setWidgetResizable(True)
         scroll_area.setWidget(conteudo)
+        scroll_area.setStyleSheet("""
+            QScrollBar:vertical {
+                background: white;
+                width: 6px;
+                margin: 2px 0;
+                border: none;
+            }
+
+            QScrollBar::handle:vertical {
+                background: gray;
+                min-height: 20px;
+                border-radius: 3px;
+            }
+
+            QScrollBar::add-line:vertical,
+            QScrollBar::sub-line:vertical {
+                height: 0;
+            }
+
+            QScrollBar::add-page:vertical,
+            QScrollBar::sub-page:vertical {
+                background: transparent;
+            }
+        """)
 
         self.janela_cadastro.setCentralWidget(scroll_area)
         self.janela_cadastro.show()
@@ -900,8 +1033,6 @@ class Clientes(QWidget):
     def marcar_alteracao(self):
         self.alteracoes_realizadas = True
 
-    def gerar_relatorio(self):
-        pass
 
     def historico_clientes_juridicos(self):
         self.janela_historico_clientes = QMainWindow()
@@ -1029,44 +1160,44 @@ class Clientes(QWidget):
         # Caso checkboxes estejam ativados
         if self.coluna_checkboxes_clientes_adicionada and self.checkboxes_clientes:
             linhas_para_remover = []
-            ids_para_remover = []
+            datas_para_remover = []
 
             # Identificar as linhas com checkboxes selecionados
             for row, checkbox in enumerate(self.checkboxes_clientes):
                 if checkbox and checkbox.isChecked():
                     linhas_para_remover.append(row)
-                    coluna_data_hora = 1 if not self.coluna_checkboxes_clientes_adicionada else 2
+                    coluna_data_hora = 0 if not self.coluna_checkboxes_clientes_adicionada else 1
                     item_data_widget = self.tabela_historico_clientes.item(row, coluna_data_hora)  # Coluna de Data/Hora
                     if item_data_widget:
-                        item_data_text = item_data_widget.text().strip()
+                        data_text = item_data_widget.text().strip()
                         # Excluir com base na data e hora
-                        if item_data_text:
-                            ids_para_remover.append(item_data_text)
+                        if data_text:
+                            datas_para_remover.append(data_text)
                         else:
-                            print(f"Erro ao capturar ID para a data/hora: '{item_data_text}'")
+                            print(f"[AVISO] Linha {row} com Data e Hora vazia.")
                     else:
-                        print(f"Erro ao capturar Data/Hora na linha {row}")
+                        print(f"[ERRO] Coluna 'Data e Hora' não encontrada na linha {row}.")
 
-            if not ids_para_remover:
+            if not datas_para_remover:
                 QMessageBox.warning(self, "Erro", "Nenhum item válido foi selecionado para apagar!")
                 return
 
             # Confirmar exclusão
             mensagem = (
-                f"Você tem certeza que deseja apagar os {len(ids_para_remover)} itens selecionados?"
-                if len(ids_para_remover) > 1
+                f"Você tem certeza que deseja apagar os {len(datas_para_remover)} itens selecionados?"
+                if len(datas_para_remover) > 1
                 else "Você tem certeza que deseja apagar o item selecionado?"
             )
 
-            if not self.confirmar_historico_apagado(mensagem):
+            if not self.confirmar_historico_apagado_clientes(mensagem):
                 return
 
             # Excluir do banco de dados
             with sqlite3.connect('banco_de_dados.db') as cn:
                 cursor = cn.cursor()
                 try:
-                    for data_hora in ids_para_remover:
-                        cursor.execute("DELETE FROM historico WHERE 'Data e Hora' = ?", (data_hora,))
+                    for data in datas_para_remover:
+                        cursor.execute('DELETE FROM historico_clientes_juridicos WHERE "Data e Hora" = ?', (data,))
                     cn.commit()
                 except Exception as e:
                     QMessageBox.critical(self, "Erro", f"Erro ao excluir do banco de dados: {e}")
@@ -1095,23 +1226,11 @@ class Clientes(QWidget):
 
             item_data_text = item_data_widget.text().strip()
 
-            # Conectar ao banco de dados para buscar o ID relacionado à Data/Hora
-            with sqlite3.connect('banco_de_dados.db') as cn:
-                cursor = cn.cursor()
-                try:
-                    # Buscar o ID com base na Data/Hora, removendo espaços ou caracteres extras
-                    cursor.execute('SELECT id FROM historico_clientes_juridicos WHERE "Data e Hora" = ?', (item_data_text,))
-                    resultado = cursor.fetchone()
+            # Verificar se há um valor válido de data/hora
+            if not item_data_text:
+                QMessageBox.warning(self, "Erro", "Não foi possível identificar a Data/Hora do item a ser apagado!")
+                return
 
-                    if item_data_text:
-                        item_id = resultado[0]  # Pegamos o ID encontrado
-                    else:
-                        QMessageBox.warning(self, "Erro", f"Não foi encontrado um item para a Data/Hora: {item_data_text}")
-                        return
-
-                except Exception as e:
-                    QMessageBox.critical(self, "Erro", f"Erro ao buscar ID: {e}")
-                    return
 
             # Confirmar exclusão
             mensagem = "Você tem certeza que deseja apagar o item selecionado?"
@@ -1123,8 +1242,7 @@ class Clientes(QWidget):
             with sqlite3.connect('banco_de_dados.db') as cn:
                 cursor = cn.cursor()
                 try:
-                    cursor.execute("DELETE FROM historico_clientes_juridicos WHERE 'Data e Hora' = ?", (item_id,))
-                    print(f"Item removido do banco de dados: ID {item_id}")
+                    cursor.execute('DELETE FROM historico_clientes_juridicos WHERE "Data e Hora" = ?', (item_data_text,))
                     cn.commit()
                 except Exception as e:
                     QMessageBox.critical(self, "Erro", f"Erro ao excluir do banco de dados: {e}")
@@ -1143,7 +1261,7 @@ class Clientes(QWidget):
             return
 
         estado = self.checkbox_header_juridicos.checkState() == Qt.Checked
-        self.checkboxes.clear()  # Reinicia a lista para manter consistência
+        self.checkboxes_clientes.clear()  # Reinicia a lista para manter consistência
         
         for row in range(self.tabela_historico_clientes.rowCount()):
             widget = self.tabela_historico_clientes.cellWidget(row, 0)
@@ -1159,7 +1277,7 @@ class Clientes(QWidget):
      # Função para adicionar checkboxes selecionar_individual na tabela de histórico
     def selecionar_individual_juridicos(self):
         if self.tabela_historico_clientes.rowCount() == 0:
-            QMessageBox.warning(self, "Aviso", "Nenhum histórico para selecionar.")
+            QMessageBox.warning(None, "Aviso", "Nenhum histórico para selecionar.")
             self.checkbox_selecionar_individual.setChecked(False)
             return
 
@@ -1172,7 +1290,7 @@ class Clientes(QWidget):
                 self.checkbox_header_juridicos.deleteLater()
                 del self.checkbox_header_juridicos
 
-            self.checkboxes.clear()
+            self.checkboxes_clientes.clear()
             return
 
         self.tabela_historico_clientes.insertColumn(0)
@@ -1193,7 +1311,7 @@ class Clientes(QWidget):
         self.atualizar_posicao_checkbox_header_juridicos()
         header.sectionResized.connect(self.atualizar_posicao_checkbox_header_juridicos)
 
-        self.checkboxes.clear()
+        self.checkboxes_clientes.clear()
 
         QTimer.singleShot(0,self.atualizar_posicao_checkbox_header_juridicos)
 
@@ -1207,8 +1325,8 @@ class Clientes(QWidget):
             layout.setAlignment(Qt.AlignCenter)
             layout.setContentsMargins(0, 0, 0, 0)
 
-            self.tabela_historico_clientes_clientes.setCellWidget(row, 0, container)
-            self.checkboxes.append(checkbox)
+            self.tabela_historico_clientes.setCellWidget(row, 0, container)
+            self.checkboxes_clientes.append(checkbox)
 
         self.tabela_historico_clientes.verticalHeader().setVisible(False)
         self.coluna_checkboxes_clientes_adicionada = True
@@ -1216,8 +1334,8 @@ class Clientes(QWidget):
     def atualizar_selecao_todos(self):
         self.checkbox_header_juridicos.blockSignals(True)
 
-        all_checked = all(checkbox.isChecked() for checkbox in self.checkboxes if checkbox)
-        any_checked = any(checkbox.isChecked() for checkbox in self.checkboxes if checkbox)
+        all_checked = all(checkbox.isChecked() for checkbox in self.checkboxes_clientes if checkbox)
+        any_checked = any(checkbox.isChecked() for checkbox in self.checkboxes_clientes if checkbox)
 
         if all_checked:
             self.checkbox_header_juridicos.setCheckState(Qt.Checked)
@@ -2039,4 +2157,21 @@ class Clientes(QWidget):
 
         except Exception as e:
             print(f"Erro ao carregar opções de {nome_coluna}:", e)
-        
+
+    def confirmar_historico_apagado_clientes(self, mensagem):
+        """
+        Exibe uma caixa de diálogo para confirmar a exclusão.
+        """
+        msgbox = QMessageBox(self)
+        msgbox.setWindowTitle("Confirmação")
+        msgbox.setText(mensagem)
+
+        btn_sim = QPushButton("Sim")
+        btn_nao = QPushButton("Não")
+        msgbox.addButton(btn_sim, QMessageBox.ButtonRole.YesRole)
+        msgbox.addButton(btn_nao, QMessageBox.ButtonRole.NoRole)
+
+        msgbox.setDefaultButton(btn_nao)
+        resposta = msgbox.exec()
+
+        return msgbox.clickedButton() == btn_sim

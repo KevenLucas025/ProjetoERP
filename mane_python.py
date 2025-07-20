@@ -266,7 +266,7 @@ class Ui_MainWindow(object):
         self.label_imagem_sistema.setBaseSize(QSize(0, 0))
         self.label_imagem_sistema.setFocusPolicy(Qt.NoFocus)
         self.label_imagem_sistema.setFrameShape(QFrame.Box)
-        self.label_imagem_sistema.setPixmap(QPixmap(u"../../Pictures/ProjetoERP/Projeto ERP/Projeto ERP/54206.cur"))
+        self.label_imagem_sistema.setPixmap(QPixmap(u"../../../../Pictures/ProjetoERP/Projeto ERP/Projeto ERP/54206.cur"))
         self.label_imagem_sistema.setScaledContents(True)
         self.label_imagem_sistema.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
         self.label_imagem_sistema.setWordWrap(False)
@@ -1449,7 +1449,7 @@ class Ui_MainWindow(object):
 "    color: black;\n"
 "}")
         icon = QIcon()
-        icon.addFile(u"imagens/pngwing.com.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        icon.addFile(u"../../../../.designer/backup/imagens/pngwing.com.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
         self.btn_adicionar_produto.setIcon(icon)
 
         self.verticalLayout_12.addWidget(self.btn_adicionar_produto)
@@ -1473,7 +1473,7 @@ class Ui_MainWindow(object):
 "    color: black;\n"
 "}")
         icon1 = QIcon()
-        icon1.addFile(u"imagens/editar.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        icon1.addFile(u"../../../../.designer/backup/imagens/editar.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
         self.btn_editar.setIcon(icon1)
 
         self.verticalLayout_12.addWidget(self.btn_editar)
@@ -1497,7 +1497,7 @@ class Ui_MainWindow(object):
 "    color: black;\n"
 "}")
         icon2 = QIcon()
-        icon2.addFile(u"imagens/sair.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        icon2.addFile(u"../../../../.designer/backup/imagens/sair.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
         self.btn_sair_modo_edicao_produtos.setIcon(icon2)
 
         self.verticalLayout_12.addWidget(self.btn_sair_modo_edicao_produtos)
@@ -1521,7 +1521,7 @@ class Ui_MainWindow(object):
 "    color: black;\n"
 "}")
         icon3 = QIcon()
-        icon3.addFile(u"imagens/toppng.com-update-512x512.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        icon3.addFile(u"../../../../.designer/backup/imagens/toppng.com-update-512x512.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
         self.btn_atualizar_produto.setIcon(icon3)
 
         self.verticalLayout_12.addWidget(self.btn_atualizar_produto)
@@ -1545,7 +1545,7 @@ class Ui_MainWindow(object):
 "    color: black;\n"
 "}")
         icon4 = QIcon()
-        icon4.addFile(u"imagens/Delete-Button-PNG-Download-Image.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        icon4.addFile(u"../../../../.designer/backup/imagens/Delete-Button-PNG-Download-Image.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
         self.btn_limpar_campos.setIcon(icon4)
         self.btn_limpar_campos.setIconSize(QSize(27, 29))
         self.btn_limpar_campos.setCheckable(False)
@@ -2030,7 +2030,7 @@ class Ui_MainWindow(object):
 "    color: black;\n"
 "}")
         icon5 = QIcon()
-        icon5.addFile(u"imagens/icons8-remover-imagem-16.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        icon5.addFile(u"../../../../.designer/backup/imagens/icons8-remover-imagem-16.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
         self.btn_remover_imagem.setIcon(icon5)
 
         self.verticalLayout_13.addWidget(self.btn_remover_imagem)
@@ -2055,7 +2055,7 @@ class Ui_MainWindow(object):
 "    color: black;\n"
 "}")
         icon6 = QIcon()
-        icon6.addFile(u"imagens/014upload2_99941.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        icon6.addFile(u"../../../../.designer/backup/imagens/014upload2_99941.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
         self.btn_carregar_imagem.setIcon(icon6)
 
         self.verticalLayout_13.addWidget(self.btn_carregar_imagem)
@@ -2157,7 +2157,7 @@ class Ui_MainWindow(object):
 "}\n"
 "")
         icon7 = QIcon()
-        icon7.addFile(u"imagens/confirmacao.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        icon7.addFile(u"../../../../.designer/backup/imagens/confirmacao.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
         self.btn_confirmar.setIcon(icon7)
 
         self.verticalLayout_20.addWidget(self.btn_confirmar)
@@ -2181,7 +2181,7 @@ class Ui_MainWindow(object):
 "    color: black;\n"
 "}")
         icon8 = QIcon()
-        icon8.addFile(u"imagens/74472.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        icon8.addFile(u"../../../../.designer/backup/imagens/74472.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
         self.btn_ver_clientes_juridicos.setIcon(icon8)
         self.btn_ver_clientes_juridicos.setIconSize(QSize(21, 25))
 
@@ -2207,7 +2207,7 @@ class Ui_MainWindow(object):
 "    color: black;\n"
 "}")
         icon9 = QIcon()
-        icon9.addFile(u"imagens/pasta.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        icon9.addFile(u"../../../../.designer/backup/imagens/pasta.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
         self.btn_ver_item.setIcon(icon9)
 
         self.verticalLayout_20.addWidget(self.btn_ver_item)
@@ -3689,7 +3689,7 @@ class Ui_MainWindow(object):
         self.table_clientes_juridicos.setGridStyle(Qt.SolidLine)
         self.table_clientes_juridicos.setCornerButtonEnabled(False)
         self.table_clientes_juridicos.horizontalHeader().setDefaultSectionSize(118)
-        self.table_clientes_juridicos.verticalHeader().setVisible(True)
+        self.table_clientes_juridicos.verticalHeader().setVisible(False)
 
         self.gridLayout_22.addWidget(self.table_clientes_juridicos, 1, 0, 1, 2)
 
@@ -5018,8 +5018,8 @@ class Ui_MainWindow(object):
         self.btn_fazer_cadastro.setText(QCoreApplication.translate("MainWindow", u"FAZER CADASTRO", None))
         self.btn_ver_usuario.setText(QCoreApplication.translate("MainWindow", u"VER USU\u00c1RIO", None))
         self.btn_adicionar_cliente_juridico.setText(QCoreApplication.translate("MainWindow", u"Criar cliente", None))
-        self.btn_editar_clientes.setText(QCoreApplication.translate("MainWindow", u"Editar", None))
-        self.btn_excluir_clientes.setText(QCoreApplication.translate("MainWindow", u"Excluir", None))
+        self.btn_editar_clientes.setText(QCoreApplication.translate("MainWindow", u"Editar cliente", None))
+        self.btn_excluir_clientes.setText(QCoreApplication.translate("MainWindow", u"Excluir cliente", None))
         self.btn_gerar_relatorio_clientes.setText(QCoreApplication.translate("MainWindow", u"Gerar Relat\u00f3rio", None))
         self.btn_marcar_como_clientes.setText(QCoreApplication.translate("MainWindow", u"Marcar como", None))
         self.btn_historico_clientes.setText(QCoreApplication.translate("MainWindow", u"Hist\u00f3rico", None))
