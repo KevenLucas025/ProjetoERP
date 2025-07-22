@@ -22,7 +22,7 @@ from openpyxl.styles import Alignment
 from fpdf import FPDF
 
 
-class Clientes(QWidget):
+class Clientes_Juridicos(QWidget):
     def __init__(self, line_clientes: QLineEdit,main_window,btn_adicionar_cliente_juridico,
                  btn_editar_clientes,btn_excluir_clientes,btn_gerar_relatorio_clientes,btn_marcar_como_clientes,
                  btn_historico_clientes):
@@ -56,6 +56,8 @@ class Clientes(QWidget):
         
         self.line_clientes.returnPressed.connect(self.buscar)
         self.imagem_line()
+        #self.configurar_line_clientes()
+
 
         #  Atalho de teclado F5 para atualizar a tabela
         atalho_f5 = QShortcut(QKeySequence("F5"),self.main_window)
@@ -83,7 +85,9 @@ class Clientes(QWidget):
                         "Nome do Cliente",
                         "Razão Social",
                         "Data da Inclusão",
-                        CNPJ, 
+                        CNPJ,
+                        RG,
+                        CPF,
                         Telefone, 
                         CEP, 
                         Endereço, 
@@ -178,12 +182,31 @@ class Clientes(QWidget):
             try:
                 # Buscar em múltiplas colunas
                 cursor.execute("""
-                    SELECT * FROM clientes_juridicos
-                    WHERE
-                        "Nome do Cliente" LIKE ? OR
-                        "Razão Social" LIKE ? OR
-                        CNPJ LIKE ? OR
-                        Telefone LIKE ?
+                    SELECT  
+                        "Nome do Cliente",
+                        "Razão Social",
+                        "Data da Inclusão",
+                        CNPJ,
+                        Telefone,
+                        CEP,
+                        Endereço,
+                        Número,
+                        Complemento,
+                        Cidade,
+                        Bairro,
+                        Estado,
+                        "Status do Cliente",
+                        "Categoria do Cliente",
+                        "Última Atualização",
+                        "Origem do Cliente",
+                        "Valor Gasto Total",
+                        "Última Compra"
+                    FROM clientes_juridicos
+                    WHERE 
+                        LOWER("Nome do Cliente") LIKE LOWER(?) OR
+                        LOWER("Razão Social") LIKE LOWER(?) OR
+                        LOWER(CNPJ) LIKE LOWER(?) OR
+                        LOWER(Telefone) LIKE LOWER(?)
                 """, (f'%{texto}%', f'%{texto}%', f'%{texto}%', f'%{texto}%'))
 
                 resultados = cursor.fetchall()
@@ -208,6 +231,37 @@ class Clientes(QWidget):
             for col_index, data in enumerate(row_data):
                 item = self.formatar_texto_juridico(str(data))
                 self.table_clientes_juridicos.setItem(row_index, col_index, item)
+
+    '''def formatar_input_buscar(self, texto):
+        # Remover caracteres não numéricos
+        numero = ''.join(filter(str.isdigit,texto))
+
+        # CNPJ 
+        if len(numero) >= 14:
+            return "{}.{}.{}/{}-{}".format(
+                numero[:2],numero[2:5],numero[5:8],numero[8:12],numero[12:]
+            )
+        # Telefone fixo (10 dígitos) ou celular (11 dígitos)
+        elif len(numero) in (10,11):
+            if len(numero) == 10:
+                return "({}) {}-{}".format(numero[:2],numero[2:6],numero[6:])
+            else:
+                return "({}) {}-{}".format(numero[:2],numero[2:7],numero[7:])
+            
+        # Sem formatação (nome, razão social etc.)
+        return texto
+    
+    def configurar_line_clientes(self):
+        self.line_clientes.textChanged.connect(self.formatar_texto_busca)
+
+    def formatar_texto_busca(self,texto):
+        cursor_pos = self.line_clientes.cursorPosition()
+        texto_formatado = self.formatar_input_buscar(texto)
+
+        self.line_clientes.blockSignals(True)
+        self.line_clientes.setText(texto_formatado)
+        self.line_clientes.blockSignals(False)
+        self.line_clientes.setCursorPosition(cursor_pos)'''
 
 
     def formatar_e_buscar_cep(self, widget):

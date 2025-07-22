@@ -25,7 +25,8 @@ from pg_configuracoes import Pagina_Configuracoes
 from estoqueprodutos import EstoqueProduto
 from historicousuario import Pagina_Usuarios
 from utils import MostrarSenha,configurar_frame_valores
-from clientes_juridicos import Clientes
+from clientes_juridicos import Clientes_Juridicos
+from clientes_fisicos import Clientes_Fisicos
 import json
 import sqlite3
 import os
@@ -170,9 +171,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.is_editing_produto = False
         self.selected_produto_id = None
 
-        self.pagina_clientes = Clientes(self.line_clientes,self,self.btn_adicionar_cliente_juridico,self.btn_editar_clientes,
+        self.pagina_clientes_juridicos = Clientes_Juridicos(self.line_clientes,self,self.btn_adicionar_cliente_juridico,self.btn_editar_clientes,
                                         self.btn_excluir_clientes,self.btn_gerar_relatorio_clientes,self.btn_marcar_como_clientes,
                                         self.btn_historico_clientes)
+        
+        self.pagina_clientes_fisicos = Clientes_Fisicos(self.line_clientes_fisicos,self,self.btn_adicionar_cliente_fisico,self.btn_editar_clientes_fisicos,
+                                                        self.btn_excluir_clientes_fisicos,self.btn_gerar_relatorio_clientes_fisicos,self.btn_historico_clientes_fisicos,
+                                                        self.btn_marcar_como_clientes_fisicos)
 
         # Crie o layout para o frame_imagem_cadastro e adicione o QLabel
         self.label_imagem_usuario = QLabel(self)
@@ -2249,7 +2254,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         widget.setText(cep_formatado)
         widget.blockSignals(False)
 #*********************************************************************************************************************
-    def formatar_cpf(self, text):
+    def formatar_cpf(self, text,widget):
+        if text == "Não Cadastrado":
+            widget.setText(text)
+            return
+        
         # Remover caracteres não numéricos
         numero_cpf = ''.join(filter(str.isdigit, text))
         
@@ -2295,7 +2304,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             widget.setText(numero_cnpj)
             widget.blockSignals(False)
 #*********************************************************************************************************************
-    def formatar_rg(self, text):
+    def formatar_rg(self, text,widget):
+        if text == "Não Cadastrado":
+            widget.setText(text)
+            return
+    
         # Remover caracteres não numéricos
         numero_rg = ''.join(filter(str.isdigit, text))
         

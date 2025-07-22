@@ -5991,7 +5991,7 @@ QPushButton:hover {
 </string>
              </property>
              <property name="currentIndex">
-              <number>0</number>
+              <number>1</number>
              </property>
              <widget class="QWidget" name="tab_clientes">
               <attribute name="title">
@@ -6389,6 +6389,16 @@ QTableWidget::item:selected {
                  </column>
                  <column>
                   <property name="text">
+                   <string>RG</string>
+                  </property>
+                 </column>
+                 <column>
+                  <property name="text">
+                   <string>CPF</string>
+                  </property>
+                 </column>
+                 <column>
+                  <property name="text">
                    <string>Telefone</string>
                   </property>
                  </column>
@@ -6587,7 +6597,7 @@ QPushButton:hover {
 }</string>
                       </property>
                       <property name="text">
-                       <string>Editar</string>
+                       <string>Editar cliente</string>
                       </property>
                      </widget>
                     </item>
@@ -6626,7 +6636,7 @@ QPushButton:hover {
 }</string>
                       </property>
                       <property name="text">
-                       <string>Excluir</string>
+                       <string>Excluir cliente</string>
                       </property>
                      </widget>
                     </item>
@@ -6851,6 +6861,11 @@ QTableWidget::item:selected {
                  <column>
                   <property name="text">
                    <string>CPF</string>
+                  </property>
+                 </column>
+                 <column>
+                  <property name="text">
+                   <string>RG</string>
                   </property>
                  </column>
                  <column>

@@ -272,7 +272,9 @@ class DataBase:
                     "Nome do Cliente" TEXT,
                     "Data da Inclusão" TEXT,
                     CPF TEXT,
+                    RG TEXT,
                     Telefone TEXT,
+                    CEP TEXT,
                     Endereço TEXT,
                     Número TEXT,
                     Complemento TEXT,
@@ -291,6 +293,7 @@ class DataBase:
             print("Tabela de clientes fisícos criada com sucesso! ")
         except Exception as e:
             print("Erro ao criar tabela de clientes_fisicos: ", e)
+            
     def create_table_historico_juridico(self):
         try:
             if self.tabela_existe("historico_clientes_juridicos"):
