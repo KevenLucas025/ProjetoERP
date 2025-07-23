@@ -3693,7 +3693,7 @@ class Ui_MainWindow(object):
         self.table_clientes_juridicos.setGridStyle(Qt.SolidLine)
         self.table_clientes_juridicos.setCornerButtonEnabled(False)
         self.table_clientes_juridicos.horizontalHeader().setDefaultSectionSize(118)
-        self.table_clientes_juridicos.verticalHeader().setVisible(False)
+        self.table_clientes_juridicos.verticalHeader().setVisible(True)
 
         self.gridLayout_22.addWidget(self.table_clientes_juridicos, 1, 0, 1, 2)
 
@@ -4747,7 +4747,7 @@ class Ui_MainWindow(object):
         self.retranslateUi(MainWindow)
 
         self.tb_base.setCurrentIndex(0)
-        self.tab_clientes_todos.setCurrentIndex(1)
+        self.tab_clientes_todos.setCurrentIndex(0)
 
 
         QMetaObject.connectSlotsByName(MainWindow)

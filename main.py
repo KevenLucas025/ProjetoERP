@@ -56,6 +56,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.setWindowTitle("Sistema de Gerenciamento")
         self.historico_pausado = False
         self.historico_pausado_clientes_juridicos = False
+        self.historico_pausado_clientes_fisicos = False
         self.historico_usuario_pausado = False
         self.imagem_removida_usuario = False
         self.usuario_tem_imagem_salva = False
@@ -120,10 +121,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.table_ativos.verticalHeader().setVisible(True)
         self.table_saida.horizontalHeader().setVisible(True)
         self.table_inativos.verticalHeader().setVisible(True)
+        self.table_clientes_fisicos.verticalHeader().setVisible(True)
         self.table_base.setShowGrid(True)
         self.table_saida.setShowGrid(True)
         self.table_ativos.setShowGrid(True)
         self.table_inativos.setShowGrid(True)
+        
 
         # funções que precisam do banco de dados
         self.erros_frames_produtos()
@@ -620,13 +623,22 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             for col, data in enumerate(cliente):
                 self.table_clientes_juridicos.setItem(row_position, col,self.criar_item(str(data)))
 
+        # Carregar dados da table_clientes_fisicos
+        clientes_fisicos = self.db.obter_clientes_fisicos()
+        for cliente in clientes_fisicos:
+            row_position = self.table_clientes_fisicos.rowCount()
+            self.table_clientes_fisicos.insertRow(row_position)
+            for col, data in enumerate(cliente):
+                self.table_clientes_fisicos.setItem(row_position,col,self.criar_item(str(data)))
+
         self.table_inativos.resizeColumnsToContents()
         self.table_inativos.resizeRowsToContents()
         self.table_massa_produtos.resizeColumnsToContents()
         self.table_massa_produtos.resizeRowsToContents()
         self.table_clientes_juridicos.resizeColumnsToContents()
         self.table_clientes_juridicos.resizeRowsToContents()
-     
+        self.table_clientes_fisicos.resizeColumnsToContents()
+        self.table_clientes_fisicos.resizeRowsToContents()
     
     
 
@@ -2213,6 +2225,23 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 VALUES (?,?,?,?)
             """,(data_hora,usuario,acao,descricao))
             cn.commit()
+
+    def registrar_historico_clientes_fisicos(self,acao,descricao):
+        # Verifica se o histórico está pausado
+        if self.historico_pausado_clientes_fisicos:
+            print("Histórico pausado. O registro não será feito")
+            return # Se o histórico estiver pausado, não faz nada
+        usuario = self.get_usuario_logado()
+        data_hora = datetime.now().strftime("%d/%m/%Y %H:%M")
+
+        with sqlite3.connect("banco_de_dados.db") as cn:
+            cursor = cn.cursor()
+            cursor.execute("""
+                INSERT INTO historico_clientes_fisicos ('Data e Hora',Usuário,Ação,Descrição)
+                VALUES (?,?,?,?)
+            """,(data_hora,usuario,acao,descricao))
+            cn.commit()
+
 #*******************************************************************************************************
     def campos_obrigatorios_preenchidos(self):
         # Verificar se todos os campos obrigatórios estão preenchidos
@@ -2254,25 +2283,23 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         widget.setText(cep_formatado)
         widget.blockSignals(False)
 #*********************************************************************************************************************
-    def formatar_cpf(self, text,widget):
+    def formatar_cpf(self, text, widget):
         if text == "Não Cadastrado":
             widget.setText(text)
             return
-        
-        # Remover caracteres não numéricos
-        numero_cpf = ''.join(filter(str.isdigit, text))
-        
-        # Verificar se o CPF tem pelo menos 9 dígitos
+
+        numero_cpf = ''.join(filter(str.isdigit, text))[:11]  # Limita a 11 dígitos
+
         if len(numero_cpf) >= 9:
-            # Formatar o CPF com pontos e hífen
-            if len(numero_cpf) > 11:
-                cpf_formatado = "{}.{}.{}-{}".format(numero_cpf[:3], numero_cpf[3:6], numero_cpf[6:9], numero_cpf[9:11])
-            else:
-                cpf_formatado = "{}.{}.{}-{}".format(numero_cpf[:3], numero_cpf[3:6], numero_cpf[6:9], numero_cpf[9:])
-            self.txt_cpf.setText(cpf_formatado)
+            cpf_formatado = "{}.{}.{}-{}".format(
+                numero_cpf[:3], numero_cpf[3:6], numero_cpf[6:9], numero_cpf[9:]
+            )
         else:
-            # Se o CPF não tiver pelo menos 9 dígitos, manter o texto original
-            self.txt_cpf.setText(text[:14])
+            cpf_formatado = numero_cpf
+
+        widget.blockSignals(True)
+        widget.setText(cpf_formatado)
+        widget.blockSignals(False)
 #*********************************************************************************************************************
     def formatar_cnpj(self, text, widget):
         if text == "Não Cadastrado":
@@ -2316,10 +2343,16 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if len(numero_rg) >= 9:
             # Formatar o RG com pontos e hífen
             rg_formatado = "{}.{}.{}-{}".format(numero_rg[:2], numero_rg[2:5], numero_rg[5:8], numero_rg[8:9])
-            self.txt_rg.setText(rg_formatado)
+
+            # Atualiza o texto do widget com formatação
+            widget.blockSignals(True)
+            widget.setText(rg_formatado)
+            widget.blockSignals(False)
         else:
-            # Se o RG não tiver pelo menos 9 dígitos, manter o texto original
-            self.txt_rg.setText(text)
+            # Atualiza o texto do widget com formatação
+            widget.blockSignals(True)
+            widget.setText(numero_rg)
+            widget.blockSignals(False)
 #*********************************************************************************************************************
     def formatar_data_nascimento(self, text):
         # Remover todos os caracteres que não são dígitos

@@ -239,6 +239,8 @@ class DataBase:
                     "Razão Social" TEXT,
                     "Data da Inclusão" TEXT,
                     CNPJ TEXT,
+                    RG TEXT,
+                    CPF TEXT,
                     Telefone TEXT,
                     CEP TEXT,
                     Endereço TEXT,
@@ -1042,13 +1044,22 @@ class DataBase:
     def obter_clientes_juridicos(self):
         cursor = self.connection.cursor()
         cursor.execute("""
-            SELECT "Nome do Cliente", "Razão Social","Data da Inclusão", CNPJ, Telefone, CEP, Endereço, Número,
+            SELECT "Nome do Cliente", "Razão Social","Data da Inclusão", CNPJ,RG,CPF, Telefone, CEP, Endereço, Número,
                 Complemento,Cidade, Bairro,Estado, "Status do Cliente", "Categoria do Cliente", "Última Atualização",
                 "Origem do Cliente", "Valor Gasto Total", "Última Compra"
             FROM clientes_juridicos
         """)
         return cursor.fetchall()
-
+    
+    def obter_clientes_fisicos(self):
+        cursor = self.connection.cursor()
+        cursor.execute("""
+            SELECT "Nome do Cliente","Data da Inclusão",CPF,RG,Telefone, CEP, Endereço, Número,
+                Complemento,Cidade, Bairro,Estado, "Status do Cliente", "Categoria do Cliente", "Última Atualização",
+                "Origem do Cliente", "Valor Gasto Total", "Última Compra"
+            FROM clientes_fisicos 
+        """)
+        return cursor.fetchall()
 
 
 if __name__ == "__main__":
