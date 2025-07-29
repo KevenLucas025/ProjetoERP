@@ -153,7 +153,7 @@ class Clientes_Fisicos(QWidget):
         self.botao_lupa.setFixedSize(altura, altura)
 
         # Posicionar o botão no canto direito da LineEdit
-        self.botao_lupa.move(self.line_clientes_fisicos.width() - altura + 160, 2)
+        self.botao_lupa.move(self.line_clientes_fisicos.width() - altura + 220, 2)
 
         # Ajustar padding para o texto não sobrepor o botão
         self.line_clientes_fisicos.setStyleSheet(

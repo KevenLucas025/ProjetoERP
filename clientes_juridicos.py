@@ -430,6 +430,10 @@ class Clientes_Juridicos(QWidget):
                 self.main_window.formatar_rg(dados_cliente[campo],entrada)
             elif campo == "CPF":
                 entrada.textChanged.connect(lambda texto, w=entrada: self.main_window.formatar_cpf(texto,w))
+            elif campo == "CNH":
+                entrada.textChanged.connect(lambda texto, w=entrada: self.main_window.formatar_cnh(texto,w))
+            elif campo == "Data de Nascimento":
+                entrada.textChanged.connect(lambda texto, w=entrada: self.main_window.formatar_data_nascimento(texto,w))
             elif campo == "Telefone":
                 entrada.textChanged.connect(lambda texto, w=entrada: self.main_window.formatar_telefone(texto, w))
             elif campo == "CEP":
@@ -592,14 +596,20 @@ class Clientes_Juridicos(QWidget):
         add_linha("Nome do Cliente")
         add_linha("Razão Social")
         add_linha("CNPJ")
+        cnpj_widget = self.campos_cliente_juridico["CNPJ"]
+        cnpj_widget.textChanged.connect(lambda text: self.main_window.formatar_cnpj(text, cnpj_widget))
         add_linha("RG")
         rg_widget = self.campos_cliente_juridico["RG"]
         rg_widget.textChanged.connect(lambda text: self.main_window.formatar_rg(text,rg_widget))
         add_linha("CPF")
         cpf_widget = self.campos_cliente_juridico["CPF"]
         cpf_widget.textChanged.connect(lambda text: self.main_window.formatar_cpf(text, cpf_widget))
-        cnpj_widget = self.campos_cliente_juridico["CNPJ"]
-        cnpj_widget.textChanged.connect(lambda text: self.main_window.formatar_cnpj(text, cnpj_widget))
+        add_linha("CNH")
+        cnh_widget = self.campos_cliente_juridico["CNH"]
+        cnh_widget.textChanged.connect(lambda text: self.main_window.formatar_cnh(text,cnh_widget))
+        add_linha("Data de Nascimento")
+        data_nascimento_widget = self.campos_cliente_juridico["Data de Nascimento"]
+        data_nascimento_widget.textChanged.connect(lambda text: self.main_window.formatar_data_nascimento(text,data_nascimento_widget))
         add_linha("Telefone")
         telefone_widget = self.campos_cliente_juridico["Telefone"]
         telefone_widget.textChanged.connect(lambda text: self.main_window.formatar_telefone(text, telefone_widget))        
@@ -750,8 +760,6 @@ class Clientes_Juridicos(QWidget):
         self.janela_cadastro.setCentralWidget(scroll_area)
         self.janela_cadastro.show()
 
-
-
     def cadastrar_clientes_juridicos(self):
         try:
             with self.db.connecta() as conexao:
@@ -812,13 +820,13 @@ class Clientes_Juridicos(QWidget):
                 # Inserir no banco
                 cursor.execute("""
                     INSERT INTO clientes_juridicos(
-                        "Nome do Cliente", "Razão Social", "Data da Inclusão", CNPJ,RG,CPF,CNH, Telefone, CEP, Endereço, Número,
+                        "Nome do Cliente", "Razão Social", "Data da Inclusão", CNPJ,RG,CPF,CNH,"Data de Nascimento", Telefone, CEP, Endereço, Número,
                         Complemento, Cidade, Bairro, Estado, "Status do Cliente", "Categoria do Cliente","Última Atualização", 
                         "Origem do Cliente","Valor Gasto Total", "Última Compra"
                     )
                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?,?,?,?,?,?,?)
                 """, (
-                    nome,razao_social, data_inclusao, cnpj,rg,cpf,cnh,data_inclusao, telefone, cep, endereco, numero,complemento, cidade,
+                    nome,razao_social, data_inclusao, cnpj,rg,cpf,cnh,data_nascimento, telefone, cep, endereco, numero,complemento, cidade,
                     bairro,estado, status, categoria, ultima_atualizacao,nacionalidade, valor_gasto_total, ultima_compra,
                 ))
                 conexao.commit()

@@ -2395,8 +2395,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                     # Adicionar os próximos quatro dígitos ao ano
                     data_formatada += numeros[4:8]
 
-        # Atualizar o texto do campo de data de nascimento
-        self.txt_data_nascimento.setText(data_formatada)
+        # Atualiza o texto do widget com formatação
+            widget.blockSignals(True)
+            widget.setText(data_formatada)
+            widget.blockSignals(False)
+        else:
+            # Atualiza o texto do widget com formatação
+            widget.blockSignals(True)
+            widget.setText(numeros)
+            widget.blockSignals(False)
 #*********************************************************************************************************************
     def formatar_telefone(self, text, widget):
         numero_limpo = ''.join(filter(str.isdigit, text))[:14]
@@ -2849,10 +2856,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 print("⚠️ Nenhuma tabela de cliente visível")
         else:
             print("⚠️ Página atual não tem método de atualização com F5.")
-
-
-
-
 
 
 # Função principal
