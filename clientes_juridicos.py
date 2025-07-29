@@ -95,6 +95,8 @@ class Clientes_Juridicos(QWidget):
                         CNPJ,
                         RG,
                         CPF,
+                        CNH,
+                        "Data de Nascimento",
                         Telefone, 
                         CEP, 
                         Endereço, 
@@ -198,6 +200,8 @@ class Clientes_Juridicos(QWidget):
                         CNPJ,
                         RG,
                         CPF,
+                        CNH,
+                        "Data de Nascimento",
                         Telefone,
                         CEP,
                         Endereço,
@@ -337,7 +341,7 @@ class Clientes_Juridicos(QWidget):
 
 
         colunas = [
-            "Nome do Cliente", "Razão Social", "Data da Inclusão", "CNPJ","RG","CPF", "Telefone",
+            "Nome do Cliente", "Razão Social", "Data da Inclusão", "CNPJ","RG","CPF","CNH","Data de Nascimento", "Telefone",
             "CEP", "Endereço", "Número", "Complemento", "Cidade", "Bairro",
             "Estado", "Status do Cliente", "Categoria do Cliente",
             "Última Atualização", "Origem do Cliente", "Valor Gasto Total", "Última Compra"
@@ -423,6 +427,9 @@ class Clientes_Juridicos(QWidget):
                 entrada.textChanged.connect(lambda texto, w=entrada: self.main_window.formatar_cnpj(texto,w))
             elif campo == "RG":
                 entrada.textChanged.connect(lambda texto, w=entrada: self.main_window.formatar_rg(texto, w))
+                self.main_window.formatar_rg(dados_cliente[campo],entrada)
+            elif campo == "CPF":
+                entrada.textChanged.connect(lambda texto, w=entrada: self.main_window.formatar_cpf(texto,w))
             elif campo == "Telefone":
                 entrada.textChanged.connect(lambda texto, w=entrada: self.main_window.formatar_telefone(texto, w))
             elif campo == "CEP":
@@ -463,7 +470,7 @@ class Clientes_Juridicos(QWidget):
         coluna_offset = 1 if self.coluna_checkboxes_clientes_adicionada else 0
 
         colunas = [
-            "Nome do Cliente", "Razão Social", "Data da Inclusão", "CNPJ","RG","CPF", "Telefone",
+            "Nome do Cliente", "Razão Social", "Data da Inclusão", "CNPJ","RG","CPF","CNH","Data de Nascimento", "Telefone",
             "CEP", "Endereço", "Número", "Complemento", "Cidade", "Bairro",
             "Estado", "Status do Cliente", "Categoria do Cliente",
             "Última Atualização", "Origem do Cliente", "Valor Gasto Total", "Última Compra"
@@ -497,8 +504,8 @@ class Clientes_Juridicos(QWidget):
             query = """
             UPDATE clientes_juridicos
             SET
-                `Nome do Cliente` = ?, `Razão Social` = ?, `Data da Inclusão` = ?,RG =?,CPF = ?, Telefone = ?,
-                CEP = ?, Endereço = ?, Número = ?, Complemento = ?, Cidade = ?, Bairro = ?,
+                `Nome do Cliente` = ?, `Razão Social` = ?, `Data da Inclusão` = ?,RG =?,CPF = ?,CNH = ?,`Data de Nascimento` = ?, 
+                Telefone = ?,CEP = ?, Endereço = ?, Número = ?, Complemento = ?, Cidade = ?, Bairro = ?,
                 Estado = ?, `Status do Cliente` = ?, `Categoria do Cliente` = ?, `Última Atualização` = ?,
                 `Origem do Cliente` = ?, `Valor Gasto Total` = ?, `Última Compra` = ?
             WHERE CNPJ = ?
@@ -510,6 +517,8 @@ class Clientes_Juridicos(QWidget):
                 dados_atualizados["Data da Inclusão"],
                 dados_atualizados["RG"],
                 dados_atualizados["CPF"],
+                dados_atualizados["CNH"],
+                dados_atualizados["Data de Nascimento"],
                 dados_atualizados["Telefone"],
                 dados_atualizados["CEP"],
                 dados_atualizados["Endereço"],
@@ -757,6 +766,10 @@ class Clientes_Juridicos(QWidget):
                 nome = get("Nome do Cliente")
                 razao_social = get("Razão Social")
                 cnpj = get("CNPJ")
+                rg = get("RG")
+                cpf = get("CPF")
+                cnh = get("CNH")
+                data_nascimento = get("Data de Nascimento")
                 telefone = get("Telefone")
                 cep = get("CEP")
                 endereco = get("Endereço")
@@ -799,13 +812,13 @@ class Clientes_Juridicos(QWidget):
                 # Inserir no banco
                 cursor.execute("""
                     INSERT INTO clientes_juridicos(
-                        "Nome do Cliente", "Razão Social", "Data da Inclusão", CNPJ, Telefone, CEP, Endereço, Número,
+                        "Nome do Cliente", "Razão Social", "Data da Inclusão", CNPJ,RG,CPF,CNH, Telefone, CEP, Endereço, Número,
                         Complemento, Cidade, Bairro, Estado, "Status do Cliente", "Categoria do Cliente","Última Atualização", 
                         "Origem do Cliente","Valor Gasto Total", "Última Compra"
                     )
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?,?,?)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?,?,?,?,?,?,?)
                 """, (
-                    nome,razao_social, data_inclusao, cnpj, telefone, cep, endereco, numero,complemento, cidade,
+                    nome,razao_social, data_inclusao, cnpj,rg,cpf,cnh,data_inclusao, telefone, cep, endereco, numero,complemento, cidade,
                     bairro,estado, status, categoria, ultima_atualizacao,nacionalidade, valor_gasto_total, ultima_compra,
                 ))
                 conexao.commit()
@@ -830,6 +843,8 @@ class Clientes_Juridicos(QWidget):
             "Nome do Cliente": "O campo Nome do Cliente é obrigatório.",
             "Razão Social": "O campo de Razão Social é obrigatório",
             "CNPJ": "O campo CNPJ é obrigatório.",
+            "CPF": "O campo de CPF é obrigatório",
+            "Data de Nascimento": "O campo Data de Nascimento é obrigatório",
             "Telefone": "O campo Telefone é obrigatório.",
             "CEP": "O campo CEP é obrigatório.",
             "Endereço": "O campo Endereço é obrigatório.",

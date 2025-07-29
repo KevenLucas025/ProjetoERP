@@ -145,7 +145,7 @@ class Clientes_Fisicos(QWidget):
         # Criar botão da lupa
         self.botao_lupa = QToolButton(self.line_clientes_fisicos)
         self.botao_lupa.setCursor(Qt.PointingHandCursor)  # Muda o cursor ao passar o mouse
-        self.botao_lupa.setIcon(QIcon(QPixmap("C:\\Users\\KEVEN\\Pictures\\ProjetoERP\\imagens\\botão_lupa.png")))  # Substitua pelo caminho correto
+        self.botao_lupa.setIcon(QIcon(QPixmap("imagens/botão_lupa.png")))  # Substitua pelo caminho correto
         self.botao_lupa.setStyleSheet("border: none; background: transparent;")  # Sem fundo e sem borda
         
         # Definir tamanho do botão

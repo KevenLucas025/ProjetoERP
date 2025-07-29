@@ -5991,7 +5991,7 @@ QPushButton:hover {
 </string>
              </property>
              <property name="currentIndex">
-              <number>0</number>
+              <number>1</number>
              </property>
              <widget class="QWidget" name="tab_clientes">
               <attribute name="title">
@@ -6365,7 +6365,7 @@ QTableWidget::item:selected {
                   <number>118</number>
                  </attribute>
                  <attribute name="verticalHeaderVisible">
-                  <bool>true</bool>
+                  <bool>false</bool>
                  </attribute>
                  <column>
                   <property name="text">
@@ -6395,6 +6395,16 @@ QTableWidget::item:selected {
                  <column>
                   <property name="text">
                    <string>CPF</string>
+                  </property>
+                 </column>
+                 <column>
+                  <property name="text">
+                   <string>CNH</string>
+                  </property>
+                 </column>
+                 <column>
+                  <property name="text">
+                   <string>Data de Nascimento</string>
                   </property>
                  </column>
                  <column>
@@ -6860,12 +6870,22 @@ QTableWidget::item:selected {
                  </column>
                  <column>
                   <property name="text">
+                   <string>RG</string>
+                  </property>
+                 </column>
+                 <column>
+                  <property name="text">
                    <string>CPF</string>
                   </property>
                  </column>
                  <column>
                   <property name="text">
-                   <string>RG</string>
+                   <string>CNH</string>
+                  </property>
+                 </column>
+                 <column>
+                  <property name="text">
+                   <string>Data de Nascimento</string>
                   </property>
                  </column>
                  <column>

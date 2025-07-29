@@ -241,6 +241,8 @@ class DataBase:
                     CNPJ TEXT,
                     RG TEXT,
                     CPF TEXT,
+                    CNH TEXT,
+                    "Data de Nascimento" TEXT,
                     Telefone TEXT,
                     CEP TEXT,
                     Endereço TEXT,
@@ -273,8 +275,10 @@ class DataBase:
                     ID INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
                     "Nome do Cliente" TEXT,
                     "Data da Inclusão" TEXT,
-                    CPF TEXT,
                     RG TEXT,
+                    CPF TEXT,
+                    CNH TEXT,
+                    "Data de Nascimento" TEXT,
                     Telefone TEXT,
                     CEP TEXT,
                     Endereço TEXT,
@@ -1044,7 +1048,7 @@ class DataBase:
     def obter_clientes_juridicos(self):
         cursor = self.connection.cursor()
         cursor.execute("""
-            SELECT "Nome do Cliente", "Razão Social","Data da Inclusão", CNPJ,RG,CPF, Telefone, CEP, Endereço, Número,
+            SELECT "Nome do Cliente", "Razão Social","Data da Inclusão", CNPJ,RG,CPF,CNH, Telefone, CEP, Endereço, Número,
                 Complemento,Cidade, Bairro,Estado, "Status do Cliente", "Categoria do Cliente", "Última Atualização",
                 "Origem do Cliente", "Valor Gasto Total", "Última Compra"
             FROM clientes_juridicos
@@ -1054,7 +1058,7 @@ class DataBase:
     def obter_clientes_fisicos(self):
         cursor = self.connection.cursor()
         cursor.execute("""
-            SELECT "Nome do Cliente","Data da Inclusão",CPF,RG,Telefone, CEP, Endereço, Número,
+            SELECT "Nome do Cliente","Data da Inclusão",RG,CPF,CNH,Telefone, CEP, Endereço, Número,
                 Complemento,Cidade, Bairro,Estado, "Status do Cliente", "Categoria do Cliente", "Última Atualização",
                 "Origem do Cliente", "Valor Gasto Total", "Última Compra"
             FROM clientes_fisicos 

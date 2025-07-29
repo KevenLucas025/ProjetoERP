@@ -2355,8 +2355,27 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             widget.blockSignals(True)
             widget.setText(numero_rg)
             widget.blockSignals(False)
+
+    def formatar_cnh(self, text, widget):
+        if text == "Não Cadastrado":
+            widget.setText(text)
+            return
+        
+        # Remove tudo que não for dígito
+        apenas_numeros = ''.join(filter(str.isdigit, text))
+        
+        # Limita a 11 dígitos
+        cnh_formatada = apenas_numeros[:11]
+        
+        # Atualiza o campo
+        widget.setText(cnh_formatada)
+
 #*********************************************************************************************************************
-    def formatar_data_nascimento(self, text):
+    def formatar_data_nascimento(self, text,widget):
+        if text == "Não Cadastrado":
+            widget.setText(text)
+            return
+        
         # Remover todos os caracteres que não são dígitos
         numeros = ''.join(filter(str.isdigit, text))
 
