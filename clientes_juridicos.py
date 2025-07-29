@@ -96,6 +96,7 @@ class Clientes_Juridicos(QWidget):
                         RG,
                         CPF,
                         CNH,
+                        "Categoria da CNH",
                         "Data de Nascimento",
                         Telefone, 
                         CEP, 
@@ -199,9 +200,20 @@ class Clientes_Juridicos(QWidget):
                         "Data da Inclusão",
                         CNPJ,
                         RG,
+                        "Data de Emissão do RG",
+                        "Órgão Emissor",
                         CPF,
+                        "Título de Eleito",
+                        "Data de Emissão do Título",
+                        "Estado Civil",
                         CNH,
+                        "Categoria da CNH",
+                        "Data de Emissão da CNH",
+                        "Data de Vencimento da CNH",
                         "Data de Nascimento",
+                        "Nome do Representante Legal",
+                        "CPF do Representante Legal",
+                        "RG do Representante Legal",
                         Telefone,
                         CEP,
                         Endereço,
@@ -215,7 +227,7 @@ class Clientes_Juridicos(QWidget):
                         "Última Atualização",
                         "Origem do Cliente",
                         "Valor Gasto Total",
-                        "Última Compra"
+                        "Última Compra"  
                     FROM clientes_juridicos
                     WHERE 
                         LOWER("Nome do Cliente") LIKE LOWER(?) OR
@@ -243,38 +255,6 @@ class Clientes_Juridicos(QWidget):
             for col_index, data in enumerate(row_data):
                 item = self.formatar_texto_juridico(str(data))
                 self.table_clientes_juridicos.setItem(row_index, col_index, item)
-
-    '''def formatar_input_buscar(self, texto):
-        # Remover caracteres não numéricos
-        numero = ''.join(filter(str.isdigit,texto))
-
-        # CNPJ 
-        if len(numero) >= 14:
-            return "{}.{}.{}/{}-{}".format(
-                numero[:2],numero[2:5],numero[5:8],numero[8:12],numero[12:]
-            )
-        # Telefone fixo (10 dígitos) ou celular (11 dígitos)
-        elif len(numero) in (10,11):
-            if len(numero) == 10:
-                return "({}) {}-{}".format(numero[:2],numero[2:6],numero[6:])
-            else:
-                return "({}) {}-{}".format(numero[:2],numero[2:7],numero[7:])
-            
-        # Sem formatação (nome, razão social etc.)
-        return texto
-    
-    def configurar_line_clientes(self):
-        self.line_clientes.textChanged.connect(self.formatar_texto_busca)
-
-    def formatar_texto_busca(self,texto):
-        cursor_pos = self.line_clientes.cursorPosition()
-        texto_formatado = self.formatar_input_buscar(texto)
-
-        self.line_clientes.blockSignals(True)
-        self.line_clientes.setText(texto_formatado)
-        self.line_clientes.blockSignals(False)
-        self.line_clientes.setCursorPosition(cursor_pos)'''
-
 
     def formatar_e_buscar_cep(self, widget):
         texto_cep = widget.text()
@@ -341,10 +321,11 @@ class Clientes_Juridicos(QWidget):
 
 
         colunas = [
-            "Nome do Cliente", "Razão Social", "Data da Inclusão", "CNPJ","RG","CPF","CNH","Data de Nascimento", "Telefone",
-            "CEP", "Endereço", "Número", "Complemento", "Cidade", "Bairro",
-            "Estado", "Status do Cliente", "Categoria do Cliente",
-            "Última Atualização", "Origem do Cliente", "Valor Gasto Total", "Última Compra"
+            "Nome do Cliente", "Razão Social", "Data da Inclusão", "CNPJ","RG","Data de Emissão do RG","Órgão Emissor",
+            "CPF","Título de Eleitor","Data de Emissão do Título","Estado Civil","CNH","Categoria da CNH","Data de Emissão da CNH",
+            "Data de Vencimento da CNH","Nome do Representante Legal","CPF do Representante Legal","RG do Representante Legal",
+            "Data de Nascimento", "Telefone","CEP", "Endereço", "Número", "Complemento", "Cidade", "Bairro","Estado", 
+            "Status do Cliente","Categoria do Cliente","Última Atualização", "Origem do Cliente", "Valor Gasto Total", "Última Compra"
         ]
 
         self.campos_cliente = {}
@@ -354,7 +335,7 @@ class Clientes_Juridicos(QWidget):
             label.setStyleSheet("color: white; font-weight: bold;")
             label.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
 
-            if campo in ["Estado", "Status do Cliente"]:
+            if campo in ["Estado", "Status do Cliente","Categoria da CNH","Órgão Emissor","Estado Civil"]:
                 entrada = QComboBox()
                 entrada.setStyleSheet("""
                     QComboBox {
@@ -402,7 +383,18 @@ class Clientes_Juridicos(QWidget):
                                     "RR", "SC", "SP", "SE", "TO"])
                 elif campo == "Status do Cliente":
                     entrada.addItems(["Selecione", "Ativo", "Inativo", "Pendente", "Bloqueado"])
-                index = entrada.findText(dados_cliente[campo])
+                elif campo == "Categoria da CNH":
+                    entrada.addItems(["Selecione","AB","A","B","C","D","E","Nenhuma"])
+                elif campo == "Estado Civil":
+                    entrada.addItems(["Selecione", "Casado", "Solteiro", "Divorciado", "Viúvo", "União Estável"])
+                elif campo == "Órgão Emissor":
+                    entrada.addItems([
+                        "Selecione", "SSP-AC", "SSP-AL", "SSP-AM", "SSP-AP", "SSP-BA", "SSP-DS", "SSP-DF",
+                        "SSP-ES", "SSP-GO", "SSP-MA", "SSP-MG", "SSP-MS", "SSP-MT", "SSP-PA", "SSP-PB",
+                        "SDS-PE", "SSP-PI", "SSP-PR", "SSP-RJ", "ITEP-RN", "SSP-RO", "SSP-RR", "SSP-RS",
+                        "SSP-SC", "SSP-SE", "SSP-SP", "SSP-TO"
+                    ])
+                index = entrada.findText(dados_cliente.get(campo, "Selecione"))
                 entrada.setCurrentIndex(index if index >= 0 else 0)
             else:
                 entrada = QLineEdit()
@@ -474,10 +466,11 @@ class Clientes_Juridicos(QWidget):
         coluna_offset = 1 if self.coluna_checkboxes_clientes_adicionada else 0
 
         colunas = [
-            "Nome do Cliente", "Razão Social", "Data da Inclusão", "CNPJ","RG","CPF","CNH","Data de Nascimento", "Telefone",
-            "CEP", "Endereço", "Número", "Complemento", "Cidade", "Bairro",
-            "Estado", "Status do Cliente", "Categoria do Cliente",
-            "Última Atualização", "Origem do Cliente", "Valor Gasto Total", "Última Compra"
+            "Nome do Cliente", "Razão Social", "Data da Inclusão", "CNPJ","RG","Data de Emissão do RG","Órgão Emissor",
+            "CPF","Título de Eleitor","Data de Emissão do Título","Estado Civil","CNH","Categoria da CNH","Data de Emissão da CNH",
+            "Data de Vencimento da CNH","Nome do Representante Legal","CPF do Representante Legal","RG do Representante Legal",
+            "Data de Nascimento", "Telefone","CEP", "Endereço", "Número", "Complemento", "Cidade", "Bairro","Estado", 
+            "Status do Cliente","Categoria do Cliente","Última Atualização", "Origem do Cliente", "Valor Gasto Total", "Última Compra"
         ]
         
 
@@ -506,45 +499,36 @@ class Clientes_Juridicos(QWidget):
             cnpj = dados_atualizados["CNPJ"]  # Supondo que o CNPJ seja identificador único
 
             query = """
-            UPDATE clientes_juridicos
-            SET
-                `Nome do Cliente` = ?, `Razão Social` = ?, `Data da Inclusão` = ?,RG =?,CPF = ?,CNH = ?,`Data de Nascimento` = ?, 
-                Telefone = ?,CEP = ?, Endereço = ?, Número = ?, Complemento = ?, Cidade = ?, Bairro = ?,
-                Estado = ?, `Status do Cliente` = ?, `Categoria do Cliente` = ?, `Última Atualização` = ?,
-                `Origem do Cliente` = ?, `Valor Gasto Total` = ?, `Última Compra` = ?
-            WHERE CNPJ = ?
+                UPDATE clientes_juridicos SET
+                    `Nome do Cliente` = ?, `Razão Social` = ?, `Data da Inclusão` = ?, CNPJ = ?,
+                    RG = ?, `Data de Emissão do RG` = ?, `Órgão Emissor` = ?, CPF = ?,
+                    `Título de Eleitor` = ?, `Data de Emissão do Título` = ?, `Estado Civil` = ?,
+                    CNH = ?, `Categoria da CNH` = ?, `Data de Emissão da CNH` = ?, `Data de Vencimento da CNH` = ?,
+                    `Nome do Representante Legal` = ?, `CPF do Representante Legal` = ?, `RG do Representante Legal` = ?,
+                    `Data de Nascimento` = ?, Telefone = ?, CEP = ?, Endereço = ?, Número = ?, Complemento = ?,
+                    Cidade = ?, Bairro = ?, Estado = ?, `Status do Cliente` = ?, `Categoria do Cliente` = ?,
+                    `Última Atualização` = ?, `Origem do Cliente` = ?, `Valor Gasto Total` = ?, `Última Compra` = ?
+                WHERE CNPJ = ?
             """
-
             valores = (
-                dados_atualizados["Nome do Cliente"],
-                dados_atualizados["Razão Social"],
-                dados_atualizados["Data da Inclusão"],
-                dados_atualizados["RG"],
-                dados_atualizados["CPF"],
-                dados_atualizados["CNH"],
-                dados_atualizados["Data de Nascimento"],
-                dados_atualizados["Telefone"],
-                dados_atualizados["CEP"],
-                dados_atualizados["Endereço"],
-                dados_atualizados["Número"],
-                dados_atualizados["Complemento"],
-                dados_atualizados["Cidade"],
-                dados_atualizados["Bairro"],
-                dados_atualizados["Estado"],
-                dados_atualizados["Status do Cliente"],
-                dados_atualizados["Categoria do Cliente"],
-                dados_atualizados["Última Atualização"],
-                dados_atualizados["Origem do Cliente"],
-                dados_atualizados["Valor Gasto Total"],
-                dados_atualizados["Última Compra"],
+                dados_atualizados["Nome do Cliente"], dados_atualizados["Razão Social"], dados_atualizados["Data da Inclusão"], dados_atualizados["CNPJ"],
+                dados_atualizados["RG"], dados_atualizados["Data de Emissão do RG"], dados_atualizados["Órgão Emissor"], dados_atualizados["CPF"],
+                dados_atualizados["Título de Eleitor"], dados_atualizados["Data de Emissão do Título"], dados_atualizados["Estado Civil"],
+                dados_atualizados["CNH"], dados_atualizados["Categoria da CNH"], dados_atualizados["Data de Emissão da CNH"], 
+                dados_atualizados["Data de Vencimento da CNH"],dados_atualizados["Nome do Representante Legal"], dados_atualizados["CPF do Representante Legal"], 
+                dados_atualizados["RG do Representante Legal"],dados_atualizados["Data de Nascimento"], dados_atualizados["Telefone"], 
+                dados_atualizados["CEP"], dados_atualizados["Endereço"], dados_atualizados["Número"], dados_atualizados["Complemento"],
+                dados_atualizados["Cidade"], dados_atualizados["Bairro"], dados_atualizados["Estado"], dados_atualizados["Status do Cliente"], dados_atualizados["Categoria do Cliente"],
+                dados_atualizados["Última Atualização"], dados_atualizados["Origem do Cliente"], dados_atualizados["Valor Gasto Total"], dados_atualizados["Última Compra"],
                 cnpj
             )
+
 
             cursor.execute(query, valores)
             self.db.connection.commit()
             QMessageBox.information(None, "Sucesso", "Cliente atualizado com sucesso.")
             self.janela_editar_cliente.close()
-            self.carregar_clientes_juridicos()  # Se quiser recarregar a tabela
+            self.carregar_clientes_juridicos()  
         except Exception as e:
             QMessageBox.critical(None, "Erro", f"Erro ao atualizar cliente: {e}")
 
@@ -567,6 +551,45 @@ class Clientes_Juridicos(QWidget):
         window_geometry = self.janela_cadastro.frameGeometry()
         window_geometry.moveCenter(screen_geometry.center())
         self.janela_cadastro.move(window_geometry.topLeft())
+
+        combobox_categoria_cnh = QComboBox()
+        combobox_categoria_cnh.addItems(["Selecione","AB","A","B","C","D","E","Nenhuma"])
+        combobox_categoria_cnh.setCurrentIndex(0)
+        combobox_categoria_cnh.setStyleSheet("""
+            QComboBox { 
+                background-color: white; 
+                border: 3px solid rgb(50,150,250); 
+                border-radius: 5px; 
+                color: black; 
+                padding: 5px;
+            }
+            QComboBox QAbstractItemView {
+                background-color: white; 
+                color: black; 
+                border: 1px solid #ccc; 
+                selection-background-color: #e5e5e5; 
+                selection-color: black;
+            }
+            QComboBox QAbstractItemView QScrollBar:vertical {
+                background: #f5f5f5; 
+                width: 12px; 
+                border: none;
+            }
+            QComboBox QAbstractItemView QScrollBar::handle:vertical {
+                background: #cccccc; 
+                min-height: 20px; 
+                border-radius: 5px;
+            }
+            QComboBox QAbstractItemView QScrollBar::add-line:vertical, 
+            QComboBox QAbstractItemView QScrollBar::sub-line:vertical {
+                background: none;
+                height: 0px;  /* Remove os botões de linha (setas de cima e baixo) */
+            }
+            QComboBox QAbstractItemView QScrollBar::add-page:vertical, 
+            QComboBox QAbstractItemView QScrollBar::sub-page:vertical {
+                background: none;
+            }
+        """)
 
         # Conteúdo do formulário
         conteudo = QWidget()
@@ -607,6 +630,7 @@ class Clientes_Juridicos(QWidget):
         add_linha("CNH")
         cnh_widget = self.campos_cliente_juridico["CNH"]
         cnh_widget.textChanged.connect(lambda text: self.main_window.formatar_cnh(text,cnh_widget))
+        add_linha("Categoria da CNH",combobox_categoria_cnh)
         add_linha("Data de Nascimento")
         data_nascimento_widget = self.campos_cliente_juridico["Data de Nascimento"]
         data_nascimento_widget.textChanged.connect(lambda text: self.main_window.formatar_data_nascimento(text,data_nascimento_widget))
@@ -775,8 +799,19 @@ class Clientes_Juridicos(QWidget):
                 razao_social = get("Razão Social")
                 cnpj = get("CNPJ")
                 rg = get("RG")
+                data_emissao = get("Data de Emissão")
+                orgao_emissor = get("Órgão Emissor")
                 cpf = get("CPF")
+                titulo_eleito = get("Título de Eleitor")
+                data_emissao_titulo = get("Data de Emissão do Título")
+                estado_civil = get("Estado Civil")
                 cnh = get("CNH")
+                categoria_cnh = get("Categoria da CNH")
+                data_emissao_cnh = get("Data de Emissão da CNH")
+                data_vencimento_cnh = get("Data de Vencimento da CNH")
+                nome_representante_legal = get("Nome do Representante Legal")
+                cpf_representante_legal = get("CPF do Representante Legal")
+                rg_representante_legal = get("RG do Representante Legal")
                 data_nascimento = get("Data de Nascimento")
                 telefone = get("Telefone")
                 cep = get("CEP")
@@ -820,14 +855,25 @@ class Clientes_Juridicos(QWidget):
                 # Inserir no banco
                 cursor.execute("""
                     INSERT INTO clientes_juridicos(
-                        "Nome do Cliente", "Razão Social", "Data da Inclusão", CNPJ,RG,CPF,CNH,"Data de Nascimento", Telefone, CEP, Endereço, Número,
-                        Complemento, Cidade, Bairro, Estado, "Status do Cliente", "Categoria do Cliente","Última Atualização", 
-                        "Origem do Cliente","Valor Gasto Total", "Última Compra"
+                        "Nome do Cliente", "Razão Social", "Data da Inclusão", CNPJ, RG, 
+                        "Data de Emissão do RG", "Órgão Emissor", CPF, "Título de Eleitor", 
+                        "Data de Emissão do Título", "Estado Civil", CNH, "Categoria da CNH", 
+                        "Data de Emissão da CNH", "Data de Vencimento da CNH", 
+                        "Data de Nascimento", "Nome do Representante Legal", 
+                        "CPF do Representante Legal", "RG do Representante Legal", Telefone, 
+                        CEP, Endereço, Número, Complemento, Cidade, Bairro, Estado, 
+                        "Status do Cliente", "Categoria do Cliente", "Última Atualização", 
+                        "Origem do Cliente", "Valor Gasto Total", "Última Compra"
                     )
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?,?,?,?,?,?,?)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """, (
-                    nome,razao_social, data_inclusao, cnpj,rg,cpf,cnh,data_nascimento, telefone, cep, endereco, numero,complemento, cidade,
-                    bairro,estado, status, categoria, ultima_atualizacao,nacionalidade, valor_gasto_total, ultima_compra,
+                    nome, razao_social, data_inclusao, cnpj, rg, data_emissao, orgao_emissor, 
+                    cpf, titulo_eleito, data_emissao_titulo, estado_civil, cnh, categoria_cnh, 
+                    data_emissao_cnh, data_vencimento_cnh, data_nascimento, 
+                    nome_representante_legal, cpf_representante_legal, rg_representante_legal, 
+                    telefone, cep, endereco, numero, complemento, cidade, bairro, estado, 
+                    status, categoria, ultima_atualizacao, nacionalidade, valor_gasto_total, 
+                    ultima_compra
                 ))
                 conexao.commit()
 
@@ -851,6 +897,12 @@ class Clientes_Juridicos(QWidget):
             "Nome do Cliente": "O campo Nome do Cliente é obrigatório.",
             "Razão Social": "O campo de Razão Social é obrigatório",
             "CNPJ": "O campo CNPJ é obrigatório.",
+            "RG": "O campo de RG é obrigatório.",
+            "Data de Emissão do RG": "A Data de Emissão do RG é obrigatória",
+            "Órgão Emissor": "O campo de  Órgão Emissor é obrigatório",
+            "Título de Eleitor": "O Título de Eleitor é obrigatório",
+            "Data de Emissão do Título": " A Data de Emissão do Título é obrigatória",
+            "Estado Civil": "O Estado Civil é obrigatório",
             "CPF": "O campo de CPF é obrigatório",
             "Data de Nascimento": "O campo Data de Nascimento é obrigatório",
             "Telefone": "O campo Telefone é obrigatório.",
@@ -864,6 +916,15 @@ class Clientes_Juridicos(QWidget):
             "Categoria do Cliente": "O campo Categoria do Cliente é obrigatório.",
             "Status do Cliente": "Você deve selecionar um status válido para o cliente.",
         }
+
+        # Verifica se a Categoria da CNH foi preenchida (diferente de "Selecionar")
+        categoria_widget = self.campos_cliente_juridico.get("Categoria da CNH")
+        if categoria_widget and isinstance(categoria_widget, QComboBox):
+            categoria_cnh = categoria_widget.currentText().strip()
+            if categoria_cnh and categoria_cnh != "Selecionar":
+                self.campos_obrigatorios_clientes["Data de Emissão da CNH"] = "A Data de Emissão da CNH é obrigatória quando há Categoria informada."
+                self.campos_obrigatorios_clientes["Data de Vencimento da CNH"] = "A Data de Vencimento da CNH é obrigatória quando há Categoria informada."
+
 
         
     def limpar_campos_clientes(self):
