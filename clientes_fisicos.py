@@ -2,7 +2,7 @@ from PySide6.QtWidgets import (QLineEdit, QToolButton,QTableWidgetItem,
                                QMessageBox,QMainWindow,QVBoxLayout,QWidget,QLabel,QCheckBox,
                                QPushButton,QScrollArea,QComboBox,QGridLayout,QHeaderView,QHBoxLayout,
                                QGraphicsOpacityEffect,QTableWidget,QInputDialog,QDialog,
-                               QRadioButton,QGroupBox,QFileDialog,QFormLayout,QDateEdit)
+                               QRadioButton,QGroupBox,QFileDialog,QFormLayout,QDateEdit,QApplication)
 from PySide6.QtGui import QPixmap, QIcon,QColor,QBrush,QGuiApplication
 from PySide6.QtCore import Qt,QTimer,QPropertyAnimation,QEvent,QDate
 from database import DataBase
@@ -33,6 +33,12 @@ class Clientes_Fisicos(QWidget):
         self.coluna_checkboxes_clientes_fisicos_adicionada = False
         self.checkboxes_clientes_fisicos = []
 
+        self.timer_buscar_fisicos = QTimer()
+        self.timer_buscar_fisicos.setSingleShot(True)
+        self.timer_buscar_fisicos.timeout.connect(self._executar_busca_dinamica_fisicos)
+        self.line_clientes_fisicos.textChanged.connect(self._iniciar_timer_busca_fisicos)
+   
+
         self.main_window = main_window
         self.table_clientes_fisicos = self.main_window.table_clientes_fisicos # Referência para a tabela no main window
         self.btn_adicionar_cliente_fisico = btn_adicionar_cliente_fisico
@@ -50,16 +56,22 @@ class Clientes_Fisicos(QWidget):
         self.btn_historico_clientes_fisicos.clicked.connect(self.historico_clientes_fisicos)
         self.btn_gerar_relatorio_clientes_fisicos.clicked.connect(self.abrir_janela_relatorio_clientes_fisicos)
 
-        self.line_clientes_fisicos.returnPressed.connect(self.buscar_cliente_fisico)
+        self.line_clientes_fisicos.returnPressed.connect(self.buscar_cliente_fisico_dinamico)
+        self.line_clientes_fisicos.textChanged.connect(self.buscar_cliente_fisico_dinamico)
         self.imagem_line_fisico()
 
-        #  Atalho de teclado F5 para atualizar a tabela
-        atalho_f5 = QShortcut(QKeySequence("F5"),self.main_window)
-        atalho_f5.activated.connect(self.carregar_clientes_fisicos)
+
         
         self.installEventFilter(self)
         self.table_clientes_fisicos.viewport().installEventFilter(self)
 
+
+    def _iniciar_timer_busca_fisicos(self, texto):
+        self.ultimo_texto = texto
+        self.timer_buscar_fisicos.start(300)  # espera 300ms após digitar
+
+    def _executar_busca_dinamica_fisicos(self):
+        self.buscar_cliente_fisico_dinamico(self.ultimo_texto)
 
 
     # Função auxiliar para criar um QTableWidgetItem com texto centralizado
@@ -68,6 +80,7 @@ class Clientes_Fisicos(QWidget):
         item.setTextAlignment(Qt.AlignCenter)  # Centraliza o texto
         item.setForeground(QBrush(QColor("white")))
         return item
+
     
     def carregar_clientes_fisicos(self):
         try:
@@ -132,7 +145,7 @@ class Clientes_Fisicos(QWidget):
         # Criar botão da lupa
         self.botao_lupa = QToolButton(self.line_clientes_fisicos)
         self.botao_lupa.setCursor(Qt.PointingHandCursor)  # Muda o cursor ao passar o mouse
-        self.botao_lupa.setIcon(QIcon(QPixmap("imagens/botão_lupa.png")))  # Substitua pelo caminho correto
+        self.botao_lupa.setIcon(QIcon(QPixmap("C:\\Users\\KEVEN\\Pictures\\ProjetoERP\\imagens\\botão_lupa.png")))  # Substitua pelo caminho correto
         self.botao_lupa.setStyleSheet("border: none; background: transparent;")  # Sem fundo e sem borda
         
         # Definir tamanho do botão
@@ -140,7 +153,7 @@ class Clientes_Fisicos(QWidget):
         self.botao_lupa.setFixedSize(altura, altura)
 
         # Posicionar o botão no canto direito da LineEdit
-        self.botao_lupa.move(self.line_clientes_fisicos.width() - altura + 223, 2)
+        self.botao_lupa.move(self.line_clientes_fisicos.width() - altura + 160, 2)
 
         # Ajustar padding para o texto não sobrepor o botão
         self.line_clientes_fisicos.setStyleSheet(
@@ -158,13 +171,15 @@ class Clientes_Fisicos(QWidget):
         )
 
         # Conectar clique do botão a uma função
-        self.botao_lupa.clicked.connect(self.buscar_cliente_fisico)
+        self.botao_lupa.clicked.connect(self.buscar_cliente_fisico_dinamico)
 
-    def buscar_cliente_fisico(self):
-        texto = self.line_clientes_fisicos.text().strip()
+    def buscar_cliente_fisico_dinamico(self,texto):
+        texto = texto.strip()
 
         if not texto:
-            QMessageBox.warning(self, "Aviso", "Digite algo para buscar.")
+            # limpar tabela ou mostrar todos, ou nada.
+            # Exemplo: mostrar todos (chame a função carregar todos, se tiver)
+            self.carregar_clientes_fisicos()  # ou limpar a tabela
             return
 
         # Conectar ao banco de dados
@@ -196,6 +211,9 @@ class Clientes_Fisicos(QWidget):
                     FROM clientes_fisicos
                     WHERE 
                         LOWER("Nome do Cliente") LIKE LOWER(?) OR
+                        CPF LIKE ? OR
+                        RG LIKE ? OR
+                        Telefone LIKE ?
                 """, (f'%{texto}%', f'%{texto}%', f'%{texto}%', f'%{texto}%'))
 
                 resultados = cursor.fetchall()
@@ -888,9 +906,9 @@ class Clientes_Fisicos(QWidget):
                 "Exclusão de Cliente(s)",
                 f"Cliente(s) excluído(s): {nomes_excluidos}"
             )
-            QMessageBox.information(self.main_window, "Sucesso", "Cliente(s) excluído(s) com sucesso.")
+            QMessageBox.information(None, "Sucesso", "Cliente(s) excluído(s) com sucesso.")
         except Exception as e:
-            QMessageBox.critical(self.main_window, "Erro", f"Erro ao excluir clientes:\n{e}")
+            QMessageBox.critical(None, "Erro", f"Erro ao excluir clientes:\n{e}")
 
     def marcar_como_clientes_fisicos(self):
         if self.table_clientes_fisicos.rowCount() == 0:

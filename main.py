@@ -8,7 +8,7 @@ from PySide6.QtWidgets import (QMainWindow, QMessageBox, QPushButton,
                                QMenu,QTableWidgetItem,QCheckBox,QApplication,QToolButton,QHeaderView,QCompleter,
                                QComboBox,QInputDialog,QProgressDialog)
 from PySide6.QtGui import (QDoubleValidator, QIcon, QColor, QPixmap,QBrush,
-                           QAction,QMovie,QImage)
+                           QAction,QMovie,QImage,QShortcut,QKeySequence)
 from PySide6 import QtWidgets
 from login import Login
 from mane_python import Ui_MainWindow
@@ -61,7 +61,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.imagem_removida_usuario = False
         self.usuario_tem_imagem_salva = False
         
-
+        # Atalho F5 global
+        self.atalho_f5 = QShortcut(QKeySequence("F5"), self)
+        self.atalho_f5.activated.connect(self.tratar_f5_global)
 
 
         # Inicialize o banco de dados antes de qualquer operação que dependa dele
@@ -2812,6 +2814,27 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             QMessageBox.information(self, "Configurações", "As configurações foram redefinidas com sucesso.")
         except Exception as e:
             QMessageBox.critical(self, "Erro", f"Erro ao resetar configurações: {str(e)}")
+
+    def tratar_f5_global(self):
+        pagina_atual = self.paginas_sistemas.currentWidget()
+        print(f"[DEBUG] Página atual: {type(pagina_atual)}")
+
+        if pagina_atual == self.pg_clientes:
+            if self.pagina_clientes_juridicos.table_clientes_juridicos.isVisible():
+                print("[DEBUG] Atualizando clientes jurídicos")
+                self.pagina_clientes_juridicos.carregar_clientes_juridicos()
+            elif self.pagina_clientes_fisicos.table_clientes_fisicos.isVisible():
+                print("[DEBUG] Atualizando clientes físicos")
+                self.pagina_clientes_fisicos.carregar_clientes_fisicos()
+            else:
+                print("⚠️ Nenhuma tabela de cliente visível")
+        else:
+            print("⚠️ Página atual não tem método de atualização com F5.")
+
+
+
+
+
 
 # Função principal
 if __name__ == '__main__':

@@ -33,7 +33,10 @@ class Clientes_Juridicos(QWidget):
         self.coluna_checkboxes_clientes_adicionada = False
         self.checkboxes_clientes = []
         
-        
+        self.timer_buscar = QTimer()
+        self.timer_buscar.setSingleShot(True)
+        self.timer_buscar.timeout.connect(self._executar_busca_dinamica_juridicos)
+        self.line_clientes.textChanged.connect(self._iniciar_timer_busca_juridicos)
         
         
         self.main_window = main_window
@@ -54,19 +57,23 @@ class Clientes_Juridicos(QWidget):
         self.btn_historico_clientes.clicked.connect(self.historico_clientes_juridicos)
         self.btn_gerar_relatorio_clientes.clicked.connect(self.abrir_janela_relatorio_clientes_juridicos)
         
-        self.line_clientes.returnPressed.connect(self.buscar)
+        self.line_clientes.returnPressed.connect(self.buscar_dinamico)
+        self.line_clientes.textChanged.connect(self.buscar_dinamico)
+
         self.imagem_line()
         #self.configurar_line_clientes()
 
 
-        #  Atalho de teclado F5 para atualizar a tabela
-        atalho_f5 = QShortcut(QKeySequence("F5"),self.main_window)
-        atalho_f5.activated.connect(self.carregar_clientes_juridicos)
         
         self.installEventFilter(self)
         self.table_clientes_juridicos.viewport().installEventFilter(self)
-        
-        
+
+    def _iniciar_timer_busca_juridicos(self, texto):
+        self.ultimo_texto = texto
+        self.timer_buscar.start(300)  # espera 300ms após digitar
+
+    def _executar_busca_dinamica_juridicos(self):
+        self.buscar_dinamico(self.ultimo_texto)
 
     # Função auxiliar para criar um QTableWidgetItem com texto centralizado
     def formatar_texto_juridico(self, text):
@@ -166,13 +173,16 @@ class Clientes_Juridicos(QWidget):
         )
 
         # Conectar clique do botão a uma função
-        self.botao_lupa.clicked.connect(self.buscar)
+        self.botao_lupa.clicked.connect(self.buscar_dinamico)
 
-    def buscar(self):
-        texto = self.line_clientes.text().strip()
+    def buscar_dinamico(self, texto):
+        texto = texto.strip()
 
+        # Se quiser, não faz nada quando texto vazio
         if not texto:
-            QMessageBox.warning(self, "Aviso", "Digite algo para buscar.")
+            # limpar tabela ou mostrar todos, ou nada.
+            # Exemplo: mostrar todos (chame a função carregar todos, se tiver)
+            self.carregar_clientes_juridicos()  # ou limpar a tabela
             return
 
         # Conectar ao banco de dados
@@ -180,13 +190,14 @@ class Clientes_Juridicos(QWidget):
             cursor = conn.cursor()
 
             try:
-                # Buscar em múltiplas colunas
                 cursor.execute("""
                     SELECT  
                         "Nome do Cliente",
                         "Razão Social",
                         "Data da Inclusão",
                         CNPJ,
+                        RG,
+                        CPF,
                         Telefone,
                         CEP,
                         Endereço,
@@ -211,16 +222,13 @@ class Clientes_Juridicos(QWidget):
 
                 resultados = cursor.fetchall()
 
-                if not resultados:
-                    QMessageBox.information(self, "Resultado", "Nenhum cliente encontrado.")
-                    return
-
-                # Atualizar sua tabela ou interface com os resultados
+                # Atualizar tabela com resultados
                 self.preencher_resultado_busca(resultados)
-                
 
             except Exception as e:
-                QMessageBox.critical(self, "Erro", f"Erro ao buscar cliente: {e}")
+                # Só loga erro, não mostra mensagem durante digitação
+                print(f"Erro na busca dinâmica: {e}")
+
 
     def preencher_resultado_busca(self, resultados):
         self.table_clientes_juridicos.setRowCount(0)
@@ -329,7 +337,7 @@ class Clientes_Juridicos(QWidget):
 
 
         colunas = [
-            "Nome do Cliente", "Razão Social", "Data da Inclusão", "CNPJ", "Telefone",
+            "Nome do Cliente", "Razão Social", "Data da Inclusão", "CNPJ","RG","CPF", "Telefone",
             "CEP", "Endereço", "Número", "Complemento", "Cidade", "Bairro",
             "Estado", "Status do Cliente", "Categoria do Cliente",
             "Última Atualização", "Origem do Cliente", "Valor Gasto Total", "Última Compra"
@@ -413,6 +421,8 @@ class Clientes_Juridicos(QWidget):
                 """)
             if campo == "CNPJ":
                 entrada.textChanged.connect(lambda texto, w=entrada: self.main_window.formatar_cnpj(texto,w))
+            elif campo == "RG":
+                entrada.textChanged.connect(lambda texto, w=entrada: self.main_window.formatar_rg(texto, w))
             elif campo == "Telefone":
                 entrada.textChanged.connect(lambda texto, w=entrada: self.main_window.formatar_telefone(texto, w))
             elif campo == "CEP":
@@ -453,7 +463,7 @@ class Clientes_Juridicos(QWidget):
         coluna_offset = 1 if self.coluna_checkboxes_clientes_adicionada else 0
 
         colunas = [
-            "Nome do Cliente", "Razão Social", "Data da Inclusão", "CNPJ", "Telefone",
+            "Nome do Cliente", "Razão Social", "Data da Inclusão", "CNPJ","RG","CPF", "Telefone",
             "CEP", "Endereço", "Número", "Complemento", "Cidade", "Bairro",
             "Estado", "Status do Cliente", "Categoria do Cliente",
             "Última Atualização", "Origem do Cliente", "Valor Gasto Total", "Última Compra"
@@ -487,7 +497,7 @@ class Clientes_Juridicos(QWidget):
             query = """
             UPDATE clientes_juridicos
             SET
-                `Nome do Cliente` = ?, `Razão Social` = ?, `Data da Inclusão` = ?, Telefone = ?,
+                `Nome do Cliente` = ?, `Razão Social` = ?, `Data da Inclusão` = ?,RG =?,CPF = ?, Telefone = ?,
                 CEP = ?, Endereço = ?, Número = ?, Complemento = ?, Cidade = ?, Bairro = ?,
                 Estado = ?, `Status do Cliente` = ?, `Categoria do Cliente` = ?, `Última Atualização` = ?,
                 `Origem do Cliente` = ?, `Valor Gasto Total` = ?, `Última Compra` = ?
@@ -498,6 +508,8 @@ class Clientes_Juridicos(QWidget):
                 dados_atualizados["Nome do Cliente"],
                 dados_atualizados["Razão Social"],
                 dados_atualizados["Data da Inclusão"],
+                dados_atualizados["RG"],
+                dados_atualizados["CPF"],
                 dados_atualizados["Telefone"],
                 dados_atualizados["CEP"],
                 dados_atualizados["Endereço"],
@@ -571,6 +583,12 @@ class Clientes_Juridicos(QWidget):
         add_linha("Nome do Cliente")
         add_linha("Razão Social")
         add_linha("CNPJ")
+        add_linha("RG")
+        rg_widget = self.campos_cliente_juridico["RG"]
+        rg_widget.textChanged.connect(lambda text: self.main_window.formatar_rg(text,rg_widget))
+        add_linha("CPF")
+        cpf_widget = self.campos_cliente_juridico["CPF"]
+        cpf_widget.textChanged.connect(lambda text: self.main_window.formatar_cpf(text, cpf_widget))
         cnpj_widget = self.campos_cliente_juridico["CNPJ"]
         cnpj_widget.textChanged.connect(lambda text: self.main_window.formatar_cnpj(text, cnpj_widget))
         add_linha("Telefone")
@@ -2229,3 +2247,4 @@ class Clientes_Juridicos(QWidget):
         resposta = msgbox.exec()
 
         return msgbox.clickedButton() == btn_sim
+    
