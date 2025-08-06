@@ -2849,10 +2849,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         if pagina_atual == self.pg_clientes:
             if self.pagina_clientes_juridicos.table_clientes_juridicos.isVisible():
-                print("[DEBUG] Atualizando clientes jurídicos")
+                QMessageBox.information(None,"Aviso","Dados atualizados com sucesso!")
                 self.pagina_clientes_juridicos.carregar_clientes_juridicos()
             elif self.pagina_clientes_fisicos.table_clientes_fisicos.isVisible():
-                print("[DEBUG] Atualizando clientes físicos")
+                QMessageBox.information(None,"Aviso","Dados atualizados com sucesso!")
                 self.pagina_clientes_fisicos.carregar_clientes_fisicos()
             else:
                 print("⚠️ Nenhuma tabela de cliente visível")

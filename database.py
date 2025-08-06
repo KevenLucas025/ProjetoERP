@@ -257,7 +257,6 @@ class DataBase:
                     "Status do Cliente" TEXT,
                     "Categoria do Cliente" TEXT,
                     "Última Atualização" TEXT,
-                    "Origem do Cliente" TEXT,
                     "Valor Gasto Total" TEXT,
                     "Última Compra" TEXT  
                     )
@@ -1051,9 +1050,9 @@ class DataBase:
     def obter_clientes_juridicos(self):
         cursor = self.connection.cursor()
         cursor.execute("""
-            SELECT "Nome do Cliente", "Razão Social","Data da Inclusão", CNPJ,RG,CPF,Email,CNH,"Categoria da CNH","Data de Emissão da CNH","Data de Vencimento da CNH", 
-                "Data de Nascimento",Telefone, CEP, Endereço, Número,Complemento,Cidade, Bairro,Estado, "Status do Cliente",
-                "Categoria do Cliente", "Última Atualização","Origem do Cliente", "Valor Gasto Total", "Última Compra"
+            SELECT "Nome do Cliente", "Razão Social","Data da Inclusão", CNPJ,RG,CPF,Email,CNH,"Categoria da CNH","Data de Emissão da CNH",
+                "Data de Vencimento da CNH",Telefone, CEP, Endereço, Número,Complemento,Cidade, Bairro,Estado, "Status do Cliente",
+                "Categoria do Cliente", "Última Atualização","Valor Gasto Total", "Última Compra"
             FROM clientes_juridicos
         """)
         return cursor.fetchall()

@@ -95,9 +95,11 @@ class Clientes_Juridicos(QWidget):
                         CNPJ,
                         RG,
                         CPF,
+                        Email,
                         CNH,
                         "Categoria da CNH",
-                        "Data de Nascimento",
+                        "Data de Emissão da CNH",
+                        "Data de Vencimento da CNH",
                         Telefone, 
                         CEP, 
                         Endereço, 
@@ -109,7 +111,6 @@ class Clientes_Juridicos(QWidget):
                         "Status do Cliente", 
                         "Categoria do Cliente",
                         "Última Atualização",
-                        "Origem do Cliente",
                         "Valor Gasto Total",
                         "Última Compra"
                     FROM clientes_juridicos
@@ -321,11 +322,9 @@ class Clientes_Juridicos(QWidget):
 
 
         colunas = [
-            "Nome do Cliente", "Razão Social", "Data da Inclusão", "CNPJ","RG","Data de Emissão do RG","Órgão Emissor",
-            "CPF","Título de Eleitor","Data de Emissão do Título","Estado Civil","CNH","Categoria da CNH","Data de Emissão da CNH",
-            "Data de Vencimento da CNH","Nome do Representante Legal","CPF do Representante Legal","RG do Representante Legal",
-            "Data de Nascimento", "Telefone","CEP", "Endereço", "Número", "Complemento", "Cidade", "Bairro","Estado", 
-            "Status do Cliente","Categoria do Cliente","Última Atualização", "Origem do Cliente", "Valor Gasto Total", "Última Compra"
+            "Nome do Cliente", "Razão Social", "Data da Inclusão", "CNPJ","RG","CPF","Email","CNH","Categoria da CNH","Data de Emissão da CNH",
+            "Data de Vencimento da CNH","Telefone","CEP", "Endereço", "Número", "Complemento", "Cidade", "Bairro","Estado", 
+            "Status do Cliente","Categoria do Cliente","Última Atualização", "Valor Gasto Total", "Última Compra"
         ]
 
         self.campos_cliente = {}
@@ -335,7 +334,7 @@ class Clientes_Juridicos(QWidget):
             label.setStyleSheet("color: white; font-weight: bold;")
             label.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
 
-            if campo in ["Estado", "Status do Cliente","Categoria da CNH","Órgão Emissor","Estado Civil"]:
+            if campo in ["Estado", "Status do Cliente","Categoria da CNH"]:
                 entrada = QComboBox()
                 entrada.setStyleSheet("""
                     QComboBox {
@@ -385,15 +384,6 @@ class Clientes_Juridicos(QWidget):
                     entrada.addItems(["Selecione", "Ativo", "Inativo", "Pendente", "Bloqueado"])
                 elif campo == "Categoria da CNH":
                     entrada.addItems(["Selecione","AB","A","B","C","D","E","Nenhuma"])
-                elif campo == "Estado Civil":
-                    entrada.addItems(["Selecione", "Casado", "Solteiro", "Divorciado", "Viúvo", "União Estável"])
-                elif campo == "Órgão Emissor":
-                    entrada.addItems([
-                        "Selecione", "SSP-AC", "SSP-AL", "SSP-AM", "SSP-AP", "SSP-BA", "SSP-DS", "SSP-DF",
-                        "SSP-ES", "SSP-GO", "SSP-MA", "SSP-MG", "SSP-MS", "SSP-MT", "SSP-PA", "SSP-PB",
-                        "SDS-PE", "SSP-PI", "SSP-PR", "SSP-RJ", "ITEP-RN", "SSP-RO", "SSP-RR", "SSP-RS",
-                        "SSP-SC", "SSP-SE", "SSP-SP", "SSP-TO"
-                    ])
                 index = entrada.findText(dados_cliente.get(campo, "Selecione"))
                 entrada.setCurrentIndex(index if index >= 0 else 0)
             else:
@@ -422,6 +412,8 @@ class Clientes_Juridicos(QWidget):
                 self.main_window.formatar_rg(dados_cliente[campo],entrada)
             elif campo == "CPF":
                 entrada.textChanged.connect(lambda texto, w=entrada: self.main_window.formatar_cpf(texto,w))
+            elif campo == "Email":
+                entrada.textChanged.connect(lambda texto, w=entrada: self.main_window.validar_email(texto,w))
             elif campo == "CNH":
                 entrada.textChanged.connect(lambda texto, w=entrada: self.main_window.formatar_cnh(texto,w))
             elif campo == "Data de Nascimento":
@@ -466,11 +458,9 @@ class Clientes_Juridicos(QWidget):
         coluna_offset = 1 if self.coluna_checkboxes_clientes_adicionada else 0
 
         colunas = [
-            "Nome do Cliente", "Razão Social", "Data da Inclusão", "CNPJ","RG","Data de Emissão do RG","Órgão Emissor",
-            "CPF","Título de Eleitor","Data de Emissão do Título","Estado Civil","CNH","Categoria da CNH","Data de Emissão da CNH",
-            "Data de Vencimento da CNH","Nome do Representante Legal","CPF do Representante Legal","RG do Representante Legal",
-            "Data de Nascimento", "Telefone","CEP", "Endereço", "Número", "Complemento", "Cidade", "Bairro","Estado", 
-            "Status do Cliente","Categoria do Cliente","Última Atualização", "Origem do Cliente", "Valor Gasto Total", "Última Compra"
+            "Nome do Cliente", "Razão Social", "Data da Inclusão", "CNPJ","RG","CPF","Email","CNH","Categoria da CNH","Data de Emissão da CNH","Data de Vencimento da CNH","Telefone","CEP", "Endereço", 
+            "Número", "Complemento", "Cidade", "Bairro","Estado", "Status do Cliente","Categoria do Cliente",
+            "Última Atualização","Valor Gasto Total", "Última Compra"
         ]
         
 
@@ -501,10 +491,10 @@ class Clientes_Juridicos(QWidget):
             query = """
                 UPDATE clientes_juridicos SET
                     `Nome do Cliente` = ?, `Razão Social` = ?, `Data da Inclusão` = ?, CNPJ = ?,
-                    RG = ?,  = ?, CPF = ?,CNH = ?, `Categoria da CNH` = ?, `Data de Emissão da CNH` = ?, 
-                    `Data de Vencimento da CNH` = ?,`Data de Nascimento` = ?, Telefone = ?, CEP = ?, Endereço = ?, 
+                    RG = ?, CPF = ?,CNH = ?, `Categoria da CNH` = ?, `Data de Emissão da CNH` = ?, 
+                    `Data de Vencimento da CNH` = ?, Telefone = ?, CEP = ?, Endereço = ?, 
                     Número = ?, Complemento = ?,Cidade = ?, Bairro = ?, Estado = ?, `Status do Cliente` = ?, `Categoria do Cliente` = ?,
-                    `Última Atualização` = ?, `Origem do Cliente` = ?, `Valor Gasto Total` = ?, `Última Compra` = ?
+                    `Última Atualização` = ?,`Valor Gasto Total` = ?, `Última Compra` = ?
                 WHERE CNPJ = ?
             """
             valores = (
@@ -512,13 +502,27 @@ class Clientes_Juridicos(QWidget):
                 dados_atualizados["RG"], dados_atualizados["CPF"],dados_atualizados["CNH"], dados_atualizados["Categoria da CNH"], dados_atualizados["Data de Emissão da CNH"], 
                 dados_atualizados["Data de Vencimento da CNH"], dados_atualizados["Telefone"], dados_atualizados["CEP"], dados_atualizados["Endereço"], dados_atualizados["Número"], dados_atualizados["Complemento"],
                 dados_atualizados["Cidade"], dados_atualizados["Bairro"], dados_atualizados["Estado"], dados_atualizados["Status do Cliente"], dados_atualizados["Categoria do Cliente"],
-                dados_atualizados["Última Atualização"], dados_atualizados["Origem do Cliente"], dados_atualizados["Valor Gasto Total"], dados_atualizados["Última Compra"],
+                dados_atualizados["Última Atualização"], dados_atualizados["Valor Gasto Total"], dados_atualizados["Última Compra"],
                 cnpj
             )
 
+            # Corrigir campos vazios com valores padrão
+            if not dados_atualizados["CNH"]:
+                dados_atualizados["CNH"] = "Não Cadastrado"
+                dados_atualizados["Categoria da CNH"] = "Não Cadastrado"
+                dados_atualizados["Data de Emissão da CNH"] = "Não Cadastrado"
+                dados_atualizados["Data de Vencimento da CNH"] = "Não Cadastrado"
 
+            if not dados_atualizados["Complemento"]:
+                dados_atualizados["Complemento"] = "Não se aplica"
+                
             cursor.execute(query, valores)
             self.db.connection.commit()
+
+            self.main_window.registrar_historico_clientes_juridicos(
+                    "Edição de Clientes", f"Cliente {dados_atualizados["Nome do Cliente"]} editado com sucesso"
+                )
+
             QMessageBox.information(None, "Sucesso", "Cliente atualizado com sucesso.")
             self.janela_editar_cliente.close()
             self.carregar_clientes_juridicos()  
@@ -897,6 +901,15 @@ class Clientes_Juridicos(QWidget):
                 valor_gasto_total = "Não Cadastrado"
                 ultima_compra = "Não Cadastrado"
                 ultima_atualizacao = "Não Cadastrado"
+
+                if not cnh:
+                    cnh = "Não Cadastrado"
+                    categoria_cnh = "Não Cadastrado"
+                    data_emissao_cnh = "Não Cadastrado"
+                    data_vencimento_cnh = "Não Cadastrado"
+
+                if not complemento:
+                    complemento = "Não se aplica"
                 
                 # Inserir no banco
                 cursor.execute("""
@@ -906,7 +919,7 @@ class Clientes_Juridicos(QWidget):
                         Telefone, CEP, Endereço, Número, Complemento, Cidade, Bairro, Estado, 
                         "Status do Cliente", "Categoria do Cliente", "Última Atualização", "Valor Gasto Total", "Última Compra"
                     )
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?,?)
                 """, (
                     nome, razao_social, data_inclusao, cnpj, rg, 
                     cpf,email, cnh, categoria_cnh, data_emissao_cnh, data_vencimento_cnh, 

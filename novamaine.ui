@@ -6479,11 +6479,6 @@ QTableWidget::item:selected {
                  </column>
                  <column>
                   <property name="text">
-                   <string>Origem do Cliente</string>
-                  </property>
-                 </column>
-                 <column>
-                  <property name="text">
                    <string>Valor Gasto Total</string>
                   </property>
                  </column>
