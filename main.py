@@ -893,10 +893,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         return True
 #*********************************************************************************************************************
-    def validar_email(self, email):
-        # Usando uma expressão regular para validar o formato do e-mail
-        regex = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{3,}$'
+    def validar_email(self, email, widget):
+        # Expressão regular para e-mail
+        regex = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
         return bool(re.match(regex, email))
+
+
 #*********************************************************************************************************************
     def validar_cnpj(self, cnpj):
         # Remover caracteres não numéricos

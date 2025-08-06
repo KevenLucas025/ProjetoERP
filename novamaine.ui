@@ -6394,27 +6394,12 @@ QTableWidget::item:selected {
                  </column>
                  <column>
                   <property name="text">
-                   <string>Data de Emissão do RG</string>
-                  </property>
-                 </column>
-                 <column>
-                  <property name="text">
-                   <string>Órgão Emissor</string>
-                  </property>
-                 </column>
-                 <column>
-                  <property name="text">
                    <string>CPF</string>
                   </property>
                  </column>
                  <column>
                   <property name="text">
-                   <string>Título de Eleitor</string>
-                  </property>
-                 </column>
-                 <column>
-                  <property name="text">
-                   <string>Estado Civil</string>
+                   <string>Email</string>
                   </property>
                  </column>
                  <column>
@@ -6435,26 +6420,6 @@ QTableWidget::item:selected {
                  <column>
                   <property name="text">
                    <string>Data de Vencimento da CNH</string>
-                  </property>
-                 </column>
-                 <column>
-                  <property name="text">
-                   <string>Data de Nascimento</string>
-                  </property>
-                 </column>
-                 <column>
-                  <property name="text">
-                   <string>Nome do Representante Legal</string>
-                  </property>
-                 </column>
-                 <column>
-                  <property name="text">
-                   <string>CPF do Representante Legal</string>
-                  </property>
-                 </column>
-                 <column>
-                  <property name="text">
-                   <string>RG do Representante Legal</string>
                   </property>
                  </column>
                  <column>
