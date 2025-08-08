@@ -93,6 +93,11 @@ class Clientes_Fisicos(QWidget):
                         "Data da Inclusão",
                         CPF, 
                         RG,
+                        Email,
+                        CNH,
+                        "Categoria da CNH",
+                        "Data de Emissão da CNH",
+                        "Data de Vencimento da CNH",
                         Telefone, 
                         CEP, 
                         Endereço, 
@@ -104,7 +109,6 @@ class Clientes_Fisicos(QWidget):
                         "Status do Cliente", 
                         "Categoria do Cliente",
                         "Última Atualização",
-                        "Origem do Cliente",
                         "Valor Gasto Total",
                         "Última Compra"
                     FROM clientes_fisicos
@@ -304,10 +308,9 @@ class Clientes_Fisicos(QWidget):
 
 
         colunas = [
-            "Nome do Cliente", "Data da Inclusão","CPF","RG", "Telefone",
-            "CEP", "Endereço", "Número", "Complemento", "Cidade", "Bairro",
-            "Estado", "Status do Cliente", "Categoria do Cliente",
-            "Última Atualização", "Origem do Cliente", "Valor Gasto Total", "Última Compra"
+            "Nome do Cliente", "Data da Inclusão","RG","CPF","Email","CNH","Categoria da CNH","Data de Emissão da CNH","Data de Vencimento da CNH", 
+            "Telefone","CEP", "Endereço", "Número", "Complemento", "Cidade", "Bairro","Estado", "Status do Cliente", 
+            "Categoria do Cliente","Última Atualização", "Valor Gasto Total", "Última Compra"
         ]
 
         self.campos_cliente = {}
@@ -317,7 +320,7 @@ class Clientes_Fisicos(QWidget):
             label.setStyleSheet("color: white; font-weight: bold;")
             label.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
 
-            if campo in ["Estado", "Status do Cliente"]:
+            if campo in ["Estado", "Status do Cliente","Categoria da CNH"]:
                 entrada = QComboBox()
                 entrada.setStyleSheet("""
                     QComboBox {
@@ -359,7 +362,9 @@ class Clientes_Fisicos(QWidget):
                     }
                 """)
 
-                if campo == "Estado":
+                if campo == "Categoria da CNH":
+                    entrada.addItems(["Selecione","AB","A","B","C","D","E","Nenhuma"])
+                elif campo == "Estado":
                     entrada.addItems(["Selecione", "AC", "AL", "AP", "AM", "BA", "CE", "DF", "ES", "GO", "MA",
                                     "MT", "MS", "MG", "PA", "PB", "PR", "PE", "PI", "RJ", "RN", "RS", "RO",
                                     "RR", "SC", "SP", "SE", "TO"])
@@ -386,10 +391,14 @@ class Clientes_Fisicos(QWidget):
                         color: black;
                     }
                 """)
-            if campo == "CPF":
+            if campo == "RG":
+                entrada.textChanged.connect(lambda texto, w=entrada: self.main_window.formatar_rg(texto,w))
+            elif campo == "CPF":
                 entrada.textChanged.connect(lambda texto, w=entrada: self.main_window.formatar_cpf(texto,w))
             elif campo == "Telefone":
                 entrada.textChanged.connect(lambda texto, w=entrada: self.main_window.formatar_telefone(texto, w))
+            elif campo == "Email":
+                entrada.textChanged.connect(lambda texto, w=entrada: self.main_window.validar_email(texto,w))
             elif campo == "CEP":
                 entrada.textChanged.connect(lambda texto, w=entrada: self.main_window.formatar_cep(texto,w))
                 entrada.editingFinished.connect(lambda e=entrada: self.formatar_e_buscar_cep(e))
@@ -427,10 +436,9 @@ class Clientes_Fisicos(QWidget):
         coluna_offset = 1 if self.coluna_checkboxes_clientes_fisicos_adicionada else 0
 
         colunas = [
-            "Nome do Cliente",  "Data da Inclusão","CPF", "RG", "Telefone",
-            "CEP", "Endereço", "Número", "Complemento", "Cidade", "Bairro",
-            "Estado", "Status do Cliente", "Categoria do Cliente",
-            "Última Atualização", "Origem do Cliente", "Valor Gasto Total", "Última Compra"
+            "Nome do Cliente", "Data da Inclusão", "CNPJ","RG","CPF","Email","CNH","Categoria da CNH","Data de Emissão da CNH",
+            "Data de Vencimento da CNH","Telefone","CEP", "Endereço", "Número", "Complemento", "Cidade", "Bairro",
+            "Estado", "Status do Cliente","Categoria do Cliente","Última Atualização","Valor Gasto Total", "Última Compra"
         ]
         
 
@@ -461,32 +469,20 @@ class Clientes_Fisicos(QWidget):
             query = """
             UPDATE clientes_fisicos
             SET
-                `Nome do Cliente` = ?, `Data da Inclusão` = ?,CPF = ?,RG = ?, Telefone = ?,
-                CEP = ?, Endereço = ?, Número = ?, Complemento = ?, Cidade = ?, Bairro = ?,
-                Estado = ?, `Status do Cliente` = ?, `Categoria do Cliente` = ?, `Última Atualização` = ?,
-                `Origem do Cliente` = ?, `Valor Gasto Total` = ?, `Última Compra` = ?
-            WHERE CPF = ?
+                `Nome do Cliente` = ?, `Data da Inclusão` = ?, CNPJ = ?,
+                RG = ?, CPF = ?, CNH = ?, `Categoria da CNH` = ?, `Data de Emissão da CNH` = ?, 
+                `Data de Vencimento da CNH` = ?, Telefone = ?, CEP = ?, Endereço = ?, 
+                Número = ?, Complemento = ?, Cidade = ?, Bairro = ?, Estado = ?, `Status do Cliente` = ?, `Categoria do Cliente` = ?,
+                `Última Atualização` = ?, `Valor Gasto Total` = ?, `Última Compra` = ?
+            WHERE CNPJ = ?
             """
 
             valores = (
-                dados_atualizados["Nome do Cliente"],
-                dados_atualizados["Data da Inclusão"],
-                dados_atualizados["CPF"],
-                dados_atualizados["RG"],
-                dados_atualizados["Telefone"],
-                dados_atualizados["CEP"],
-                dados_atualizados["Endereço"],
-                dados_atualizados["Número"],
-                dados_atualizados["Complemento"],
-                dados_atualizados["Cidade"],
-                dados_atualizados["Bairro"],
-                dados_atualizados["Estado"],
-                dados_atualizados["Status do Cliente"],
-                dados_atualizados["Categoria do Cliente"],
-                dados_atualizados["Última Atualização"],
-                dados_atualizados["Origem do Cliente"],
-                dados_atualizados["Valor Gasto Total"],
-                dados_atualizados["Última Compra"],
+                dados_atualizados["Nome do Cliente"],dados_atualizados["Data da Inclusão"], dados_atualizados["CNPJ"],
+                dados_atualizados["RG"], dados_atualizados["CPF"], dados_atualizados["CNH"], dados_atualizados["Categoria da CNH"], dados_atualizados["Data de Emissão da CNH"], 
+                dados_atualizados["Data de Vencimento da CNH"], dados_atualizados["Telefone"], dados_atualizados["CEP"], dados_atualizados["Endereço"], dados_atualizados["Número"], dados_atualizados["Complemento"],
+                dados_atualizados["Cidade"], dados_atualizados["Bairro"], dados_atualizados["Estado"], dados_atualizados["Status do Cliente"], dados_atualizados["Categoria do Cliente"],
+                dados_atualizados["Última Atualização"], dados_atualizados["Valor Gasto Total"], dados_atualizados["Última Compra"],
                 cpf
             )
 
@@ -533,21 +529,105 @@ class Clientes_Fisicos(QWidget):
         """)
 
         def add_linha(titulo, widget=None):
-            layout.addWidget(QLabel(titulo))
+            label = QLabel(titulo)
+            label.setStyleSheet("color: white; font-weight: bold;")
+            layout.addWidget(label)
             if widget is None:
                 widget = QLineEdit()
             layout.addWidget(widget)
-            chave_sem_ponto = titulo.rstrip(":")  # remove ':' do final
-            self.campos_cliente_fisico[chave_sem_ponto] = widget
+            chave_sem_ponto = titulo.rstrip(":")
+            self.cadastrar_clientes_fisicos[chave_sem_ponto] = widget
+            return label, widget
+
+        # ComboBox Categoria CNH criado antecipadamente para uso no formulário
+        combobox_categoria_cnh_fisico = QComboBox()
+        combobox_categoria_cnh_fisico.addItems(["Selecionar", "AB", "A", "B", "C", "D", "E", "Nenhuma"])
+        combobox_categoria_cnh_fisico.setCurrentIndex(0)
+        combobox_categoria_cnh_fisico.setStyleSheet("""
+            QComboBox { 
+                background-color: white; 
+                border: 3px solid rgb(50,150,250); 
+                border-radius: 5px; 
+                color: black; 
+                padding: 5px;
+            }
+            QComboBox QAbstractItemView {
+                background-color: white; 
+                color: black; 
+                border: 1px solid #ccc; 
+                selection-background-color: #e5e5e5; 
+                selection-color: black;
+            }
+            QComboBox QAbstractItemView QScrollBar:vertical {
+                background: #f5f5f5; 
+                width: 12px; 
+                border: none;
+            }
+            QComboBox QAbstractItemView QScrollBar::handle:vertical {
+                background: #cccccc; 
+                min-height: 20px; 
+                border-radius: 5px;
+            }
+            QComboBox QAbstractItemView QScrollBar::add-line:vertical, 
+            QComboBox QAbstractItemView QScrollBar::sub-line:vertical {
+                background: none;
+                height: 0px;
+            }
+            QComboBox QAbstractItemView QScrollBar::add-page:vertical, 
+            QComboBox QAbstractItemView QScrollBar::sub-page:vertical {
+                background: none;
+            }
+        """)
 
 
         add_linha("Nome do Cliente")
-        add_linha("CPF")
-        cpf_widget = self.campos_cliente_fisico["CPF"]
-        cpf_widget.textChanged.connect(lambda text,w=cpf_widget: self.main_window.formatar_cpf(text, w))
         add_linha("RG")
         rg_widget = self.campos_cliente_fisico["RG"]
         rg_widget.textChanged.connect(lambda text, w=rg_widget: self.main_window.formatar_rg(text,w))
+        add_linha("CPF")
+        cpf_widget = self.campos_cliente_fisico["CPF"]
+        cpf_widget.textChanged.connect(lambda text,w=cpf_widget: self.main_window.formatar_cpf(text, w))
+        add_linha("Email")
+        email_widget = self.campos_cliente_fisico["Email"]
+        email_widget.textChanged.connect(lambda text: self.main_window.validar_email(text,email_widget))
+        add_linha("CNH")
+        self.campos_cliente_fisico["CNH"].setPlaceholderText("Opcional")
+        label_categoria_cnh, widget_categoria_cnh = add_linha("Categoria da CNH", combobox_categoria_cnh_fisico)
+
+        # Campos Data Emissão e Vencimento CNH, inicialmente escondidos
+        label_emissao_cnh, widget_emissao_cnh = add_linha("Data de Emissão da CNH")
+        label_vencimento_cnh, widget_vencimento_cnh = add_linha("Data de Vencimento da CNH")
+
+        # Aplicar formatação de data (mesma usada em Data de Nascimento)
+        widget_emissao_cnh.textChanged.connect(lambda text: self.main_window.formatar_data_nascimento(text, widget_emissao_cnh))
+        widget_vencimento_cnh.textChanged.connect(lambda text: self.main_window.formatar_data_nascimento(text, widget_vencimento_cnh))
+        label_emissao_cnh.hide()
+        widget_emissao_cnh.hide()
+        label_vencimento_cnh.hide()
+        widget_vencimento_cnh.hide()
+
+        cnh_widget = self.campos_cliente_fisico["CNH"]
+        cnh_widget.textChanged.connect(lambda text: self.main_window.formatar_cnh(text, cnh_widget))
+
+        # Função para mostrar/esconder datas da CNH conforme categoria selecionada
+        def on_categoria_cnh_change_fisicos(text):
+            if text not in ("Selecionar", "Nenhuma"):
+                label_emissao_cnh.show()
+                widget_emissao_cnh.show()
+                label_vencimento_cnh.show()
+                widget_vencimento_cnh.show()
+            else:
+                label_emissao_cnh.hide()
+                widget_emissao_cnh.hide()
+                label_vencimento_cnh.hide()
+                widget_vencimento_cnh.hide()
+                widget_emissao_cnh.clear()
+                widget_vencimento_cnh.clear()
+
+        combobox_categoria_cnh_fisico.currentTextChanged.connect(on_categoria_cnh_change_fisicos)
+
+
+        
         add_linha("Telefone")
         telefone_widget = self.campos_cliente_fisico["Telefone"]
         telefone_widget.textChanged.connect(lambda text: self.main_window.formatar_telefone(text, telefone_widget))        
@@ -697,6 +777,31 @@ class Clientes_Fisicos(QWidget):
 
         self.janela_cadastro_fisico.setCentralWidget(scroll_area)
         self.janela_cadastro_fisico.show()
+    def informacoes_obrigatorias_clientes(self):
+        self.campos_obrigatorios_clientes_fisicos = {
+            "Nome do Cliente": "O campo Nome do Cliente é obrigatório.",
+            "CNPJ": "O campo CNPJ é obrigatório.",
+            "RG": "O campo de RG é obrigatório.",
+            "CPF": "O campo de CPF é obrigatório",
+            "Email": "O campo de E-mail é obrigatório",
+            "Telefone": "O campo Telefone é obrigatório.",
+            "CEP": "O campo CEP é obrigatório.",
+            "Endereço": "O campo Endereço é obrigatório.",
+            "Número": "O campo Número é obrigatório.",
+            "Cidade": "O campo Cidade é obrigatório.",
+            "Bairro": "O campo Bairro é obrigatório.",
+            "Estado": "O campo de Estado é obrigatório",
+            "Categoria do Cliente": "O campo Categoria do Cliente é obrigatório.",
+            "Status do Cliente": "Você deve selecionar um status válido para o cliente.",
+        }
+
+        # Verifica se a Categoria da CNH foi preenchida (diferente de "Selecionar")
+        categoria_widget = self.campos_cliente_juridico.get("Categoria da CNH")
+        if categoria_widget and isinstance(categoria_widget, QComboBox):
+            categoria_cnh = categoria_widget.currentText().strip()
+            if categoria_cnh and categoria_cnh != "Selecionar":
+                self.campos_obrigatorios_clientes_fisicos["Data de Emissão da CNH"] = "A Data de Emissão da CNH é obrigatória quando há Categoria informada."
+                self.campos_obrigatorios_clientes_fisicos["Data de Vencimento da CNH"] = "A Data de Vencimento da CNH é obrigatória quando há Categoria informada."
 
     def cadastrar_clientes_fisicos(self):
         try:
@@ -710,8 +815,14 @@ class Clientes_Fisicos(QWidget):
                     else self.campos_cliente_fisico[campo].currentText()
 
                 nome = get("Nome do Cliente")
-                cpf = get("CPF")
+                cnpj = get("CNPJ")
                 rg = get("RG")
+                cpf = get("CPF")
+                email = get("Email")
+                cnh = get("CNH")
+                categoria_cnh = get("Categoria da CNH")
+                data_emissao_cnh = get("Data de Emissão da CNH")
+                data_vencimento_cnh = get("Data de Vencimento da CNH")
                 telefone = get("Telefone")
                 cep = get("CEP")
                 endereco = get("Endereço")
@@ -720,7 +831,6 @@ class Clientes_Fisicos(QWidget):
                 cidade = get("Cidade")
                 bairro = get("Bairro")
                 estado = get("Estado")
-                nacionalidade = get("Nacionalidade")
                 categoria = get("Categoria do Cliente")
                 status = get("Status do Cliente")
 
@@ -754,14 +864,17 @@ class Clientes_Fisicos(QWidget):
                 # Inserir no banco
                 cursor.execute("""
                     INSERT INTO clientes_fisicos(
-                        "Nome do Cliente", "Data da Inclusão", CPF,RG, Telefone, CEP, Endereço, Número,
-                        Complemento, Cidade, Bairro, Estado, "Status do Cliente", "Categoria do Cliente","Última Atualização", 
-                        "Origem do Cliente","Valor Gasto Total", "Última Compra"
+                        "Nome do Cliente", "Data da Inclusão", CNPJ, RG, 
+                         CPF,Email, CNH, "Categoria da CNH", "Data de Emissão da CNH", "Data de Vencimento da CNH",  
+                        Telefone, CEP, Endereço, Número, Complemento, Cidade, Bairro, Estado, 
+                        "Status do Cliente", "Categoria do Cliente", "Última Atualização", "Valor Gasto Total", "Última Compra"
                     )
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?,?,?)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?,?)
                 """, (
-                    nome,data_inclusao, cpf, rg, telefone, cep, endereco, numero,complemento, cidade,
-                    bairro,estado, status, categoria, ultima_atualizacao,nacionalidade, valor_gasto_total, ultima_compra,
+                    nome, data_inclusao, cnpj, rg, 
+                    cpf,email, cnh, categoria_cnh, data_emissao_cnh, data_vencimento_cnh, 
+                    telefone, cep, endereco, numero, complemento, cidade, bairro, estado, 
+                    status, categoria, ultima_atualizacao, valor_gasto_total,ultima_compra
                 ))
                 conexao.commit()
 

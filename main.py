@@ -2860,6 +2860,23 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             print("⚠️ Página atual não tem método de atualização com F5.")
 
 
+    def resource_way(relative_path):
+        """Retorna o caminho absoluto para arquivos embutidos no .exe."""
+        if hasattr(sys, '_MEIPASS'):
+            return os.path.join(sys._MEIPASS, relative_path)
+        return os.path.join(os.path.abspath("."), relative_path)
+
+
+    # Cria a pasta "DadosSistema" na mesma pasta do executável
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    pasta_dados = os.path.join(base_dir, "DadosSistema")
+
+    if not os.path.exists(pasta_dados):
+        os.makedirs(pasta_dados)
+
+    # Caminho completo do banco de dados
+    caminho_banco = os.path.join(pasta_dados, "banco_de_dados.db")
+
 # Função principal
 if __name__ == '__main__':
     app = QApplication(sys.argv)

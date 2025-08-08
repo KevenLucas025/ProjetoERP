@@ -6365,7 +6365,7 @@ QTableWidget::item:selected {
                   <number>118</number>
                  </attribute>
                  <attribute name="verticalHeaderVisible">
-                  <bool>false</bool>
+                  <bool>true</bool>
                  </attribute>
                  <column>
                   <property name="text">
@@ -6890,12 +6890,27 @@ QTableWidget::item:selected {
                  </column>
                  <column>
                   <property name="text">
+                   <string>Email</string>
+                  </property>
+                 </column>
+                 <column>
+                  <property name="text">
                    <string>CNH</string>
                   </property>
                  </column>
                  <column>
                   <property name="text">
-                   <string>Data de Nascimento</string>
+                   <string>Categoria da CNH</string>
+                  </property>
+                 </column>
+                 <column>
+                  <property name="text">
+                   <string>Data de Emissão da CNH</string>
+                  </property>
+                 </column>
+                 <column>
+                  <property name="text">
+                   <string>Data de Vencimento da CNH</string>
                   </property>
                  </column>
                  <column>
@@ -6951,11 +6966,6 @@ QTableWidget::item:selected {
                  <column>
                   <property name="text">
                    <string>Última Atualização</string>
-                  </property>
-                 </column>
-                 <column>
-                  <property name="text">
-                   <string>Origem do Cliente</string>
                   </property>
                  </column>
                  <column>

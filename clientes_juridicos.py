@@ -2,9 +2,9 @@ from PySide6.QtWidgets import (QLineEdit, QToolButton,QTableWidgetItem,
                                QMessageBox,QMainWindow,QVBoxLayout,QWidget,QLabel,QCheckBox,
                                QPushButton,QScrollArea,QComboBox,QGridLayout,QHeaderView,QHBoxLayout,
                                QGraphicsOpacityEffect,QTableWidget,QInputDialog,QDialog,
-                               QRadioButton,QGroupBox,QFileDialog,QFormLayout,QDateEdit)
+                               QRadioButton,QGroupBox,QFileDialog,QFormLayout,QDateEdit,QMenu,QApplication)
 from PySide6.QtGui import QPixmap, QIcon,QColor,QBrush,QGuiApplication
-from PySide6.QtCore import Qt,QTimer,QPropertyAnimation,QEvent,QDate
+from PySide6.QtCore import Qt,QTimer,QPropertyAnimation,QEvent,QDate,QPoint
 from database import DataBase
 import sqlite3
 import pandas as pd
@@ -15,11 +15,13 @@ import csv
 from reportlab.lib import colors
 from reportlab.lib.pagesizes import letter
 from reportlab.lib.pagesizes import letter,landscape,A4
-from reportlab.platypus import SimpleDocTemplate, Table, TableStyle
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle,Paragraph,Spacer
+from reportlab.lib.styles import getSampleStyleSheet
 from openpyxl import load_workbook
 from openpyxl.utils import get_column_letter
 from openpyxl.styles import Alignment
 from fpdf import FPDF
+import json
 
 
 class Clientes_Juridicos(QWidget):
@@ -59,6 +61,8 @@ class Clientes_Juridicos(QWidget):
         
         self.line_clientes.returnPressed.connect(self.buscar_dinamico)
         self.line_clientes.textChanged.connect(self.buscar_dinamico)
+
+        self.configurar_menu_contexto()
 
         self.imagem_line()
         #self.configurar_line_clientes()
@@ -483,30 +487,50 @@ class Clientes_Juridicos(QWidget):
             else:
                 dados_atualizados[campo] = widget.text()
 
+        # --- VERIFICAÇÃO DE CAMPOS SENSÍVEIS ---
+        campos_sensiveis = ["Última Atualização", "Valor Gasto Total", "Última Compra"]
+        alterou_campo_sensivel = any(
+            dados_atualizados[c] != self.dados_originais_cliente[c]
+            for c in campos_sensiveis
+        )
+
+        if alterou_campo_sensivel:
+            try:
+                with open("config.json", "r", encoding="utf-8") as f:
+                    config = json.load(f)
+                    senha_correta = config.get("senha", "")
+            except Exception as e:
+                QMessageBox.critical(None, "Erro", f"Não foi possível carregar a senha do sistema\n {e}")
+                return
+
+            tentativas = 0
+            while tentativas < 3:
+                senha, ok = QInputDialog.getText(
+                    None, "Confirmação de Segurança",
+                    "Digite a senha do sistema:", QLineEdit.Password
+                )
+
+                if not ok:  # Cancelou
+                    return
+
+                if senha.strip() == senha_correta.strip():
+                    break  # Sai do loop se a senha estiver correta
+
+                tentativas += 1
+                if tentativas < 3:
+                    QMessageBox.critical(None, "Acesso Negado",
+                                        f"Senha incorreta. Tentativas restantes: {3 - tentativas}")
+                else:
+                    QMessageBox.critical(None, "Acesso Negado",
+                                        "Você excedeu o número máximo de tentativas.\nO sistema será encerrado.")
+                    QApplication.quit()
+                    return
 
         try:
             cursor = self.db.connection.cursor()
-            cnpj = dados_atualizados["CNPJ"]  # Supondo que o CNPJ seja identificador único
+            cnpj = dados_atualizados["CNPJ"]  # Identificador único
 
-            query = """
-                UPDATE clientes_juridicos SET
-                    `Nome do Cliente` = ?, `Razão Social` = ?, `Data da Inclusão` = ?, CNPJ = ?,
-                    RG = ?, CPF = ?,CNH = ?, `Categoria da CNH` = ?, `Data de Emissão da CNH` = ?, 
-                    `Data de Vencimento da CNH` = ?, Telefone = ?, CEP = ?, Endereço = ?, 
-                    Número = ?, Complemento = ?,Cidade = ?, Bairro = ?, Estado = ?, `Status do Cliente` = ?, `Categoria do Cliente` = ?,
-                    `Última Atualização` = ?,`Valor Gasto Total` = ?, `Última Compra` = ?
-                WHERE CNPJ = ?
-            """
-            valores = (
-                dados_atualizados["Nome do Cliente"], dados_atualizados["Razão Social"], dados_atualizados["Data da Inclusão"], dados_atualizados["CNPJ"],
-                dados_atualizados["RG"], dados_atualizados["CPF"],dados_atualizados["CNH"], dados_atualizados["Categoria da CNH"], dados_atualizados["Data de Emissão da CNH"], 
-                dados_atualizados["Data de Vencimento da CNH"], dados_atualizados["Telefone"], dados_atualizados["CEP"], dados_atualizados["Endereço"], dados_atualizados["Número"], dados_atualizados["Complemento"],
-                dados_atualizados["Cidade"], dados_atualizados["Bairro"], dados_atualizados["Estado"], dados_atualizados["Status do Cliente"], dados_atualizados["Categoria do Cliente"],
-                dados_atualizados["Última Atualização"], dados_atualizados["Valor Gasto Total"], dados_atualizados["Última Compra"],
-                cnpj
-            )
-
-            # Corrigir campos vazios com valores padrão
+            # Corrigir campos vazios antes do UPDATE
             if not dados_atualizados["CNH"]:
                 dados_atualizados["CNH"] = "Não Cadastrado"
                 dados_atualizados["Categoria da CNH"] = "Não Cadastrado"
@@ -515,19 +539,39 @@ class Clientes_Juridicos(QWidget):
 
             if not dados_atualizados["Complemento"]:
                 dados_atualizados["Complemento"] = "Não se aplica"
-                
+
+            query = """
+                UPDATE clientes_juridicos SET
+                    `Nome do Cliente` = ?, `Razão Social` = ?, `Data da Inclusão` = ?, CNPJ = ?,
+                    RG = ?, CPF = ?, CNH = ?, `Categoria da CNH` = ?, `Data de Emissão da CNH` = ?, 
+                    `Data de Vencimento da CNH` = ?, Telefone = ?, CEP = ?, Endereço = ?, 
+                    Número = ?, Complemento = ?, Cidade = ?, Bairro = ?, Estado = ?, `Status do Cliente` = ?, `Categoria do Cliente` = ?,
+                    `Última Atualização` = ?, `Valor Gasto Total` = ?, `Última Compra` = ?
+                WHERE CNPJ = ?
+            """
+            valores = (
+                dados_atualizados["Nome do Cliente"], dados_atualizados["Razão Social"], dados_atualizados["Data da Inclusão"], dados_atualizados["CNPJ"],
+                dados_atualizados["RG"], dados_atualizados["CPF"], dados_atualizados["CNH"], dados_atualizados["Categoria da CNH"], dados_atualizados["Data de Emissão da CNH"], 
+                dados_atualizados["Data de Vencimento da CNH"], dados_atualizados["Telefone"], dados_atualizados["CEP"], dados_atualizados["Endereço"], dados_atualizados["Número"], dados_atualizados["Complemento"],
+                dados_atualizados["Cidade"], dados_atualizados["Bairro"], dados_atualizados["Estado"], dados_atualizados["Status do Cliente"], dados_atualizados["Categoria do Cliente"],
+                dados_atualizados["Última Atualização"], dados_atualizados["Valor Gasto Total"], dados_atualizados["Última Compra"],
+                cnpj
+            )
+
             cursor.execute(query, valores)
             self.db.connection.commit()
 
             self.main_window.registrar_historico_clientes_juridicos(
-                    "Edição de Clientes", f"Cliente {dados_atualizados["Nome do Cliente"]} editado com sucesso"
-                )
+                "Edição de Clientes",
+                f"Cliente {dados_atualizados['Nome do Cliente']} editado com sucesso"
+            )
 
             QMessageBox.information(None, "Sucesso", "Cliente atualizado com sucesso.")
             self.janela_editar_cliente.close()
-            self.carregar_clientes_juridicos()  
+            self.carregar_clientes_juridicos()
         except Exception as e:
             QMessageBox.critical(None, "Erro", f"Erro ao atualizar cliente: {e}")
+
 
     
 
@@ -564,7 +608,7 @@ class Clientes_Juridicos(QWidget):
 
         def add_linha(titulo, widget=None):
             label = QLabel(titulo)
-            label.setStyleSheet("color: black; font-weight: bold;")
+            label.setStyleSheet("color: white; font-weight: bold;")
             layout.addWidget(label)
             if widget is None:
                 widget = QLineEdit()
@@ -1609,10 +1653,10 @@ class Clientes_Juridicos(QWidget):
 
         # Campo para inserir a data
         campo_data = QLineEdit()
-        campo_data.setPlaceholderText("Digite a data no formato DD/MM/AAAA")
+        campo_data.setPlaceholderText("formato DD/MM/AAAA")
         
         # Conectar ao método de formatação, passando o texto
-        campo_data.textChanged.connect(lambda: self.formatar_data(campo_data))
+        campo_data.textChanged.connect(lambda: self.formatar_data_clientes_juridicos(campo_data))
 
 
         # Campo para selecionar se quer o mais recente ou mais antigo (filtro por hora)
@@ -1753,7 +1797,7 @@ class Clientes_Juridicos(QWidget):
                     ]
                     escritor.writerow(dados_linhas)
 
-                    QMessageBox.information(self, "Sucesso", f"Arquivo CSV salvo com sucesso em:\n{nome_arquivo}")
+                QMessageBox.information(self, "Sucesso", f"Arquivo CSV salvo com sucesso em:\n{nome_arquivo}")
 
         except Exception as e:
             QMessageBox.critical(self, "Erro", f"Falha ao salvar o arquivo CSV:\n{str(e)}")
@@ -1847,6 +1891,13 @@ class Clientes_Juridicos(QWidget):
         try:
             # Criar o PDF
             pdf = SimpleDocTemplate(nome_arquivo, pagesize=landscape(letter))
+            estilos = getSampleStyleSheet()
+
+            titulo = Paragraph("<b>Histórico de Clientes Jurídicos</b>", estilos['Title'])
+
+            # Espaço entre título e tabela
+            espacamento = Spacer(1, 12)
+
             tabela = Table(dados)
 
             # Adicionar estilo à tabela
@@ -1861,8 +1912,8 @@ class Clientes_Juridicos(QWidget):
             ])
             tabela.setStyle(estilo)
 
-            # Gerar o PDF
-            pdf.build([tabela])
+            # Construir PDF com título + espaço + tabela
+            pdf.build([titulo,espacamento,tabela])
             QMessageBox.information(self, "Sucesso", f"Arquivo PDF gerado com sucesso em: \n{nome_arquivo}")
 
         except Exception as e:
@@ -2348,4 +2399,32 @@ class Clientes_Juridicos(QWidget):
         resposta = msgbox.exec()
 
         return msgbox.clickedButton() == btn_sim
-    
+    def configurar_menu_contexto(self):
+        self.table_clientes_juridicos.setContextMenuPolicy(Qt.CustomContextMenu)
+        self.table_clientes_juridicos.customContextMenuRequested.connect(self.abrir_menu_contexto)
+
+    def abrir_menu_contexto(self,pos:QPoint):
+        index = self.table_clientes_juridicos.indexAt(pos)
+        if not index.isValid():
+            return # Clicou fora de uma célula
+        
+        # Captura os dados da linha
+        linha = index.row()
+        nome_cliente = self.table_clientes_juridicos.item(linha,0).text()  # Coluna 0 = Nome do Cliente
+
+        menu = QMenu()
+
+        detalhes_action = menu.addAction("Detalhes")
+        editar_action = menu.addAction("Editar Cliente")
+        excluir_action = menu.addAction("Excluir Cliente")
+
+
+        action = menu.exec(self.table_clientes_juridicos.viewport().mapToGlobal(pos))
+
+        # Executa conforme a opção clicada
+        if action == detalhes_action:
+            QMessageBox.information(self, "Aviso", "Essa função ainda não está disponível")
+        elif action == editar_action:
+            self.editar_cliente_juridico()
+        elif action == excluir_action:
+            self.excluir_clientes_juridicos()
