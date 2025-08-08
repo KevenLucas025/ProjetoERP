@@ -1244,8 +1244,6 @@ class Clientes_Juridicos(QWidget):
                     self.table_clientes_juridicos.clearFocus() # remove o foco da tabela      
         return super().eventFilter(source,event)
     
-    def exibir_janela_historico_clientes(self):
-        pass
     
     def marcar_alteracao(self):
         self.alteracoes_realizadas = True
@@ -2399,6 +2397,7 @@ class Clientes_Juridicos(QWidget):
         resposta = msgbox.exec()
 
         return msgbox.clickedButton() == btn_sim
+    
     def configurar_menu_contexto(self):
         self.table_clientes_juridicos.setContextMenuPolicy(Qt.CustomContextMenu)
         self.table_clientes_juridicos.customContextMenuRequested.connect(self.abrir_menu_contexto)

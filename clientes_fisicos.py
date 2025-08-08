@@ -2,9 +2,9 @@ from PySide6.QtWidgets import (QLineEdit, QToolButton,QTableWidgetItem,
                                QMessageBox,QMainWindow,QVBoxLayout,QWidget,QLabel,QCheckBox,
                                QPushButton,QScrollArea,QComboBox,QGridLayout,QHeaderView,QHBoxLayout,
                                QGraphicsOpacityEffect,QTableWidget,QInputDialog,QDialog,
-                               QRadioButton,QGroupBox,QFileDialog,QFormLayout,QDateEdit,QApplication)
+                               QRadioButton,QGroupBox,QFileDialog,QFormLayout,QDateEdit,QMenu,QApplication)
 from PySide6.QtGui import QPixmap, QIcon,QColor,QBrush,QGuiApplication
-from PySide6.QtCore import Qt,QTimer,QPropertyAnimation,QEvent,QDate
+from PySide6.QtCore import Qt,QTimer,QPropertyAnimation,QEvent,QDate,QPoint
 from database import DataBase
 import sqlite3
 import pandas as pd
@@ -16,6 +16,7 @@ from reportlab.lib import colors
 from reportlab.lib.pagesizes import letter
 from reportlab.lib.pagesizes import letter,landscape,A4
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle
+from reportlab.lib.styles import getSampleStyleSheet
 from openpyxl import load_workbook
 from openpyxl.utils import get_column_letter
 from openpyxl.styles import Alignment
@@ -58,9 +59,11 @@ class Clientes_Fisicos(QWidget):
 
         self.line_clientes_fisicos.returnPressed.connect(self.buscar_cliente_fisico_dinamico)
         self.line_clientes_fisicos.textChanged.connect(self.buscar_cliente_fisico_dinamico)
+
+        self.configurar_menu_contexto_fisicos()
         self.imagem_line_fisico()
 
-
+        
         
         self.installEventFilter(self)
         self.table_clientes_fisicos.viewport().installEventFilter(self)
@@ -260,6 +263,9 @@ class Clientes_Fisicos(QWidget):
                 self.campos_cliente["Estado"].setCurrentIndex(index_estado)
 
     def exibir_edicao_clientes_fisicos(self, dados_cliente: dict):
+        print("Dados recebidos para edição: ")
+        for k,v in dados_cliente.items():
+            print(f"{k}:  {v}")
         self.dados_originais_cliente_fisico = dados_cliente.copy()
         self.alteracoes_realizadas = False
         self.janela_editar_cliente_fisico = QMainWindow()
@@ -308,9 +314,9 @@ class Clientes_Fisicos(QWidget):
 
 
         colunas = [
-            "Nome do Cliente", "Data da Inclusão","RG","CPF","Email","CNH","Categoria da CNH","Data de Emissão da CNH","Data de Vencimento da CNH", 
-            "Telefone","CEP", "Endereço", "Número", "Complemento", "Cidade", "Bairro","Estado", "Status do Cliente", 
-            "Categoria do Cliente","Última Atualização", "Valor Gasto Total", "Última Compra"
+            "Nome do Cliente", "Data da Inclusão","RG","CPF","Email","CNH","Categoria da CNH","Data de Emissão da CNH",
+            "Data de Vencimento da CNH", "Telefone","CEP", "Endereço", "Número", "Complemento", "Cidade", "Bairro","Estado", 
+            "Status do Cliente", "Categoria do Cliente","Última Atualização", "Valor Gasto Total", "Última Compra"
         ]
 
         self.campos_cliente = {}
@@ -436,7 +442,7 @@ class Clientes_Fisicos(QWidget):
         coluna_offset = 1 if self.coluna_checkboxes_clientes_fisicos_adicionada else 0
 
         colunas = [
-            "Nome do Cliente", "Data da Inclusão", "CNPJ","RG","CPF","Email","CNH","Categoria da CNH","Data de Emissão da CNH",
+            "Nome do Cliente", "Data da Inclusão", "RG","CPF","Email","CNH","Categoria da CNH","Data de Emissão da CNH",
             "Data de Vencimento da CNH","Telefone","CEP", "Endereço", "Número", "Complemento", "Cidade", "Bairro",
             "Estado", "Status do Cliente","Categoria do Cliente","Última Atualização","Valor Gasto Total", "Última Compra"
         ]
@@ -536,7 +542,7 @@ class Clientes_Fisicos(QWidget):
                 widget = QLineEdit()
             layout.addWidget(widget)
             chave_sem_ponto = titulo.rstrip(":")
-            self.cadastrar_clientes_fisicos[chave_sem_ponto] = widget
+            self.campos_cliente_fisico[chave_sem_ponto] = widget
             return label, widget
 
         # ComboBox Categoria CNH criado antecipadamente para uso no formulário
@@ -687,7 +693,6 @@ class Clientes_Fisicos(QWidget):
             }
         """)
         add_linha("Estado", combobox_estado_cliente_fisico)
-        add_linha("Nacionalidade")
         add_linha("Categoria do Cliente")
 
         combobox_status_cliente = QComboBox()
@@ -777,10 +782,10 @@ class Clientes_Fisicos(QWidget):
 
         self.janela_cadastro_fisico.setCentralWidget(scroll_area)
         self.janela_cadastro_fisico.show()
-    def informacoes_obrigatorias_clientes(self):
+
+    def informacoes_obrigatorias_clientes_fisicos(self):
         self.campos_obrigatorios_clientes_fisicos = {
             "Nome do Cliente": "O campo Nome do Cliente é obrigatório.",
-            "CNPJ": "O campo CNPJ é obrigatório.",
             "RG": "O campo de RG é obrigatório.",
             "CPF": "O campo de CPF é obrigatório",
             "Email": "O campo de E-mail é obrigatório",
@@ -796,7 +801,7 @@ class Clientes_Fisicos(QWidget):
         }
 
         # Verifica se a Categoria da CNH foi preenchida (diferente de "Selecionar")
-        categoria_widget = self.campos_cliente_juridico.get("Categoria da CNH")
+        categoria_widget = self.campos_cliente_fisico.get("Categoria da CNH")
         if categoria_widget and isinstance(categoria_widget, QComboBox):
             categoria_cnh = categoria_widget.currentText().strip()
             if categoria_cnh and categoria_cnh != "Selecionar":
@@ -815,7 +820,6 @@ class Clientes_Fisicos(QWidget):
                     else self.campos_cliente_fisico[campo].currentText()
 
                 nome = get("Nome do Cliente")
-                cnpj = get("CNPJ")
                 rg = get("RG")
                 cpf = get("CPF")
                 email = get("Email")
@@ -860,19 +864,26 @@ class Clientes_Fisicos(QWidget):
                 valor_gasto_total = "Não Cadastrado"
                 ultima_compra = "Não Cadastrado"
                 ultima_atualizacao = "Não Cadastrado"
+
+                if not cnh:
+                    cnh = "Não Cadastrado"
+                    categoria_cnh = "Não Cadastrado"
+                    data_emissao_cnh = "Não Cadastrado"
+                    data_vencimento_cnh = "Não Cadastrado"
+
+                if not complemento:
+                    complemento = "Não se aplica"
                 
                 # Inserir no banco
                 cursor.execute("""
                     INSERT INTO clientes_fisicos(
-                        "Nome do Cliente", "Data da Inclusão", CNPJ, RG, 
-                         CPF,Email, CNH, "Categoria da CNH", "Data de Emissão da CNH", "Data de Vencimento da CNH",  
-                        Telefone, CEP, Endereço, Número, Complemento, Cidade, Bairro, Estado, 
+                        "Nome do Cliente", "Data da Inclusão",RG, CPF,Email, CNH, "Categoria da CNH", "Data de Emissão da CNH", 
+                        "Data de Vencimento da CNH",  Telefone, CEP, Endereço, Número, Complemento, Cidade, Bairro, Estado, 
                         "Status do Cliente", "Categoria do Cliente", "Última Atualização", "Valor Gasto Total", "Última Compra"
                     )
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?,?)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """, (
-                    nome, data_inclusao, cnpj, rg, 
-                    cpf,email, cnh, categoria_cnh, data_emissao_cnh, data_vencimento_cnh, 
+                    nome, data_inclusao, rg, cpf,email, cnh, categoria_cnh, data_emissao_cnh, data_vencimento_cnh, 
                     telefone, cep, endereco, numero, complemento, cidade, bairro, estado, 
                     status, categoria, ultima_atualizacao, valor_gasto_total,ultima_compra
                 ))
@@ -891,22 +902,6 @@ class Clientes_Fisicos(QWidget):
         except Exception as e:
             QMessageBox.critical(None, "Erro", f"Erro ao cadastrar cliente: \n{e}")
 
-    def informacoes_obrigatorias_clientes_fisicos(self):
-        self.campos_obrigatorios_clientes_fisicos = {
-            "Nome do Cliente": "O campo Nome do Cliente é obrigatório.",
-            "CPF": "O campo CPF é obrigatório.",
-            "RG": "O campo de RG é obrigatório",
-            "Telefone": "O campo Telefone é obrigatório.",
-            "CEP": "O campo CEP é obrigatório.",
-            "Endereço": "O campo Endereço é obrigatório.",
-            "Número": "O campo Número é obrigatório.",
-            "Cidade": "O campo Cidade é obrigatório.",
-            "Bairro": "O campo Bairro é obrigatório.",
-            "Estado": "O campo de Estado é obrigatório",
-            "Nacionalidade": "O campo Nacionalidade é obrigatório.",
-            "Categoria do Cliente": "O campo Categoria do Cliente é obrigatório.",
-            "Status do Cliente": "Você deve selecionar um status válido para o cliente.",
-        }
     def limpar_campos_clientes_fisicos(self):
         for campo, widget in self.campos_cliente_fisico.items():
             if isinstance(widget,QLineEdit):
@@ -2290,3 +2285,33 @@ class Clientes_Fisicos(QWidget):
         resposta = msgbox.exec()
 
         return msgbox.clickedButton() == btn_sim
+    
+    def configurar_menu_contexto_fisicos(self):
+        self.table_clientes_fisicos.setContextMenuPolicy(Qt.CustomContextMenu)
+        self.table_clientes_fisicos.customContextMenuRequested.connect(self.abrir_menu_contexto_fisicos)
+    
+    def abrir_menu_contexto_fisicos(self,pos:QPoint):
+        index = self.table_clientes_fisicos.indexAt(pos)
+        if not index.isValid():
+            return # Clicou fora de uma célula
+        
+        # Captura os dados da linha
+        linha = index.row()
+        nome_cliente = self.table_clientes_fisicos.item(linha,0).text()  # Coluna 0 = Nome do Cliente
+
+        menu = QMenu()
+
+        detalhes_action = menu.addAction("Detalhes")
+        editar_action = menu.addAction("Editar Cliente")
+        excluir_action = menu.addAction("Excluir Cliente")
+
+
+        action = menu.exec(self.table_clientes_fisicos.viewport().mapToGlobal(pos))
+
+        # Executa conforme a opção clicada
+        if action == detalhes_action:
+            QMessageBox.information(self, "Aviso", "Essa função ainda não está disponível")
+        elif action == editar_action:
+            self.editar_cliente_fisico()
+        elif action == excluir_action:
+            self.excluir_clientes_fisicos()
