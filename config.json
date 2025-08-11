@@ -5,6 +5,10 @@
     "nao_mostrar_mensagem_boas_vindas": true,
     "nao_mostrar_aviso_irreversivel": false,
     "nao_mostrar_mensagem_arquivo_excel": false,
-    "nao_mostrar_mensagem_arquivo_excel_fisicos": false,
-    "historico_autocompletes": {}
+    "nao_mostrar_mensagem_arquivo_excel_fisicos": true,
+    "historico_autocompletes": {
+        "line_clientes": [
+            "Keved"
+        ]
+    }
 }

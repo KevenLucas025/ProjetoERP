@@ -58,8 +58,11 @@ class Clientes_Fisicos(QWidget):
         self.btn_historico_clientes_fisicos.clicked.connect(self.historico_clientes_fisicos)
         self.btn_gerar_relatorio_clientes_fisicos.clicked.connect(self.abrir_janela_relatorio_clientes_fisicos)
 
-        self.line_clientes_fisicos.returnPressed.connect(self.buscar_cliente_fisico_dinamico)
-        self.line_clientes_fisicos.textChanged.connect(self.buscar_cliente_fisico_dinamico)
+        # Enter → busca manual (com popup se não encontrar)
+        self.line_clientes_fisicos.returnPressed.connect(self.buscar_cliente_fisico_manual)
+        # Texto digitado → busca dinâmica (sem popup)
+        self.line_clientes_fisicos.textChanged.connect(lambda texto: self.buscar_cliente_fisico_dinamico((texto)))
+
 
         self.configurar_menu_contexto_fisicos()
         self.imagem_line_fisico()
@@ -76,6 +79,107 @@ class Clientes_Fisicos(QWidget):
 
     def _executar_busca_dinamica_fisicos(self):
         self.buscar_cliente_fisico_dinamico(self.ultimo_texto)
+
+    def _buscar_clientes_fisicos(self, texto):
+        """Executa a busca no banco e retorna lista de resultados."""
+        if not isinstance(texto, str):
+            return []
+
+        texto = texto.strip()
+        if not texto:
+            return self._listar_todos_clientes()
+
+        with sqlite3.connect('banco_de_dados.db') as conn:
+            cursor = conn.cursor()
+            cursor.execute("""
+                SELECT  
+                    "Nome do Cliente",
+                    "Data da Inclusão",
+                    RG,       
+                    CPF,
+                    Email,
+                    CNH,
+                    "Categoria da CNH",
+                    "Data de Emissão da CNH",
+                    "Data de Vencimento da CNH",
+                    Telefone,
+                    CEP,
+                    Endereço,
+                    Número,
+                    Complemento,
+                    Cidade,
+                    Bairro,
+                    Estado,
+                    "Status do Cliente",
+                    "Categoria do Cliente",
+                    "Última Atualização",
+                    "Origem do Cliente",
+                    "Valor Gasto Total",
+                    "Última Compra"
+                FROM clientes_fisicos
+                WHERE 
+                    LOWER("Nome do Cliente") LIKE LOWER(?) OR
+                    CPF LIKE ? OR
+                    RG LIKE ? OR
+                    Telefone LIKE ?
+            """, (f'%{texto}%', f'%{texto}%', f'%{texto}%', f'%{texto}%'))
+            return cursor.fetchall()
+
+    def _listar_todos_clientes(self):
+        with sqlite3.connect('banco_de_dados.db') as conn:
+            cursor = conn.cursor()
+            cursor.execute("""
+                SELECT  
+                    "Nome do Cliente",
+                    "Data da Inclusão",
+                    RG,       
+                    CPF,
+                    Email,
+                    CNH,
+                    "Categoria da CNH",
+                    "Data de Emissão da CNH",
+                    "Data de Vencimento da CNH",
+                    Telefone,
+                    CEP,
+                    Endereço,
+                    Número,
+                    Complemento,
+                    Cidade,
+                    Bairro,
+                    Estado,
+                    "Status do Cliente",
+                    "Categoria do Cliente",
+                    "Última Atualização",
+                    "Origem do Cliente",
+                    "Valor Gasto Total",
+                    "Última Compra"
+                FROM clientes_fisicos
+            """)
+            return cursor.fetchall()
+
+    def buscar_cliente_fisico_dinamico(self, texto):
+        texto = texto.strip()
+        if not texto:
+            resultados = self._listar_todos_clientes()
+        else:
+            resultados = self._buscar_clientes_fisicos(texto)
+        self.preencher_resultado_busca_fisica(resultados)
+
+
+    def buscar_cliente_fisico_manual(self):
+        texto = self.line_clientes_fisicos.text().strip()
+        if not texto:
+            self.preencher_resultado_busca_fisica(self._listar_todos_clientes())
+            return
+
+        resultados = self._buscar_clientes_fisicos(texto)
+        if resultados:
+            self.preencher_resultado_busca_fisica(resultados)
+        else:
+            QMessageBox.information(self, "Resultado", "Nenhum cliente encontrado.")
+            self.preencher_resultado_busca_fisica(self._listar_todos_clientes())
+
+
 
 
     # Função auxiliar para criar um QTableWidgetItem com texto centralizado
@@ -181,61 +285,9 @@ class Clientes_Fisicos(QWidget):
         # Conectar clique do botão a uma função
         self.botao_lupa.clicked.connect(self.buscar_cliente_fisico_dinamico)
 
-    def buscar_cliente_fisico_dinamico(self,texto):
-        texto = texto.strip()
+    
 
-        if not texto:
-            # limpar tabela ou mostrar todos, ou nada.
-            # Exemplo: mostrar todos (chame a função carregar todos, se tiver)
-            self.carregar_clientes_fisicos()  # ou limpar a tabela
-            return
 
-        # Conectar ao banco de dados
-        with sqlite3.connect('banco_de_dados.db') as conn:
-            cursor = conn.cursor()
-
-            try:
-                # Buscar em múltiplas colunas
-                cursor.execute("""
-                    SELECT  
-                        "Nome do Cliente",
-                        "Data da Inclusão",
-                        CPF,
-                        RG,
-                        Telefone,
-                        CEP,
-                        Endereço,
-                        Número,
-                        Complemento,
-                        Cidade,
-                        Bairro,
-                        Estado,
-                        "Status do Cliente",
-                        "Categoria do Cliente",
-                        "Última Atualização",
-                        "Origem do Cliente",
-                        "Valor Gasto Total",
-                        "Última Compra"
-                    FROM clientes_fisicos
-                    WHERE 
-                        LOWER("Nome do Cliente") LIKE LOWER(?) OR
-                        CPF LIKE ? OR
-                        RG LIKE ? OR
-                        Telefone LIKE ?
-                """, (f'%{texto}%', f'%{texto}%', f'%{texto}%', f'%{texto}%'))
-
-                resultados = cursor.fetchall()
-
-                if not resultados:
-                    QMessageBox.information(self, "Resultado", "Nenhum cliente encontrado.")
-                    return
-
-                # Atualizar sua tabela ou interface com os resultados
-                self.preencher_resultado_busca_fisica(resultados)
-                
-
-            except Exception as e:
-                QMessageBox.critical(self, "Erro", f"Erro ao buscar cliente: {e}")
 
     def preencher_resultado_busca_fisica(self, resultados):
         self.table_clientes_fisicos.setRowCount(0)
@@ -533,18 +585,17 @@ class Clientes_Fisicos(QWidget):
                 dados_atualizados["Última Atualização"], dados_atualizados["Valor Gasto Total"], dados_atualizados["Última Compra"],
                 cpf
             )
-            """print("Valores enviados para UPDATE:")
-            print(valores)"""
 
+            self.main_window.registrar_historico_clientes_fisicos(
+                    "Edição de Clientes", f"Cliente {dados_atualizados["Nome do Cliente"]} editado com sucesso"
+                )
 
             cursor.execute(query, valores)
 
-            print("Campos sensíveis enviados:", dados_atualizados["Última Atualização"], dados_atualizados["Valor Gasto Total"], dados_atualizados["Última Compra"])
-
             self.db.connection.commit()
             QMessageBox.information(None, "Sucesso", "Cliente atualizado com sucesso.")
-            self.janela_editar_cliente_fisico.close()
             self.carregar_clientes_fisicos()  # Se quiser recarregar a tabela
+            self.janela_editar_cliente_fisico.close()
         except Exception as e:
             QMessageBox.critical(None, "Erro", f"Erro ao atualizar cliente: {e}")
 
