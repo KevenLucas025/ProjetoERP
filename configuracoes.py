@@ -15,7 +15,7 @@ class Configuracoes_Login:
 
     def carregar(self):
         try:
-            with open("config.json", "r") as f:
+            with open("config.json", "r",encoding="utf-8") as f:
                 config = json.load(f)
                 self.usuario = config.get("usuario", "")
                 self.senha = config.get("senha","")
@@ -41,7 +41,7 @@ class Configuracoes_Login:
             "nao_mostrar_mensagem_arquivo_excel_fisicos":self.nao_mostrar_mensagem_arquivo_excel_fisicos,
             "historico_autocompletes": self.historico_autocompletes
         }
-        with open("config.json", "w") as f:
+        with open("config.json", "w",encoding="utf-8") as f:
             json.dump(config, f,indent=4,ensure_ascii=False)
 
 

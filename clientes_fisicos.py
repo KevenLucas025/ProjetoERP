@@ -21,6 +21,7 @@ from openpyxl import load_workbook
 from openpyxl.utils import get_column_letter
 from openpyxl.styles import Alignment
 from fpdf import FPDF
+import json
 
 
 class Clientes_Fisicos(QWidget):
@@ -263,9 +264,6 @@ class Clientes_Fisicos(QWidget):
                 self.campos_cliente["Estado"].setCurrentIndex(index_estado)
 
     def exibir_edicao_clientes_fisicos(self, dados_cliente: dict):
-        print("Dados recebidos para edição: ")
-        for k,v in dados_cliente.items():
-            print(f"{k}:  {v}")
         self.dados_originais_cliente_fisico = dados_cliente.copy()
         self.alteracoes_realizadas = False
         self.janela_editar_cliente_fisico = QMainWindow()
@@ -467,32 +465,82 @@ class Clientes_Fisicos(QWidget):
             else:
                 dados_atualizados[campo] = widget.text()
 
+        # --- VERIFICAÇÃO DE CAMPOS SENSÍVEIS ---
+        campos_sensiveis_fisicos = ["Data da Inclusão","Última Atualização", "Valor Gasto Total", "Última Compra"]
+        alterou_campo_sensivel_fisico = any(
+            dados_atualizados[c] != self.dados_originais_cliente_fisico[c]
+            for c in campos_sensiveis_fisicos
+        )
+        if alterou_campo_sensivel_fisico:
+            try:
+                with open("config.json","r",encoding="utf-8") as f:
+                    config = json.load(f)
+                    senha_correta = config.get("senha","")
+            except Exception as e:
+                QMessageBox.critical(None, "Erro", f"Não foi possível carregar a senha do sistema\n {e}")
+                return
+            tentativas = 0
+            while tentativas < 3:
+                senha, ok = QInputDialog.getText(
+                    None, "Confirmação de Segurança",
+                    "Digite a senha do sistema:",QLineEdit.Password
+                )
+                if not ok: # Cancelou
+                    return
+                
+                if senha.strip() == senha_correta.strip():
+                    break # Sai do loop se a senha estiver correta
+
+                tentativas += 1
+                if tentativas < 3:
+                    QMessageBox.critical(None, "Acesso Negado",
+                                        f"Senha incorreta. Tentativas restantes: {3 - tentativas}")
+                else:
+                    QMessageBox.critical(None, "Acesso Negado",
+                                        "Você excedeu o número máximo de tentativas.\nO sistema será encerrado.")
+                    QApplication.quit()
+                    return
 
         try:
             cursor = self.db.connection.cursor()
-            cpf = dados_atualizados["CPF"]  # Supondo que o CPF seja identificador único
+            cpf = dados_atualizados["CPF"]  #  CPF identificador único
+
+            # Corrigir campos vazios antes do UPDATE
+            if not dados_atualizados["CNH"]:
+                dados_atualizados["CNH"] = "Não Cadastrado"
+                dados_atualizados["Categoria da CNH"] = "Não Cadastrado"
+                dados_atualizados["Data de Emissão da CNH"] = "Não Cadastrado"
+                dados_atualizados["Data de Vencimento da CNH"] = "Não Cadastrado"
+
+            if not dados_atualizados["Complemento"]:
+                dados_atualizados["Complemento"] = "Não se aplica"
 
             query = """
-            UPDATE clientes_fisicos
-            SET
-                `Nome do Cliente` = ?, `Data da Inclusão` = ?, CNPJ = ?,
+            UPDATE clientes_fisicos SET
+                `Nome do Cliente` = ?, `Data da Inclusão` = ?,
                 RG = ?, CPF = ?, CNH = ?, `Categoria da CNH` = ?, `Data de Emissão da CNH` = ?, 
                 `Data de Vencimento da CNH` = ?, Telefone = ?, CEP = ?, Endereço = ?, 
                 Número = ?, Complemento = ?, Cidade = ?, Bairro = ?, Estado = ?, `Status do Cliente` = ?, `Categoria do Cliente` = ?,
                 `Última Atualização` = ?, `Valor Gasto Total` = ?, `Última Compra` = ?
-            WHERE CNPJ = ?
+            WHERE CPF  = ?
             """
 
             valores = (
-                dados_atualizados["Nome do Cliente"],dados_atualizados["Data da Inclusão"], dados_atualizados["CNPJ"],
+                dados_atualizados["Nome do Cliente"],dados_atualizados["Data da Inclusão"],
                 dados_atualizados["RG"], dados_atualizados["CPF"], dados_atualizados["CNH"], dados_atualizados["Categoria da CNH"], dados_atualizados["Data de Emissão da CNH"], 
                 dados_atualizados["Data de Vencimento da CNH"], dados_atualizados["Telefone"], dados_atualizados["CEP"], dados_atualizados["Endereço"], dados_atualizados["Número"], dados_atualizados["Complemento"],
                 dados_atualizados["Cidade"], dados_atualizados["Bairro"], dados_atualizados["Estado"], dados_atualizados["Status do Cliente"], dados_atualizados["Categoria do Cliente"],
                 dados_atualizados["Última Atualização"], dados_atualizados["Valor Gasto Total"], dados_atualizados["Última Compra"],
                 cpf
             )
+            """print("Valores enviados para UPDATE:")
+            print(valores)"""
+
 
             cursor.execute(query, valores)
+
+            print("Campos sensíveis enviados:", dados_atualizados["Última Atualização"], dados_atualizados["Valor Gasto Total"], dados_atualizados["Última Compra"])
+
             self.db.connection.commit()
             QMessageBox.information(None, "Sucesso", "Cliente atualizado com sucesso.")
             self.janela_editar_cliente_fisico.close()

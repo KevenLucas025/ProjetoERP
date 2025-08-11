@@ -281,9 +281,9 @@ class DataBase:
                     CPF TEXT,
                     Email TEXT,
                     CNH TEXT,
-                    "Categoria da CNH",
-                    "Data de Emissão da CNH",
-                    "Data de Vencimento da CNH",
+                    "Categoria da CNH" TEXT,
+                    "Data de Emissão da CNH" TEXT,
+                    "Data de Vencimento da CNH" TEXT,
                     Telefone TEXT,
                     CEP TEXT,
                     Endereço TEXT,
@@ -343,7 +343,7 @@ class DataBase:
             print("Erro ao criar tabela de historico_clientes_fisicos: ", e)
 #*********************************************************************************************************************
     def insert_product(self, produto, quantidade, valor_real, desconto,valor_total, data_cadastro, 
-                    codigo_item, cliente, descricao_produto, usuario, imagem=None):
+                    codigo_item, cliente, descricao_produto, usuario,cnpj,cpf, imagem=None):
         try:
             cursor = self.connection.cursor()
 
@@ -359,13 +359,15 @@ class DataBase:
             descricao_produto = descricao_produto if descricao_produto is not None else "Não Cadastrado"
             usuario = usuario if usuario is not None else "Não Cadastrado"
             imagem = imagem if imagem is not None else "Não Cadastrado"
+            cnpj = cnpj if cnpj is not None else "Não Cadastrado"
+            cpf = cpf if cpf is not None else "Não Cadastrado"
 
             cursor.execute("""
                 INSERT INTO products (Produto, Quantidade, Valor_Real, Desconto,"Valor Total", "Data do Cadastro", Código_Item, 
-                        Cliente, Descrição_Produto,"Status da Saída", Imagem, Usuário) 
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?,?)
+                        Cliente, Descrição_Produto,"Status da Saída", Imagem, Usuário,CNPJ,CPF) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?,?,?,?)
             """, (produto, quantidade, valor_real, desconto,valor_total, data_cadastro, codigo_item, 
-                cliente, descricao_produto, 0,imagem, usuario))
+                cliente, descricao_produto, 0,imagem, usuario,cpf,cnpj))
             self.connection.commit()
             print("Produto inserido com sucesso!")
         except Exception as e:

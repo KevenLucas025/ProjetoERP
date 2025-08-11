@@ -488,7 +488,7 @@ class Clientes_Juridicos(QWidget):
                 dados_atualizados[campo] = widget.text()
 
         # --- VERIFICAÇÃO DE CAMPOS SENSÍVEIS ---
-        campos_sensiveis = ["Última Atualização", "Valor Gasto Total", "Última Compra"]
+        campos_sensiveis = ["Data da Inclusão","Última Atualização", "Valor Gasto Total", "Última Compra"]
         alterou_campo_sensivel = any(
             dados_atualizados[c] != self.dados_originais_cliente[c]
             for c in campos_sensiveis

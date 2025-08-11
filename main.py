@@ -1626,15 +1626,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                                 "Você está editando um produto.\nAtualize o produto em vez de criar um novo.")
             return
         # Verificar se há produtos pendentes para confirmar
-        if not self.produtos_pendentes:
+        if (not hasattr(self, 'produtos_pendentes_por_cliente') or
+            not any(self.produtos_pendentes_por_cliente.values())):
+            
             msg = QMessageBox()
             msg.setIcon(QMessageBox.Warning)
             msg.setWindowTitle("Erro")  
             msg.setText("Não há produtos preenchidos para confirmar.")
             msg.exec()
             return None
-        
-        
 
         # Verificar se todos os campos obrigatórios estão preenchidos
         if not self.campos_obrigatorios_preenchidos():
@@ -1671,12 +1671,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if confirmar_msg.clickedButton() == button_nao:
             return
                 
-        # Salvar os produtos pendentes no banco de dados
-        for produto in self.produtos_pendentes:
-            self.inserir_produto_no_bd(produto)
+        # Para salvar, por exemplo:
+        for lista_produtos in self.produtos_pendentes_por_cliente.values():
+            for produto in lista_produtos:
+                self.inserir_produto_no_bd(produto)
 
-        # Limpar a lista de produtos pendentes
-        self.produtos_pendentes.clear()
+        # Depois limpar:
+        self.produtos_pendentes_por_cliente.clear()
 
         # Limpar os campos de entrada
         self.limpar_campos_produtos()
@@ -1698,13 +1699,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             
              #  Verificar se o cliente existe antes de continuar
             cursor.execute("""
-                SELECT 1 FROM clientes_juridicos WHERE "Nome do Cliente" = ?
-            """, (produto_info["cliente"],))
-            cliente_existe = cursor.fetchone()
+                SELECT CNPJ FROM clientes_juridicos WHERE rowid = ?
+            """, (produto_info["rowid_cliente"],))
+            result = cursor.fetchone()
             
-            #  Cliente existe, continuar cadastro do produto
-            if not cliente_existe:
-                return # Impede o restante do código de continuar
+            if not result:
+                return  # Cliente não encontrado
+            cnpj_cliente = result[0]
 
             # Formatando o valor_real com o símbolo "R$" e duas casas decimais
             valor_real_formatado = produto_info['valor_produto']
@@ -1736,36 +1737,48 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 produto_info["cliente"],
                 produto_info["descricao_produto"],
                 usuario_logado,  # Passando o usuário logado
-                imagem_bytes  # Adicionando a imagem aqui
+                imagem_bytes,  # Adicionando a imagem aqui
+                produto_info.get("cnpj"),  # novo campo CNPJ
+                produto_info.get("cpf")    # novo campo CPF
             )
         except Exception as e:
             QMessageBox.critical(self, "Erro", f"Erro ao cadastrar produto: {str(e)}")
             
-        # Atualizar "Valor Gasto Total" e "Última Compra"   
+         # Atualizar "Valor Gasto Total" e "Última Compra" apenas para o cliente correto
         cursor = db.connection.cursor()
-        cursor.execute("""
-            SELECT "Valor Total" FROM products WHERE "Cliente" = ?
-        """,(produto_info["cliente"],))
+
+        if produto_info.get("cnpj"):  # Cliente jurídico
+            cursor.execute("""SELECT "Valor Total" FROM products WHERE CNPJ = ?""", (produto_info["cnpj"],))
+        else:  # Cliente físico
+            cursor.execute("""SELECT "Valor Total" FROM products WHERE CPF = ?""", (produto_info["cpf"],))
+
+
         
         linhas = cursor.fetchall()
         valor_total_cliente = 0.0
-        
         for linha in linhas:
             valor_str = str(linha[0]).replace("R$", "").replace(".", "").replace(",", ".")
             try:
                 valor_total_cliente += float(valor_str)
-            except:
-                pass
+            except Exception as e:
+                print(f"Erro ao converter valor: '{valor_str}' -> {e}")
             
         # 2. Formatar para padrão BR
         valor_total_formatado = f"R$ {valor_total_cliente:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
 
-        # 3. Atualizar a tabela clientes_juridicos
-        cursor.execute("""
-            UPDATE clientes_juridicos
-            SET "Valor Gasto Total" = ?, "Última Compra" = ?
-            WHERE "Nome do Cliente" = ?
-        """, (valor_total_formatado, produto_info["data_cadastro"], produto_info["cliente"]))
+        # Atualizar tabela de clientes
+        if produto_info.get("cnpj"):
+            cursor.execute("""
+                UPDATE clientes_juridicos
+                SET "Valor Gasto Total" = ?, "Última Compra" = ?
+                WHERE CNPJ = ?
+            """, (valor_total_formatado, produto_info["data_cadastro"], produto_info["cnpj"]))
+        else:
+            cursor.execute("""
+                UPDATE clientes_fisicos
+                SET "Valor Gasto Total" = ?, "Última Compra" = ?
+                WHERE CPF = ?
+            """, (valor_total_formatado, produto_info["data_cadastro"], produto_info["cpf"]))
 
         db.connection.commit()
 
@@ -1773,7 +1786,41 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             # Registrar no histórico após a inserção do produto
             descricao = f"Produto {produto_info['produto']} foi cadastrado com quantidade {produto_info['quantidade']} e valor {valor_real_formatado}."
             self.registrar_historico("Cadastro de Produto", descricao)
+#*********************************************************************************************************************
+    def adicionar_produto(self):
+        # Verificar se todos os campos estão preenchidos
+        campos_preenchidos = all([
+            self.txt_produto.text().strip(),
+            self.txt_quantidade.text().strip(),
+            self.txt_valor_produto_3.text().strip(),
+            self.dateEdit_3.date().isValid(),
+            self.txt_cliente_3.text().strip(),
+            self.txt_descricao_produto_3.text().strip()
+        ])
 
+        # Gerar código automaticamente se estiver vazio
+        if campos_preenchidos and (not self.txt_codigo_item.text().strip() or self.txt_codigo_item.text() == "0"):
+            self.txt_codigo_item.setText(self.gerar_codigo_aleatorio())
+
+        produto_original = self.produto_selecionado if hasattr(self, 'produto_selecionado') else None
+        produto_info = self.subscribe_produto()
+
+        if produto_info is not None:
+            quantidade, valor_do_desconto, valor_com_desconto = produto_info
+
+            # Verificar se houve alteração
+            if produto_original and not self.verificar_alteracoes_produto(produto_original):
+                msg = QMessageBox()
+                msg.setIcon(QMessageBox.Information)
+                msg.setWindowTitle("Informação")
+                msg.setText("Nenhuma alteração foi feita no produto.")
+                msg.exec()
+                return
+            
+            self.atualizar_valores_frames_na_hora_do_cadastro(quantidade, valor_do_desconto, valor_com_desconto)
+
+            # Limpar produto selecionado após a adição
+            self.produto_selecionado = None
 #*********************************************************************************************************************
     def subscribe_produto(self): 
         # Verificar se todos os campos obrigatórios estão preenchidos
@@ -1860,24 +1907,85 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         db = DataBase()
         db.connecta()
         cursor = db.connection.cursor()
-        cursor.execute("""
-                SELECT 1 FROM clientes_juridicos WHERE "Nome do Cliente" = ?
-        """,(produto_info["cliente"],))
-        clientes_existe = cursor.fetchone()
 
-        if not clientes_existe:
+        cliente_nome = produto_info["cliente"]
+        
+        # Buscar em clientes_fisicos
+        cursor.execute("""
+            SELECT rowid, "Nome do Cliente", CPF 
+            FROM clientes_fisicos 
+            WHERE "Nome do Cliente" = ?
+        """, (cliente_nome,))
+        clientes_fisicos = [(rowid, nome, "Físico", cpf) for rowid, nome, cpf in cursor.fetchall()]
+
+        # Buscar em clientes_juridicos
+        cursor.execute("""
+            SELECT rowid, "Nome do Cliente", CNPJ 
+            FROM clientes_juridicos 
+            WHERE "Nome do Cliente" = ?
+        """, (cliente_nome,))
+        clientes_juridicos = [(rowid, nome, "Jurídico", cnpj) for rowid, nome, cnpj in cursor.fetchall()]
+
+
+        # Junta todos os resultados
+        clientes_encontrados = clientes_fisicos + clientes_juridicos
+
+
+        if not clientes_encontrados:
             QMessageBox.warning(
                 None,"Cliente não Encontrado",
                 f"O cliente {produto_info["cliente"]} precisa estar cadastrado antes de adicionar um produto"
             )
             return
+        
+        # Se houver mais de um cliente com o mesmo nome, perguntar por qual seguir
+        if len(clientes_encontrados) > 1:
+            nomes_formatados = "\n".join(
+                [f"{i+1}. {tipo} - {nome} - {'CNPJ' if tipo == 'Jurídico' else 'CPF'}: {doc}"
+                for i, (_, nome, tipo, doc) in enumerate(clientes_encontrados)]
+            )
+            escolha, ok = QInputDialog.getInt(
+                None,
+                "Cliente duplicado encontrado",
+                f"Foram encontrados {len(clientes_encontrados)} clientes com o mesmo nome '{cliente_nome}':\n\n{nomes_formatados}\n\nDigite o número do cliente que deseja usar:",
+                1,  # valor inicial
+                1,  # mínimo
+                len(clientes_encontrados)  # máximo
+            )
             
+            if not ok:
+                return  # usuário cancelou
+
+            cliente_escolhido = clientes_encontrados[escolha - 1]
+        else:
+            cliente_escolhido = clientes_encontrados[0]
+
+        rowid_cliente, nome_cliente, tipo_cliente,documento_cliente = cliente_escolhido
+
+        # Armazena no produto_info
+        produto_info["rowid_cliente"] = rowid_cliente
+        if tipo_cliente == "Jurídico":
+            produto_info["cnpj"] = documento_cliente
+            produto_info["cpf"] = None
+        else:
+            produto_info["cpf"] = documento_cliente
+            produto_info["cnpj"] = None
+
+
+        # 6) Inicializar dicionário se não existir para o cliente
+        if not hasattr(self, 'produtos_pendentes_por_cliente'):
+            self.produtos_pendentes_por_cliente = {}
+
+        if rowid_cliente not in self.produtos_pendentes_por_cliente:
+            self.produtos_pendentes_por_cliente[rowid_cliente] = []
+
 
         if not self.is_editing_produto:
-            self.produtos_pendentes.clear() # Limpa produtos anteriores inválidos
-            self.produtos_pendentes.append(produto_info)
+            if rowid_cliente not in self.produtos_pendentes_por_cliente:
+                self.produtos_pendentes_por_cliente[rowid_cliente] = []
+            self.produtos_pendentes_por_cliente[rowid_cliente].append(produto_info)
         else:
-            # Apenas cálculo foi feito, mas o produto não será adicionado
+            # lógica para editar produto, se houver
             pass
         # Retornar os valores calculados para exibição
         return quantidade, valor_desconto, valor_com_desconto
@@ -1925,43 +2033,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def exibir_tabela_produtos(self):
         dialog_atualizacao = AtualizarProduto(self)
         dialog_atualizacao.exec()
-#*********************************************************************************************************************
-    def adicionar_produto(self):
-        # Verificar se todos os campos estão preenchidos
-        campos_preenchidos = all([
-            self.txt_produto.text().strip(),
-            self.txt_quantidade.text().strip(),
-            self.txt_valor_produto_3.text().strip(),
-            self.dateEdit_3.date().isValid(),
-            self.txt_cliente_3.text().strip(),
-            self.txt_descricao_produto_3.text().strip()
-        ])
-
-        # Gerar código automaticamente se estiver vazio
-        if campos_preenchidos and (not self.txt_codigo_item.text().strip() or self.txt_codigo_item.text() == "0"):
-            self.txt_codigo_item.setText(self.gerar_codigo_aleatorio())
-
-        produto_original = self.produto_selecionado if hasattr(self, 'produto_selecionado') else None
-        produto_info = self.subscribe_produto()
-
-        if produto_info is not None:
-            quantidade, valor_do_desconto, valor_com_desconto = produto_info
-
-            # Verificar se houve alteração
-            if produto_original and not self.verificar_alteracoes_produto(produto_original):
-                msg = QMessageBox()
-                msg.setIcon(QMessageBox.Information)
-                msg.setWindowTitle("Informação")
-                msg.setText("Nenhuma alteração foi feita no produto.")
-                msg.exec()
-                return
-            
-            self.atualizar_valores_frames_na_hora_do_cadastro(quantidade, valor_do_desconto, valor_com_desconto)
-
-            # Limpar produto selecionado após a adição
-            self.produto_selecionado = None
-    
-#*********************************************************************************************************************    
+       
     def gerar_codigo_aleatorio(self, length=12):
         caracteres = string.ascii_uppercase + string.digits
         codigo_aleatorio = ''.join(random.choice(caracteres) for _ in range(length))
