@@ -997,27 +997,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 # Configuração do local
     locale.setlocale(locale.LC_ALL, 'pt_BR.UTF-8')
 #*********************************************************************************************************************
-    def formatar_moeda(self):
-        sender = self.sender()
-        valor = sender.text()
-
-        if valor:
-            try:
-                # Converte a string para float, substituindo vírgula por ponto
-                valor = valor.replace(",", ".")
-                valor_float = float(valor)
-            except ValueError:
-                QMessageBox.warning(self, "Erro", "Valor inválido")
-                return
-
-            if valor_float < 10:
-                self.mostrar_detalhes_erro()
-                return
-
-            # Formata o valor como moeda, agrupando milhares
-            valor_formatado = locale.currency(valor_float, grouping=True)
-
-            sender.setText(valor_formatado)
+    
 #*********************************************************************************************************************
     def desconectarUsuario(self):   
         msgBox = QMessageBox()
@@ -2407,6 +2387,32 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             widget.setText(numero_cnpj)
             widget.blockSignals(False)
 #*********************************************************************************************************************
+    def formatar_moeda(self, widget):
+        valor = widget.text().strip()
+
+        # Permitir "Não Cadastrado"
+        if valor.lower() == "não cadastrado":
+            widget.setText("Não Cadastrado")
+            return
+
+        if valor:
+            try:
+                # Remove R$, espaços e pontos de milhar
+                valor = valor.replace("R$", "").replace(" ", "").replace(".", "").replace(",", ".")
+                valor_float = float(valor)
+            except ValueError:
+                QMessageBox.warning(None, "Erro", "Valor inválido.")
+                return
+
+            # Regra: valor mínimo
+            if valor_float < 10:
+                self.mostrar_detalhes_erro()
+                return
+
+            # Formatar como moeda
+            valor_formatado = locale.currency(valor_float, grouping=True)
+            widget.setText(valor_formatado)
+#*********************************************************************************************************************
     def formatar_rg(self, text,widget):
         if text == "Não Cadastrado":
             widget.setText(text)
@@ -2445,39 +2451,34 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         widget.setText(cnh_formatada)
 
 #*********************************************************************************************************************
-    def formatar_data_nascimento(self, text,widget):
+    def formatar_data_nascimento(self, text, widget):
         if text == "Não Cadastrado":
             widget.setText(text)
             return
         
         # Remover todos os caracteres que não são dígitos
         numeros = ''.join(filter(str.isdigit, text))
-
-        # Definir um valor padrão para data_formatada
         data_formatada = ""
 
-        # Verificar se existem dígitos suficientes para formar uma data
         if len(numeros) >= 1:
-            # Pegar os dois primeiros dígitos e adicionar a '/'
             data_formatada = numeros[:2] + "/"
-            # Verificar se há pelo menos 3 dígitos para o mês
             if len(numeros) >= 3:
-                # Adicionar os próximos dois dígitos ao mês
                 data_formatada += numeros[2:4] + "/"
-                # Verificar se há pelo menos 5 dígitos para o ano
                 if len(numeros) >= 5:
-                    # Adicionar os próximos quatro dígitos ao ano
                     data_formatada += numeros[4:8]
 
-        # Atualiza o texto do widget com formatação
-            widget.blockSignals(True)
-            widget.setText(data_formatada)
-            widget.blockSignals(False)
-        else:
-            # Atualiza o texto do widget com formatação
-            widget.blockSignals(True)
-            widget.setText(numeros)
-            widget.blockSignals(False)
+        widget.blockSignals(True)
+        widget.setText(data_formatada)
+        widget.blockSignals(False)
+
+    def validar_data_quando_finalizar(self, text, widget):
+        if len(text) == 10:  # formato completo dd/mm/yyyy
+            try:
+                datetime.strptime(text, "%d/%m/%Y")
+            except ValueError:
+                QMessageBox.warning(None, "Data inválida", f"A data '{text}' é inválida.")
+                widget.setText("")
+                widget.setFocus()
 #*********************************************************************************************************************
     def formatar_telefone(self, text, widget):
         numero_limpo = ''.join(filter(str.isdigit, text))[:14]

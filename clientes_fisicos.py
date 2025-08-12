@@ -329,15 +329,15 @@ class Clientes_Fisicos(QWidget):
 
         dados = self.main_window.buscar_cep(texto_cep)
         if dados:
-            self.campos_cliente["Endereço"].setText(dados.get("logradouro", ""))
-            self.campos_cliente["Complemento"].setText(dados.get("complemento", ""))
-            self.campos_cliente["Bairro"].setText(dados.get("bairro", ""))
-            self.campos_cliente["Cidade"].setText(dados.get("localidade", ""))
+            self.campos_cliente_fisico["Endereço"].setText(dados.get("logradouro", ""))
+            self.campos_cliente_fisico["Complemento"].setText(dados.get("complemento", ""))
+            self.campos_cliente_fisico["Bairro"].setText(dados.get("bairro", ""))
+            self.campos_cliente_fisico["Cidade"].setText(dados.get("localidade", ""))
             
             estado = dados.get("uf", "")
-            index_estado = self.campos_cliente["Estado"].findText(estado)
+            index_estado = self.campos_cliente_fisico["Estado"].findText(estado)
             if index_estado >= 0:
-                self.campos_cliente["Estado"].setCurrentIndex(index_estado)
+                self.campos_cliente_fisico["Estado"].setCurrentIndex(index_estado)
 
     
 
@@ -701,7 +701,7 @@ class Clientes_Fisicos(QWidget):
             "Status do Cliente", "Categoria do Cliente","Última Atualização", "Valor Gasto Total", "Última Compra"
         ]
 
-        self.campos_cliente = {}
+        self.campos_cliente_fisico = {}
         labels_map = {} # Para guardar referências dos labels
 
         for i, campo in enumerate(colunas):
@@ -794,38 +794,40 @@ class Clientes_Fisicos(QWidget):
             elif campo == "CEP":
                 entrada.textChanged.connect(lambda texto, w=entrada: self.main_window.formatar_cep(texto,w))
                 entrada.editingFinished.connect(lambda e=entrada: self.formatar_e_buscar_cep(e))
-            elif campo in ["Data de Emissão da CNH", "Data de Vencimento da CNH"]:
-                entrada.textChanged.connect(lambda texto, w=entrada: self.main_window.formatar_data_nascimento(texto,w))
-                
+            elif campo in ["Data de Emissão da CNH", "Data de Vencimento da CNH", "Última Compra", "Data da Inclusão", "Última Atualização"]:
+                entrada.textChanged.connect(lambda texto, w=entrada: self.main_window.formatar_data_nascimento(texto, w))
+                entrada.editingFinished.connect(lambda w=entrada: self.main_window.validar_data_quando_finalizar(w.text(), w))
+            elif campo == "Valor Gasto Total":
+                entrada.editingFinished.connect(lambda w=entrada: self.main_window.formatar_moeda(w))
 
             layout.addWidget(label, i, 0)
             layout.addWidget(entrada, i, 1)
-            self.campos_cliente[campo] = entrada
+            self.campos_cliente_fisico[campo] = entrada
 
         # --- Esconde inicialmente os campos de datas da CNH ---
         labels_map["Data de Emissão da CNH"].hide()
-        self.campos_cliente["Data de Emissão da CNH"].hide()
+        self.campos_cliente_fisico["Data de Emissão da CNH"].hide()
         labels_map["Data de Vencimento da CNH"].hide()
-        self.campos_cliente["Data de Vencimento da CNH"].hide()
+        self.campos_cliente_fisico["Data de Vencimento da CNH"].hide()
 
         #Função para mostrar/esconder os campos da CNH
         def on_categoria_cnh_change_edit(text):
             if text not in ("Selecione","Nenhum"):
                 labels_map["Data de Emissão da CNH"].show()
-                self.campos_cliente["Data de Emissão da CNH"].show()
+                self.campos_cliente_fisico["Data de Emissão da CNH"].show()
                 labels_map["Data de Vencimento da CNH"].show()
-                self.campos_cliente["Data de Vencimento da CNH"].show()
+                self.campos_cliente_fisico["Data de Vencimento da CNH"].show()
             else:
                 labels_map["Data de Emissão da CNH"].hide()
-                self.campos_cliente["Data de Emissão da CNH"].hide()
+                self.campos_cliente_fisico["Data de Emissão da CNH"].hide()
                 labels_map["Data de Vencimento da CNH"].hide()
-                self.campos_cliente["Data de Vencimento da CNH"].hide()
-                self.campos_cliente["Data de Emissão da CNH"].clear()
-                self.campos_cliente["Data de Vencimento da CNH"].clear()
+                self.campos_cliente_fisico["Data de Vencimento da CNH"].hide()
+                self.campos_cliente_fisico["Data de Emissão da CNH"].clear()
+                self.campos_cliente_fisico["Data de Vencimento da CNH"].clear()
 
         # Conecta evento e aplica estado inicial
-        self.campos_cliente["Categoria da CNH"].currentTextChanged.connect(on_categoria_cnh_change_edit)
-        on_categoria_cnh_change_edit(self.campos_cliente["Categoria da CNH"].currentText())
+        self.campos_cliente_fisico["Categoria da CNH"].currentTextChanged.connect(on_categoria_cnh_change_edit)
+        on_categoria_cnh_change_edit(self.campos_cliente_fisico["Categoria da CNH"].currentText())
 
         # Botão atualizar
         botao_atualizar = QPushButton("Atualizar")
@@ -862,7 +864,7 @@ class Clientes_Fisicos(QWidget):
             "Status do Cliente": "Você deve selecionar um status válido para o cliente.",
         }
         
-        cnh_widget = self.campos_cliente.get("CNH")
+        cnh_widget = self.campos_cliente_fisico.get("CNH")
         cnh_valor = ""
         if isinstance(cnh_widget, QLineEdit):
             cnh_valor = cnh_widget.text().strip()
@@ -870,7 +872,7 @@ class Clientes_Fisicos(QWidget):
             cnh_valor = cnh_widget.currentText().strip()
                 
         # Se CNH tiver valor, obriga mais campos
-        if cnh_valor and cnh_valor.lower() != "não cadastrado" and cnh_valor.lower() != "selecionar":
+        if cnh_valor and cnh_valor.lower() != "não cadastrado" and cnh_valor.lower() != "selecione":
             self.campos_obrigatorios_clientes_fisicos.update({
                 "Categoria da CNH": "Informe a Categoria da CNH.",
                 "Data de Emissão da CNH": "Informe a Data de Emissão da CNH.",
@@ -993,11 +995,24 @@ class Clientes_Fisicos(QWidget):
             QMessageBox.information(None, "Sem alterações", "Nenhuma modificação foi feita.")
             return
         
-        
+        # --- VALIDAÇÃO DOS CAMPOS OBRIGATÓRIOS ---
+        for campo, mensagem in self.campos_obrigatorios_clientes_fisicos.items():
+            widget = self.campos_cliente_fisico[campo]
+            if isinstance(widget, QLineEdit):
+                valor = widget.text().strip()
+            elif isinstance(widget, QComboBox):
+                valor = widget.currentText().strip()
+            else:
+                valor = str(widget).strip()
+
+            if not valor or (isinstance(widget, QComboBox) and valor.lower() == "selecione"):
+                QMessageBox.warning(None, "Atenção", mensagem)
+                return
+
 
         # Monta dados atualizados
         dados_atualizados = {}
-        for campo, widget in self.campos_cliente.items():
+        for campo, widget in self.campos_cliente_fisico.items():
             if isinstance(widget, QComboBox):
                 dados_atualizados[campo] = widget.currentText()
             else:

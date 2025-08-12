@@ -2,7 +2,7 @@ from PySide6.QtWidgets import (QLineEdit, QToolButton,QTableWidgetItem,
                                QMessageBox,QMainWindow,QVBoxLayout,QWidget,QLabel,QCheckBox,
                                QPushButton,QScrollArea,QComboBox,QGridLayout,QHeaderView,QHBoxLayout,
                                QGraphicsOpacityEffect,QTableWidget,QInputDialog,QDialog,
-                               QRadioButton,QGroupBox,QFileDialog,QFormLayout,QDateEdit,QMenu,QApplication)
+                               QRadioButton,QGroupBox,QFileDialog,QFormLayout,QDateEdit,QMenu,QApplication,QTextEdit)
 from PySide6.QtGui import QPixmap, QIcon,QColor,QBrush,QGuiApplication
 from PySide6.QtCore import Qt,QTimer,QPropertyAnimation,QEvent,QDate,QPoint
 from database import DataBase
@@ -333,15 +333,15 @@ class Clientes_Juridicos(QWidget):
 
         dados = self.main_window.buscar_cep(texto_cep)
         if dados:
-            self.campos_cliente["Endereço"].setText(dados.get("logradouro", ""))
-            self.campos_cliente["Complemento"].setText(dados.get("complemento", ""))
-            self.campos_cliente["Bairro"].setText(dados.get("bairro", ""))
-            self.campos_cliente["Cidade"].setText(dados.get("localidade", ""))
+            self.campos_cliente_juridico["Endereço"].setText(dados.get("logradouro", ""))
+            self.campos_cliente_juridico["Complemento"].setText(dados.get("complemento", ""))
+            self.campos_cliente_juridico["Bairro"].setText(dados.get("bairro", ""))
+            self.campos_cliente_juridico["Cidade"].setText(dados.get("localidade", ""))
             
             estado = dados.get("uf", "")
-            index_estado = self.campos_cliente["Estado"].findText(estado)
+            index_estado = self.campos_cliente_juridico["Estado"].findText(estado)
             if index_estado >= 0:
-                self.campos_cliente["Estado"].setCurrentIndex(index_estado)
+                self.campos_cliente_juridico["Estado"].setCurrentIndex(index_estado)
                 
     def exibir_edicao_clientes(self, dados_cliente: dict):
         self.dados_originais_cliente = dados_cliente.copy()
@@ -397,7 +397,7 @@ class Clientes_Juridicos(QWidget):
             "Status do Cliente","Categoria do Cliente","Última Atualização", "Valor Gasto Total", "Última Compra"
         ]
 
-        self.campos_cliente = {}
+        self.campos_cliente_juridico = {}
 
         for i, campo in enumerate(colunas):
             label = QLabel(campo + ":")
@@ -486,18 +486,22 @@ class Clientes_Juridicos(QWidget):
                 entrada.textChanged.connect(lambda texto, w=entrada: self.main_window.validar_email(texto,w))
             elif campo == "CNH":
                 entrada.textChanged.connect(lambda texto, w=entrada: self.main_window.formatar_cnh(texto,w))
-            elif campo == "Data de Nascimento":
-                entrada.textChanged.connect(lambda texto, w=entrada: self.main_window.formatar_data_nascimento(texto,w))
+            elif campo in ["Data de Emissão da CNH", "Data de Vencimento da CNH", "Última Compra", "Data da Inclusão", "Última Atualização"]:
+                entrada.textChanged.connect(lambda texto, w=entrada: self.main_window.formatar_data_nascimento(texto, w))
+                entrada.editingFinished.connect(lambda w=entrada: self.main_window.validar_data_quando_finalizar(w.text(), w))
             elif campo == "Telefone":
                 entrada.textChanged.connect(lambda texto, w=entrada: self.main_window.formatar_telefone(texto, w))
             elif campo == "CEP":
                 entrada.textChanged.connect(lambda texto, w=entrada: self.main_window.formatar_cep(texto,w))
                 entrada.editingFinished.connect(lambda e=entrada: self.formatar_e_buscar_cep(e))
+            elif campo == "Valor Gasto Total":
+                entrada.editingFinished.connect(lambda w=entrada: self.main_window.formatar_moeda(w))
+
                 
 
             layout.addWidget(label, i, 0)
             layout.addWidget(entrada, i, 1)
-            self.campos_cliente[campo] = entrada
+            self.campos_cliente_juridico[campo] = entrada
 
         # Botão atualizar
         botao_atualizar = QPushButton("Atualizar")
@@ -541,106 +545,7 @@ class Clientes_Juridicos(QWidget):
 
         self.exibir_edicao_clientes(dados_cliente)   
 
-    def atualizar_dados_clientes(self):
-        if not self.alteracoes_realizadas:
-            QMessageBox.information(None, "Sem alterações", "Nenhuma modificação foi feita.")
-            return
-        
-        dados_atualizados = {}
-        for campo, widget in self.campos_cliente.items():
-            if isinstance(widget, QComboBox):
-                dados_atualizados[campo] = widget.currentText()
-            else:
-                dados_atualizados[campo] = widget.text()
-
-        # --- VERIFICAÇÃO DE CAMPOS SENSÍVEIS ---
-        campos_sensiveis = ["Data da Inclusão","Última Atualização", "Valor Gasto Total", "Última Compra"]
-        alterou_campo_sensivel = any(
-            dados_atualizados[c] != self.dados_originais_cliente[c]
-            for c in campos_sensiveis
-        )
-
-        if alterou_campo_sensivel:
-            try:
-                with open("config.json", "r", encoding="utf-8") as f:
-                    config = json.load(f)
-                    senha_correta = config.get("senha", "")
-            except Exception as e:
-                QMessageBox.critical(None, "Erro", f"Não foi possível carregar a senha do sistema\n {e}")
-                return
-
-            tentativas = 0
-            while tentativas < 3:
-                senha, ok = QInputDialog.getText(
-                    None, "Confirmação de Segurança",
-                    "Digite a senha do sistema:", QLineEdit.Password
-                )
-
-                if not ok:  # Cancelou
-                    return
-
-                if senha.strip() == senha_correta.strip():
-                    break  # Sai do loop se a senha estiver correta
-
-                tentativas += 1
-                if tentativas < 3:
-                    QMessageBox.critical(None, "Acesso Negado",
-                                        f"Senha incorreta. Tentativas restantes: {3 - tentativas}")
-                else:
-                    QMessageBox.critical(None, "Acesso Negado",
-                                        "Você excedeu o número máximo de tentativas.\nO sistema será encerrado.")
-                    QApplication.quit()
-                    return
-
-        try:
-            cursor = self.db.connection.cursor()
-            cnpj = dados_atualizados["CNPJ"]  # Identificador único
-
-            # Corrigir campos vazios antes do UPDATE
-            if not dados_atualizados["CNH"]:
-                dados_atualizados["CNH"] = "Não Cadastrado"
-                dados_atualizados["Categoria da CNH"] = "Não Cadastrado"
-                dados_atualizados["Data de Emissão da CNH"] = "Não Cadastrado"
-                dados_atualizados["Data de Vencimento da CNH"] = "Não Cadastrado"
-
-            if not dados_atualizados["Complemento"]:
-                dados_atualizados["Complemento"] = "Não se aplica"
-
-            query = """
-                UPDATE clientes_juridicos SET
-                    `Nome do Cliente` = ?, `Razão Social` = ?, `Data da Inclusão` = ?, CNPJ = ?,
-                    RG = ?, CPF = ?, CNH = ?, `Categoria da CNH` = ?, `Data de Emissão da CNH` = ?, 
-                    `Data de Vencimento da CNH` = ?, Telefone = ?, CEP = ?, Endereço = ?, 
-                    Número = ?, Complemento = ?, Cidade = ?, Bairro = ?, Estado = ?, `Status do Cliente` = ?, `Categoria do Cliente` = ?,
-                    `Última Atualização` = ?, `Valor Gasto Total` = ?, `Última Compra` = ?
-                WHERE CNPJ = ?
-            """
-            valores = (
-                dados_atualizados["Nome do Cliente"], dados_atualizados["Razão Social"], dados_atualizados["Data da Inclusão"], dados_atualizados["CNPJ"],
-                dados_atualizados["RG"], dados_atualizados["CPF"], dados_atualizados["CNH"], dados_atualizados["Categoria da CNH"], dados_atualizados["Data de Emissão da CNH"], 
-                dados_atualizados["Data de Vencimento da CNH"], dados_atualizados["Telefone"], dados_atualizados["CEP"], dados_atualizados["Endereço"], dados_atualizados["Número"], dados_atualizados["Complemento"],
-                dados_atualizados["Cidade"], dados_atualizados["Bairro"], dados_atualizados["Estado"], dados_atualizados["Status do Cliente"], dados_atualizados["Categoria do Cliente"],
-                dados_atualizados["Última Atualização"], dados_atualizados["Valor Gasto Total"], dados_atualizados["Última Compra"],
-                cnpj
-            )
-
-            cursor.execute(query, valores)
-            self.db.connection.commit()
-
-            self.main_window.registrar_historico_clientes_juridicos(
-                "Edição de Clientes",
-                f"Cliente {dados_atualizados['Nome do Cliente']} editado com sucesso"
-            )
-
-            QMessageBox.information(None, "Sucesso", "Cliente atualizado com sucesso.")
-            self.carregar_clientes_juridicos()
-            self.janela_editar_cliente.close()
-        except Exception as e:
-            QMessageBox.critical(None, "Erro", f"Erro ao atualizar cliente: {e}")
-
-
     
-
     def exibir_janela_cadastro_cliente(self):
         self.campos_cliente_juridico = {}
         self.informacoes_obrigatorias_clientes()
@@ -952,13 +857,157 @@ class Clientes_Juridicos(QWidget):
         elif isinstance(cnh_widget, QComboBox):
             cnh_valor = cnh_widget.currentText().strip()
                 
-        # Se CNH tiver valor, obriga mais campos
-        if cnh_valor and cnh_valor.lower() != "não cadastrado" and cnh_valor.lower() != "selecionar":
+        if cnh_valor and cnh_valor.lower() not in ["não cadastrado", "selecione"]:
             self.campos_obrigatorios_clientes.update({
                 "Categoria da CNH": "Informe a Categoria da CNH.",
                 "Data de Emissão da CNH": "Informe a Data de Emissão da CNH.",
                 "Data de Vencimento da CNH": "Informe a Data de Vencimento da CNH."
             })
+
+   
+             
+
+        for campo, mensagem_erro in self.campos_obrigatorios_clientes.items():
+            widget = self.campos_cliente_juridico.get(campo)
+            if widget is None:
+                continue
+            
+            valor = ""
+            if isinstance(widget, QLineEdit):
+                valor = widget.text().strip()
+            elif isinstance(widget, QComboBox):
+                valor = widget.currentText().strip()
+                if valor.lower() == "selecione":
+                    valor = ""
+            else:
+                valor = str(widget).strip()
+
+            print(f"Validando campo '{campo}': valor capturado '{valor}'")  # <-- print para debug
+
+            if not valor:
+                QMessageBox.warning(None, "Campo obrigatório", mensagem_erro)
+                # Foca no widget para ajudar o usuário a preencher
+                widget.setFocus()
+                return False
+
+        return True
+
+    def atualizar_dados_clientes(self):
+        if not self.informacoes_obrigatorias_clientes():
+            return
+
+        # --- VALIDAÇÃO DOS CAMPOS OBRIGATÓRIOS ---
+        for campo, mensagem in self.campos_obrigatorios_clientes.items():
+            widget = self.campos_cliente_juridico[campo]
+            if isinstance(widget, QLineEdit):
+                valor = widget.text().strip()
+            elif isinstance(widget, QComboBox):
+                valor = widget.currentText().strip()
+            else:
+                valor = str(widget).strip()
+
+            if not valor or (isinstance(widget, QComboBox) and valor.lower() == "selecione"):
+                QMessageBox.warning(None, "Atenção", mensagem)
+                return
+
+
+        if not self.alteracoes_realizadas:
+            QMessageBox.information(None, "Sem alterações", "Nenhuma modificação foi feita.")
+            return
+        
+        # --- COLETA DOS DADOS ---
+        dados_atualizados = {}
+        for campo, widget in self.campos_cliente_juridico.items():
+            if isinstance(widget, QComboBox):
+                dados_atualizados[campo] = widget.currentText()
+            else:
+                dados_atualizados[campo] = widget.text()
+
+        # --- VERIFICAÇÃO DE CAMPOS SENSÍVEIS ---
+        campos_sensiveis = ["Data da Inclusão","Última Atualização", "Valor Gasto Total", "Última Compra"]
+        alterou_campo_sensivel = any(
+            dados_atualizados[c] != self.dados_originais_cliente[c]
+            for c in campos_sensiveis
+        )
+
+        if alterou_campo_sensivel:
+            try:
+                with open("config.json", "r", encoding="utf-8") as f:
+                    config = json.load(f)
+                    senha_correta = config.get("senha", "")
+            except Exception as e:
+                QMessageBox.critical(None, "Erro", f"Não foi possível carregar a senha do sistema\n {e}")
+                return
+
+            tentativas = 0
+            while tentativas < 3:
+                senha, ok = QInputDialog.getText(
+                    None, "Confirmação de Segurança",
+                    "Digite a senha do sistema:", QLineEdit.Password
+                )
+
+                if not ok:  # Cancelou
+                    return
+
+                if senha.strip() == senha_correta.strip():
+                    break  # Sai do loop se a senha estiver correta
+
+                tentativas += 1
+                if tentativas < 3:
+                    QMessageBox.critical(None, "Acesso Negado",
+                                        f"Senha incorreta. Tentativas restantes: {3 - tentativas}")
+                else:
+                    QMessageBox.critical(None, "Acesso Negado",
+                                        "Você excedeu o número máximo de tentativas.\nO sistema será encerrado.")
+                    QApplication.quit()
+                    return
+
+        try:
+            cursor = self.db.connection.cursor()
+            cnpj = dados_atualizados["CNPJ"]  # Identificador único
+
+            # --- VALORES PADRÃO PARA CAMPOS NÃO PREENCHIDOS ---
+            if not dados_atualizados["CNH"]:
+                dados_atualizados["CNH"] = "Não Cadastrado"
+                dados_atualizados["Categoria da CNH"] = "Não Cadastrado"
+                dados_atualizados["Data de Emissão da CNH"] = "Não Cadastrado"
+                dados_atualizados["Data de Vencimento da CNH"] = "Não Cadastrado"
+
+            if not dados_atualizados["Complemento"]:
+                dados_atualizados["Complemento"] = "Não se aplica"
+
+            query = """
+                UPDATE clientes_juridicos SET
+                    `Nome do Cliente` = ?, `Razão Social` = ?, `Data da Inclusão` = ?, CNPJ = ?,
+                    RG = ?, CPF = ?, CNH = ?, `Categoria da CNH` = ?, `Data de Emissão da CNH` = ?, 
+                    `Data de Vencimento da CNH` = ?, Telefone = ?, CEP = ?, Endereço = ?, 
+                    Número = ?, Complemento = ?, Cidade = ?, Bairro = ?, Estado = ?, `Status do Cliente` = ?, `Categoria do Cliente` = ?,
+                    `Última Atualização` = ?, `Valor Gasto Total` = ?, `Última Compra` = ?
+                WHERE CNPJ = ?
+            """
+            valores = (
+                dados_atualizados["Nome do Cliente"], dados_atualizados["Razão Social"], dados_atualizados["Data da Inclusão"], dados_atualizados["CNPJ"],
+                dados_atualizados["RG"], dados_atualizados["CPF"], dados_atualizados["CNH"], dados_atualizados["Categoria da CNH"], dados_atualizados["Data de Emissão da CNH"], 
+                dados_atualizados["Data de Vencimento da CNH"], dados_atualizados["Telefone"], dados_atualizados["CEP"], dados_atualizados["Endereço"], dados_atualizados["Número"], dados_atualizados["Complemento"],
+                dados_atualizados["Cidade"], dados_atualizados["Bairro"], dados_atualizados["Estado"], dados_atualizados["Status do Cliente"], dados_atualizados["Categoria do Cliente"],
+                dados_atualizados["Última Atualização"], dados_atualizados["Valor Gasto Total"], dados_atualizados["Última Compra"],
+                cnpj
+            )
+
+            cursor.execute(query, valores)
+            self.db.connection.commit()
+
+            self.main_window.registrar_historico_clientes_juridicos(
+                "Edição de Clientes",
+                f"Cliente {dados_atualizados['Nome do Cliente']} editado com sucesso"
+            )
+
+            QMessageBox.information(None, "Sucesso", "Cliente atualizado com sucesso.")
+            self.carregar_clientes_juridicos()
+            self.janela_editar_cliente.close()
+        except Exception as e:
+            QMessageBox.critical(None, "Erro", f"Erro ao atualizar cliente: {e}")
+
     
     def cadastrar_clientes_juridicos(self):
         self.informacoes_obrigatorias_clientes()
@@ -1026,7 +1075,6 @@ class Clientes_Juridicos(QWidget):
                 if cursor.fetchone():
                     QMessageBox.information(None,"Duplicidade","Já existe um cliente cadastrado com esta CNH.")
                     return
-                
 
                 # Validação de todos os campos obrigatórios
                 for campo, mensagem in self.campos_obrigatorios_clientes.items():
