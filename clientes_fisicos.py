@@ -57,15 +57,26 @@ class Clientes_Fisicos(QWidget):
         self.btn_editar_clientes_fisicos.clicked.connect(self.editar_cliente_fisico)
         self.btn_historico_clientes_fisicos.clicked.connect(self.historico_clientes_fisicos)
         self.btn_gerar_relatorio_clientes_fisicos.clicked.connect(self.abrir_janela_relatorio_clientes_fisicos)
+        self.imagem_line_fisico()
+        
+        
+       # ENTER → busca manual
+        self.line_clientes_fisicos.returnPressed.connect(
+            lambda: self.buscar_cliente_fisico_dinamico(manual=True)
+        )
 
-        # Enter → busca manual (com popup se não encontrar)
-        self.line_clientes_fisicos.returnPressed.connect(self.buscar_cliente_fisico_manual)
-        # Texto digitado → busca dinâmica (sem popup)
-        self.line_clientes_fisicos.textChanged.connect(lambda texto: self.buscar_cliente_fisico_dinamico((texto)))
+        # Botão lupa → busca manual
+        self.botao_lupa.clicked.connect(
+            lambda: self.buscar_cliente_fisico_dinamico(manual=True)
+        )
 
+        # Digitação → busca dinâmica
+        self.line_clientes_fisicos.textChanged.connect(
+            lambda: self.buscar_cliente_fisico_dinamico(manual=False)
+        )
 
         self.configurar_menu_contexto_fisicos()
-        self.imagem_line_fisico()
+        
 
         
         
@@ -157,12 +168,26 @@ class Clientes_Fisicos(QWidget):
             """)
             return cursor.fetchall()
 
-    def buscar_cliente_fisico_dinamico(self, texto):
+    def buscar_cliente_fisico_dinamico(self, texto=None,manual=None):
+        # Captura o texto do campo se não foi passado
+        if not isinstance(texto, str):
+            texto = self.line_clientes_fisicos.text()
+            
         texto = texto.strip()
+        
         if not texto:
-            resultados = self._listar_todos_clientes()
-        else:
-            resultados = self._buscar_clientes_fisicos(texto)
+            if manual:
+                QMessageBox.warning(self, "Atenção", "Por favor, digite um cliente para pesquisar.")
+            else:
+                # Busca dinâmica sem texto → mostra todos
+                self.preencher_resultado_busca_fisica(self._listar_todos_clientes())
+            return
+
+        resultados = self._buscar_clientes_fisicos(texto)
+
+        if not resultados and manual:
+            QMessageBox.information(self, "Resultado", "Nenhum cliente encontrado.")
+
         self.preencher_resultado_busca_fisica(resultados)
 
 
@@ -179,7 +204,17 @@ class Clientes_Fisicos(QWidget):
             QMessageBox.information(self, "Resultado", "Nenhum cliente encontrado.")
             self.preencher_resultado_busca_fisica(self._listar_todos_clientes())
 
+    def preencher_resultado_busca_fisica(self, resultados):
+        self.table_clientes_fisicos.setRowCount(0)
 
+        for row_data in resultados:
+            row_index = self.table_clientes_fisicos.rowCount()
+            self.table_clientes_fisicos.insertRow(row_index)
+            for col_index, data in enumerate(row_data):
+                item = self.formatar_texto_fisico(str(data))
+                self.table_clientes_fisicos.setItem(row_index, col_index, item)
+        self.table_clientes_fisicos.resizeColumnsToContents()
+        self.table_clientes_fisicos.resizeRowsToContents()
 
 
     # Função auxiliar para criar um QTableWidgetItem com texto centralizado
@@ -199,8 +234,8 @@ class Clientes_Fisicos(QWidget):
                     SELECT 
                         "Nome do Cliente",
                         "Data da Inclusão",
+                        RG,      
                         CPF, 
-                        RG,
                         Email,
                         CNH,
                         "Categoria da CNH",
@@ -285,19 +320,8 @@ class Clientes_Fisicos(QWidget):
         # Conectar clique do botão a uma função
         self.botao_lupa.clicked.connect(self.buscar_cliente_fisico_dinamico)
 
+
     
-
-
-
-    def preencher_resultado_busca_fisica(self, resultados):
-        self.table_clientes_fisicos.setRowCount(0)
-
-        for row_data in resultados:
-            row_index = self.table_clientes_fisicos.rowCount()
-            self.table_clientes_fisicos.insertRow(row_index)
-            for col_index, data in enumerate(row_data):
-                item = self.formatar_texto_fisico(str(data))
-                self.table_clientes_fisicos.setItem(row_index, col_index, item)
 
     def formatar_e_buscar_cep_fisico(self, widget):
         texto_cep = widget.text()
@@ -315,173 +339,7 @@ class Clientes_Fisicos(QWidget):
             if index_estado >= 0:
                 self.campos_cliente["Estado"].setCurrentIndex(index_estado)
 
-    def exibir_edicao_clientes_fisicos(self, dados_cliente: dict):
-        self.dados_originais_cliente_fisico = dados_cliente.copy()
-        self.alteracoes_realizadas = False
-        self.janela_editar_cliente_fisico = QMainWindow()
-        self.janela_editar_cliente_fisico.setWindowTitle("Editar Cliente")
-        self.janela_editar_cliente_fisico.resize(683, 600)
-        self.janela_editar_cliente_fisico.setStyleSheet("background-color: rgb(0, 80, 121);")
-
-        screen = QGuiApplication.primaryScreen()
-        screen_geometry = screen.availableGeometry()
-        window_geometry = self.janela_editar_cliente_fisico.frameGeometry()
-        window_geometry.moveCenter(screen_geometry.center())
-        self.janela_editar_cliente_fisico.move(window_geometry.topLeft())
-
-        central_widget = QWidget()
-        layout = QGridLayout(central_widget)
-        layout.setSpacing(10)
-        layout.setContentsMargins(30, 30, 30, 30)
-        
-        scroll_area = QScrollArea()
-        scroll_area.setWidgetResizable(True)
-        scroll_area.setWidget(central_widget)
-        scroll_area.setStyleSheet("""
-            QScrollBar:vertical {
-                background: white;
-                width: 6px;
-                margin: 2px 0;
-                border: none;
-            }
-
-            QScrollBar::handle:vertical {
-                background: gray;
-                min-height: 20px;
-                border-radius: 3px;
-            }
-
-            QScrollBar::add-line:vertical,
-            QScrollBar::sub-line:vertical {
-                height: 0;
-            }
-
-            QScrollBar::add-page:vertical,
-            QScrollBar::sub-page:vertical {
-                background: transparent;
-            }
-        """)
-
-
-        colunas = [
-            "Nome do Cliente", "Data da Inclusão","RG","CPF","Email","CNH","Categoria da CNH","Data de Emissão da CNH",
-            "Data de Vencimento da CNH", "Telefone","CEP", "Endereço", "Número", "Complemento", "Cidade", "Bairro","Estado", 
-            "Status do Cliente", "Categoria do Cliente","Última Atualização", "Valor Gasto Total", "Última Compra"
-        ]
-
-        self.campos_cliente = {}
-
-        for i, campo in enumerate(colunas):
-            label = QLabel(campo + ":")
-            label.setStyleSheet("color: white; font-weight: bold;")
-            label.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
-
-            if campo in ["Estado", "Status do Cliente","Categoria da CNH"]:
-                entrada = QComboBox()
-                entrada.setStyleSheet("""
-                    QComboBox {
-                        background-color: white;
-                        border: 2px solid rgb(50,150,250);
-                        border-radius: 5px;
-                        color: black;
-                        padding: 5px;
-                    }
-
-                    QComboBox QAbstractItemView {
-                        background-color: white;
-                        color: black;
-                        selection-background-color: rgb(220, 220, 220);
-                        border: 1px solid lightgray;
-                    }
-
-                    QComboBox QScrollBar:vertical {
-                        border: none;
-                        background: transparent;
-                        width: 6px;
-                        margin: 2px 0 2px 0;
-                    }
-
-                    QComboBox QScrollBar::handle:vertical {
-                        background: gray;
-                        min-height: 20px;
-                        border-radius: 3px;
-                    }
-
-                    QComboBox QScrollBar::add-line:vertical,
-                    QComboBox QScrollBar::sub-line:vertical {
-                        height: 0;
-                    }
-
-                    QComboBox QScrollBar::add-page:vertical,
-                    QComboBox QScrollBar::sub-page:vertical {
-                        background: white;
-                    }
-                """)
-
-                if campo == "Categoria da CNH":
-                    entrada.addItems(["Selecione","AB","A","B","C","D","E","Nenhuma"])
-                elif campo == "Estado":
-                    entrada.addItems(["Selecione", "AC", "AL", "AP", "AM", "BA", "CE", "DF", "ES", "GO", "MA",
-                                    "MT", "MS", "MG", "PA", "PB", "PR", "PE", "PI", "RJ", "RN", "RS", "RO",
-                                    "RR", "SC", "SP", "SE", "TO"])
-                elif campo == "Status do Cliente":
-                    entrada.addItems(["Selecione", "Ativo", "Inativo", "Pendente", "Bloqueado"])
-                index = entrada.findText(dados_cliente[campo])
-                entrada.setCurrentIndex(index if index >= 0 else 0)
-            else:
-                entrada = QLineEdit()
-                entrada.setText(dados_cliente[campo])
-            if isinstance(entrada,QComboBox):
-                entrada.currentTextChanged.connect(self.marcar_alteracao)
-            else:
-                entrada.textChanged.connect(self.marcar_alteracao)
-                entrada.setStyleSheet("""
-                    QLineEdit {
-                        color: black;
-                        background-color: rgb(240, 240, 240);
-                        border: 2px solid rgb(50, 150,250);
-                        border-radius: 6px;
-                        padding: 3px;
-                    }
-                    QLineEdit::placeholderText {
-                        color: black;
-                    }
-                """)
-            if campo == "RG":
-                entrada.textChanged.connect(lambda texto, w=entrada: self.main_window.formatar_rg(texto,w))
-            elif campo == "CPF":
-                entrada.textChanged.connect(lambda texto, w=entrada: self.main_window.formatar_cpf(texto,w))
-            elif campo == "Telefone":
-                entrada.textChanged.connect(lambda texto, w=entrada: self.main_window.formatar_telefone(texto, w))
-            elif campo == "Email":
-                entrada.textChanged.connect(lambda texto, w=entrada: self.main_window.validar_email(texto,w))
-            elif campo == "CEP":
-                entrada.textChanged.connect(lambda texto, w=entrada: self.main_window.formatar_cep(texto,w))
-                entrada.editingFinished.connect(lambda e=entrada: self.formatar_e_buscar_cep(e))
-                
-
-            layout.addWidget(label, i, 0)
-            layout.addWidget(entrada, i, 1)
-            self.campos_cliente[campo] = entrada
-
-        # Botão atualizar
-        botao_atualizar = QPushButton("Atualizar")
-        botao_atualizar.setStyleSheet("""
-            QPushButton {
-                background-color: white;
-                padding: 8px;
-                font-weight: bold;
-                border-radius: 10px;
-            }
-            QPushButton:hover {
-                background-color: lightgray;
-            }
-        """)
-        botao_atualizar.clicked.connect(self.atualizar_dados_clientes_fisicos)
-        layout.addWidget(botao_atualizar, len(colunas), 0, 1, 2, alignment=Qt.AlignCenter)
-
-        self.janela_editar_cliente_fisico.setCentralWidget(scroll_area)
-        self.janela_editar_cliente_fisico.show()
+    
 
     def editar_cliente_fisico(self):
         linha_selecionada = self.table_clientes_fisicos.currentRow()
@@ -501,108 +359,15 @@ class Clientes_Fisicos(QWidget):
         dados_cliente = {}
         for col, nome_coluna in enumerate(colunas):
             item = self.table_clientes_fisicos.item(linha_selecionada, col + coluna_offset)
-            dados_cliente[nome_coluna] = item.text() if item else ""
+            dados_cliente[nome_coluna] = item.text() if item else ""    
 
         self.exibir_edicao_clientes_fisicos(dados_cliente)   
 
-    def atualizar_dados_clientes_fisicos(self):
-        if not self.alteracoes_realizadas:
-            QMessageBox.information(None, "Sem alterações", "Nenhuma modificação foi feita.")
-            return
-        
-        dados_atualizados = {}
-        for campo, widget in self.campos_cliente.items():
-            if isinstance(widget, QComboBox):
-                dados_atualizados[campo] = widget.currentText()
-            else:
-                dados_atualizados[campo] = widget.text()
+    
 
-        # --- VERIFICAÇÃO DE CAMPOS SENSÍVEIS ---
-        campos_sensiveis_fisicos = ["Data da Inclusão","Última Atualização", "Valor Gasto Total", "Última Compra"]
-        alterou_campo_sensivel_fisico = any(
-            dados_atualizados[c] != self.dados_originais_cliente_fisico[c]
-            for c in campos_sensiveis_fisicos
-        )
-        if alterou_campo_sensivel_fisico:
-            try:
-                with open("config.json","r",encoding="utf-8") as f:
-                    config = json.load(f)
-                    senha_correta = config.get("senha","")
-            except Exception as e:
-                QMessageBox.critical(None, "Erro", f"Não foi possível carregar a senha do sistema\n {e}")
-                return
-            tentativas = 0
-            while tentativas < 3:
-                senha, ok = QInputDialog.getText(
-                    None, "Confirmação de Segurança",
-                    "Digite a senha do sistema:",QLineEdit.Password
-                )
-                if not ok: # Cancelou
-                    return
-                
-                if senha.strip() == senha_correta.strip():
-                    break # Sai do loop se a senha estiver correta
-
-                tentativas += 1
-                if tentativas < 3:
-                    QMessageBox.critical(None, "Acesso Negado",
-                                        f"Senha incorreta. Tentativas restantes: {3 - tentativas}")
-                else:
-                    QMessageBox.critical(None, "Acesso Negado",
-                                        "Você excedeu o número máximo de tentativas.\nO sistema será encerrado.")
-                    QApplication.quit()
-                    return
-
-        try:
-            cursor = self.db.connection.cursor()
-            cpf = dados_atualizados["CPF"]  #  CPF identificador único
-
-            # Corrigir campos vazios antes do UPDATE
-            if not dados_atualizados["CNH"]:
-                dados_atualizados["CNH"] = "Não Cadastrado"
-                dados_atualizados["Categoria da CNH"] = "Não Cadastrado"
-                dados_atualizados["Data de Emissão da CNH"] = "Não Cadastrado"
-                dados_atualizados["Data de Vencimento da CNH"] = "Não Cadastrado"
-
-            if not dados_atualizados["Complemento"]:
-                dados_atualizados["Complemento"] = "Não se aplica"
-
-            query = """
-            UPDATE clientes_fisicos SET
-                `Nome do Cliente` = ?, `Data da Inclusão` = ?,
-                RG = ?, CPF = ?, CNH = ?, `Categoria da CNH` = ?, `Data de Emissão da CNH` = ?, 
-                `Data de Vencimento da CNH` = ?, Telefone = ?, CEP = ?, Endereço = ?, 
-                Número = ?, Complemento = ?, Cidade = ?, Bairro = ?, Estado = ?, `Status do Cliente` = ?, `Categoria do Cliente` = ?,
-                `Última Atualização` = ?, `Valor Gasto Total` = ?, `Última Compra` = ?
-            WHERE CPF  = ?
-            """
-
-            valores = (
-                dados_atualizados["Nome do Cliente"],dados_atualizados["Data da Inclusão"],
-                dados_atualizados["RG"], dados_atualizados["CPF"], dados_atualizados["CNH"], dados_atualizados["Categoria da CNH"], dados_atualizados["Data de Emissão da CNH"], 
-                dados_atualizados["Data de Vencimento da CNH"], dados_atualizados["Telefone"], dados_atualizados["CEP"], dados_atualizados["Endereço"], dados_atualizados["Número"], dados_atualizados["Complemento"],
-                dados_atualizados["Cidade"], dados_atualizados["Bairro"], dados_atualizados["Estado"], dados_atualizados["Status do Cliente"], dados_atualizados["Categoria do Cliente"],
-                dados_atualizados["Última Atualização"], dados_atualizados["Valor Gasto Total"], dados_atualizados["Última Compra"],
-                cpf
-            )
-
-            self.main_window.registrar_historico_clientes_fisicos(
-                    "Edição de Clientes", f"Cliente {dados_atualizados["Nome do Cliente"]} editado com sucesso"
-                )
-
-            cursor.execute(query, valores)
-
-            self.db.connection.commit()
-            QMessageBox.information(None, "Sucesso", "Cliente atualizado com sucesso.")
-            self.carregar_clientes_fisicos()  # Se quiser recarregar a tabela
-            self.janela_editar_cliente_fisico.close()
-        except Exception as e:
-            QMessageBox.critical(None, "Erro", f"Erro ao atualizar cliente: {e}")
 
     def exibir_janela_cadastro_cliente_fisico(self):
         self.campos_cliente_fisico = {}
-        self.informacoes_obrigatorias_clientes_fisicos()
-        
         self.janela_cadastro_fisico = QMainWindow()
         self.janela_cadastro_fisico.resize(700, 550)
         self.janela_cadastro_fisico.setWindowTitle("Cadastro do Cliente")
@@ -882,10 +647,208 @@ class Clientes_Fisicos(QWidget):
         self.janela_cadastro_fisico.setCentralWidget(scroll_area)
         self.janela_cadastro_fisico.show()
 
+    def exibir_edicao_clientes_fisicos(self, dados_cliente: dict):
+        self.dados_originais_cliente_fisico = dados_cliente.copy()
+        self.alteracoes_realizadas = False
+        self.janela_editar_cliente_fisico = QMainWindow()
+        self.janela_editar_cliente_fisico.setWindowTitle("Editar Cliente")
+        self.janela_editar_cliente_fisico.resize(683, 600)
+        self.janela_editar_cliente_fisico.setStyleSheet("background-color: rgb(0, 80, 121);")
+
+        screen = QGuiApplication.primaryScreen()
+        screen_geometry = screen.availableGeometry()
+        window_geometry = self.janela_editar_cliente_fisico.frameGeometry()
+        window_geometry.moveCenter(screen_geometry.center())
+        self.janela_editar_cliente_fisico.move(window_geometry.topLeft())
+
+        central_widget = QWidget()
+        layout = QGridLayout(central_widget)
+        layout.setSpacing(10)
+        layout.setContentsMargins(30, 30, 30, 30)
+        
+        scroll_area = QScrollArea()
+        scroll_area.setWidgetResizable(True)
+        scroll_area.setWidget(central_widget)
+        scroll_area.setStyleSheet("""
+            QScrollBar:vertical {
+                background: white;
+                width: 6px;
+                margin: 2px 0;
+                border: none;
+            }
+
+            QScrollBar::handle:vertical {
+                background: gray;
+                min-height: 20px;
+                border-radius: 3px;
+            }
+
+            QScrollBar::add-line:vertical,
+            QScrollBar::sub-line:vertical {
+                height: 0;
+            }
+
+            QScrollBar::add-page:vertical,
+            QScrollBar::sub-page:vertical {
+                background: transparent;
+            }
+        """)
+
+
+        colunas = [
+            "Nome do Cliente", "Data da Inclusão","RG","CPF","Email","CNH","Categoria da CNH","Data de Emissão da CNH",
+            "Data de Vencimento da CNH", "Telefone","CEP", "Endereço", "Número", "Complemento", "Cidade", "Bairro","Estado", 
+            "Status do Cliente", "Categoria do Cliente","Última Atualização", "Valor Gasto Total", "Última Compra"
+        ]
+
+        self.campos_cliente = {}
+        labels_map = {} # Para guardar referências dos labels
+
+        for i, campo in enumerate(colunas):
+            label = QLabel(campo + ":")
+            label.setStyleSheet("color: white; font-weight: bold;")
+            label.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
+            labels_map[campo] = label # Guarda referência para depois
+
+            if campo in ["Estado", "Status do Cliente","Categoria da CNH"]:
+                entrada = QComboBox()
+                entrada.setStyleSheet("""
+                    QComboBox {
+                        background-color: white;
+                        border: 2px solid rgb(50,150,250);
+                        border-radius: 5px;
+                        color: black;
+                        padding: 5px;
+                    }
+
+                    QComboBox QAbstractItemView {
+                        background-color: white;
+                        color: black;
+                        selection-background-color: rgb(220, 220, 220);
+                        border: 1px solid lightgray;
+                    }
+
+                    QComboBox QScrollBar:vertical {
+                        border: none;
+                        background: transparent;
+                        width: 6px;
+                        margin: 2px 0 2px 0;
+                    }
+
+                    QComboBox QScrollBar::handle:vertical {
+                        background: gray;
+                        min-height: 20px;
+                        border-radius: 3px;
+                    }
+
+                    QComboBox QScrollBar::add-line:vertical,
+                    QComboBox QScrollBar::sub-line:vertical {
+                        height: 0;
+                    }
+
+                    QComboBox QScrollBar::add-page:vertical,
+                    QComboBox QScrollBar::sub-page:vertical {
+                        background: white;
+                    }
+                """)
+
+                if campo == "Categoria da CNH":
+                    entrada.addItems(["Selecione","AB","A","B","C","D","E","Nenhuma"])
+                elif campo == "Estado":
+                    entrada.addItems(["Selecione", "AC", "AL", "AP", "AM", "BA", "CE", "DF", "ES", "GO", "MA",
+                                    "MT", "MS", "MG", "PA", "PB", "PR", "PE", "PI", "RJ", "RN", "RS", "RO",
+                                    "RR", "SC", "SP", "SE", "TO"])
+                elif campo == "Status do Cliente":
+                    entrada.addItems(["Selecione", "Ativo", "Inativo", "Pendente", "Bloqueado"])
+                index = entrada.findText(dados_cliente[campo])
+                entrada.setCurrentIndex(index if index >= 0 else 0)
+            else:
+                entrada = QLineEdit()
+                entrada.setText(dados_cliente[campo])
+            if isinstance(entrada,QComboBox):
+                entrada.currentTextChanged.connect(self.marcar_alteracao)
+            else:
+                entrada.textChanged.connect(self.marcar_alteracao)
+                entrada.setStyleSheet("""
+                    QLineEdit {
+                        color: black;
+                        background-color: rgb(240, 240, 240);
+                        border: 2px solid rgb(50, 150,250);
+                        border-radius: 6px;
+                        padding: 3px;
+                    }
+                    QLineEdit::placeholderText {
+                        color: black;
+                    }
+                """)
+            if campo == "RG":
+                entrada.textChanged.connect(lambda texto, w=entrada: self.main_window.formatar_rg(texto,w))
+            elif campo == "CPF":
+                entrada.textChanged.connect(lambda texto, w=entrada: self.main_window.formatar_cpf(texto,w))
+            elif campo == "CNH":
+                entrada.textChanged.connect(lambda texto, w=entrada: self.main_window.formatar_cnh(texto,w))
+            elif campo == "Telefone":
+                entrada.textChanged.connect(lambda texto, w=entrada: self.main_window.formatar_telefone(texto, w))
+            elif campo == "Email":
+                entrada.textChanged.connect(lambda texto, w=entrada: self.main_window.validar_email(texto,w))
+            elif campo == "CEP":
+                entrada.textChanged.connect(lambda texto, w=entrada: self.main_window.formatar_cep(texto,w))
+                entrada.editingFinished.connect(lambda e=entrada: self.formatar_e_buscar_cep(e))
+            elif campo in ["Data de Emissão da CNH", "Data de Vencimento da CNH"]:
+                entrada.textChanged.connect(lambda texto, w=entrada: self.main_window.formatar_data_nascimento(texto,w))
+                
+
+            layout.addWidget(label, i, 0)
+            layout.addWidget(entrada, i, 1)
+            self.campos_cliente[campo] = entrada
+
+        # --- Esconde inicialmente os campos de datas da CNH ---
+        labels_map["Data de Emissão da CNH"].hide()
+        self.campos_cliente["Data de Emissão da CNH"].hide()
+        labels_map["Data de Vencimento da CNH"].hide()
+        self.campos_cliente["Data de Vencimento da CNH"].hide()
+
+        #Função para mostrar/esconder os campos da CNH
+        def on_categoria_cnh_change_edit(text):
+            if text not in ("Selecione","Nenhum"):
+                labels_map["Data de Emissão da CNH"].show()
+                self.campos_cliente["Data de Emissão da CNH"].show()
+                labels_map["Data de Vencimento da CNH"].show()
+                self.campos_cliente["Data de Vencimento da CNH"].show()
+            else:
+                labels_map["Data de Emissão da CNH"].hide()
+                self.campos_cliente["Data de Emissão da CNH"].hide()
+                labels_map["Data de Vencimento da CNH"].hide()
+                self.campos_cliente["Data de Vencimento da CNH"].hide()
+                self.campos_cliente["Data de Emissão da CNH"].clear()
+                self.campos_cliente["Data de Vencimento da CNH"].clear()
+
+        # Conecta evento e aplica estado inicial
+        self.campos_cliente["Categoria da CNH"].currentTextChanged.connect(on_categoria_cnh_change_edit)
+        on_categoria_cnh_change_edit(self.campos_cliente["Categoria da CNH"].currentText())
+
+        # Botão atualizar
+        botao_atualizar = QPushButton("Atualizar")
+        botao_atualizar.setStyleSheet("""
+            QPushButton {
+                background-color: white;
+                padding: 8px;
+                font-weight: bold;
+                border-radius: 10px;
+            }
+            QPushButton:hover {
+                background-color: lightgray;
+            }
+        """)
+        botao_atualizar.clicked.connect(self.atualizar_dados_clientes_fisicos)
+        layout.addWidget(botao_atualizar, len(colunas), 0, 1, 2, alignment=Qt.AlignCenter)
+
+        self.janela_editar_cliente_fisico.setCentralWidget(scroll_area)
+        self.janela_editar_cliente_fisico.show()
+
     def informacoes_obrigatorias_clientes_fisicos(self):
         self.campos_obrigatorios_clientes_fisicos = {
             "Nome do Cliente": "O campo Nome do Cliente é obrigatório.",
-            "RG": "O campo de RG é obrigatório.",
             "CPF": "O campo de CPF é obrigatório",
             "Email": "O campo de E-mail é obrigatório",
             "Telefone": "O campo Telefone é obrigatório.",
@@ -898,16 +861,25 @@ class Clientes_Fisicos(QWidget):
             "Categoria do Cliente": "O campo Categoria do Cliente é obrigatório.",
             "Status do Cliente": "Você deve selecionar um status válido para o cliente.",
         }
-
-        # Verifica se a Categoria da CNH foi preenchida (diferente de "Selecionar")
-        categoria_widget = self.campos_cliente_fisico.get("Categoria da CNH")
-        if categoria_widget and isinstance(categoria_widget, QComboBox):
-            categoria_cnh = categoria_widget.currentText().strip()
-            if categoria_cnh and categoria_cnh != "Selecionar":
-                self.campos_obrigatorios_clientes_fisicos["Data de Emissão da CNH"] = "A Data de Emissão da CNH é obrigatória quando há Categoria informada."
-                self.campos_obrigatorios_clientes_fisicos["Data de Vencimento da CNH"] = "A Data de Vencimento da CNH é obrigatória quando há Categoria informada."
+        
+        cnh_widget = self.campos_cliente.get("CNH")
+        cnh_valor = ""
+        if isinstance(cnh_widget, QLineEdit):
+            cnh_valor = cnh_widget.text().strip()
+        elif isinstance(cnh_widget, QComboBox):
+            cnh_valor = cnh_widget.currentText().strip()
+                
+        # Se CNH tiver valor, obriga mais campos
+        if cnh_valor and cnh_valor.lower() != "não cadastrado" and cnh_valor.lower() != "selecionar":
+            self.campos_obrigatorios_clientes_fisicos.update({
+                "Categoria da CNH": "Informe a Categoria da CNH.",
+                "Data de Emissão da CNH": "Informe a Data de Emissão da CNH.",
+                "Data de Vencimento da CNH": "Informe a Data de Vencimento da CNH."
+            })
 
     def cadastrar_clientes_fisicos(self):
+        # Atualiza a lista de campos obrigatórios de acordo com o preenchimento
+        self.informacoes_obrigatorias_clientes_fisicos()
         try:
             with self.db.connecta() as conexao:
                 cursor = conexao.cursor()
@@ -937,14 +909,27 @@ class Clientes_Fisicos(QWidget):
                 categoria = get("Categoria do Cliente")
                 status = get("Status do Cliente")
 
-                # Verificar se o cliente já existe
-                cursor.execute("""
-                    SELECT 1 FROM clientes_fisicos
-                    WHERE CPF = ? OR RG = ?
-                """, (cpf, rg))
-
+                # Verificar campos únicos individualmente
+                cursor.execute('SELECT 1 FROM clientes_fisicos WHERE RG = ?',(rg,))
                 if cursor.fetchone():
-                    QMessageBox.warning(None, "Cliente já existe", "Já existe um cliente com este CPF ou RG.")
+                    QMessageBox.information(None,"Duplicidade","Já existe um cliente cadastrado com este RG.")
+                    return
+                cursor.execute("SELECT 1 FROM clientes_fisicos WHERE CPF = ?",(cpf,))
+                if cursor.fetchone():
+                    QMessageBox.information(None,"Duplicidade","Já existe um cliente cadastrado com este CPF.")
+                    return
+                cursor.execute('SELECT 1 FROM clientes_fisicos WHERE Email = ?',(email,))
+                if cursor.fetchone():
+                    QMessageBox.information(None,"Duplicidade","Já existe um cliente cadastrado com este Email.")
+                    return
+                cursor.execute('SELECT 1 FROM clientes_fisicos WHERE RG = ?',(telefone,))
+                if cursor.fetchone():
+                    QMessageBox.information(None,"Duplicidade","Já existe um cliente cadastrado com este Telefone.")
+                    return
+
+                cursor.execute('SELECT 1 FROM clientes_fisicos WHERE CNH = ?',(cnh,))
+                if cursor.fetchone():
+                    QMessageBox.information(None,"Duplicidade","Já existe um cliente cadastrado com esta CNH.")
                     return
 
                 # Validação de todos os campos obrigatórios
@@ -1000,6 +985,109 @@ class Clientes_Fisicos(QWidget):
                 self.carregar_clientes_fisicos()       
         except Exception as e:
             QMessageBox.critical(None, "Erro", f"Erro ao cadastrar cliente: \n{e}")
+            
+    def atualizar_dados_clientes_fisicos(self):
+        # Atualiza campos obrigatórios de acordo com a CNH
+        self.informacoes_obrigatorias_clientes_fisicos()
+        if not self.alteracoes_realizadas:
+            QMessageBox.information(None, "Sem alterações", "Nenhuma modificação foi feita.")
+            return
+        
+        
+
+        # Monta dados atualizados
+        dados_atualizados = {}
+        for campo, widget in self.campos_cliente.items():
+            if isinstance(widget, QComboBox):
+                dados_atualizados[campo] = widget.currentText()
+            else:
+                dados_atualizados[campo] = widget.text()
+
+        # --- VERIFICAÇÃO DE CAMPOS SENSÍVEIS ---
+        campos_sensiveis_fisicos = ["Data da Inclusão", "Última Atualização", "Valor Gasto Total", "Última Compra"]
+        alterou_campo_sensivel_fisico = any(
+            dados_atualizados[c] != self.dados_originais_cliente_fisico[c]
+            for c in campos_sensiveis_fisicos
+        )
+        if alterou_campo_sensivel_fisico:
+            try:
+                with open("config.json", "r", encoding="utf-8") as f:
+                    config = json.load(f)
+                    senha_correta = config.get("senha", "")
+            except Exception as e:
+                QMessageBox.critical(None, "Erro", f"Não foi possível carregar a senha do sistema\n {e}")
+                return
+            tentativas = 0
+            while tentativas < 3:
+                senha, ok = QInputDialog.getText(
+                    None, "Confirmação de Segurança",
+                    "Digite a senha do sistema:", QLineEdit.Password
+                )
+                if not ok:  # Cancelou
+                    return
+                
+                if senha.strip() == senha_correta.strip():
+                    break
+
+                tentativas += 1
+                if tentativas < 3:
+                    QMessageBox.critical(None, "Acesso Negado",
+                                        f"Senha incorreta. Tentativas restantes: {3 - tentativas}")
+                else:
+                    QMessageBox.critical(None, "Acesso Negado",
+                                        "Você excedeu o número máximo de tentativas.\nO sistema será encerrado.")
+                    QApplication.quit()
+                    return
+
+        try:
+            cursor = self.db.connection.cursor()
+
+            # CPF ORIGINAL — garante que vamos atualizar o cliente certo
+            cpf_original = self.dados_originais_cliente_fisico["CPF"]
+
+            # Corrigir campos vazios antes do UPDATE
+            if not dados_atualizados["CNH"]:
+                dados_atualizados["CNH"] = "Não Cadastrado"
+                dados_atualizados["Categoria da CNH"] = "Não Cadastrado"
+                dados_atualizados["Data de Emissão da CNH"] = "Não Cadastrado"
+                dados_atualizados["Data de Vencimento da CNH"] = "Não Cadastrado"
+
+            if not dados_atualizados["Complemento"]:
+                dados_atualizados["Complemento"] = "Não se aplica"
+
+            query = """
+            UPDATE clientes_fisicos SET
+                `Nome do Cliente` = ?, `Data da Inclusão` = ?,
+                RG = ?, CPF = ?, CNH = ?, `Categoria da CNH` = ?, `Data de Emissão da CNH` = ?, 
+                `Data de Vencimento da CNH` = ?, Telefone = ?, CEP = ?, Endereço = ?, 
+                Número = ?, Complemento = ?, Cidade = ?, Bairro = ?, Estado = ?, `Status do Cliente` = ?, `Categoria do Cliente` = ?,
+                `Última Atualização` = ?, `Valor Gasto Total` = ?, `Última Compra` = ?
+            WHERE CPF = ?
+            """
+
+            valores = (
+                dados_atualizados["Nome do Cliente"], dados_atualizados["Data da Inclusão"],
+                dados_atualizados["RG"], dados_atualizados["CPF"], dados_atualizados["CNH"], dados_atualizados["Categoria da CNH"], dados_atualizados["Data de Emissão da CNH"], 
+                dados_atualizados["Data de Vencimento da CNH"], dados_atualizados["Telefone"], dados_atualizados["CEP"], dados_atualizados["Endereço"], dados_atualizados["Número"], dados_atualizados["Complemento"],
+                dados_atualizados["Cidade"], dados_atualizados["Bairro"], dados_atualizados["Estado"], dados_atualizados["Status do Cliente"], dados_atualizados["Categoria do Cliente"],
+                dados_atualizados["Última Atualização"], dados_atualizados["Valor Gasto Total"], dados_atualizados["Última Compra"],
+                cpf_original
+            )
+
+            cursor.execute(query, valores)
+            self.db.connection.commit()
+
+            
+            self.main_window.registrar_historico_clientes_fisicos(
+                "Edição de Clientes", f"Cliente {dados_atualizados['Nome do Cliente']} editado com sucesso"
+            )
+            QMessageBox.information(None, "Sucesso", "Cliente atualizado com sucesso.")
+            self.carregar_clientes_fisicos()
+            self.janela_editar_cliente_fisico.close()
+            
+
+        except Exception as e:
+            QMessageBox.critical(None, "Erro", f"Erro ao atualizar cliente: {e}")
 
     def limpar_campos_clientes_fisicos(self):
         for campo, widget in self.campos_cliente_fisico.items():
