@@ -11,6 +11,7 @@ class Configuracoes_Login:
         self.nao_mostrar_mensagem_arquivo_excel = False
         self.nao_mostrar_mensagem_arquivo_excel_fisicos = False
         self.historico_autocompletes = {}
+        self.tema = "escuro"
         self.carregar()
 
     def carregar(self):
@@ -25,6 +26,7 @@ class Configuracoes_Login:
                 self.nao_mostrar_mensagem_arquivo_excel = config.get("nao_mostrar_mensagem_arquivo_excel", False)
                 self.nao_mostrar_mensagem_arquivo_excel_fisicos = config.get("nao_mostrar_mensagem_arquivo_excel_fisicos",False)
                 self.historico_autocompletes = config.get("historico_autocompletes", {})
+                self.tema = config.get("tema","escuro")
         except FileNotFoundError:
             print("Arquivo config.json não encontrado")
         except json.JSONDecodeError:
@@ -39,7 +41,8 @@ class Configuracoes_Login:
             "nao_mostrar_aviso_irreversivel": self.nao_mostrar_aviso_irreversivel,
             "nao_mostrar_mensagem_arquivo_excel": self.nao_mostrar_mensagem_arquivo_excel,
             "nao_mostrar_mensagem_arquivo_excel_fisicos":self.nao_mostrar_mensagem_arquivo_excel_fisicos,
-            "historico_autocompletes": self.historico_autocompletes
+            "historico_autocompletes": self.historico_autocompletes,
+            "tema": self.tema
         }
         with open("config.json", "w",encoding="utf-8") as f:
             json.dump(config, f,indent=4,ensure_ascii=False)

@@ -1,6 +1,6 @@
 {
-    "usuario": "Keven",
-    "senha": "123",
+    "usuario": "",
+    "senha": "",
     "mantem_conectado": false,
     "nao_mostrar_mensagem_boas_vindas": true,
     "nao_mostrar_aviso_irreversivel": false,
@@ -30,5 +30,6 @@
         "txt_descricao_produto_3": [
             "Jogos"
         ]
-    }
+    },
+    "tema": "escuro"
 }

@@ -862,6 +862,10 @@ class Clientes_Fisicos(QWidget):
             "Estado": "O campo de Estado é obrigatório",
             "Categoria do Cliente": "O campo Categoria do Cliente é obrigatório.",
             "Status do Cliente": "Você deve selecionar um status válido para o cliente.",
+            "Última Atualização": "O campo Última Atualização é obrigatório.",
+            "Data da Inclusão": "O campo Data da Inclusão é obrigatório.",
+            "Valor Gasto Total": "O campo Valor Gasto Total é obrigatório.",
+            "Última Compra": "O campo Última Compra é obrigatório."
         }
         
         cnh_widget = self.campos_cliente_fisico.get("CNH")
@@ -878,6 +882,31 @@ class Clientes_Fisicos(QWidget):
                 "Data de Emissão da CNH": "Informe a Data de Emissão da CNH.",
                 "Data de Vencimento da CNH": "Informe a Data de Vencimento da CNH."
             })
+
+        for campo, mensagem_erro in self.campos_obrigatorios_clientes_fisicos.items():
+            widget = self.campos_cliente_fisico.get(campo)
+            if widget is None:
+                continue
+            
+            valor = ""
+            if isinstance(widget, QLineEdit):
+                valor = widget.text().strip()
+            elif isinstance(widget, QComboBox):
+                valor = widget.currentText().strip()
+                if valor.lower() == "selecione":
+                    valor = ""
+            else:
+                valor = str(widget).strip()
+
+            print(f"Validando campo '{campo}': valor capturado '{valor}'")  # <-- print para debug
+
+            if not valor:
+                QMessageBox.warning(None, "Campo obrigatório", mensagem_erro)
+                # Foca no widget para ajudar o usuário a preencher
+                widget.setFocus()
+                return False
+
+        return True
 
     def cadastrar_clientes_fisicos(self):
         # Atualiza a lista de campos obrigatórios de acordo com o preenchimento
@@ -990,7 +1019,9 @@ class Clientes_Fisicos(QWidget):
             
     def atualizar_dados_clientes_fisicos(self):
         # Atualiza campos obrigatórios de acordo com a CNH
-        self.informacoes_obrigatorias_clientes_fisicos()
+        if not self.informacoes_obrigatorias_clientes_fisicos():
+            return
+        
         if not self.alteracoes_realizadas:
             QMessageBox.information(None, "Sem alterações", "Nenhuma modificação foi feita.")
             return

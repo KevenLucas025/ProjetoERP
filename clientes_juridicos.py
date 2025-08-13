@@ -848,6 +848,11 @@ class Clientes_Juridicos(QWidget):
             "Estado": "O campo de Estado é obrigatório",
             "Categoria do Cliente": "O campo Categoria do Cliente é obrigatório.",
             "Status do Cliente": "Você deve selecionar um status válido para o cliente.",
+            "Última Atualização": "O campo Última Atualização é obrigatório.",
+            "Data da Inclusão": "O campo Última Atualização é obrigatório.",
+            "Valor Gasto Total": "O campo Última Atualização é obrigatório.",
+            "Última Compra": "O campo Última Atualização é obrigatório."
+            
         }
 
         cnh_widget = self.campos_cliente_juridico.get("CNH")
@@ -864,8 +869,6 @@ class Clientes_Juridicos(QWidget):
                 "Data de Vencimento da CNH": "Informe a Data de Vencimento da CNH."
             })
 
-   
-             
 
         for campo, mensagem_erro in self.campos_obrigatorios_clientes.items():
             widget = self.campos_cliente_juridico.get(campo)

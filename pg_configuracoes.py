@@ -6,6 +6,7 @@ import os
 import json
 from login import Login
 import sys
+from configuracoes import Configuracoes_Login
 
 class Pagina_Configuracoes(QWidget):
     def __init__(self, tool_tema, tool_atalhos,tool_hora, tool_fonte,tool_atualizacoes,tool_notificacoes,
@@ -51,13 +52,19 @@ class Pagina_Configuracoes(QWidget):
         self.frame_quantidade = frame_quantidade
 
 
+        self.config = Configuracoes_Login(main_window=main_window)
 
+        if self.config.tema == "escuro":
+            self.aplicar_modo_escuro_sem_progress()
+        elif self.config.tema == "claro":
+            self.aplicar_modo_claro()
+        else:
+            self.aplicar_modo_classico()
 
         self.frame_pg_configuracoes = frame_pg_configuracoes
         self.frame_pg_configuracoes.setObjectName("frame_pg_configuracoes")
         self.frame_pg_configuracoes1 = frame_pg_configuracoes1
         self.frame_pg_configuracoes1.setObjectName("frame_pg_configuracoes1")
-
         self.line_excel.setObjectName("line_excel")
 
         self.tool_tema = tool_tema
@@ -136,65 +143,23 @@ class Pagina_Configuracoes(QWidget):
         QTimer.singleShot(3000, lambda: self.finalizar_aplicacao_modo_escuro(progress_dialog))
 
     def finalizar_aplicacao_modo_escuro(self, progress_dialog):
-        progress_dialog.accept()  # Oculta o diálogo de progresso
+        if progress_dialog:
+            progress_dialog.accept()  # Oculta o diálogo de progresso
 
         # Aplicar o estilo de modo escuro apenas após a conclusão da progress bar
-        style_sheet = """
-            QMainWindow, QStackedWidget, QWidget, QFrame, QLabel, QToolButton, QPushButton {
-                background-color: #202124;
-                color: #ffffff;
+        style_sheet = """ 
+            QMainWindow, QWidget, QFrame, QLabel, QToolButton, QPushButton {
+                background-color: #202124; color: #ffffff;
             }
-            QPushButton {
-                border-radius: 5px;
-                border: 2px solid #ffffff;
-                background-color: #ffffff;
-                color: #000000;
+            QPushButton { border-radius:5px; border:2px solid #ffffff; background-color:#ffffff; color:#000000; }
+            QPushButton:hover { background-color:#dddddd; }
+            QPushButton:pressed { background-color:#bbbbbb; }
+            QToolButton { border-radius:5px; border:2px solid #ffffff; background-color:white; color:black; }
+            #frame_pg_configuracoes{ background-color:#202124; color:#ffffff; border:2px solid #ffffff; }
+            #frame_valor_total_produtos,#frame_valor_do_desconto,#frame_valor_desconto,#frame_quantidade {
+                background-color:#2a2b2e; color:#ffffff; border:2px solid #ffffff; border-radius:10px;
             }
-            QPushButton:hover {
-                background-color: #dddddd;
-                border: 2px solid #aaaaaa;
-            }
-            QPushButton:pressed {
-                background-color: #bbbbbb;
-                border: 2px solid #888888;
-            }
-            QToolButton {
-                border-radius: 5px;
-                border: 2px solid #ffffff;
-                background-color: white;
-                color: black;
-            }
-            QToolButton:hover {
-                background-color: #dddddd;
-                border: 2px solid #aaaaaa;
-            }
-            QToolButton:pressed {
-                background-color: #bbbbbb;
-                border: 2px solid #888888;
-            }
-            #frame_pg_configuracoes{
-                background-color: #202124;
-                color: #ffffff;
-                border: 2px solid #ffffff;
-            }
-            #frame_valor_total_produtos,#frame_valor_do_desconto, #frame_valor_desconto,#frame_quantidade{
-                background-color: #2a2b2e;
-                color: #ffffff;
-                border: 2px solid #ffffff;
-                border-radius: 10px;
-            }
-            #label_valor_total_produtos,#label_valor_do_desconto,#label_valor_desconto,#label_quantidade_2{
-                background-color: #2a2b2e;
-                color: #ffffff;
-            }
-            #label_8,#label_cadastramento_produtos,#label_10,#label_base, #label_saida{
-                border: 4px solid #ffffff;
-            }
-            #frame_page_estoque{
-                background-color: #202124;
-                color: #ffffff;
-            }
-        """  
+            """
          # Iterar sobre todos os widgets da aplicação e aplicar o estilo
         app = QApplication.instance()
         for widget in app.allWidgets():
@@ -205,8 +170,12 @@ class Pagina_Configuracoes(QWidget):
 
         self.btn_retroceder.setGeometry(40, 5, 30, 30)  # Define a geometria do botão 'btn_retroceder'
 
+        self.config.tema = "escuro"
+        self.config.salvar(self.config.usuario, self.config.senha, self.config.mantem_conectado)
 
-
+    # --- Modo escuro na inicialização (sem progress) ---
+    def aplicar_modo_escuro_sem_progress(self):
+        self.finalizar_aplicacao_modo_escuro(progress_dialog=None)
 
     def aplicar_modo_claro(self):
         style_sheet = """
