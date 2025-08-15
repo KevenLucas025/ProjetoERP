@@ -11,26 +11,45 @@ class Configuracoes_Login:
         self.nao_mostrar_mensagem_arquivo_excel = False
         self.nao_mostrar_mensagem_arquivo_excel_fisicos = False
         self.historico_autocompletes = {}
-        self.tema = "escuro"
+        self.tema = "classico"
         self.carregar()
 
     def carregar(self):
         try:
-            with open("config.json", "r",encoding="utf-8") as f:
-                config = json.load(f)
+            with open("config.json", "r", encoding="utf-8") as f:
+                conteudo = f.read().strip()
+
+                # Arquivo existe mas está vazio
+                if not conteudo:
+                    print("config.json está vazio, aplicando tema padrão.")
+                    self.tema = "classico"  # ou "escuro", se quiser
+                    return
+
+                config = json.loads(conteudo)
+
                 self.usuario = config.get("usuario", "")
-                self.senha = config.get("senha","")
+                self.senha = config.get("senha", "")
                 self.mantem_conectado = config.get("mantem_conectado", False)
                 self.nao_mostrar_mensagem_boas_vindas = config.get("nao_mostrar_mensagem_boas_vindas", False)
                 self.nao_mostrar_aviso_irreversivel = config.get("nao_mostrar_aviso_irreversivel", False)
                 self.nao_mostrar_mensagem_arquivo_excel = config.get("nao_mostrar_mensagem_arquivo_excel", False)
-                self.nao_mostrar_mensagem_arquivo_excel_fisicos = config.get("nao_mostrar_mensagem_arquivo_excel_fisicos",False)
+                self.nao_mostrar_mensagem_arquivo_excel_fisicos = config.get("nao_mostrar_mensagem_arquivo_excel_fisicos", False)
                 self.historico_autocompletes = config.get("historico_autocompletes", {})
-                self.tema = config.get("tema","escuro")
+
+                # Só define tema se existir no arquivo, senão mantém padrão
+                if "tema" in config:
+                    self.tema = config["tema"]
+                else:
+                    print("Chave 'tema' não encontrada, usando tema padrão.")
+                    self.tema = "classico"  # ou "escuro"
+
         except FileNotFoundError:
-            print("Arquivo config.json não encontrado")
+            print("Arquivo config.json não encontrado, aplicando tema padrão.")
+            self.tema = "classico"  # ou "escuro"
         except json.JSONDecodeError:
-            print("Erro ao decodificar o JSON")
+            print("Erro ao decodificar o JSON, aplicando tema padrão.")
+            self.tema = "classico"  # ou "escuro"
+
 
     def salvar(self, usuario, senha, mantem_conectado):
         config = {

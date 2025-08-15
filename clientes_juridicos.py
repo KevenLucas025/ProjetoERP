@@ -172,6 +172,7 @@ class Clientes_Juridicos(QWidget):
         self.botao_lupa.setCursor(Qt.PointingHandCursor)  # Muda o cursor ao passar o mouse
         self.botao_lupa.setIcon(QIcon(QPixmap("imagens/botão_lupa.png")))  # Substitua pelo caminho correto
         self.botao_lupa.setStyleSheet("border: none; background: transparent;")  # Sem fundo e sem borda
+        self.botao_lupa.setContentsMargins(0,0,0,0)
         
         # Definir tamanho do botão
         altura = self.line_clientes.height() - 4  # Ajustar altura conforme a LineEdit

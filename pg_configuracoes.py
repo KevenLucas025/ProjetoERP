@@ -10,8 +10,7 @@ from configuracoes import Configuracoes_Login
 
 class Pagina_Configuracoes(QWidget):
     def __init__(self, tool_tema, tool_atalhos,tool_hora, tool_fonte,tool_atualizacoes,tool_notificacoes,
-                 frame_pg_configuracoes, frame_pg_configuracoes1, 
-                 main_window, paginas_sistemas, frame_botoes_navegacoes, label_8, centralwidget, 
+                 frame_pg_configuracoes, main_window, paginas_sistemas, frame_botoes_navegacoes, label_8, centralwidget, 
                  frame_2, frame_page_estoque, frame_5, frame_cadastro_usuario,
                  pg_cadastro_usuario, btn_avancar, btn_retroceder, btn_opcoes, btn_home, btn_verificar_estoque,
                  btn_cadastrar_produto, btn_cadastro_usuario, btn_clientes, btn_configuracoes,
@@ -50,10 +49,11 @@ class Pagina_Configuracoes(QWidget):
         self.frame_valor_do_desconto = frame_valor_do_desconto
         self.frame_valor_desconto = frame_valor_desconto
         self.frame_quantidade = frame_quantidade
-
-
+        self.frame_pg_configuracoes = frame_pg_configuracoes
+       
+        
         self.config = Configuracoes_Login(main_window=main_window)
-
+        
         if self.config.tema == "escuro":
             self.aplicar_modo_escuro_sem_progress()
         elif self.config.tema == "claro":
@@ -61,11 +61,12 @@ class Pagina_Configuracoes(QWidget):
         else:
             self.aplicar_modo_classico()
 
-        self.frame_pg_configuracoes = frame_pg_configuracoes
-        self.frame_pg_configuracoes.setObjectName("frame_pg_configuracoes")
-        self.frame_pg_configuracoes1 = frame_pg_configuracoes1
-        self.frame_pg_configuracoes1.setObjectName("frame_pg_configuracoes1")
+
+        
+    
+
         self.line_excel.setObjectName("line_excel")
+
 
         self.tool_tema = tool_tema
         self.tool_atalhos = tool_atalhos
@@ -143,39 +144,161 @@ class Pagina_Configuracoes(QWidget):
         QTimer.singleShot(3000, lambda: self.finalizar_aplicacao_modo_escuro(progress_dialog))
 
     def finalizar_aplicacao_modo_escuro(self, progress_dialog):
-        if progress_dialog:
+        if progress_dialog is not None:
             progress_dialog.accept()  # Oculta o diálogo de progresso
+       
 
         # Aplicar o estilo de modo escuro apenas após a conclusão da progress bar
-        style_sheet = """ 
-            QMainWindow, QWidget, QFrame, QLabel, QToolButton, QPushButton {
-                background-color: #202124; color: #ffffff;
+        style_sheet = """
+            /* Fundo escuro padrão */
+            QMainWindow, QStackedWidget, QWidget, QFrame, QLabel, QToolButton, QPushButton {
+                background-color: #202124;
+                color: #ffffff;
             }
-            QPushButton { border-radius:5px; border:2px solid #ffffff; background-color:#ffffff; color:#000000; }
-            QPushButton:hover { background-color:#dddddd; }
-            QPushButton:pressed { background-color:#bbbbbb; }
-            QToolButton { border-radius:5px; border:2px solid #ffffff; background-color:white; color:black; }
-            #frame_pg_configuracoes{ background-color:#202124; color:#ffffff; border:2px solid #ffffff; }
-            #frame_valor_total_produtos,#frame_valor_do_desconto,#frame_valor_desconto,#frame_quantidade {
-                background-color:#2a2b2e; color:#ffffff; border:2px solid #ffffff; border-radius:10px;
+
+            /* QTableView com seleção diferenciada */
+            QTableView {
+                background-color: #ffffff;
+                color: black;
+                gridline-color: #555555;
+                selection-background-color: #7a7a7a; /* verde água */
+                selection-color: white;
             }
-            """
+            QHeaderView::section {
+                background-color: #ffffff;
+                color: black;
+                border: 1px solid #aaaaaa;
+                padding: 4px;
+            }
+
+            /* QTabWidget headers brancos */
+            QTabWidget::pane {
+                border: 1px solid #444444;
+                background-color: #202124;
+            }
+            QTabBar::tab {
+                background-color: #ffffff; /* fundo branco */
+                color: black;
+                padding: 6px 12px;
+                border: 1px solid #aaaaaa;
+                border-bottom: none;
+            }
+            QTabBar::tab:selected {
+                background-color: #eeeeee; /* branco levemente mais escuro */
+            }
+            QTabBar::tab:hover {
+                background-color: #f5f5f5;
+            }
+
+            /* Botões comuns */
+            QPushButton {
+                border-radius: 5px;
+                border: 2px solid #ffffff;
+                background-color: #2e2e2e; /* fundo escuro */
+                color: #ffffff; /* texto branco */
+            }
+
+            QPushButton:hover {
+                background-color: #444444; /* hover levemente mais claro */
+                border: 2px solid #aaaaaa;
+            }
+
+            QPushButton:pressed {
+                background-color: #555555; /* pressionado */
+                border: 2px solid #888888;
+            }
+
+            /* ToolButtons com gradiente */
+            QPushButton {
+                color: #ffffff;
+                border-radius: 8px;
+                font-size: 16px;
+                background: qlineargradient(
+                    x1:0, y1:0, x2:0, y2:1,
+                    stop:0 rgb(60, 60, 60),
+                    stop:1 rgb(100, 100, 100)
+                );
+                border: 2px solid #1e1e1e; /* borda escura */
+                padding: 6px;
+            }
+
+            QPushButton:hover {
+                background: qlineargradient(
+                    x1:0, y1:0, x2:0, y2:1,
+                    stop:0 rgb(90, 90, 90),
+                    stop:1 rgb(130, 130, 130)
+                );
+                color: #ffffff;
+                border: 2px solid #aaaaaa; /* destaca no hover */
+            }
+
+            QPushButton:pressed {
+                background: qlineargradient(
+                    x1:0, y1:0, x2:0, y2:1,
+                    stop:0 rgb(50, 50, 50),
+                    stop:1 rgb(80, 80, 80)
+                );
+                color: #ffffff;
+                border: 2px solid #666666;
+            }
+            QPushButton#btn_login{
+                width: 120px;   /* largura mínima */
+                min-height: 21px;   /* altura mínima */
+            
+            }
+            QLineEdit#txt_senha,
+            QlineEdit#txt_usuario{
+                border: 2px solid #555555;      /* borda sutil em cinza escuro */
+                border-radius: 5px;             /* bordas arredondadas */
+                padding: 5px;                    /* espaçamento interno */
+                background-color: #2e2e2e;      /* fundo escuro */
+                color: #ffffff;                  /* texto branco */   
+            }
+            /* Placeholder */
+            QLineEdit#txt_usuario::placeholder,
+            QLineEdit#txt_senha::placeholder {
+                color: #bbbbbb;  /* placeholder cinza claro */
+            }
+            
+
+            #frame_valor_total_produtos, #frame_valor_do_desconto, #frame_valor_desconto, #frame_quantidade {
+                background-color: #2a2b2e;
+                color: #ffffff;
+                border: 2px solid #ffffff;
+                border-radius: 10px;
+            }
+            #label_valor_total_produtos, #label_valor_do_desconto, #label_valor_desconto, #label_quantidade_2 {
+                background-color: #2a2b2e;
+                color: #ffffff;
+            }
+            #label_8, #label_cadastramento_produtos, #label_10, #label_base, #label_saida {
+                border: 4px solid #ffffff;
+            }
+            #frame_page_estoque {
+                background-color: #202124;
+                color: #ffffff;
+            }
+        """
+
+
          # Iterar sobre todos os widgets da aplicação e aplicar o estilo
         app = QApplication.instance()
         for widget in app.allWidgets():
             widget.setStyleSheet(style_sheet)
 
-        self.btn_opcoes.setIcon(QIcon("imagens/imagens_modo_escuro/seta esquerda preta.png")) #Esse botão é o botão de retroceder, nomenclatura errada
-        self.btn_retroceder.setIcon(QIcon("imagens/imagens_modo_escuro/seta direita preta.png")) # Esse botão é o botão avançar, nomenclatura errada
+        self.btn_opcoes.setIcon(QIcon("imagens/imagens_modo_escuro/seta direita preta.png")) #Esse botão é o botão de retroceder, nomenclatura errada
+        self.btn_retroceder.setIcon(QIcon("imagens/imagens_modo_escuro/seta esquerda preta.png")) # Esse botão é o botão avançar, nomenclatura errada
 
         self.btn_retroceder.setGeometry(40, 5, 30, 30)  # Define a geometria do botão 'btn_retroceder'
 
+        # Salvar no JSON que o tema agora é escuro
         self.config.tema = "escuro"
         self.config.salvar(self.config.usuario, self.config.senha, self.config.mantem_conectado)
 
     # --- Modo escuro na inicialização (sem progress) ---
     def aplicar_modo_escuro_sem_progress(self):
-        self.finalizar_aplicacao_modo_escuro(progress_dialog=None)
+        self.finalizar_aplicacao_modo_escuro(progress_dialog=None)  
+
 
     def aplicar_modo_claro(self):
         style_sheet = """
@@ -231,7 +354,6 @@ class Pagina_Configuracoes(QWidget):
         self.main_window.setStyleSheet(style_sheet)
         self.paginas_sistemas.setStyleSheet(style_sheet)
         self.frame_pg_configuracoes.setStyleSheet(style_sheet)
-        self.frame_pg_configuracoes1.setStyleSheet(style_sheet)
         self.frame_botoes_navegacoes.setStyleSheet(style_sheet)
 
 

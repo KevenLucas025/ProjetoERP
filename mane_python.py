@@ -42,7 +42,7 @@ class Ui_MainWindow(object):
         self.centralwidget.setSizePolicy(sizePolicy)
         self.centralwidget.setMinimumSize(QSize(0, 0))
         self.centralwidget.setFocusPolicy(Qt.StrongFocus)
-        self.centralwidget.setStyleSheet(u"")
+        self.centralwidget.setStyleSheet(u"background-color: rgb(0, 80, 121);")
         self.gridLayout_2 = QGridLayout(self.centralwidget)
         self.gridLayout_2.setObjectName(u"gridLayout_2")
         self.horizontalSpacer_5 = QSpacerItem(1130, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
@@ -3409,8 +3409,10 @@ class Ui_MainWindow(object):
         self.tab_clientes_todos.setObjectName(u"tab_clientes_todos")
         self.tab_clientes_todos.setCursor(QCursor(Qt.CursorShape.ArrowCursor))
         self.tab_clientes_todos.setStyleSheet(u"QTabBar::tab:selected {\n"
-"    background-color: white;\n"
 "    color: black;\n"
+"}\n"
+"QTabWidget::pane {\n"
+"    border: none;   /* Remove a borda branca */\n"
 "}\n"
 "")
         self.tab_clientes = QWidget()
@@ -3636,12 +3638,12 @@ class Ui_MainWindow(object):
         __qtablewidgetitem93 = QTableWidgetItem()
         self.table_clientes_juridicos.setHorizontalHeaderItem(23, __qtablewidgetitem93)
         self.table_clientes_juridicos.setObjectName(u"table_clientes_juridicos")
-        self.table_clientes_juridicos.setStyleSheet(u"/* Estiliza apenas o QTableView com objectName \"table_ativos\" */\n"
+        self.table_clientes_juridicos.setStyleSheet(u"/* Estiliza apenas o QTableView com objectName  */\n"
 "QTableView {\n"
 "    gridline-color: black;\n"
-"    border: 2px solid white;\n"
 "    color: black;\n"
 "    selection-color: white;\n"
+"\n"
 "}\n"
 "\n"
 "/* Estiliza a barra de rolagem horizontal */\n"
@@ -3673,9 +3675,9 @@ class Ui_MainWindow(object):
 "	border-radius: 5px;\n"
 "}\n"
 "\n"
-"/* "
-                        "Remove os bot\u00f5es */\n"
-"QTableView QScrollBar::add-line:vertical,\n"
+"/* Remove os bot\u00f5es */\n"
+"QTableView QScr"
+                        "ollBar::add-line:vertical,\n"
 "QTableView QScrollBar::sub-line:vertical {\n"
 "    height: 0px;\n"
 "    width: 0px;\n"
@@ -3695,7 +3697,7 @@ class Ui_MainWindow(object):
 "    background-color: rgb(0, 120, 215);\n"
 "    color: white;\n"
 "}")
-        self.table_clientes_juridicos.setFrameShape(QFrame.Box)
+        self.table_clientes_juridicos.setFrameShape(QFrame.NoFrame)
         self.table_clientes_juridicos.setEditTriggers(QAbstractItemView.NoEditTriggers)
         self.table_clientes_juridicos.setSelectionBehavior(QAbstractItemView.SelectRows)
         self.table_clientes_juridicos.setGridStyle(Qt.SolidLine)
@@ -3928,7 +3930,6 @@ class Ui_MainWindow(object):
         self.table_clientes_fisicos.setStyleSheet(u"/* Estiliza apenas o QTableView com objectName \"table_ativos\" */\n"
 "QTableView {\n"
 "    gridline-color: black;\n"
-"    border: 2px solid white;\n"
 "    color: black;\n"
 "    selection-color: white;\n"
 "}\n"
@@ -3962,9 +3963,9 @@ class Ui_MainWindow(object):
 "	border-radius: 5px;\n"
 "}\n"
 "\n"
-"/* "
-                        "Remove os bot\u00f5es */\n"
-"QTableView QScrollBar::add-line:vertical,\n"
+"/* Remove os bot\u00f5es */\n"
+"QTab"
+                        "leView QScrollBar::add-line:vertical,\n"
 "QTableView QScrollBar::sub-line:vertical {\n"
 "    height: 0px;\n"
 "    width: 0px;\n"
@@ -3984,7 +3985,8 @@ class Ui_MainWindow(object):
 "    background-color: rgb(0, 120, 215);\n"
 "    color: white;\n"
 "}")
-        self.table_clientes_fisicos.setFrameShape(QFrame.Box)
+        self.table_clientes_fisicos.setFrameShape(QFrame.NoFrame)
+        self.table_clientes_fisicos.setFrameShadow(QFrame.Plain)
         self.table_clientes_fisicos.setEditTriggers(QAbstractItemView.NoEditTriggers)
         self.table_clientes_fisicos.setSelectionBehavior(QAbstractItemView.SelectRows)
         self.table_clientes_fisicos.setGridStyle(Qt.SolidLine)
@@ -4054,9 +4056,10 @@ class Ui_MainWindow(object):
 "}")
         self.frame_botoes_configuracoes.setFrameShape(QFrame.NoFrame)
         self.frame_botoes_configuracoes.setFrameShadow(QFrame.Raised)
+        self.gridLayout_29 = QGridLayout(self.frame_botoes_configuracoes)
+        self.gridLayout_29.setObjectName(u"gridLayout_29")
         self.frame_botoes_config = QFrame(self.frame_botoes_configuracoes)
         self.frame_botoes_config.setObjectName(u"frame_botoes_config")
-        self.frame_botoes_config.setGeometry(QRect(9, 19, 181, 660))
         sizePolicy.setHeightForWidth(self.frame_botoes_config.sizePolicy().hasHeightForWidth())
         self.frame_botoes_config.setSizePolicy(sizePolicy)
         self.frame_botoes_config.setMinimumSize(QSize(0, 660))
@@ -4202,6 +4205,9 @@ class Ui_MainWindow(object):
         self.tool_notificacoes.setToolButtonStyle(Qt.ToolButtonTextOnly)
 
         self.verticalLayout_17.addWidget(self.tool_notificacoes)
+
+
+        self.gridLayout_29.addWidget(self.frame_botoes_config, 0, 0, 1, 1)
 
 
         self.gridLayout_17.addWidget(self.frame_botoes_configuracoes, 1, 0, 1, 3)

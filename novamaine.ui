@@ -51,7 +51,7 @@
     <enum>Qt::StrongFocus</enum>
    </property>
    <property name="styleSheet">
-    <string notr="true"/>
+    <string notr="true">background-color: rgb(0, 80, 121);</string>
    </property>
    <layout class="QGridLayout" name="gridLayout_2">
     <item row="0" column="1">
@@ -5985,8 +5985,10 @@ QPushButton:hover {
              </property>
              <property name="styleSheet">
               <string notr="true">QTabBar::tab:selected {
-    background-color: white;
     color: black;
+}
+QTabWidget::pane {
+    border: none;   /* Remove a borda branca */
 }
 </string>
              </property>
@@ -6287,12 +6289,12 @@ QLineEdit::placeholderText {
                <item row="1" column="0" colspan="2">
                 <widget class="QTableWidget" name="table_clientes_juridicos">
                  <property name="styleSheet">
-                  <string notr="true">/* Estiliza apenas o QTableView com objectName &quot;table_ativos&quot; */
+                  <string notr="true">/* Estiliza apenas o QTableView com objectName  */
 QTableView {
     gridline-color: black;
-    border: 2px solid white;
     color: black;
     selection-color: white;
+
 }
 
 /* Estiliza a barra de rolagem horizontal */
@@ -6347,7 +6349,7 @@ QTableWidget::item:selected {
 }</string>
                  </property>
                  <property name="frameShape">
-                  <enum>QFrame::Box</enum>
+                  <enum>QFrame::NoFrame</enum>
                  </property>
                  <property name="editTriggers">
                   <set>QAbstractItemView::NoEditTriggers</set>
@@ -6788,7 +6790,6 @@ QPushButton:hover {
                   <string notr="true">/* Estiliza apenas o QTableView com objectName &quot;table_ativos&quot; */
 QTableView {
     gridline-color: black;
-    border: 2px solid white;
     color: black;
     selection-color: white;
 }
@@ -6845,7 +6846,10 @@ QTableWidget::item:selected {
 }</string>
                  </property>
                  <property name="frameShape">
-                  <enum>QFrame::Box</enum>
+                  <enum>QFrame::NoFrame</enum>
+                 </property>
+                 <property name="frameShadow">
+                  <enum>QFrame::Plain</enum>
                  </property>
                  <property name="editTriggers">
                   <set>QAbstractItemView::NoEditTriggers</set>
@@ -7100,59 +7104,53 @@ QTableWidget::item:selected {
              <property name="frameShadow">
               <enum>QFrame::Raised</enum>
              </property>
-             <widget class="QFrame" name="frame_botoes_config">
-              <property name="geometry">
-               <rect>
-                <x>9</x>
-                <y>19</y>
-                <width>181</width>
-                <height>660</height>
-               </rect>
-              </property>
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="minimumSize">
-               <size>
-                <width>0</width>
-                <height>660</height>
-               </size>
-              </property>
-              <property name="maximumSize">
-               <size>
-                <width>16777215</width>
-                <height>612</height>
-               </size>
-              </property>
-              <property name="frameShape">
-               <enum>QFrame::NoFrame</enum>
-              </property>
-              <property name="frameShadow">
-               <enum>QFrame::Raised</enum>
-              </property>
-              <layout class="QVBoxLayout" name="verticalLayout_17">
-               <item>
-                <widget class="QToolButton" name="tool_tema">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="maximumSize">
-                  <size>
-                   <width>150</width>
-                   <height>30</height>
-                  </size>
-                 </property>
-                 <property name="cursor">
-                  <cursorShape>PointingHandCursor</cursorShape>
-                 </property>
-                 <property name="styleSheet">
-                  <string notr="true">QToolButton {
+             <layout class="QGridLayout" name="gridLayout_29">
+              <item row="0" column="0">
+               <widget class="QFrame" name="frame_botoes_config">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>0</width>
+                  <height>660</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>16777215</width>
+                  <height>612</height>
+                 </size>
+                </property>
+                <property name="frameShape">
+                 <enum>QFrame::NoFrame</enum>
+                </property>
+                <property name="frameShadow">
+                 <enum>QFrame::Raised</enum>
+                </property>
+                <layout class="QVBoxLayout" name="verticalLayout_17">
+                 <item>
+                  <widget class="QToolButton" name="tool_tema">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="maximumSize">
+                    <size>
+                     <width>150</width>
+                     <height>30</height>
+                    </size>
+                   </property>
+                   <property name="cursor">
+                    <cursorShape>PointingHandCursor</cursorShape>
+                   </property>
+                   <property name="styleSheet">
+                    <string notr="true">QToolButton {
                 background-color: rgb(50, 150, 250);
                 color: white;
                 border-radius: 5px;
@@ -7164,37 +7162,37 @@ QTableWidget::item:selected {
                 border: 2px solid rgb(100, 180, 255);
             }
             </string>
-                 </property>
-                 <property name="text">
-                  <string>Tema do Sistema</string>
-                 </property>
-                 <property name="popupMode">
-                  <enum>QToolButton::MenuButtonPopup</enum>
-                 </property>
-                 <property name="toolButtonStyle">
-                  <enum>Qt::ToolButtonTextOnly</enum>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QToolButton" name="tool_atalhos">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="maximumSize">
-                  <size>
-                   <width>150</width>
-                   <height>30</height>
-                  </size>
-                 </property>
-                 <property name="cursor">
-                  <cursorShape>PointingHandCursor</cursorShape>
-                 </property>
-                 <property name="styleSheet">
-                  <string notr="true">QToolButton {
+                   </property>
+                   <property name="text">
+                    <string>Tema do Sistema</string>
+                   </property>
+                   <property name="popupMode">
+                    <enum>QToolButton::MenuButtonPopup</enum>
+                   </property>
+                   <property name="toolButtonStyle">
+                    <enum>Qt::ToolButtonTextOnly</enum>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QToolButton" name="tool_atalhos">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="maximumSize">
+                    <size>
+                     <width>150</width>
+                     <height>30</height>
+                    </size>
+                   </property>
+                   <property name="cursor">
+                    <cursorShape>PointingHandCursor</cursorShape>
+                   </property>
+                   <property name="styleSheet">
+                    <string notr="true">QToolButton {
                 background-color: rgb(50, 150, 250);
                 color: white;
                 border-radius: 5px;
@@ -7206,37 +7204,37 @@ QTableWidget::item:selected {
                 border: 2px solid rgb(100, 180, 255);
             }
             </string>
-                 </property>
-                 <property name="text">
-                  <string>Atalhos do teclado</string>
-                 </property>
-                 <property name="popupMode">
-                  <enum>QToolButton::MenuButtonPopup</enum>
-                 </property>
-                 <property name="toolButtonStyle">
-                  <enum>Qt::ToolButtonTextOnly</enum>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QToolButton" name="tool_hora">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="maximumSize">
-                  <size>
-                   <width>150</width>
-                   <height>30</height>
-                  </size>
-                 </property>
-                 <property name="cursor">
-                  <cursorShape>PointingHandCursor</cursorShape>
-                 </property>
-                 <property name="styleSheet">
-                  <string notr="true">QToolButton {
+                   </property>
+                   <property name="text">
+                    <string>Atalhos do teclado</string>
+                   </property>
+                   <property name="popupMode">
+                    <enum>QToolButton::MenuButtonPopup</enum>
+                   </property>
+                   <property name="toolButtonStyle">
+                    <enum>Qt::ToolButtonTextOnly</enum>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QToolButton" name="tool_hora">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="maximumSize">
+                    <size>
+                     <width>150</width>
+                     <height>30</height>
+                    </size>
+                   </property>
+                   <property name="cursor">
+                    <cursorShape>PointingHandCursor</cursorShape>
+                   </property>
+                   <property name="styleSheet">
+                    <string notr="true">QToolButton {
                 background-color: rgb(50, 150, 250);
                 color: white;
                 border-radius: 5px;
@@ -7248,37 +7246,37 @@ QTableWidget::item:selected {
                 border: 2px solid rgb(100, 180, 255);
             }
             </string>
-                 </property>
-                 <property name="text">
-                  <string>Hora e idioma</string>
-                 </property>
-                 <property name="popupMode">
-                  <enum>QToolButton::MenuButtonPopup</enum>
-                 </property>
-                 <property name="toolButtonStyle">
-                  <enum>Qt::ToolButtonTextOnly</enum>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QToolButton" name="tool_fonte">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="maximumSize">
-                  <size>
-                   <width>150</width>
-                   <height>30</height>
-                  </size>
-                 </property>
-                 <property name="cursor">
-                  <cursorShape>PointingHandCursor</cursorShape>
-                 </property>
-                 <property name="styleSheet">
-                  <string notr="true">QToolButton {
+                   </property>
+                   <property name="text">
+                    <string>Hora e idioma</string>
+                   </property>
+                   <property name="popupMode">
+                    <enum>QToolButton::MenuButtonPopup</enum>
+                   </property>
+                   <property name="toolButtonStyle">
+                    <enum>Qt::ToolButtonTextOnly</enum>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QToolButton" name="tool_fonte">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="maximumSize">
+                    <size>
+                     <width>150</width>
+                     <height>30</height>
+                    </size>
+                   </property>
+                   <property name="cursor">
+                    <cursorShape>PointingHandCursor</cursorShape>
+                   </property>
+                   <property name="styleSheet">
+                    <string notr="true">QToolButton {
                 background-color: rgb(50, 150, 250);
                 color: white;
                 border-radius: 5px;
@@ -7290,37 +7288,37 @@ QTableWidget::item:selected {
                 border: 2px solid rgb(100, 180, 255);
             }
             </string>
-                 </property>
-                 <property name="text">
-                  <string>Tamanho da fonte</string>
-                 </property>
-                 <property name="popupMode">
-                  <enum>QToolButton::MenuButtonPopup</enum>
-                 </property>
-                 <property name="toolButtonStyle">
-                  <enum>Qt::ToolButtonTextOnly</enum>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QToolButton" name="tool_atualizacoes">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="maximumSize">
-                  <size>
-                   <width>150</width>
-                   <height>30</height>
-                  </size>
-                 </property>
-                 <property name="cursor">
-                  <cursorShape>PointingHandCursor</cursorShape>
-                 </property>
-                 <property name="styleSheet">
-                  <string notr="true">QToolButton {
+                   </property>
+                   <property name="text">
+                    <string>Tamanho da fonte</string>
+                   </property>
+                   <property name="popupMode">
+                    <enum>QToolButton::MenuButtonPopup</enum>
+                   </property>
+                   <property name="toolButtonStyle">
+                    <enum>Qt::ToolButtonTextOnly</enum>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QToolButton" name="tool_atualizacoes">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="maximumSize">
+                    <size>
+                     <width>150</width>
+                     <height>30</height>
+                    </size>
+                   </property>
+                   <property name="cursor">
+                    <cursorShape>PointingHandCursor</cursorShape>
+                   </property>
+                   <property name="styleSheet">
+                    <string notr="true">QToolButton {
                 background-color: rgb(50, 150, 250);
                 color: white;
                 border-radius: 5px;
@@ -7332,37 +7330,37 @@ QTableWidget::item:selected {
                 border: 2px solid rgb(100, 180, 255);
             }
             </string>
-                 </property>
-                 <property name="text">
-                  <string>Atualizações</string>
-                 </property>
-                 <property name="popupMode">
-                  <enum>QToolButton::MenuButtonPopup</enum>
-                 </property>
-                 <property name="toolButtonStyle">
-                  <enum>Qt::ToolButtonTextOnly</enum>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QToolButton" name="tool_notificacoes">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-                   <horstretch>0</horstretch>
-                   <verstretch>0</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="maximumSize">
-                  <size>
-                   <width>150</width>
-                   <height>30</height>
-                  </size>
-                 </property>
-                 <property name="cursor">
-                  <cursorShape>PointingHandCursor</cursorShape>
-                 </property>
-                 <property name="styleSheet">
-                  <string notr="true">QToolButton {
+                   </property>
+                   <property name="text">
+                    <string>Atualizações</string>
+                   </property>
+                   <property name="popupMode">
+                    <enum>QToolButton::MenuButtonPopup</enum>
+                   </property>
+                   <property name="toolButtonStyle">
+                    <enum>Qt::ToolButtonTextOnly</enum>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QToolButton" name="tool_notificacoes">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="maximumSize">
+                    <size>
+                     <width>150</width>
+                     <height>30</height>
+                    </size>
+                   </property>
+                   <property name="cursor">
+                    <cursorShape>PointingHandCursor</cursorShape>
+                   </property>
+                   <property name="styleSheet">
+                    <string notr="true">QToolButton {
                 background-color: rgb(50, 150, 250);
                 color: white;
                 border-radius: 5px;
@@ -7374,20 +7372,22 @@ QTableWidget::item:selected {
                 border: 2px solid rgb(100, 180, 255);
             }
             </string>
-                 </property>
-                 <property name="text">
-                  <string>Notificações</string>
-                 </property>
-                 <property name="popupMode">
-                  <enum>QToolButton::MenuButtonPopup</enum>
-                 </property>
-                 <property name="toolButtonStyle">
-                  <enum>Qt::ToolButtonTextOnly</enum>
-                 </property>
-                </widget>
-               </item>
-              </layout>
-             </widget>
+                   </property>
+                   <property name="text">
+                    <string>Notificações</string>
+                   </property>
+                   <property name="popupMode">
+                    <enum>QToolButton::MenuButtonPopup</enum>
+                   </property>
+                   <property name="toolButtonStyle">
+                    <enum>Qt::ToolButtonTextOnly</enum>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </widget>
+              </item>
+             </layout>
             </widget>
            </item>
           </layout>
