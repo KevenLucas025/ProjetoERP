@@ -60,9 +60,6 @@ class Pagina_Configuracoes(QWidget):
             self.aplicar_modo_claro()
         else:
             self.aplicar_modo_classico()
-
-
-        
     
 
         self.line_excel.setObjectName("line_excel")
@@ -146,24 +143,23 @@ class Pagina_Configuracoes(QWidget):
     def finalizar_aplicacao_modo_escuro(self, progress_dialog):
         if progress_dialog is not None:
             progress_dialog.accept()  # Oculta o diálogo de progresso
-       
 
-        # Aplicar o estilo de modo escuro apenas após a conclusão da progress bar
+        # Estilo geral dos botões (modo escuro)
+        # Estilo geral dos botões (modo escuro)
         style_sheet = """
-            /* Fundo escuro padrão */
-            QMainWindow, QStackedWidget, QWidget, QFrame, QLabel, QToolButton, QPushButton {
-                background-color: #202124;
-                color: #ffffff;
-            }
-
-            /* QTableView com seleção diferenciada */
+        QMainWindow, QStackedWidget, QWidget, QFrame, QLabel {
+            background-color: #202124;
+            color: #ffffff;
+        }
+        /* QTableView com seleção diferenciada */
             QTableView {
                 background-color: #ffffff;
                 color: black;
                 gridline-color: #555555;
-                selection-background-color: #7a7a7a; /* verde água */
+                selection-background-color: #7a7a7a;
                 selection-color: white;
             }
+
             QHeaderView::section {
                 background-color: #ffffff;
                 color: black;
@@ -176,6 +172,7 @@ class Pagina_Configuracoes(QWidget):
                 border: 1px solid #444444;
                 background-color: #202124;
             }
+
             QTabBar::tab {
                 background-color: #ffffff; /* fundo branco */
                 color: black;
@@ -183,103 +180,236 @@ class Pagina_Configuracoes(QWidget):
                 border: 1px solid #aaaaaa;
                 border-bottom: none;
             }
+
             QTabBar::tab:selected {
                 background-color: #eeeeee; /* branco levemente mais escuro */
             }
+
             QTabBar::tab:hover {
                 background-color: #f5f5f5;
             }
 
-            /* Botões comuns */
-            QPushButton {
-                border-radius: 5px;
-                border: 2px solid #ffffff;
-                background-color: #2e2e2e; /* fundo escuro */
-                color: #ffffff; /* texto branco */
-            }
+        /* Botões gerais */
+        QPushButton {
+            border-radius: 5px;
+            color: #ffffff;
+        }
 
-            QPushButton:hover {
-                background-color: #444444; /* hover levemente mais claro */
-                border: 2px solid #aaaaaa;
-            }
+        QPushButton:hover {
+            background-color: #444444;
+        }
 
-            QPushButton:pressed {
-                background-color: #555555; /* pressionado */
-                border: 2px solid #888888;
-            }
-
-            /* ToolButtons com gradiente */
-            QPushButton {
-                color: #ffffff;
+        QPushButton:pressed {
+            background-color: #555555;
+            border: 2px solid #888888;
+        }
+         /* Botões de menu principal */
+            QPushButton#btn_home,
+            QPushButton#btn_verificar_estoque,
+            QPushButton#btn_verificar_usuarios,
+            QPushButton#btn_cadastrar_produto,
+            QPushButton#btn_cadastrar_usuarios,
+            QPushButton#btn_clientes,
+            QPushButton#btn_configuracoes {
                 border-radius: 8px;
-                font-size: 16px;
                 background: qlineargradient(
                     x1:0, y1:0, x2:0, y2:1,
-                    stop:0 rgb(60, 60, 60),
-                    stop:1 rgb(100, 100, 100)
+                    stop:0 rgb(60, 60, 60),   /* topo */
+                    stop:1 rgb(100, 100, 100) /* base */
                 );
-                border: 2px solid #1e1e1e; /* borda escura */
-                padding: 6px;
+                color: #ffffff; /* texto branco */
+                min-width: 130px;   /* largura mínima */
+                min-height: 21px;   /* altura mínima */
             }
 
-            QPushButton:hover {
+            QPushButton#btn_home:hover,
+            QPushButton#btn_verificar_estoque:hover,
+            QPushButton#btn_verificar_usuarios:hover,
+            QPushButton#btn_cadastrar_produto:hover,
+            QPushButton#btn_cadastrar_usuarios:hover,
+            QPushButton#btn_clientes:hover,
+            QPushButton#btn_configuracoes:hover {
                 background: qlineargradient(
                     x1:0, y1:0, x2:0, y2:1,
                     stop:0 rgb(90, 90, 90),
                     stop:1 rgb(130, 130, 130)
                 );
-                color: #ffffff;
-                border: 2px solid #aaaaaa; /* destaca no hover */
             }
 
-            QPushButton:pressed {
+            QPushButton#btn_home:pressed,
+            QPushButton#btn_verificar_estoque:pressed,
+            QPushButton#btn_verificar_usuarios:pressed,
+            QPushButton#btn_cadastrar_produto:pressed,
+            QPushButton#btn_cadastrar_usuarios:pressed,
+            QPushButton#btn_clientes:pressed,
+            QPushButton#btn_configuracoes:pressed {
                 background: qlineargradient(
                     x1:0, y1:0, x2:0, y2:1,
                     stop:0 rgb(50, 50, 50),
                     stop:1 rgb(80, 80, 80)
                 );
-                color: #ffffff;
-                border: 2px solid #666666;
             }
-            QPushButton#btn_login{
+
+
+        /* Botão específico btn_opcoes_navegacao */
+        QPushButton#btn_opcoes_navegacao {
+            background: qlineargradient(
+                x1:0, y1:0, x2:0, y2:1,
+                stop:0 rgb(60, 60, 60),
+                stop:1 rgb(100, 100, 100)
+            );
+            color: #ffffff;
+        }
+
+        QPushButton#btn_opcoes_navegacao:hover {
+            background: qlineargradient(
+                x1:0, y1:0, x2:0, y2:1,
+                stop:0 rgb(90, 90, 90),
+                stop:1 rgb(130, 130, 130)
+            );
+        }
+
+        QPushButton#btn_opcoes_navegacao:pressed {
+            background: qlineargradient(
+                x1:0, y1:0, x2:0, y2:1,
+                stop:0 rgb(50, 50, 50),
+                stop:1 rgb(80, 80, 80)
+            );
+        }
+        /* Botão de login */
+            QPushButton#btn_login {
+                border-radius: 8px;
                 width: 120px;   /* largura mínima */
                 min-height: 21px;   /* altura mínima */
+                background: qlineargradient(
+                    x1:0, y1:0, x2:0, y2:1,
+                    stop:0 rgb(60, 60, 60),   /* topo */
+                    stop:1 rgb(100, 100, 100) /* base */
+                );
+            }
+            QPushButton#btn_login:hover{
+                background: qlineargradient(
+                    x1:0, y1:0, x2:0, y2:1,
+                    stop:0 rgb(90, 90, 90),
+                    stop:1 rgb(130, 130, 130)
+                );
+            }
+            /* Botão de login */
+            QPushButton#btn_opcoes_extras {
+                border-radius: 8px;
+                width: 120px;   /* largura mínima */
+                min-height: 21px;   /* altura mínima */
+                background: qlineargradient(
+                    x1:0, y1:0, x2:0, y2:1,
+                    stop:0 rgb(60, 60, 60),   /* topo */
+                    stop:1 rgb(100, 100, 100) /* base */
+                );
+            }
+            QPushButton#btn_avancar,
+            QPushButton#btn_retroceder{
+                background: qlineargradient(
+                    x1:0, y1:0, x2:0, y2:1,
+                    stop:0 rgb(60, 60, 60),   /* topo */
+                    stop:1 rgb(100, 100, 100) /* base */
+                );
             
             }
+            QPushButton#btn_avancar:hover,
+            QPushButton#btn_retroceder:hover{
+                background: qlineargradient(
+                    x1:0, y1:0, x2:0, y2:1,
+                    stop:0 rgb(90, 90, 90),
+                    stop:1 rgb(130, 130, 130)
+                ); 
+            }
+            QPushButton#btn_avancar:pressed,
+            QPushButton#btn_retroceder:pressed{
+                background: qlineargradient(
+                    x1:0, y1:0, x2:0, y2:1,
+                    stop:0 rgb(50, 50, 50),
+                    stop:1 rgb(80, 80, 80)
+                );
+                border: 2px solid #888888;
+            }
+            /* Campos de entrada */
             QLineEdit#txt_senha,
-            QlineEdit#txt_usuario{
+            QLineEdit#txt_usuario {
                 border: 2px solid #555555;      /* borda sutil em cinza escuro */
                 border-radius: 5px;             /* bordas arredondadas */
-                padding: 5px;                    /* espaçamento interno */
+                padding: 5px;                   /* espaçamento interno */
                 background-color: #2e2e2e;      /* fundo escuro */
-                color: #ffffff;                  /* texto branco */   
+                color: #ffffff;                 /* texto branco */
             }
+            
+            QToolButton{
+                border-radius: 8px;
+                background: qlineargradient(
+                    x1:0, y1:0, x2:0, y2:1,
+                    stop:0 rgb(60, 60, 60),   /* topo */
+                    stop:1 rgb(100, 100, 100) /* base */
+                );
+                color: #ffffff;
+                min-width: 130px;
+                min-height: 21px;
+            
+            }
+            QToolButton:hover{
+                background: qlineargradient(
+                x1:0, y1:0, x2:0, y2:1,
+                stop:0 rgb(90, 90, 90),
+                stop:1 rgb(130, 130, 130)
+            );
+            }
+            QToolButton:pressed, {
+                background: qlineargradient(
+                    x1:0, y1:0, x2:0, y2:1,
+                    stop:0 rgb(50, 50, 50),
+                    stop:1 rgb(80, 80, 80)
+                );
+            }
+
             /* Placeholder */
             QLineEdit#txt_usuario::placeholder,
             QLineEdit#txt_senha::placeholder {
                 color: #bbbbbb;  /* placeholder cinza claro */
             }
-            
 
-            #frame_valor_total_produtos, #frame_valor_do_desconto, #frame_valor_desconto, #frame_quantidade {
+            /* Frames com valores */
+            #frame_valor_total_produtos,
+            #frame_valor_do_desconto,
+            #frame_valor_desconto,
+            #frame_quantidade {
                 background-color: #2a2b2e;
                 color: #ffffff;
                 border: 2px solid #ffffff;
                 border-radius: 10px;
             }
-            #label_valor_total_produtos, #label_valor_do_desconto, #label_valor_desconto, #label_quantidade_2 {
+
+            /* Labels dentro dos frames */
+            #label_valor_total_produtos,
+            #label_valor_do_desconto,
+            #label_valor_desconto,
+            #label_quantidade_2 {
                 background-color: #2a2b2e;
                 color: #ffffff;
             }
-            #label_8, #label_cadastramento_produtos, #label_10, #label_base, #label_saida {
+
+            /* Bordas especiais */
+            #label_8,
+            #label_cadastramento_produtos,
+            #label_10,
+            #label_base,
+            #label_saida {
                 border: 4px solid #ffffff;
             }
-            #frame_page_estoque {
+
+            /* Página de estoque */
+            #frame_pag_estoque {
                 background-color: #202124;
                 color: #ffffff;
             }
-        """
 
+        """
 
          # Iterar sobre todos os widgets da aplicação e aplicar o estilo
         app = QApplication.instance()
@@ -294,6 +424,7 @@ class Pagina_Configuracoes(QWidget):
         # Salvar no JSON que o tema agora é escuro
         self.config.tema = "escuro"
         self.config.salvar(self.config.usuario, self.config.senha, self.config.mantem_conectado)
+        
 
     # --- Modo escuro na inicialização (sem progress) ---
     def aplicar_modo_escuro_sem_progress(self):

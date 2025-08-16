@@ -379,7 +379,7 @@ QPushButton:hover {
        <string notr="true">QToolButton {
                 background-color: rgb(50, 150, 250);
                 color: white;
-                border-radius: 10px;
+                border-radius: 5px;
                 border: 2px solid rgb(50, 150, 250);
                 padding: 5px 10px;
             }
@@ -5993,7 +5993,7 @@ QTabWidget::pane {
 </string>
              </property>
              <property name="currentIndex">
-              <number>0</number>
+              <number>1</number>
              </property>
              <widget class="QWidget" name="tab_clientes">
               <attribute name="title">
@@ -6367,7 +6367,7 @@ QTableWidget::item:selected {
                   <number>118</number>
                  </attribute>
                  <attribute name="verticalHeaderVisible">
-                  <bool>true</bool>
+                  <bool>false</bool>
                  </attribute>
                  <column>
                   <property name="text">
@@ -7082,13 +7082,13 @@ QTableWidget::item:selected {
              <property name="minimumSize">
               <size>
                <width>0</width>
-               <height>703</height>
+               <height>684</height>
               </size>
              </property>
              <property name="maximumSize">
               <size>
                <width>16777215</width>
-               <height>691</height>
+               <height>699</height>
               </size>
              </property>
              <property name="styleSheet">
@@ -7104,7 +7104,7 @@ QTableWidget::item:selected {
              <property name="frameShadow">
               <enum>QFrame::Raised</enum>
              </property>
-             <layout class="QGridLayout" name="gridLayout_29">
+             <layout class="QGridLayout" name="gridLayout_30">
               <item row="0" column="0">
                <widget class="QFrame" name="frame_botoes_config">
                 <property name="sizePolicy">
@@ -7122,7 +7122,7 @@ QTableWidget::item:selected {
                 <property name="maximumSize">
                  <size>
                   <width>16777215</width>
-                  <height>612</height>
+                  <height>643</height>
                  </size>
                 </property>
                 <property name="frameShape">
@@ -7131,8 +7131,8 @@ QTableWidget::item:selected {
                 <property name="frameShadow">
                  <enum>QFrame::Raised</enum>
                 </property>
-                <layout class="QVBoxLayout" name="verticalLayout_17">
-                 <item>
+                <layout class="QGridLayout" name="gridLayout_29">
+                 <item row="0" column="0">
                   <widget class="QToolButton" name="tool_tema">
                    <property name="sizePolicy">
                     <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
@@ -7172,9 +7172,12 @@ QTableWidget::item:selected {
                    <property name="toolButtonStyle">
                     <enum>Qt::ToolButtonTextOnly</enum>
                    </property>
+                   <property name="autoRaise">
+                    <bool>false</bool>
+                   </property>
                   </widget>
                  </item>
-                 <item>
+                 <item row="1" column="0">
                   <widget class="QToolButton" name="tool_atalhos">
                    <property name="sizePolicy">
                     <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
@@ -7216,7 +7219,7 @@ QTableWidget::item:selected {
                    </property>
                   </widget>
                  </item>
-                 <item>
+                 <item row="2" column="0">
                   <widget class="QToolButton" name="tool_hora">
                    <property name="sizePolicy">
                     <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
@@ -7258,7 +7261,7 @@ QTableWidget::item:selected {
                    </property>
                   </widget>
                  </item>
-                 <item>
+                 <item row="3" column="0">
                   <widget class="QToolButton" name="tool_fonte">
                    <property name="sizePolicy">
                     <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
@@ -7300,7 +7303,7 @@ QTableWidget::item:selected {
                    </property>
                   </widget>
                  </item>
-                 <item>
+                 <item row="4" column="0">
                   <widget class="QToolButton" name="tool_atualizacoes">
                    <property name="sizePolicy">
                     <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
@@ -7342,7 +7345,7 @@ QTableWidget::item:selected {
                    </property>
                   </widget>
                  </item>
-                 <item>
+                 <item row="5" column="0">
                   <widget class="QToolButton" name="tool_notificacoes">
                    <property name="sizePolicy">
                     <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
@@ -7386,6 +7389,19 @@ QTableWidget::item:selected {
                  </item>
                 </layout>
                </widget>
+              </item>
+              <item row="0" column="1">
+               <spacer name="horizontalSpacer_6">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>1008</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
               </item>
              </layout>
             </widget>

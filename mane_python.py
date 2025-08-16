@@ -224,7 +224,7 @@ class Ui_MainWindow(object):
         self.btn_mais_opcoes.setStyleSheet(u"QToolButton {\n"
 "                background-color: rgb(50, 150, 250);\n"
 "                color: white;\n"
-"                border-radius: 10px;\n"
+"                border-radius: 5px;\n"
 "                border: 2px solid rgb(50, 150, 250);\n"
 "                padding: 5px 10px;\n"
 "            }\n"
@@ -3703,7 +3703,7 @@ class Ui_MainWindow(object):
         self.table_clientes_juridicos.setGridStyle(Qt.SolidLine)
         self.table_clientes_juridicos.setCornerButtonEnabled(False)
         self.table_clientes_juridicos.horizontalHeader().setDefaultSectionSize(118)
-        self.table_clientes_juridicos.verticalHeader().setVisible(True)
+        self.table_clientes_juridicos.verticalHeader().setVisible(False)
 
         self.gridLayout_22.addWidget(self.table_clientes_juridicos, 1, 0, 1, 2)
 
@@ -4047,8 +4047,8 @@ class Ui_MainWindow(object):
         self.frame_botoes_configuracoes.setObjectName(u"frame_botoes_configuracoes")
         sizePolicy.setHeightForWidth(self.frame_botoes_configuracoes.sizePolicy().hasHeightForWidth())
         self.frame_botoes_configuracoes.setSizePolicy(sizePolicy)
-        self.frame_botoes_configuracoes.setMinimumSize(QSize(0, 703))
-        self.frame_botoes_configuracoes.setMaximumSize(QSize(16777215, 691))
+        self.frame_botoes_configuracoes.setMinimumSize(QSize(0, 684))
+        self.frame_botoes_configuracoes.setMaximumSize(QSize(16777215, 699))
         self.frame_botoes_configuracoes.setStyleSheet(u"QFrame#frame_botoes_configuracoes {	\n"
 "        border: 2px solid white;\n"
 "		border-radius: 10px;\n"
@@ -4056,18 +4056,18 @@ class Ui_MainWindow(object):
 "}")
         self.frame_botoes_configuracoes.setFrameShape(QFrame.NoFrame)
         self.frame_botoes_configuracoes.setFrameShadow(QFrame.Raised)
-        self.gridLayout_29 = QGridLayout(self.frame_botoes_configuracoes)
-        self.gridLayout_29.setObjectName(u"gridLayout_29")
+        self.gridLayout_30 = QGridLayout(self.frame_botoes_configuracoes)
+        self.gridLayout_30.setObjectName(u"gridLayout_30")
         self.frame_botoes_config = QFrame(self.frame_botoes_configuracoes)
         self.frame_botoes_config.setObjectName(u"frame_botoes_config")
         sizePolicy.setHeightForWidth(self.frame_botoes_config.sizePolicy().hasHeightForWidth())
         self.frame_botoes_config.setSizePolicy(sizePolicy)
         self.frame_botoes_config.setMinimumSize(QSize(0, 660))
-        self.frame_botoes_config.setMaximumSize(QSize(16777215, 612))
+        self.frame_botoes_config.setMaximumSize(QSize(16777215, 643))
         self.frame_botoes_config.setFrameShape(QFrame.NoFrame)
         self.frame_botoes_config.setFrameShadow(QFrame.Raised)
-        self.verticalLayout_17 = QVBoxLayout(self.frame_botoes_config)
-        self.verticalLayout_17.setObjectName(u"verticalLayout_17")
+        self.gridLayout_29 = QGridLayout(self.frame_botoes_config)
+        self.gridLayout_29.setObjectName(u"gridLayout_29")
         self.tool_tema = QToolButton(self.frame_botoes_config)
         self.tool_tema.setObjectName(u"tool_tema")
         sizePolicy.setHeightForWidth(self.tool_tema.sizePolicy().hasHeightForWidth())
@@ -4088,8 +4088,9 @@ class Ui_MainWindow(object):
 "            ")
         self.tool_tema.setPopupMode(QToolButton.MenuButtonPopup)
         self.tool_tema.setToolButtonStyle(Qt.ToolButtonTextOnly)
+        self.tool_tema.setAutoRaise(False)
 
-        self.verticalLayout_17.addWidget(self.tool_tema)
+        self.gridLayout_29.addWidget(self.tool_tema, 0, 0, 1, 1)
 
         self.tool_atalhos = QToolButton(self.frame_botoes_config)
         self.tool_atalhos.setObjectName(u"tool_atalhos")
@@ -4112,7 +4113,7 @@ class Ui_MainWindow(object):
         self.tool_atalhos.setPopupMode(QToolButton.MenuButtonPopup)
         self.tool_atalhos.setToolButtonStyle(Qt.ToolButtonTextOnly)
 
-        self.verticalLayout_17.addWidget(self.tool_atalhos)
+        self.gridLayout_29.addWidget(self.tool_atalhos, 1, 0, 1, 1)
 
         self.tool_hora = QToolButton(self.frame_botoes_config)
         self.tool_hora.setObjectName(u"tool_hora")
@@ -4135,7 +4136,7 @@ class Ui_MainWindow(object):
         self.tool_hora.setPopupMode(QToolButton.MenuButtonPopup)
         self.tool_hora.setToolButtonStyle(Qt.ToolButtonTextOnly)
 
-        self.verticalLayout_17.addWidget(self.tool_hora)
+        self.gridLayout_29.addWidget(self.tool_hora, 2, 0, 1, 1)
 
         self.tool_fonte = QToolButton(self.frame_botoes_config)
         self.tool_fonte.setObjectName(u"tool_fonte")
@@ -4158,7 +4159,7 @@ class Ui_MainWindow(object):
         self.tool_fonte.setPopupMode(QToolButton.MenuButtonPopup)
         self.tool_fonte.setToolButtonStyle(Qt.ToolButtonTextOnly)
 
-        self.verticalLayout_17.addWidget(self.tool_fonte)
+        self.gridLayout_29.addWidget(self.tool_fonte, 3, 0, 1, 1)
 
         self.tool_atualizacoes = QToolButton(self.frame_botoes_config)
         self.tool_atualizacoes.setObjectName(u"tool_atualizacoes")
@@ -4181,7 +4182,7 @@ class Ui_MainWindow(object):
         self.tool_atualizacoes.setPopupMode(QToolButton.MenuButtonPopup)
         self.tool_atualizacoes.setToolButtonStyle(Qt.ToolButtonTextOnly)
 
-        self.verticalLayout_17.addWidget(self.tool_atualizacoes)
+        self.gridLayout_29.addWidget(self.tool_atualizacoes, 4, 0, 1, 1)
 
         self.tool_notificacoes = QToolButton(self.frame_botoes_config)
         self.tool_notificacoes.setObjectName(u"tool_notificacoes")
@@ -4204,10 +4205,14 @@ class Ui_MainWindow(object):
         self.tool_notificacoes.setPopupMode(QToolButton.MenuButtonPopup)
         self.tool_notificacoes.setToolButtonStyle(Qt.ToolButtonTextOnly)
 
-        self.verticalLayout_17.addWidget(self.tool_notificacoes)
+        self.gridLayout_29.addWidget(self.tool_notificacoes, 5, 0, 1, 1)
 
 
-        self.gridLayout_29.addWidget(self.frame_botoes_config, 0, 0, 1, 1)
+        self.gridLayout_30.addWidget(self.frame_botoes_config, 0, 0, 1, 1)
+
+        self.horizontalSpacer_6 = QSpacerItem(1008, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+
+        self.gridLayout_30.addItem(self.horizontalSpacer_6, 0, 1, 1, 1)
 
 
         self.gridLayout_17.addWidget(self.frame_botoes_configuracoes, 1, 0, 1, 3)
@@ -4769,7 +4774,7 @@ class Ui_MainWindow(object):
         self.retranslateUi(MainWindow)
 
         self.tb_base.setCurrentIndex(0)
-        self.tab_clientes_todos.setCurrentIndex(0)
+        self.tab_clientes_todos.setCurrentIndex(1)
 
 
         QMetaObject.connectSlotsByName(MainWindow)

@@ -222,17 +222,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.btn_opcoes_navegacao = QPushButton(self)
         self.btn_opcoes_navegacao.setIcon(QIcon("imagens/54206.png"))
         self.btn_opcoes_navegacao.setIconSize(QSize(30,30))
-        self.btn_opcoes_navegacao.setGeometry(10,10,150,80)
+        self.btn_opcoes_navegacao.setGeometry(60,35,35,35)
         self.btn_opcoes_navegacao.setCursor(Qt.PointingHandCursor)
-        estilo_botao_opcoes_navegacao = """
-            QPushButton {
-                border: none;
-                background: transparent;
-            }
-
-        """
-        self.btn_opcoes_navegacao.setStyleSheet(estilo_botao_opcoes_navegacao)
-
 
         # Criar o menu dentro do botão btn_opcoes
         self.menu_opcoes = QMenu(self.btn_mais_opcoes)
