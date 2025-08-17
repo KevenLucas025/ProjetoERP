@@ -352,7 +352,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         # Lista de páginas na ordem desejada
         self.paginas = [self.home_pag, self.pag_estoque, self.pg_cadastrar_produto, 
-                        self.pg_cadastrar_usuario, self.pg_clientes, self.pg_configuracoes, 
+                        self.pg_cadastrar_usuario, self.pg_clientes,
                         self.pg_contato]
         self.pagina_atual_index = 0  # Índice da página atual na lista
         self.historico_paginas = []  # Lista para armazenar o histórico de páginas
@@ -396,7 +396,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.btn_home.clicked.connect(lambda: self.paginas_sistemas.setCurrentWidget(self.home_pag))
         self.btn_clientes.clicked.connect(lambda: self.paginas_sistemas.setCurrentWidget(self.pg_clientes))
         self.btn_cadastrar_usuarios.clicked.connect(lambda: self.paginas_sistemas.setCurrentWidget(self.pg_cadastrar_usuario))
-        self.btn_configuracoes.clicked.connect(lambda: self.paginas_sistemas.setCurrentWidget(self.pg_configuracoes))      
         self.btn_cadastrar_produto.clicked.connect(lambda: self.paginas_sistemas.setCurrentWidget(self.pg_cadastrar_produto))
         self.btn_ver_item.clicked.connect(lambda: self.paginas_sistemas.setCurrentWidget(self.pag_estoque))
         self.btn_novo_produto.clicked.connect(lambda: self.paginas_sistemas.setCurrentWidget(self.pg_cadastrar_produto))
@@ -431,14 +430,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         
         
-        self.pagina_configuracoes = Pagina_Configuracoes(self.tool_tema,self.tool_atalhos,
-                                                         self.tool_hora,self.tool_fonte,self.tool_atualizacoes,self.tool_notificacoes,
-                                                         self.frame_botoes_configuracoes,self.frame_pg_configuracoes,self,self,
-                                                         self.frame_botoes_navegacoes,self.label_configuracoes,self.centralwidget,
-                                                         self.frame_pag_estoque,self.frame_2,self.paginas_sistemas,
+        self.pagina_configuracoes = Pagina_Configuracoes(self,self,self,self.centralwidget,self.frame_pag_estoque,self.frame_2,self.paginas_sistemas,
                                                          self.pg_cadastrar_usuario,self.frame_pag_cadastrar_usuario,
                                                          self.btn_mais_opcoes,self.btn_avancar,self.btn_retroceder,self.btn_home,self.btn_verificar_estoque,
-                                                         self.btn_cadastrar_produto, self.btn_cadastrar_usuarios, self.btn_clientes,self.btn_configuracoes,
+                                                         self.btn_cadastrar_produto, self.btn_cadastrar_usuarios, self.btn_clientes,
                                                          self.btn_abrir_planilha,self.btn_importar,self.btn_gerar_saida,
                                                          self.line_excel,self.btn_gerar_estorno,
                                                          self.label_cadastramento,self.label_cadastramento_produtos,self.frame_valor_total_produtos,
@@ -665,9 +660,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     # EXIBE A PÁGINA DE CONFIGURAÇÕES AO CLICAR NA OPÇÃO CONFIGURAÇÕES DENTRO DO MENU DO BOTÃO MAIS OPÇÕES
     def combobox_caixa(self):
-        selected_action = self.sender()  # A ação que acionou o slot
-        if selected_action == self.action_configuracoes:
-            self.paginas_sistemas.setCurrentWidget(self.pg_configuracoes)
+        pass
 
     def show_combobox(self):
         self.combobox.show()

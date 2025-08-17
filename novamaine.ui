@@ -54,19 +54,6 @@
     <string notr="true">background-color: rgb(0, 80, 121);</string>
    </property>
    <layout class="QGridLayout" name="gridLayout_2">
-    <item row="0" column="1">
-     <spacer name="horizontalSpacer_5">
-      <property name="orientation">
-       <enum>Qt::Horizontal</enum>
-      </property>
-      <property name="sizeHint" stdset="0">
-       <size>
-        <width>1130</width>
-        <height>20</height>
-       </size>
-      </property>
-     </spacer>
-    </item>
     <item row="0" column="0" rowspan="2">
      <widget class="QFrame" name="frame_botoes_navegacoes">
       <property name="sizePolicy">
@@ -91,42 +78,6 @@
        <enum>QFrame::Plain</enum>
       </property>
       <layout class="QGridLayout" name="gridLayout">
-       <item row="6" column="0">
-        <widget class="QPushButton" name="btn_configuracoes">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>145</width>
-           <height>27</height>
-          </size>
-         </property>
-         <property name="cursor">
-          <cursorShape>PointingHandCursor</cursorShape>
-         </property>
-         <property name="styleSheet">
-          <string notr="true">QPushButton {
-    color: rgb(255, 255, 255);
-    border-radius: 8px;
-    font-size: 16px;
-    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */
-    border: 4px solid transparent;
-}
-
-QPushButton:hover {
-    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */
-    color: black;
-}</string>
-         </property>
-         <property name="text">
-          <string>Configurações</string>
-         </property>
-        </widget>
-       </item>
        <item row="2" column="0">
         <widget class="QPushButton" name="btn_verificar_usuarios">
          <property name="sizePolicy">
@@ -160,6 +111,42 @@ QPushButton:hover {
          </property>
          <property name="text">
           <string>Verificar Usuários</string>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="0">
+        <widget class="QPushButton" name="btn_clientes">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>145</width>
+           <height>27</height>
+          </size>
+         </property>
+         <property name="cursor">
+          <cursorShape>PointingHandCursor</cursorShape>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">QPushButton {
+    color: rgb(255, 255, 255);
+    border-radius: 8px;
+    font-size: 16px;
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */
+    border: 4px solid transparent;
+}
+
+QPushButton:hover {
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */
+    color: black;
+}</string>
+         </property>
+         <property name="text">
+          <string>Clientes</string>
          </property>
         </widget>
        </item>
@@ -241,8 +228,8 @@ QPushButton:hover {
          </property>
         </widget>
        </item>
-       <item row="5" column="0">
-        <widget class="QPushButton" name="btn_clientes">
+       <item row="3" column="0">
+        <widget class="QPushButton" name="btn_cadastrar_produto">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
            <horstretch>0</horstretch>
@@ -273,7 +260,7 @@ QPushButton:hover {
 }</string>
          </property>
          <property name="text">
-          <string>Clientes</string>
+          <string>Cadastrar Produto</string>
          </property>
         </widget>
        </item>
@@ -313,44 +300,21 @@ QPushButton:hover {
          </property>
         </widget>
        </item>
-       <item row="3" column="0">
-        <widget class="QPushButton" name="btn_cadastrar_produto">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>145</width>
-           <height>27</height>
-          </size>
-         </property>
-         <property name="cursor">
-          <cursorShape>PointingHandCursor</cursorShape>
-         </property>
-         <property name="styleSheet">
-          <string notr="true">QPushButton {
-    color: rgb(255, 255, 255);
-    border-radius: 8px;
-    font-size: 16px;
-    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */
-    border: 4px solid transparent;
-}
-
-QPushButton:hover {
-    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */
-    color: black;
-}</string>
-         </property>
-         <property name="text">
-          <string>Cadastrar Produto</string>
-         </property>
-        </widget>
-       </item>
       </layout>
      </widget>
+    </item>
+    <item row="0" column="1">
+     <spacer name="horizontalSpacer_5">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>1130</width>
+        <height>20</height>
+       </size>
+      </property>
+     </spacer>
     </item>
     <item row="0" column="2">
      <widget class="QToolButton" name="btn_mais_opcoes">
@@ -377,17 +341,19 @@ QPushButton:hover {
       </property>
       <property name="styleSheet">
        <string notr="true">QToolButton {
-                background-color: rgb(50, 150, 250);
-                color: white;
-                border-radius: 5px;
-                border: 2px solid rgb(50, 150, 250);
-                padding: 5px 10px;
-            }
-            QToolButton:hover {
-                background-color: rgb(100, 180, 255);
-                border: 2px solid rgb(100, 180, 255);
-            }
-            </string>
+    background-color: rgb(50, 150, 250);
+    color: white;
+    border-radius: 5px;
+    border: 2px solid rgb(50, 150, 250);
+    padding: 5px 10px;
+}
+
+QToolButton:hover {
+    background-color: rgb(100, 180, 255);
+    border: 2px solid rgb(100, 180, 255);
+}
+
+</string>
       </property>
       <property name="text">
        <string>Mais opções</string>
@@ -5993,7 +5959,7 @@ QTabWidget::pane {
 </string>
              </property>
              <property name="currentIndex">
-              <number>1</number>
+              <number>0</number>
              </property>
              <widget class="QWidget" name="tab_clientes">
               <attribute name="title">
@@ -6367,7 +6333,7 @@ QTableWidget::item:selected {
                   <number>118</number>
                  </attribute>
                  <attribute name="verticalHeaderVisible">
-                  <bool>false</bool>
+                  <bool>true</bool>
                  </attribute>
                  <column>
                   <property name="text">
@@ -6986,424 +6952,6 @@ QTableWidget::item:selected {
                </item>
               </layout>
              </widget>
-            </widget>
-           </item>
-          </layout>
-         </widget>
-        </item>
-       </layout>
-      </widget>
-      <widget class="QWidget" name="pg_configuracoes">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <layout class="QGridLayout" name="gridLayout_16">
-        <item row="0" column="0">
-         <widget class="QFrame" name="frame_pg_configuracoes">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="frameShape">
-           <enum>QFrame::NoFrame</enum>
-          </property>
-          <property name="frameShadow">
-           <enum>QFrame::Raised</enum>
-          </property>
-          <layout class="QGridLayout" name="gridLayout_17">
-           <item row="0" column="2">
-            <spacer name="horizontalSpacer_4">
-             <property name="orientation">
-              <enum>Qt::Horizontal</enum>
-             </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>398</width>
-               <height>20</height>
-              </size>
-             </property>
-            </spacer>
-           </item>
-           <item row="0" column="1">
-            <widget class="QLabel" name="label_configuracoes">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="maximumSize">
-              <size>
-               <width>16777215</width>
-               <height>50</height>
-              </size>
-             </property>
-             <property name="styleSheet">
-              <string notr="true">QLabel {
-    color: white;
-    text-align: center; /* Centraliza o texto horizontalmente */
-    vertical-align: middle; /* Centraliza o texto verticalmente */
-	border: 3px solid white;
-	border-radius: 8px;
-}
-</string>
-             </property>
-             <property name="text">
-              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:14pt; font-weight:600; font-style:italic;&quot;&gt;CONFIGURAÇÕES&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="0">
-            <spacer name="horizontalSpacer_3">
-             <property name="orientation">
-              <enum>Qt::Horizontal</enum>
-             </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>438</width>
-               <height>20</height>
-              </size>
-             </property>
-            </spacer>
-           </item>
-           <item row="1" column="0" colspan="3">
-            <widget class="QFrame" name="frame_botoes_configuracoes">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="minimumSize">
-              <size>
-               <width>0</width>
-               <height>684</height>
-              </size>
-             </property>
-             <property name="maximumSize">
-              <size>
-               <width>16777215</width>
-               <height>699</height>
-              </size>
-             </property>
-             <property name="styleSheet">
-              <string notr="true">QFrame#frame_botoes_configuracoes {	
-        border: 2px solid white;
-		border-radius: 10px;
-		padding: 5px;
-}</string>
-             </property>
-             <property name="frameShape">
-              <enum>QFrame::NoFrame</enum>
-             </property>
-             <property name="frameShadow">
-              <enum>QFrame::Raised</enum>
-             </property>
-             <layout class="QGridLayout" name="gridLayout_30">
-              <item row="0" column="0">
-               <widget class="QFrame" name="frame_botoes_config">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="minimumSize">
-                 <size>
-                  <width>0</width>
-                  <height>660</height>
-                 </size>
-                </property>
-                <property name="maximumSize">
-                 <size>
-                  <width>16777215</width>
-                  <height>643</height>
-                 </size>
-                </property>
-                <property name="frameShape">
-                 <enum>QFrame::NoFrame</enum>
-                </property>
-                <property name="frameShadow">
-                 <enum>QFrame::Raised</enum>
-                </property>
-                <layout class="QGridLayout" name="gridLayout_29">
-                 <item row="0" column="0">
-                  <widget class="QToolButton" name="tool_tema">
-                   <property name="sizePolicy">
-                    <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-                     <horstretch>0</horstretch>
-                     <verstretch>0</verstretch>
-                    </sizepolicy>
-                   </property>
-                   <property name="maximumSize">
-                    <size>
-                     <width>150</width>
-                     <height>30</height>
-                    </size>
-                   </property>
-                   <property name="cursor">
-                    <cursorShape>PointingHandCursor</cursorShape>
-                   </property>
-                   <property name="styleSheet">
-                    <string notr="true">QToolButton {
-                background-color: rgb(50, 150, 250);
-                color: white;
-                border-radius: 5px;
-                border: 2px solid rgb(50, 150, 250);
-                padding: 5px 10px;
-            }
-            QToolButton:hover {
-                background-color: rgb(100, 180, 255);
-                border: 2px solid rgb(100, 180, 255);
-            }
-            </string>
-                   </property>
-                   <property name="text">
-                    <string>Tema do Sistema</string>
-                   </property>
-                   <property name="popupMode">
-                    <enum>QToolButton::MenuButtonPopup</enum>
-                   </property>
-                   <property name="toolButtonStyle">
-                    <enum>Qt::ToolButtonTextOnly</enum>
-                   </property>
-                   <property name="autoRaise">
-                    <bool>false</bool>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="1" column="0">
-                  <widget class="QToolButton" name="tool_atalhos">
-                   <property name="sizePolicy">
-                    <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-                     <horstretch>0</horstretch>
-                     <verstretch>0</verstretch>
-                    </sizepolicy>
-                   </property>
-                   <property name="maximumSize">
-                    <size>
-                     <width>150</width>
-                     <height>30</height>
-                    </size>
-                   </property>
-                   <property name="cursor">
-                    <cursorShape>PointingHandCursor</cursorShape>
-                   </property>
-                   <property name="styleSheet">
-                    <string notr="true">QToolButton {
-                background-color: rgb(50, 150, 250);
-                color: white;
-                border-radius: 5px;
-                border: 2px solid rgb(50, 150, 250);
-                padding: 5px 10px;
-            }
-            QToolButton:hover {
-                background-color: rgb(100, 180, 255);
-                border: 2px solid rgb(100, 180, 255);
-            }
-            </string>
-                   </property>
-                   <property name="text">
-                    <string>Atalhos do teclado</string>
-                   </property>
-                   <property name="popupMode">
-                    <enum>QToolButton::MenuButtonPopup</enum>
-                   </property>
-                   <property name="toolButtonStyle">
-                    <enum>Qt::ToolButtonTextOnly</enum>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="2" column="0">
-                  <widget class="QToolButton" name="tool_hora">
-                   <property name="sizePolicy">
-                    <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-                     <horstretch>0</horstretch>
-                     <verstretch>0</verstretch>
-                    </sizepolicy>
-                   </property>
-                   <property name="maximumSize">
-                    <size>
-                     <width>150</width>
-                     <height>30</height>
-                    </size>
-                   </property>
-                   <property name="cursor">
-                    <cursorShape>PointingHandCursor</cursorShape>
-                   </property>
-                   <property name="styleSheet">
-                    <string notr="true">QToolButton {
-                background-color: rgb(50, 150, 250);
-                color: white;
-                border-radius: 5px;
-                border: 2px solid rgb(50, 150, 250);
-                padding: 5px 10px;
-            }
-            QToolButton:hover {
-                background-color: rgb(100, 180, 255);
-                border: 2px solid rgb(100, 180, 255);
-            }
-            </string>
-                   </property>
-                   <property name="text">
-                    <string>Hora e idioma</string>
-                   </property>
-                   <property name="popupMode">
-                    <enum>QToolButton::MenuButtonPopup</enum>
-                   </property>
-                   <property name="toolButtonStyle">
-                    <enum>Qt::ToolButtonTextOnly</enum>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="3" column="0">
-                  <widget class="QToolButton" name="tool_fonte">
-                   <property name="sizePolicy">
-                    <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-                     <horstretch>0</horstretch>
-                     <verstretch>0</verstretch>
-                    </sizepolicy>
-                   </property>
-                   <property name="maximumSize">
-                    <size>
-                     <width>150</width>
-                     <height>30</height>
-                    </size>
-                   </property>
-                   <property name="cursor">
-                    <cursorShape>PointingHandCursor</cursorShape>
-                   </property>
-                   <property name="styleSheet">
-                    <string notr="true">QToolButton {
-                background-color: rgb(50, 150, 250);
-                color: white;
-                border-radius: 5px;
-                border: 2px solid rgb(50, 150, 250);
-                padding: 5px 10px;
-            }
-            QToolButton:hover {
-                background-color: rgb(100, 180, 255);
-                border: 2px solid rgb(100, 180, 255);
-            }
-            </string>
-                   </property>
-                   <property name="text">
-                    <string>Tamanho da fonte</string>
-                   </property>
-                   <property name="popupMode">
-                    <enum>QToolButton::MenuButtonPopup</enum>
-                   </property>
-                   <property name="toolButtonStyle">
-                    <enum>Qt::ToolButtonTextOnly</enum>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="4" column="0">
-                  <widget class="QToolButton" name="tool_atualizacoes">
-                   <property name="sizePolicy">
-                    <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-                     <horstretch>0</horstretch>
-                     <verstretch>0</verstretch>
-                    </sizepolicy>
-                   </property>
-                   <property name="maximumSize">
-                    <size>
-                     <width>150</width>
-                     <height>30</height>
-                    </size>
-                   </property>
-                   <property name="cursor">
-                    <cursorShape>PointingHandCursor</cursorShape>
-                   </property>
-                   <property name="styleSheet">
-                    <string notr="true">QToolButton {
-                background-color: rgb(50, 150, 250);
-                color: white;
-                border-radius: 5px;
-                border: 2px solid rgb(50, 150, 250);
-                padding: 5px 10px;
-            }
-            QToolButton:hover {
-                background-color: rgb(100, 180, 255);
-                border: 2px solid rgb(100, 180, 255);
-            }
-            </string>
-                   </property>
-                   <property name="text">
-                    <string>Atualizações</string>
-                   </property>
-                   <property name="popupMode">
-                    <enum>QToolButton::MenuButtonPopup</enum>
-                   </property>
-                   <property name="toolButtonStyle">
-                    <enum>Qt::ToolButtonTextOnly</enum>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="5" column="0">
-                  <widget class="QToolButton" name="tool_notificacoes">
-                   <property name="sizePolicy">
-                    <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-                     <horstretch>0</horstretch>
-                     <verstretch>0</verstretch>
-                    </sizepolicy>
-                   </property>
-                   <property name="maximumSize">
-                    <size>
-                     <width>150</width>
-                     <height>30</height>
-                    </size>
-                   </property>
-                   <property name="cursor">
-                    <cursorShape>PointingHandCursor</cursorShape>
-                   </property>
-                   <property name="styleSheet">
-                    <string notr="true">QToolButton {
-                background-color: rgb(50, 150, 250);
-                color: white;
-                border-radius: 5px;
-                border: 2px solid rgb(50, 150, 250);
-                padding: 5px 10px;
-            }
-            QToolButton:hover {
-                background-color: rgb(100, 180, 255);
-                border: 2px solid rgb(100, 180, 255);
-            }
-            </string>
-                   </property>
-                   <property name="text">
-                    <string>Notificações</string>
-                   </property>
-                   <property name="popupMode">
-                    <enum>QToolButton::MenuButtonPopup</enum>
-                   </property>
-                   <property name="toolButtonStyle">
-                    <enum>Qt::ToolButtonTextOnly</enum>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
-               </widget>
-              </item>
-              <item row="0" column="1">
-               <spacer name="horizontalSpacer_6">
-                <property name="orientation">
-                 <enum>Qt::Horizontal</enum>
-                </property>
-                <property name="sizeHint" stdset="0">
-                 <size>
-                  <width>1008</width>
-                  <height>20</height>
-                 </size>
-                </property>
-               </spacer>
-              </item>
-             </layout>
             </widget>
            </item>
           </layout>

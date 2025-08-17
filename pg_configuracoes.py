@@ -7,13 +7,14 @@ import json
 from login import Login
 import sys
 from configuracoes import Configuracoes_Login
+from clientes_juridicos import Clientes_Juridicos
 
 class Pagina_Configuracoes(QWidget):
-    def __init__(self, tool_tema, tool_atalhos,tool_hora, tool_fonte,tool_atualizacoes,tool_notificacoes,
-                 frame_pg_configuracoes, main_window, paginas_sistemas, frame_botoes_navegacoes, label_8, centralwidget, 
+    def __init__(self,
+                main_window, paginas_sistemas, frame_botoes_navegacoes, centralwidget, 
                  frame_2, frame_page_estoque, frame_5, frame_cadastro_usuario,
                  pg_cadastro_usuario, btn_avancar, btn_retroceder, btn_opcoes, btn_home, btn_verificar_estoque,
-                 btn_cadastrar_produto, btn_cadastro_usuario, btn_clientes, btn_configuracoes,
+                 btn_cadastrar_produto, btn_cadastro_usuario, btn_clientes,
                  btn_importar, btn_gerar_saida, btn_estorno, btn_abrir_planilha, line_excel,
                  label_cadastramento, label_cadastramento_produtos,frame_valor_total_produtos,
                  frame_valor_do_desconto, frame_valor_desconto,frame_quantidade,parent=None):
@@ -22,7 +23,6 @@ class Pagina_Configuracoes(QWidget):
         self.main_window = main_window
         self.paginas_sistemas = paginas_sistemas
         self.frame_botoes_navegacoes = frame_botoes_navegacoes
-        self.label_8 = label_8
         self.centralwidget = centralwidget
         self.frame_2 = frame_2
         self.frame_page_estoque = frame_page_estoque
@@ -36,7 +36,6 @@ class Pagina_Configuracoes(QWidget):
         self.btn_verificar_estoque = btn_verificar_estoque
         self.btn_cadastro_usuario = btn_cadastro_usuario
         self.btn_clientes = btn_clientes
-        self.btn_configuracoes = btn_configuracoes
         self.btn_cadastrar_produto = btn_cadastrar_produto
         self.btn_abrir_planilha = btn_abrir_planilha
         self.btn_importar = btn_importar
@@ -49,10 +48,11 @@ class Pagina_Configuracoes(QWidget):
         self.frame_valor_do_desconto = frame_valor_do_desconto
         self.frame_valor_desconto = frame_valor_desconto
         self.frame_quantidade = frame_quantidade
-        self.frame_pg_configuracoes = frame_pg_configuracoes
+  
        
         
         self.config = Configuracoes_Login(main_window=main_window)
+
         
         if self.config.tema == "escuro":
             self.aplicar_modo_escuro_sem_progress()
@@ -64,13 +64,6 @@ class Pagina_Configuracoes(QWidget):
 
         self.line_excel.setObjectName("line_excel")
 
-
-        self.tool_tema = tool_tema
-        self.tool_atalhos = tool_atalhos
-        self.tool_hora = tool_hora
-        self.tool_fonte = tool_fonte
-        self.tool_atualizacoes = tool_atualizacoes
-        self.tool_notificacoes = tool_notificacoes
 
         layout_principal = QVBoxLayout(self)
         self.setLayout(layout_principal)
@@ -96,12 +89,12 @@ class Pagina_Configuracoes(QWidget):
         layout_principal.addWidget(self.progress_bar)
         layout_principal.addStretch()
 
-        self.tool_tema.clicked.connect(self.mostrar_menu_tema)
+        '''self.tool_tema.clicked.connect(self.mostrar_menu_tema)
         self.tool_atalhos.clicked.connect(self.mostrar_menu_atalhos)
         self.tool_hora.clicked.connect(self.mostrar_menu_hora)
         self.tool_fonte.clicked.connect(self.mostrar_menu_fonte)
         self.tool_atualizacoes.clicked.connect(self.mostrar_menu_atualizacoes)
-        self.tool_notificacoes.clicked.connect(self.mostrar_menu_notificacoes)
+        self.tool_notificacoes.clicked.connect(self.mostrar_menu_notificacoes)'''
 
     def mostrar_menu_tema(self):
         menu_tema = QMenu(self)
@@ -144,7 +137,7 @@ class Pagina_Configuracoes(QWidget):
         if progress_dialog is not None:
             progress_dialog.accept()  # Oculta o diálogo de progresso
 
-        # Estilo geral dos botões (modo escuro)
+
         # Estilo geral dos botões (modo escuro)
         style_sheet = """
         QMainWindow, QStackedWidget, QWidget, QFrame, QLabel {
@@ -209,8 +202,7 @@ class Pagina_Configuracoes(QWidget):
             QPushButton#btn_verificar_usuarios,
             QPushButton#btn_cadastrar_produto,
             QPushButton#btn_cadastrar_usuarios,
-            QPushButton#btn_clientes,
-            QPushButton#btn_configuracoes {
+            QPushButton#btn_clientes {
                 border-radius: 8px;
                 background: qlineargradient(
                     x1:0, y1:0, x2:0, y2:1,
@@ -227,8 +219,7 @@ class Pagina_Configuracoes(QWidget):
             QPushButton#btn_verificar_usuarios:hover,
             QPushButton#btn_cadastrar_produto:hover,
             QPushButton#btn_cadastrar_usuarios:hover,
-            QPushButton#btn_clientes:hover,
-            QPushButton#btn_configuracoes:hover {
+            QPushButton#btn_clientes:hover{
                 background: qlineargradient(
                     x1:0, y1:0, x2:0, y2:1,
                     stop:0 rgb(90, 90, 90),
@@ -241,8 +232,7 @@ class Pagina_Configuracoes(QWidget):
             QPushButton#btn_verificar_usuarios:pressed,
             QPushButton#btn_cadastrar_produto:pressed,
             QPushButton#btn_cadastrar_usuarios:pressed,
-            QPushButton#btn_clientes:pressed,
-            QPushButton#btn_configuracoes:pressed {
+            QPushButton#btn_clientes:pressed{
                 background: qlineargradient(
                     x1:0, y1:0, x2:0, y2:1,
                     stop:0 rgb(50, 50, 50),
@@ -331,6 +321,7 @@ class Pagina_Configuracoes(QWidget):
                 );
                 border: 2px solid #888888;
             }
+
             /* Campos de entrada */
             QLineEdit#txt_senha,
             QLineEdit#txt_usuario {
@@ -340,18 +331,17 @@ class Pagina_Configuracoes(QWidget):
                 background-color: #2e2e2e;      /* fundo escuro */
                 color: #ffffff;                 /* texto branco */
             }
-            
+
             QToolButton{
                 border-radius: 8px;
                 background: qlineargradient(
                     x1:0, y1:0, x2:0, y2:1,
-                    stop:0 rgb(60, 60, 60),   /* topo */
-                    stop:1 rgb(100, 100, 100) /* base */
+                    stop:0 rgb(60, 60, 60),
+                    stop:1 rgb(100, 100, 100)
                 );
                 color: #ffffff;
                 min-width: 130px;
-                min-height: 21px;
-            
+                min-height: 21px;      
             }
             QToolButton:hover{
                 background: qlineargradient(
@@ -410,7 +400,7 @@ class Pagina_Configuracoes(QWidget):
             }
 
         """
-
+        
          # Iterar sobre todos os widgets da aplicação e aplicar o estilo
         app = QApplication.instance()
         for widget in app.allWidgets():
@@ -418,6 +408,7 @@ class Pagina_Configuracoes(QWidget):
 
         self.btn_opcoes.setIcon(QIcon("imagens/imagens_modo_escuro/seta direita preta.png")) #Esse botão é o botão de retroceder, nomenclatura errada
         self.btn_retroceder.setIcon(QIcon("imagens/imagens_modo_escuro/seta esquerda preta.png")) # Esse botão é o botão avançar, nomenclatura errada
+        self.config_juridico.botao_lupa.setIcon(QIcon("imagens/botão_lupa_branco.jpg"))
 
         self.btn_retroceder.setGeometry(40, 5, 30, 30)  # Define a geometria do botão 'btn_retroceder'
 
@@ -437,16 +428,7 @@ class Pagina_Configuracoes(QWidget):
                 background-color: #ffffff;
                 color: #000000;
             }
-            #frame_pg_configuracoes {
-                background-color: #ffffff;
-                color: #000000;
-                border: 2px solid #000000;
-            }
-            #frame_pg_configuracoes1 {
-                background-color: #ffffff;
-                color: #000000;
-                border: 2px solid #000000;
-            }
+
             QToolButton {
                 background-color: #f0f0f0;
                 color: #000000;
@@ -468,15 +450,6 @@ class Pagina_Configuracoes(QWidget):
                 background-color: #005079;
                 color: #ffffff;
             }
-            #frame_pg_configuracoes {
-                background-color: #005079;
-                color: #ffffff;
-                border: 2px solid #ffffff;
-            }
-            #frame_pg_configuracoes1 {
-                background-color: #005079;
-                color: #ffffff;
-            }
             #frame_botoes_navegacoes {
                 background-color: #005079;
                 color: #ffffff;
@@ -484,7 +457,6 @@ class Pagina_Configuracoes(QWidget):
         """
         self.main_window.setStyleSheet(style_sheet)
         self.paginas_sistemas.setStyleSheet(style_sheet)
-        self.frame_pg_configuracoes.setStyleSheet(style_sheet)
         self.frame_botoes_navegacoes.setStyleSheet(style_sheet)
 
 
