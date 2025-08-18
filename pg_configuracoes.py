@@ -1,5 +1,5 @@
 from PySide6.QtWidgets import (QWidget,QMenu, QVBoxLayout, 
-                               QProgressBar,QApplication,QDialog,QMessageBox)
+                               QProgressBar,QApplication,QDialog,QMessageBox,QToolButton)
 from PySide6.QtCore import Qt, QTimer
 from PySide6.QtGui import QIcon
 import os
@@ -89,35 +89,63 @@ class Pagina_Configuracoes(QWidget):
         layout_principal.addWidget(self.progress_bar)
         layout_principal.addStretch()
 
-        '''self.tool_tema.clicked.connect(self.mostrar_menu_tema)
-        self.tool_atalhos.clicked.connect(self.mostrar_menu_atalhos)
-        self.tool_hora.clicked.connect(self.mostrar_menu_hora)
-        self.tool_fonte.clicked.connect(self.mostrar_menu_fonte)
-        self.tool_atualizacoes.clicked.connect(self.mostrar_menu_atualizacoes)
-        self.tool_notificacoes.clicked.connect(self.mostrar_menu_notificacoes)'''
+    def configurar_menu_opcoes(self,parent_button):
+        # Criar o menu principal
+        menu_config = QMenu("Configurações", self)
 
-    def mostrar_menu_tema(self):
-        menu_tema = QMenu(self)
-        menu_tema.setStyleSheet("""
-            QMenu {
-                background-color: white;
-                color: black;
-            }
-            QMenu::item:selected {
-                background-color: rgb(100, 180, 255);
-                color: white;
-            }
-        """)
+        # ------------------- MENU TEMA -------------------
+        menu_tema = QMenu("Tema do Sistema", self)
+        menu_tema.addAction("Modo escuro")
+        menu_tema.addAction("Modo claro")
+        menu_tema.addAction("Modo clássico")
+        menu_config.addMenu(menu_tema)
 
-        modo_escuro_action = menu_tema.addAction("Modo escuro")
-        modo_claro_action = menu_tema.addAction("Modo claro")
-        modo_classico_action = menu_tema.addAction("Modo clássico")
+        # ------------------- MENU ATUALIZAÇÕES -------------------
+        menu_atualizacoes = QMenu("Atualizações", self)
+        menu_atualizacoes.addAction("Definir atualizações automaticamente")
+        menu_atualizacoes.addAction("Não definir atualizações automáticas")
+        menu_atualizacoes.addAction("Verificar se há atualizações")
+        menu_atualizacoes.addAction("Exibir histórico de atualizações")
+        menu_config.addMenu(menu_atualizacoes)
 
-        modo_escuro_action.triggered.connect(self.aplicar_modo_escuro)
-        modo_claro_action.triggered.connect(self.aplicar_modo_claro)
-        modo_classico_action.triggered.connect(self.aplicar_modo_classico)
+        # ------------------- MENU HORA -------------------
+        menu_hora = QMenu("Hora e Data", self)
+        menu_hora.addAction("Exibir os segundos")
+        menu_hora.addAction("Exibir relógio analógico")
+        menu_hora.addAction("Exibir relógio digital")
+        menu_hora.addAction("Exibir calendário")
+        menu_hora.addAction("Definir fuso horário automaticamente")
+        menu_hora.addAction("Definir fuso horário manualmente")
+        menu_hora.addAction("Definir horário automaticamente")
+        menu_hora.addAction("Não exibir relógio")
+        menu_config.addMenu(menu_hora)
 
-        menu_tema.exec(self.tool_tema.mapToGlobal(self.tool_tema.rect().bottomLeft()))
+        # ------------------- MENU FONTE -------------------
+        menu_fonte = QMenu("Fonte", self)
+        tamanhos = [str(i) for i in range(8, 37, 2)]
+        for tamanho in tamanhos:
+            menu_fonte.addAction(tamanho)
+        menu_config.addMenu(menu_fonte)
+
+        # ------------------- MENU NOTIFICAÇÕES -------------------
+        menu_notificacoes = QMenu("Notificações", self)
+        menu_notificacoes.addAction("Definir notificação de boas-vindas")
+        menu_config.addMenu(menu_notificacoes)
+
+        # ------------------- MENU ATALHOS -------------------
+        menu_atalhos = QMenu("Atalhos do Teclado", self)
+        menu_atalhos.addAction("Mapear teclas de atalhos")
+        menu_atalhos.addAction("Abrir painel de atalhos")
+        menu_atalhos.addAction("Editar atalhos")
+        menu_atalhos.addAction("Sobre atalhos")
+        menu_config.addMenu(menu_atalhos)
+
+        # Agora associa o menu ao botão "Mais opções"
+        self.main_window.btn_mais_opcoes.setMenu(menu_config)
+        self.main_window.btn_mais_opcoes.setPopupMode(QToolButton.InstantPopup)
+
+        # Exemplo de ação conectada
+        menu_tema.actions()[0].triggered.connect(lambda: print("Modo escuro ativado!"))
 
     def aplicar_modo_escuro(self):
         progress_dialog = ProgressDialog(self)
@@ -408,7 +436,7 @@ class Pagina_Configuracoes(QWidget):
 
         self.btn_opcoes.setIcon(QIcon("imagens/imagens_modo_escuro/seta direita preta.png")) #Esse botão é o botão de retroceder, nomenclatura errada
         self.btn_retroceder.setIcon(QIcon("imagens/imagens_modo_escuro/seta esquerda preta.png")) # Esse botão é o botão avançar, nomenclatura errada
-        self.config_juridico.botao_lupa.setIcon(QIcon("imagens/botão_lupa_branco.jpg"))
+        
 
         self.btn_retroceder.setGeometry(40, 5, 30, 30)  # Define a geometria do botão 'btn_retroceder'
 
@@ -459,106 +487,6 @@ class Pagina_Configuracoes(QWidget):
         self.paginas_sistemas.setStyleSheet(style_sheet)
         self.frame_botoes_navegacoes.setStyleSheet(style_sheet)
 
-
-
-    def mostrar_menu_atalhos(self):
-        menu_atalhos = QMenu(self)
-        menu_atalhos.setStyleSheet("""
-            QMenu {
-                background-color: white;
-                color: black;
-            }
-            QMenu::item:selected {
-                background-color: rgb(100, 180, 255);
-                color: white;
-            }
-        """)
-
-        menu_atalhos.addAction("Mapear teclas de atalhos")
-        menu_atalhos.addAction("Abrir painel de atalhos")
-        menu_atalhos.addAction("Editar atalhos")
-        menu_atalhos.addAction("Sobre atalhos")
-
-        menu_atalhos.exec(self.tool_atalhos.mapToGlobal(self.tool_atalhos.rect().bottomLeft()))
-
-    def mostrar_menu_hora(self):
-        menu_hora = QMenu(self)
-        menu_hora.setStyleSheet("""
-            QMenu {
-                background-color: white;
-                color: black;
-            }
-            QMenu::item:selected {
-                background-color: rgb(100, 180, 255);
-                color: white;
-            }
-        """)
-
-        menu_hora.addAction("Exibir os segundos")
-        menu_hora.addAction("Exibir relógio análogico")
-        menu_hora.addAction("Exibir relógio digital")
-        menu_hora.addAction("Exibir calendário")
-        menu_hora.addAction("Definir fuso horário automaticamente")
-        menu_hora.addAction("Definir fuso horário manualmente")
-        menu_hora.addAction("Definir horário automaticamente")
-        menu_hora.addAction("Não exibir relógio")
-
-        menu_hora.exec(self.tool_hora.mapToGlobal(self.tool_hora.rect().bottomLeft()))
-
-    def mostrar_menu_fonte(self):
-        menu_fonte = QMenu(self)
-        menu_fonte.setStyleSheet("""
-            QMenu {
-                background-color: white;
-                color: black;
-            }
-            QMenu::item:selected {
-                background-color: rgb(100, 180, 255);
-                color: white;
-            }
-        """)
-
-        tamanhos = [str(i) for i in range(8, 37, 2)]
-        for tamanho in tamanhos:
-            menu_fonte.addAction(tamanho)
-
-        menu_fonte.exec(self.tool_fonte.mapToGlobal(self.tool_fonte.rect().bottomLeft()))
-
-    def mostrar_menu_atualizacoes(self):
-        menu_atualizacoes = QMenu(self)
-        menu_atualizacoes.setStyleSheet("""
-            QMenu {
-                background-color: white;
-                color: black;
-            }
-            QMenu::item:selected {
-                background-color: rgb(100, 180, 255);
-                color: white;
-            }
-        """)
-
-        menu_atualizacoes.addAction("Definir atualizações automaticamente")
-        menu_atualizacoes.addAction("Não definir atualizações automáticas")
-        menu_atualizacoes.addAction("Verificar se há atualizações")
-        menu_atualizacoes.addAction("Exibir histórico de atualizações")
-
-        menu_atualizacoes.exec(self.tool_atualizacoes.mapToGlobal(self.tool_atualizacoes.rect().bottomLeft()))
-
-    def mostrar_menu_notificacoes(self):
-        menu_notificacoes = QMenu(self)
-        menu_notificacoes.setStyleSheet("""
-            QMenu{
-                background-color: white;
-                color: black;
-            }
-            QMenu::item:selected {
-                background-color: rgb(100, 180, 255);
-                color: white;
-            }      
-        """)
-        menu_notificacoes.addAction("Definir notificação de boas vinda")
-        
-        menu_notificacoes.exec(self.tool_notificacoes.mapToGlobal(self.tool_notificacoes.rect().bottomLeft()))
 
     def mousePressEvent_atualizacoes(self, event):
         if event.button() == Qt.LeftButton:

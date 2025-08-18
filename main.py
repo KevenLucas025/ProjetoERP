@@ -279,7 +279,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         # Conectar as ações do menu aos slots correspondentes
         self.action_sair.triggered.connect(self.desconectarUsuario)
-        self.action_configuracoes.triggered.connect(self.combobox_caixa)
+        self.action_configuracoes.triggered.connect(self.show_menu_opcoes)
         self.action_contato.triggered.connect(self.show_pg_contato)
         self.action_reiniciar.triggered.connect(self.reiniciar_sistema)
         self.action_planilhas_exemplo.triggered.connect(self.exibir_planilhas_exemplo)
@@ -659,8 +659,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         
 
     # EXIBE A PÁGINA DE CONFIGURAÇÕES AO CLICAR NA OPÇÃO CONFIGURAÇÕES DENTRO DO MENU DO BOTÃO MAIS OPÇÕES
-    def combobox_caixa(self):
-        pass
+    def show_menu_opcoes(self):
+        # chama a função do pg_configuracoes
+        self.pagina_configuracoes.configurar_menu_opcoes(self.btn_mais_opcoes)
 
     def show_combobox(self):
         self.combobox.show()
