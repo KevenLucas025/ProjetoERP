@@ -1,5 +1,5 @@
 from PySide6.QtWidgets import (QWidget,QMenu, QVBoxLayout, 
-                               QProgressBar,QApplication,QDialog,QMessageBox,QToolButton)
+                               QProgressBar,QApplication,QDialog,QMessageBox,QToolButton,QMainWindow,QSizePolicy)
 from PySide6.QtCore import Qt, QTimer
 from PySide6.QtGui import QIcon
 import os
@@ -8,6 +8,7 @@ from login import Login
 import sys
 from configuracoes import Configuracoes_Login
 from clientes_juridicos import Clientes_Juridicos
+from mane_python import Ui_MainWindow
 
 class Pagina_Configuracoes(QWidget):
     def __init__(self,
@@ -50,16 +51,16 @@ class Pagina_Configuracoes(QWidget):
         self.frame_quantidade = frame_quantidade
   
        
-        
+        self.estilo_original_classico = Ui_MainWindow()
         self.config = Configuracoes_Login(main_window=main_window)
 
         
         if self.config.tema == "escuro":
             self.aplicar_modo_escuro_sem_progress()
         elif self.config.tema == "claro":
-            self.aplicar_modo_claro()
+            self.aplicar_modo_claro_sem_progress()
         else:
-            self.aplicar_modo_classico()
+            self.aplicar_modo_classico_sem_progress()
     
 
         self.line_excel.setObjectName("line_excel")
@@ -89,66 +90,8 @@ class Pagina_Configuracoes(QWidget):
         layout_principal.addWidget(self.progress_bar)
         layout_principal.addStretch()
 
-    def configurar_menu_opcoes(self,parent_button):
-        # Criar o menu principal
-        menu_config = QMenu("Configurações", self)
-
-        # ------------------- MENU TEMA -------------------
-        menu_tema = QMenu("Tema do Sistema", self)
-        menu_tema.addAction("Modo escuro")
-        menu_tema.addAction("Modo claro")
-        menu_tema.addAction("Modo clássico")
-        menu_config.addMenu(menu_tema)
-
-        # ------------------- MENU ATUALIZAÇÕES -------------------
-        menu_atualizacoes = QMenu("Atualizações", self)
-        menu_atualizacoes.addAction("Definir atualizações automaticamente")
-        menu_atualizacoes.addAction("Não definir atualizações automáticas")
-        menu_atualizacoes.addAction("Verificar se há atualizações")
-        menu_atualizacoes.addAction("Exibir histórico de atualizações")
-        menu_config.addMenu(menu_atualizacoes)
-
-        # ------------------- MENU HORA -------------------
-        menu_hora = QMenu("Hora e Data", self)
-        menu_hora.addAction("Exibir os segundos")
-        menu_hora.addAction("Exibir relógio analógico")
-        menu_hora.addAction("Exibir relógio digital")
-        menu_hora.addAction("Exibir calendário")
-        menu_hora.addAction("Definir fuso horário automaticamente")
-        menu_hora.addAction("Definir fuso horário manualmente")
-        menu_hora.addAction("Definir horário automaticamente")
-        menu_hora.addAction("Não exibir relógio")
-        menu_config.addMenu(menu_hora)
-
-        # ------------------- MENU FONTE -------------------
-        menu_fonte = QMenu("Fonte", self)
-        tamanhos = [str(i) for i in range(8, 37, 2)]
-        for tamanho in tamanhos:
-            menu_fonte.addAction(tamanho)
-        menu_config.addMenu(menu_fonte)
-
-        # ------------------- MENU NOTIFICAÇÕES -------------------
-        menu_notificacoes = QMenu("Notificações", self)
-        menu_notificacoes.addAction("Definir notificação de boas-vindas")
-        menu_config.addMenu(menu_notificacoes)
-
-        # ------------------- MENU ATALHOS -------------------
-        menu_atalhos = QMenu("Atalhos do Teclado", self)
-        menu_atalhos.addAction("Mapear teclas de atalhos")
-        menu_atalhos.addAction("Abrir painel de atalhos")
-        menu_atalhos.addAction("Editar atalhos")
-        menu_atalhos.addAction("Sobre atalhos")
-        menu_config.addMenu(menu_atalhos)
-
-        # Agora associa o menu ao botão "Mais opções"
-        self.main_window.btn_mais_opcoes.setMenu(menu_config)
-        self.main_window.btn_mais_opcoes.setPopupMode(QToolButton.InstantPopup)
-
-        # Exemplo de ação conectada
-        menu_tema.actions()[0].triggered.connect(lambda: print("Modo escuro ativado!"))
-
     def aplicar_modo_escuro(self):
-        progress_dialog = ProgressDialog(self)
+        progress_dialog = ProgressDialog("Escuro", self)
         progress_dialog.show()
 
         def update_progress(value):
@@ -447,10 +390,33 @@ class Pagina_Configuracoes(QWidget):
 
     # --- Modo escuro na inicialização (sem progress) ---
     def aplicar_modo_escuro_sem_progress(self):
-        self.finalizar_aplicacao_modo_escuro(progress_dialog=None)  
+        self.finalizar_aplicacao_modo_escuro(progress_dialog=None)
+
+    def aplicar_modo_claro_sem_progress(self):
+        self.finalizar_aplicacao_modo_claro(progress_dialog=None)
+
+    def aplicar_modo_classico_sem_progress(self):
+        self.finalizar_aplicacao_modo_classico(progress_dialog=None)
 
 
     def aplicar_modo_claro(self):
+        progress_dialog = ProgressDialog("Claro", self)
+        progress_dialog.show()
+
+        def update_progress(value):
+            progress_dialog.update_progress(value)
+
+        update_progress(10)
+        QTimer.singleShot(1000, lambda: update_progress(50))
+        QTimer.singleShot(2000, lambda: update_progress(80))
+        QTimer.singleShot(3000, lambda: update_progress(100))
+
+        QTimer.singleShot(3000, lambda: self.finalizar_aplicacao_modo_claro(progress_dialog))
+
+    def finalizar_aplicacao_modo_claro(self,progress_dialog):
+        if progress_dialog is not None:
+            progress_dialog.accept()  # Oculta o diálogo de progresso
+
         style_sheet = """
             QMainWindow {
                 background-color: #ffffff;
@@ -462,11 +428,32 @@ class Pagina_Configuracoes(QWidget):
                 color: #000000;
             }
         """
-        self.main_window.setStyleSheet(style_sheet)
+        # Iterar sobre todos os widgets da aplicação e aplicar o estilo
+        app = QApplication.instance()
+        for widget in app.allWidgets():
+            widget.setStyleSheet(style_sheet)
+        
+        # Salvar no JSON que o tema agora é escuro
+        self.config.tema = "claro"
+        self.config.salvar(self.config.usuario, self.config.senha, self.config.mantem_conectado)
 
     def aplicar_modo_classico(self):
+        progress_dialog = ProgressDialog("Clássico", self)
+        progress_dialog.show()
+
+        def update_progress(value):
+            progress_dialog.update_progress(value)
+
+        update_progress(10)
+        QTimer.singleShot(1000, lambda: update_progress(50))
+        QTimer.singleShot(2000, lambda: update_progress(80))
+        QTimer.singleShot(3000, lambda: update_progress(100))
+
+        QTimer.singleShot(3000, lambda: self.finalizar_aplicacao_modo_classico(progress_dialog))
+
+    def finalizar_aplicacao_modo_classico(self,progress_dialog):
         style_sheet = """
-            QMainWindow {
+            QMainWindow, QStackedWidget, QWidget, QFrame, QLabel,QTableWidget {
                 background-color: #005079;
                 color: #ffffff;
             }
@@ -478,46 +465,257 @@ class Pagina_Configuracoes(QWidget):
                 background-color: #005079;
                 color: #ffffff;
             }
+            QPushButton{
+                color: rgb(255, 255, 255);
+                border-radius: 8px;
+                font-size: 16px;
+                background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */
+                border: 4px solid transparent;
+            }
+
+            QPushButton:hover{
+                background: qlineargradient(x1:0, y1:0, x2:0, y2:1, 
+                stop:0 rgb(100, 180, 255), 
+                stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */
+                color: black;
+            }
+
+            QPushButton#btn_opcoes_extras{
+                color: rgb(255, 255, 255);
+                border-radius: 10px;
+                border:  transparent;
+                background-color: rgb(100, 200, 255);
+            }
+            QPushButton#btn_login {
+                font-size: 16px;
+                border: 3px solid transparent;
+            }
+            QPushButton#btn_login:hover {
+                color: black;
+            }
+
+            QLineEdit#txt_usuario,
+            QLineEdit#txt_senha{
+                border: 2px solid #0078d4;  /* Cor da borda */
+                border-radius: 5px;          /* Bordas arredondadas */
+                padding: 5px;                /* Espaçamento interno */
+        
+            }
+            QLineEdit#txt_usuario,
+            QLineEdit#txt_senha{
+                color: black;  /* Cor do placeholder */
+            }
+            QLineEdit#line_clientes,
+            QLineEdit#line_clientes_fisicos {
+                color: black;
+                background-color: rgb(240, 240, 240); /* Cor de fundo cinza claro */
+                border: 2px solid rgb(50, 150,250); /* Borda azul */
+                border-radius: 6px; /* Cantos arredondados */
+                padding: 3px; /* Espaçamento interno */
+            }
+
+            QLineEdit#line_clientes::placeholderText,
+            QLineEdit#line_clientes_fisicos::placeholderText {
+                color: black; /* Cor do texto do placeholder */
+            }
+
+            QTableView{
+                gridline-color: black;
+                color: black;
+                selection-color: white;
+            }
+            /* Cabeçalho das colunas */
+            QHeaderView::section {
+                color: black;
+            }
+            /* Estiliza a barra de rolagem horizontal */
+            QTableView QScrollBar:horizontal {
+                border: none;
+                background-color: rgb(255, 255, 255);
+                height: 15px;
+                margin: 0px 10px 0px 10px;
+            }
+            /* Estiliza a barra de rolagem vertical */
+            QTableView QScrollBar:vertical {
+                border: none;
+                background-color: rgb(255, 255, 255); /* branco */
+                width: 35px;
+                margin: 0px 10px 0px 10px;
+            }
+            /* Parte que você arrasta */
+            QTableView QScrollBar::handle:vertical {
+                background-color: rgb(180, 180,150);  /* cinza */
+                min-height: 30px;
+                border-radius: 5px;
+            }
+
+            QTableView QScrollBar::handle:horizontal{
+                background-color: rgb(180,180,150);
+                min-height: 30px;
+                border-radius: 5px;
+            }
+
+            /* Remove os botões */
+            QTableView QScrollBar::add-line:vertical,
+            QTableView QScrollBar::sub-line:vertical {
+                height: 0px;
+                width: 0px;
+                border: none;
+                background: none;
+            }
+
+            QTableView QScrollBar::groove:horizontal{
+                background-color: rgb(100,240,240);
+                border-radius: 2px;
+                height: 15px;
+                margin: 0px 10px 0px 10px;
+            }
+
+            /* Estilo para item selecionado */
+            QTableView::item:selected {
+                background-color: rgb(0, 120, 215);
+                color: white;
+            }
+            QTabBar::tab {
+                color: black;  /* Cor do texto de todas as tabs */
+                }
+            QTabBar::tab:selected {
+                color: black;
+            }
+            QToolButton {
+                background-color: rgb(50, 150, 250);
+                color: white;
+                border-radius: 5px;
+                border: 2px solid rgb(50, 150, 250);
+                padding: 5px 10px;
+            }
+
+            QToolButton:hover {
+                background-color: rgb(100, 180, 255);
+                border: 2px solid rgb(100, 180, 255);
+            }
+
+
             #frame_botoes_navegacoes {
                 background-color: #005079;
                 color: #ffffff;
             }
         """
-        self.main_window.setStyleSheet(style_sheet)
-        self.paginas_sistemas.setStyleSheet(style_sheet)
-        self.frame_botoes_navegacoes.setStyleSheet(style_sheet)
+        # Iterar sobre todos os widgets da aplicação e aplicar o estilo
+        app = QApplication.instance()
+        for widget in app.allWidgets():
+            widget.setStyleSheet(style_sheet)
+        
+        # Salvar no JSON que o tema agora é escuro
+        self.config.tema = "classico"
+        self.config.salvar(self.config.usuario, self.config.senha, self.config.mantem_conectado)
 
 
-    def mousePressEvent_atualizacoes(self, event):
-        if event.button() == Qt.LeftButton:
-            self.mostrar_menu_atualizacoes()
+    def configurar_menu_opcoes(self, parent_button):
+        # Criar a janela de configurações
+        self.janela_config = QMainWindow()
+        self.janela_config.setWindowTitle("Configurações")
+        self.janela_config.setMinimumSize(600, 500)
+        
+        # Aplica o style_sheet atual do sistema à janela de configurações
+        self.janela_config.setStyleSheet(self.styleSheet())
 
-    def mousePressEvent_fonte(self, event):
-        if event.button() == Qt.LeftButton:
-            self.mostrar_menu_fonte()
+        central = QWidget()
+        layout = QVBoxLayout(central)
+        self.janela_config.setCentralWidget(central)
 
-    def mousePressEvent_hora(self, event):
-        if event.button() == Qt.LeftButton:
-            self.mostrar_menu_hora()
+        # ------------------- MENU TEMA -------------------
+        btn_tema = QToolButton(self.janela_config)
+        btn_tema.setText("Tema do Sistema")
+        btn_tema.setPopupMode(QToolButton.InstantPopup)
+        btn_tema.setToolButtonStyle(Qt.ToolButtonTextOnly)
+        btn_tema.setObjectName("btn_classe_tema")  # identifica para o modo clássico
+        menu_tema = QMenu(self.janela_config)
+        menu_tema.addAction("Modo escuro", self.aplicar_modo_escuro)
+        menu_tema.addAction("Modo claro", self.aplicar_modo_claro)
+        menu_tema.addAction("Modo clássico", self.aplicar_modo_classico)
+        btn_tema.setMenu(menu_tema)
+        layout.addWidget(btn_tema)
 
-    def mousePressEvent_atalhos(self, event):
-        if event.button() == Qt.LeftButton:
-            self.mostrar_menu_atalhos()
+        # ------------------- BOTÃO ATUALIZAÇÕES -------------------
+        btn_atualizacoes = QToolButton(self.janela_config)
+        btn_atualizacoes.setText("Atualizações")
+        btn_atualizacoes.setPopupMode(QToolButton.InstantPopup)
+        btn_atualizacoes.setToolButtonStyle(Qt.ToolButtonTextOnly)
+        btn_atualizacoes.setObjectName("btn_classe_atualizacoes")
+        menu_atualizacoes = QMenu(self.janela_config)
+        menu_atualizacoes.addAction("Definir atualizações automaticamente")
+        menu_atualizacoes.addAction("Não definir atualizações automáticas")
+        menu_atualizacoes.addAction("Verificar se há atualizações")
+        menu_atualizacoes.addAction("Exibir histórico de atualizações")
+        btn_atualizacoes.setMenu(menu_atualizacoes)
+        layout.addWidget(btn_atualizacoes)
 
-    def mousePressEvent_tema(self, event):
-        if event.button() == Qt.LeftButton:
-            self.mostrar_menu_tema()
+        # ------------------- MENU HORA -------------------
+        btn_hora = QToolButton(self.janela_config)
+        btn_hora.setText("Hora e Data")
+        btn_hora.setPopupMode(QToolButton.InstantPopup)
+        btn_hora.setToolButtonStyle(Qt.ToolButtonTextOnly)
+        btn_hora.setObjectName("btn_classe_hora")
+        menu_hora = QMenu(self.janela_config)
+        menu_hora.addAction("Exibir os segundos")
+        menu_hora.addAction("Exibir relógio analógico")
+        menu_hora.addAction("Exibir relógio digital")
+        menu_hora.addAction("Exibir calendário")
+        menu_hora.addAction("Definir fuso horário automaticamente")
+        menu_hora.addAction("Definir fuso horário manualmente")
+        menu_hora.addAction("Definir horário automaticamente")
+        menu_hora.addAction("Não exibir relógio")
+        btn_hora.setMenu(menu_hora)
+        layout.addWidget(btn_hora)
 
-    def  mousePressEvent_notificacao(self, event):
-        if event.button() == Qt.LeftButton:
-            self.mostrar_menu_notificacoes()
+        # ------------------- MENU FONTE -------------------
+        btn_fonte = QToolButton(self.janela_config)
+        btn_fonte.setText("Fonte")
+        btn_fonte.setPopupMode(QToolButton.InstantPopup)
+        btn_fonte.setToolButtonStyle(Qt.ToolButtonTextOnly)
+        btn_fonte.setObjectName("btn_classe_fonte")
+        menu_fonte = QMenu(self.janela_config)
+        for i in range(8, 37, 2):
+            menu_fonte.addAction(str(i))
+        btn_fonte.setMenu(menu_fonte)
+        layout.addWidget(btn_fonte)
+
+        # ------------------- MENU NOTIFICAÇÕES -------------------
+        btn_notificacoes = QToolButton(self.janela_config)
+        btn_notificacoes.setText("Notificações")
+        btn_notificacoes.setPopupMode(QToolButton.InstantPopup)
+        btn_notificacoes.setToolButtonStyle(Qt.ToolButtonTextOnly)
+        btn_notificacoes.setObjectName("btn_classe_notificacoes")
+        menu_notificacoes = QMenu(self.janela_config)
+        menu_notificacoes.addAction("Definir notificação de boas-vindas")
+        btn_notificacoes.setMenu(menu_notificacoes)
+        layout.addWidget(btn_notificacoes)
+
+        # ------------------- MENU ATALHOS -------------------
+        btn_atalhos = QToolButton(self.janela_config)
+        btn_atalhos.setText("Atalhos do Teclado")
+        btn_atalhos.setPopupMode(QToolButton.InstantPopup)
+        btn_atalhos.setToolButtonStyle(Qt.ToolButtonTextOnly)
+        btn_atalhos.setObjectName("btn_classe_atalhos")
+        menu_atalhos = QMenu(self.janela_config)
+        menu_atalhos.addAction("Mapear teclas de atalhos")
+        menu_atalhos.addAction("Abrir painel de atalhos")
+        menu_atalhos.addAction("Editar atalhos")
+        menu_atalhos.addAction("Sobre atalhos")
+        btn_atalhos.setMenu(menu_atalhos)
+        layout.addWidget(btn_atalhos)
+
+        # Mostrar janela
+        self.janela_config.show()
+    
 
 
 
 class ProgressDialog(QDialog):
-    def __init__(self, parent=None):
+    def __init__(self, tema="Escuro", parent=None):
         super().__init__(parent)
-        self.setWindowTitle("Aplicando Modo Escuro")
+        self.setWindowTitle(f"Aplicando Modo {tema}")
         self.setWindowModality(Qt.ApplicationModal)
         self.setFixedSize(300, 100)
 
@@ -532,8 +730,7 @@ class ProgressDialog(QDialog):
                 border: 1px solid #aaaaaa;
                 border-radius: 5px;
                 height: 10px;
-                text-align: center; /* Alinhar o texto ao centro */
-                                        
+                text-align: center;
             }
             QProgressBar::chunk {
                 background-color: #4caf50;
@@ -547,6 +744,7 @@ class ProgressDialog(QDialog):
     def update_progress(self, value):
         self.progress_bar.setValue(value)
         QApplication.processEvents()
+
 
 
 

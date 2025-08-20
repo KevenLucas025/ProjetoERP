@@ -5953,13 +5953,14 @@ QPushButton:hover {
               <string notr="true">QTabBar::tab:selected {
     color: black;
 }
-QTabWidget::pane {
-    border: none;   /* Remove a borda branca */
-}
+
 </string>
              </property>
+             <property name="tabShape">
+              <enum>QTabWidget::Rounded</enum>
+             </property>
              <property name="currentIndex">
-              <number>0</number>
+              <number>1</number>
              </property>
              <widget class="QWidget" name="tab_clientes">
               <attribute name="title">
@@ -6258,7 +6259,7 @@ QLineEdit::placeholderText {
                   <string notr="true">/* Estiliza apenas o QTableView com objectName  */
 QTableView {
     gridline-color: black;
-    color: black;
+    color: white;
     selection-color: white;
 
 }
@@ -6333,7 +6334,7 @@ QTableWidget::item:selected {
                   <number>118</number>
                  </attribute>
                  <attribute name="verticalHeaderVisible">
-                  <bool>true</bool>
+                  <bool>false</bool>
                  </attribute>
                  <column>
                   <property name="text">
