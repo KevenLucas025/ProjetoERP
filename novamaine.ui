@@ -4180,7 +4180,7 @@ QLineEdit::placeholderText {
                  </widget>
                 </item>
                 <item>
-                 <widget class="QLineEdit" name="txt_usuario">
+                 <widget class="QLineEdit" name="txt_usuario_cadastro">
                   <property name="sizePolicy">
                    <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
                     <horstretch>0</horstretch>
@@ -5086,7 +5086,7 @@ QLineEdit::placeholderText {
                  </widget>
                 </item>
                 <item>
-                 <widget class="QLineEdit" name="txt_senha">
+                 <widget class="QLineEdit" name="txt_senha_cadastro">
                   <property name="sizePolicy">
                    <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
                     <horstretch>0</horstretch>
@@ -5960,7 +5960,7 @@ QPushButton:hover {
               <enum>QTabWidget::Rounded</enum>
              </property>
              <property name="currentIndex">
-              <number>1</number>
+              <number>0</number>
              </property>
              <widget class="QWidget" name="tab_clientes">
               <attribute name="title">
@@ -6334,7 +6334,7 @@ QTableWidget::item:selected {
                   <number>118</number>
                  </attribute>
                  <attribute name="verticalHeaderVisible">
-                  <bool>false</bool>
+                  <bool>true</bool>
                  </attribute>
                  <column>
                   <property name="text">

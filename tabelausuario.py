@@ -344,8 +344,8 @@ class TabelaUsuario(QMainWindow):
 
             # Preencher os campos da MainWindow com os dados do usuário selecionado
             self.main_window.txt_nome.setText(usuario_nome or "")
-            self.main_window.txt_usuario.setText(usuario_usuario or "")
-            self.main_window.txt_senha.setText(usuario_senha or "")
+            self.main_window.txt_usuario_cadastro.setText(usuario_usuario or "")
+            self.main_window.txt_senha_cadastro.setText(usuario_senha or "")
             self.main_window.txt_confirmar_senha.setText(usuario_confirmar_senha or "")
             self.main_window.txt_cep.setText(usuario_cep or "")
             self.main_window.txt_endereco.setText(usuario_endereco or "")
@@ -786,7 +786,7 @@ class TabelaUsuario(QMainWindow):
             QMessageBox.warning(self, "Aviso", "Imagem não encontrada.")
 
     def limpar_campos_de_texto(self):
-        self.main_window.txt_usuario.clear()
+        self.main_window.txt_usuario_cadastro.clear()
 
     def atualizar_tabela_usuario(self):
         try:

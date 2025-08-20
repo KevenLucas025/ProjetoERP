@@ -465,6 +465,14 @@ class Pagina_Configuracoes(QWidget):
                 background-color: #005079;
                 color: #ffffff;
             }
+            QPushButton#botao_lupa,
+            QPushButton#botao_lupa {
+                qproperty-icon: url("imagens/botão_lupa.png");
+                qproperty-iconSize: 16px 16px;
+                background: transparent;
+                border: none;
+            }
+
             QPushButton{
                 color: rgb(255, 255, 255);
                 border-radius: 8px;
@@ -493,6 +501,7 @@ class Pagina_Configuracoes(QWidget):
             QPushButton#btn_login:hover {
                 color: black;
             }
+            
 
             QLineEdit#txt_usuario,
             QLineEdit#txt_senha{
@@ -518,6 +527,49 @@ class Pagina_Configuracoes(QWidget):
             QLineEdit#line_clientes_fisicos::placeholderText {
                 color: black; /* Cor do texto do placeholder */
             }
+            QLineEdit#txt_nome,
+            QLineEdit#txt_usuario_cadastro,
+            QLineEdit#txt_senha_cadastro,
+            QLineEdit#txt_confirmar_senha,
+            QLineEdit#txt_cep,
+            QLineEdit#txt_endereco,
+            QLineEdit#txt_numero,
+            QLineEdit#txt_cidade,
+            QLineEdit#txt_bairro,
+            QLineEdit#txt_complemento,
+            QLineEdit#txt_telefone,
+            QLineEdit#txt_email,
+            QLineEdit#txt_data_nascimento,
+            QLineEdit#txt_rg,
+            QLineEdit#txt_cpf,
+            QLineEdit#txt_cnpj {
+                color: black;
+                background-color: rgb(240, 240, 240); /* Cor de fundo cinza claro */
+                border: 2px solid rgb(50, 150, 250);  /* Borda azul */
+                border-radius: 6px;                   /* Cantos arredondados */
+                padding: 3px;                         /* Espaçamento interno */
+            }
+
+            QLineEdit#txt_nome::placeholderText,
+            QLineEdit#txt_usuario_cadastro::placeholderText,
+            QLineEdit#txt_senha_cadastro::placeholderText,
+            QLineEdit#txt_confirmar_senha::placeholderText,
+            QLineEdit#txt_cep::placeholderText,
+            QLineEdit#txt_endereco::placeholderText,
+            QLineEdit#txt_numero::placeholderText,
+            QLineEdit#txt_cidade::placeholderText,
+            QLineEdit#txt_bairro::placeholderText,
+            QLineEdit#txt_complemento::placeholderText,
+            QLineEdit#txt_telefone::placeholderText,
+            QLineEdit#txt_email::placeholderText,
+            QLineEdit#txt_data_nascimento::placeholderText,
+            QLineEdit#txt_rg::placeholderText,
+            QLineEdit#txt_cpf::placeholderText,
+            QLineEdit#txt_cnpj::placeholderText {
+                color: black; /* Cor do texto do placeholder */
+            }
+
+
 
             QTableView{
                 gridline-color: black;
@@ -594,6 +646,28 @@ class Pagina_Configuracoes(QWidget):
                 background-color: rgb(100, 180, 255);
                 border: 2px solid rgb(100, 180, 255);
             }
+
+            /* Menu do btn_mais_opcoes */
+            QToolButton#btn_mais_opcoes QMenu {
+                background-color: white;     
+                border: 1px solid #ccc;
+                color: black;
+            }
+
+            /* Itens dentro desse menu */
+            QToolButton#btn_mais_opcoes QMenu::item {
+                background-color: transparent;
+                color: black;
+                padding: 6px 20px;
+            }
+
+            /* Item em hover/selecionado */
+            QToolButton#btn_mais_opcoes QMenu::item:selected {
+                background-color: rgb(0, 120, 215);
+                color: white;
+            }
+
+
 
 
             #frame_botoes_navegacoes {

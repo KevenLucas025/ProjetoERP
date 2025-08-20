@@ -168,11 +168,10 @@ class Clientes_Juridicos(QWidget):
 
     def imagem_line(self):
         # Criar botão da lupa
-        self.botao_lupa = QToolButton(self.line_clientes)
+        self.botao_lupa = QPushButton(self.line_clientes)
         self.botao_lupa.setCursor(Qt.PointingHandCursor)  # Muda o cursor ao passar o mouse
-        self.botao_lupa.setIcon(QIcon(QPixmap("imagens/botão_lupa.png")))  # Substitua pelo caminho correto
-        self.botao_lupa.setStyleSheet("border: none; background: transparent;")  # Sem fundo e sem borda
         self.botao_lupa.setContentsMargins(0,0,0,0)
+        self.botao_lupa.setObjectName("botao_lupa")
         
         # Definir tamanho do botão
         altura = self.line_clientes.height() - 4  # Ajustar altura conforme a LineEdit
@@ -181,20 +180,7 @@ class Clientes_Juridicos(QWidget):
         # Posicionar o botão no canto direito da LineEdit
         self.botao_lupa.move(self.line_clientes.width() - altura + 1, 2)
 
-        # Ajustar padding para o texto não sobrepor o botão
-        self.line_clientes.setStyleSheet(
-            "QLineEdit {"
-            "    color: black;"
-            "    background-color: rgb(240, 240, 240);"
-            "    border: 2px solid rgb(50, 150, 250);"
-            "    border-radius: 6px;"
-            "    padding: 3px;"  # Padding normal
-            f"    padding-right: {altura + 5}px;"  # Ajuste para o botão
-            "}"
-            "QLineEdit::placeholderText {"
-            "    color: black;"
-            "}"
-        )
+        
 
         # Conectar clique do botão a uma função
         self.botao_lupa.clicked.connect(self.buscar_cliente_juridico_dinamico)

@@ -77,7 +77,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.login_window = login_window
 
-        self.exibir_senha = MostrarSenha(self,self.txt_senha)
+        self.exibir_senha = MostrarSenha(self,self.txt_senha_cadastro)
         self.exibir_senha_usuario = MostrarSenha(self,self.txt_confirmar_senha)
 
         #Cria as tabelas no banco de dados sempre que executar o sistema em um novo ambiente
@@ -100,7 +100,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             "txt_codigo_item": self.txt_codigo_item,
             "txt_complemento": self.txt_complemento,
             "txt_confirmar_senha": self.txt_confirmar_senha,
-            "txt_senha": self.txt_senha,
+            "txt_senha_cadastro": self.txt_senha_cadastro,
             "txt_data_nascimento": self.txt_data_nascimento,
             "txt_cpf": self.txt_cpf,
             "txt_descricao_produto_3": self.txt_descricao_produto_3,
@@ -113,7 +113,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             "txt_rg": self.txt_rg,
             "txt_quantidade": self.txt_quantidade,
             "line_clientes": self.line_clientes,
-            "txt_usuario": self.txt_usuario,
+            "txt_usuario_cadastro": self.txt_usuario_cadastro,
             "txt_cnpj": self.txt_cnpj
         }
         
@@ -707,7 +707,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         # Obter os dados da interface
         usuario_nome = self.txt_nome.text()
-        usuario_usuario = self.txt_usuario.text()
+        usuario_usuario = self.txt_usuario_cadastro.text()
         usuario_telefone = self.txt_telefone.text()
         usuario_endereco = self.txt_endereco.text()
         usuario_numero = self.txt_numero.text()
@@ -721,7 +721,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         usuario_cnpj = self.txt_cnpj.text()
         usuario_cep = self.txt_cep.text()
         usuario_estado = self.perfil_estado.currentText()
-        usuario_senha = self.txt_senha.text()
+        usuario_senha = self.txt_senha_cadastro.text()
         usuario_confirmar_senha = self.txt_confirmar_senha.text()
 
         # Verificar campos obrigatórios
@@ -839,7 +839,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             if usuario:
                 # Supondo que o resultado esteja na ordem dos campos
                 self.txt_nome.setText(usuario[1])
-                self.txt_usuario.setText(usuario[2])
+                self.txt_usuario_cadastro.setText(usuario[2])
                 self.txt_telefone.setText(usuario[3])
                 self.txt_endereco.setText(usuario[4])
                 self.txt_numero.setText(usuario[5])
@@ -850,7 +850,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 self.txt_cpf.setText(usuario[10])
                 self.txt_cep.setText(usuario[11])
                 self.txt_estado.setText(usuario[12])
-                self.txt_senha.setText(usuario[13])
+                self.txt_senha_cadastro.setText(usuario[13])
                 self.txt_confirmar_senha.setText(usuario[14])
                 
                 # Se tiver uma imagem, carregar a imagem
@@ -1049,7 +1049,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             return ""
 #*********************************************************************************************************************            
     def carregar_configuracoes(self):
-        self.txt_usuario.setText(self.config.usuario if self.config.usuario else "")
+        self.txt_usuario_cadastro.setText(self.config.usuario if self.config.usuario else "")
         self.login_window.btn_manter_conectado.setChecked(self.config.mantem_conectado)
 #*********************************************************************************************************************
     def mostrar_detalhes_erro(self):
@@ -1124,7 +1124,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             # Coleta de dados dos campos
             nome = self.txt_nome.text().strip()
             usuario = self.gerar_codigo_usuarios()
-            senha = self.txt_senha.text()
+            senha = self.txt_senha_cadastro.text()
             confirmar_senha = self.txt_confirmar_senha.text()
             cep = self.txt_cep.text().strip()
             endereco = self.txt_endereco.text().strip()
@@ -1238,8 +1238,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
             # Limpar campos após cadastro
             self.txt_nome.clear()
-            self.txt_usuario.clear()
-            self.txt_senha.clear()
+            self.txt_usuario_cadastro.clear()
+            self.txt_senha_cadastro.clear()
             self.txt_confirmar_senha.clear()
             self.txt_cpf.clear()
             self.txt_cnpj.clear()
@@ -1312,7 +1312,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def eliminar_campos_usuarios(self):
         # Limpar campos de texto
         self.txt_nome.clear()
-        self.txt_usuario.clear()
+        self.txt_usuario_cadastro.clear()
         self.txt_telefone.clear()
         self.txt_endereco.clear()
         self.txt_cidade.clear()
@@ -1324,7 +1324,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.txt_rg.clear()
         self.txt_cpf.clear()
         self.txt_cep.clear()
-        self.txt_senha.clear()
+        self.txt_senha_cadastro.clear()
         self.txt_cnpj.clear()
         self.txt_confirmar_senha.clear()
         # Limpar campos de combo box
@@ -1453,7 +1453,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         print("Inicializando erros_frames_usuarios")
         self.campos_obrigatorios_usuarios = {
         'nome': self.txt_nome,
-        'usuario': self.txt_usuario,
+        'usuario': self.txt_usuario_cadastro,
         'telefone': self.txt_telefone,
         'endereco': self.txt_endereco,            # <--- corrigido
         'numero': self.txt_numero,          # <--- corrigido
@@ -1465,7 +1465,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         'cnpj': self.txt_cnpj,
         'cep': self.txt_cep,
         'estado': self.perfil_estado,
-        'senha': self.txt_senha,
+        'senha': self.txt_senha_cadastro,
         'confirmar senha': self.txt_confirmar_senha,
         'perfil': self.perfil_usuarios
         }
@@ -2592,7 +2592,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 #**************************************************************************************************************            
     def limpar_campos_após_atualizar_usuario(self):
         self.txt_nome.clear()
-        self.txt_usuario.clear()
+        self.txt_usuario_cadastro.clear()
         self.txt_telefone.clear()
         self.txt_endereco.clear()
         self.txt_numero.clear()
@@ -2605,7 +2605,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.txt_cep.clear()
         self.txt_cpf.clear()
         self.txt_cnpj.clear()
-        self.txt_senha.clear()
+        self.txt_senha_cadastro.clear()
         self.txt_confirmar_senha.clear()
         self.perfil_estado.setCurrentIndex(0)
         self.perfil_usuarios.setCurrentIndex(0)
@@ -2775,8 +2775,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.selected_user = None
          # Limpa todos os campos (pode reaproveitar o trecho do subscribe_user)
         self.txt_nome.clear()
-        self.txt_usuario.clear()
-        self.txt_senha.clear()
+        self.txt_usuario_cadastro.clear()
+        self.txt_senha_cadastro.clear()
         self.txt_confirmar_senha.clear()
         self.txt_cpf.clear()
         self.txt_cnpj.clear()

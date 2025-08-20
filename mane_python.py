@@ -2392,12 +2392,12 @@ class Ui_MainWindow(object):
 
         self.horizontalLayout_10.addWidget(self.label_usuario)
 
-        self.txt_usuario = QLineEdit(self.frame_3)
-        self.txt_usuario.setObjectName(u"txt_usuario")
-        sizePolicy.setHeightForWidth(self.txt_usuario.sizePolicy().hasHeightForWidth())
-        self.txt_usuario.setSizePolicy(sizePolicy)
-        self.txt_usuario.setMaximumSize(QSize(181, 30))
-        self.txt_usuario.setStyleSheet(u"QLineEdit {\n"
+        self.txt_usuario_cadastro = QLineEdit(self.frame_3)
+        self.txt_usuario_cadastro.setObjectName(u"txt_usuario_cadastro")
+        sizePolicy.setHeightForWidth(self.txt_usuario_cadastro.sizePolicy().hasHeightForWidth())
+        self.txt_usuario_cadastro.setSizePolicy(sizePolicy)
+        self.txt_usuario_cadastro.setMaximumSize(QSize(181, 30))
+        self.txt_usuario_cadastro.setStyleSheet(u"QLineEdit {\n"
 "	color: black;\n"
 "    background-color: rgb(240, 240, 240); /* Cor de fundo cinza claro */\n"
 "    border: 2px solid rgb(50, 150,250); /* Borda azul */\n"
@@ -2410,7 +2410,7 @@ class Ui_MainWindow(object):
 "}\n"
 "")
 
-        self.horizontalLayout_10.addWidget(self.txt_usuario)
+        self.horizontalLayout_10.addWidget(self.txt_usuario_cadastro)
 
         self.frame_erro_usuario = QFrame(self.frame_3)
         self.frame_erro_usuario.setObjectName(u"frame_erro_usuario")
@@ -2971,12 +2971,12 @@ class Ui_MainWindow(object):
 
         self.horizontalLayout_21.addWidget(self.label_senha)
 
-        self.txt_senha = QLineEdit(self.frame_3)
-        self.txt_senha.setObjectName(u"txt_senha")
-        sizePolicy.setHeightForWidth(self.txt_senha.sizePolicy().hasHeightForWidth())
-        self.txt_senha.setSizePolicy(sizePolicy)
-        self.txt_senha.setMaximumSize(QSize(181, 30))
-        self.txt_senha.setStyleSheet(u"QLineEdit {\n"
+        self.txt_senha_cadastro = QLineEdit(self.frame_3)
+        self.txt_senha_cadastro.setObjectName(u"txt_senha_cadastro")
+        sizePolicy.setHeightForWidth(self.txt_senha_cadastro.sizePolicy().hasHeightForWidth())
+        self.txt_senha_cadastro.setSizePolicy(sizePolicy)
+        self.txt_senha_cadastro.setMaximumSize(QSize(181, 30))
+        self.txt_senha_cadastro.setStyleSheet(u"QLineEdit {\n"
 "	color: black;\n"
 "    background-color: rgb(240, 240, 240); /* Cor de fundo cinza claro */\n"
 "    border: 2px solid rgb(50, 150,250); /* Borda azul */\n"
@@ -2988,9 +2988,9 @@ class Ui_MainWindow(object):
 "    color: black; /* Cor do texto do placeholder */\n"
 "}\n"
 "")
-        self.txt_senha.setEchoMode(QLineEdit.Password)
+        self.txt_senha_cadastro.setEchoMode(QLineEdit.Password)
 
-        self.horizontalLayout_21.addWidget(self.txt_senha)
+        self.horizontalLayout_21.addWidget(self.txt_senha_cadastro)
 
         self.frame_senha = QFrame(self.frame_3)
         self.frame_senha.setObjectName(u"frame_senha")
@@ -3392,10 +3392,9 @@ class Ui_MainWindow(object):
         self.tab_clientes_todos.setStyleSheet(u"QTabBar::tab:selected {\n"
 "    color: black;\n"
 "}\n"
-"QTabWidget::pane {\n"
-"    border: none;   /* Remove a borda branca */\n"
-"}\n"
+"\n"
 "")
+        self.tab_clientes_todos.setTabShape(QTabWidget.Rounded)
         self.tab_clientes = QWidget()
         self.tab_clientes.setObjectName(u"tab_clientes")
         self.gridLayout_22 = QGridLayout(self.tab_clientes)
@@ -3622,7 +3621,7 @@ class Ui_MainWindow(object):
         self.table_clientes_juridicos.setStyleSheet(u"/* Estiliza apenas o QTableView com objectName  */\n"
 "QTableView {\n"
 "    gridline-color: black;\n"
-"    color: black;\n"
+"    color: white;\n"
 "    selection-color: white;\n"
 "\n"
 "}\n"
