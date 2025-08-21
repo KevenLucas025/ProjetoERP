@@ -220,31 +220,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.btn_retroceder.setToolTip("Retroceder") # Adiciona uma dica de ferramenta
 
         self.btn_opcoes_navegacao = QPushButton(self)
-        self.btn_opcoes_navegacao.setIcon(QIcon("imagens/54206.png"))
         self.btn_opcoes_navegacao.setIconSize(QSize(30,30))
         self.btn_opcoes_navegacao.setGeometry(60,35,35,35)
         self.btn_opcoes_navegacao.setCursor(Qt.PointingHandCursor)
+        self.btn_opcoes_navegacao.setObjectName("btn_opcoes_navegacao")
 
         # Criar o menu dentro do botão btn_opcoes
         self.menu_opcoes = QMenu(self.btn_mais_opcoes)
-        
-
-       # Definir o estilo do menu
-        estilo_botao_menu = """
-            QMenu {
-                background-color: white;
-                color: black;
-                border: 1px solid lightgray;
-            }
-            QMenu::item {
-                padding: 5px 20px;
-            }
-            QMenu::item:selected {
-                background-color: rgb(0, 120, 215); /* Azul Windows */
-                color: white;
-            }
-        """
-        self.menu_opcoes.setStyleSheet(estilo_botao_menu)
 
 
         # Criar as ações do menu

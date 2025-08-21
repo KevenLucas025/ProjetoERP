@@ -1406,8 +1406,8 @@ class Ui_MainWindow(object):
         self.frame_botoes_a_e_a_a.setObjectName(u"frame_botoes_a_e_a_a")
         sizePolicy.setHeightForWidth(self.frame_botoes_a_e_a_a.sizePolicy().hasHeightForWidth())
         self.frame_botoes_a_e_a_a.setSizePolicy(sizePolicy)
-        self.frame_botoes_a_e_a_a.setMinimumSize(QSize(177, 0))
-        self.frame_botoes_a_e_a_a.setMaximumSize(QSize(200, 190))
+        self.frame_botoes_a_e_a_a.setMinimumSize(QSize(0, 0))
+        self.frame_botoes_a_e_a_a.setMaximumSize(QSize(218, 190))
         self.frame_botoes_a_e_a_a.setFrameShape(QFrame.NoFrame)
         self.frame_botoes_a_e_a_a.setFrameShadow(QFrame.Raised)
         self.verticalLayout_12 = QVBoxLayout(self.frame_botoes_a_e_a_a)
@@ -1431,7 +1431,7 @@ class Ui_MainWindow(object):
 "    color: black;\n"
 "}")
         icon = QIcon()
-        icon.addFile(u"../../../../.designer/backup/imagens/pngwing.com.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        icon.addFile(u"imagens/pngwing.com.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
         self.btn_adicionar_produto.setIcon(icon)
 
         self.verticalLayout_12.addWidget(self.btn_adicionar_produto)
@@ -1455,7 +1455,7 @@ class Ui_MainWindow(object):
 "    color: black;\n"
 "}")
         icon1 = QIcon()
-        icon1.addFile(u"../../../../.designer/backup/imagens/editar.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        icon1.addFile(u"imagens/editar.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
         self.btn_editar.setIcon(icon1)
 
         self.verticalLayout_12.addWidget(self.btn_editar)
@@ -1479,8 +1479,9 @@ class Ui_MainWindow(object):
 "    color: black;\n"
 "}")
         icon2 = QIcon()
-        icon2.addFile(u"../../../../.designer/backup/imagens/sair.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        icon2.addFile(u"imagens/sair.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
         self.btn_sair_modo_edicao_produtos.setIcon(icon2)
+        self.btn_sair_modo_edicao_produtos.setIconSize(QSize(16, 16))
 
         self.verticalLayout_12.addWidget(self.btn_sair_modo_edicao_produtos)
 
@@ -1503,7 +1504,7 @@ class Ui_MainWindow(object):
 "    color: black;\n"
 "}")
         icon3 = QIcon()
-        icon3.addFile(u"../../../../.designer/backup/imagens/toppng.com-update-512x512.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        icon3.addFile(u"imagens/toppng.com-update-512x512.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
         self.btn_atualizar_produto.setIcon(icon3)
 
         self.verticalLayout_12.addWidget(self.btn_atualizar_produto)
@@ -1527,7 +1528,7 @@ class Ui_MainWindow(object):
 "    color: black;\n"
 "}")
         icon4 = QIcon()
-        icon4.addFile(u"../../../../.designer/backup/imagens/Delete-Button-PNG-Download-Image.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        icon4.addFile(u"imagens/Delete-Button-PNG-Download-Image.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
         self.btn_limpar_campos.setIcon(icon4)
         self.btn_limpar_campos.setIconSize(QSize(27, 29))
         self.btn_limpar_campos.setCheckable(False)
@@ -1979,8 +1980,10 @@ class Ui_MainWindow(object):
 
         self.frame_imagem_produto_3 = QFrame(self.frame_cadastrar_produto)
         self.frame_imagem_produto_3.setObjectName(u"frame_imagem_produto_3")
-        self.frame_imagem_produto_3.setMinimumSize(QSize(331, 321))
-        self.frame_imagem_produto_3.setMaximumSize(QSize(331, 321))
+        sizePolicy.setHeightForWidth(self.frame_imagem_produto_3.sizePolicy().hasHeightForWidth())
+        self.frame_imagem_produto_3.setSizePolicy(sizePolicy)
+        self.frame_imagem_produto_3.setMinimumSize(QSize(302, 321))
+        self.frame_imagem_produto_3.setMaximumSize(QSize(283, 309))
         self.frame_imagem_produto_3.setFrameShape(QFrame.NoFrame)
         self.frame_imagem_produto_3.setFrameShadow(QFrame.Raised)
 
@@ -2014,7 +2017,7 @@ class Ui_MainWindow(object):
 "    color: black;\n"
 "}")
         icon5 = QIcon()
-        icon5.addFile(u"../../../../.designer/backup/imagens/icons8-remover-imagem-16.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        icon5.addFile(u"imagens/icons8-remover-imagem-16.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
         self.btn_remover_imagem.setIcon(icon5)
 
         self.verticalLayout_13.addWidget(self.btn_remover_imagem)
@@ -2039,7 +2042,7 @@ class Ui_MainWindow(object):
 "    color: black;\n"
 "}")
         icon6 = QIcon()
-        icon6.addFile(u"../../../../.designer/backup/imagens/014upload2_99941.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        icon6.addFile(u"imagens/014upload2_99941.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
         self.btn_carregar_imagem.setIcon(icon6)
 
         self.verticalLayout_13.addWidget(self.btn_carregar_imagem)
@@ -2141,7 +2144,7 @@ class Ui_MainWindow(object):
 "}\n"
 "")
         icon7 = QIcon()
-        icon7.addFile(u"../../../../.designer/backup/imagens/confirmacao.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        icon7.addFile(u"imagens/confirmacao.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
         self.btn_confirmar.setIcon(icon7)
 
         self.verticalLayout_20.addWidget(self.btn_confirmar)
@@ -2165,7 +2168,7 @@ class Ui_MainWindow(object):
 "    color: black;\n"
 "}")
         icon8 = QIcon()
-        icon8.addFile(u"../../../../.designer/backup/imagens/74472.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        icon8.addFile(u"imagens/74472.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
         self.btn_ver_clientes_juridicos.setIcon(icon8)
         self.btn_ver_clientes_juridicos.setIconSize(QSize(21, 25))
 
@@ -2191,7 +2194,7 @@ class Ui_MainWindow(object):
 "    color: black;\n"
 "}")
         icon9 = QIcon()
-        icon9.addFile(u"../../../../.designer/backup/imagens/pasta.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        icon9.addFile(u"imagens/pasta.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
         self.btn_ver_item.setIcon(icon9)
 
         self.verticalLayout_20.addWidget(self.btn_ver_item)
@@ -3407,7 +3410,7 @@ class Ui_MainWindow(object):
         sizePolicy.setHeightForWidth(self.frame_7.sizePolicy().hasHeightForWidth())
         self.frame_7.setSizePolicy(sizePolicy)
         self.frame_7.setMaximumSize(QSize(16777215, 50))
-        self.frame_7.setFrameShape(QFrame.Box)
+        self.frame_7.setFrameShape(QFrame.NoFrame)
         self.frame_7.setFrameShadow(QFrame.Raised)
         self.verticalLayout_21 = QVBoxLayout(self.frame_7)
         self.verticalLayout_21.setObjectName(u"verticalLayout_21")
@@ -3720,7 +3723,7 @@ class Ui_MainWindow(object):
         sizePolicy.setHeightForWidth(self.frame_12.sizePolicy().hasHeightForWidth())
         self.frame_12.setSizePolicy(sizePolicy)
         self.frame_12.setMaximumSize(QSize(16777215, 50))
-        self.frame_12.setFrameShape(QFrame.Box)
+        self.frame_12.setFrameShape(QFrame.NoFrame)
         self.frame_12.setFrameShadow(QFrame.Raised)
         self.verticalLayout_23 = QVBoxLayout(self.frame_12)
         self.verticalLayout_23.setObjectName(u"verticalLayout_23")
@@ -4055,7 +4058,7 @@ class Ui_MainWindow(object):
         self.frame_9.setSizePolicy(sizePolicy)
         self.frame_9.setMinimumSize(QSize(0, 0))
         self.frame_9.setMaximumSize(QSize(16777214, 200))
-        self.frame_9.setFrameShape(QFrame.Box)
+        self.frame_9.setFrameShape(QFrame.NoFrame)
         self.frame_9.setFrameShadow(QFrame.Raised)
         self.verticalLayout_22 = QVBoxLayout(self.frame_9)
         self.verticalLayout_22.setObjectName(u"verticalLayout_22")
@@ -4290,7 +4293,7 @@ class Ui_MainWindow(object):
         self.frame_11.setSizePolicy(sizePolicy)
         self.frame_11.setMinimumSize(QSize(0, 0))
         self.frame_11.setMaximumSize(QSize(16777214, 200))
-        self.frame_11.setFrameShape(QFrame.Box)
+        self.frame_11.setFrameShape(QFrame.NoFrame)
         self.frame_11.setFrameShadow(QFrame.Raised)
         self.gridLayout_26 = QGridLayout(self.frame_11)
         self.gridLayout_26.setObjectName(u"gridLayout_26")

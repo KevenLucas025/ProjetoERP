@@ -2479,13 +2479,13 @@ QTableWidget::item:selected {
              </property>
              <property name="minimumSize">
               <size>
-               <width>177</width>
+               <width>0</width>
                <height>0</height>
               </size>
              </property>
              <property name="maximumSize">
               <size>
-               <width>200</width>
+               <width>218</width>
                <height>190</height>
               </size>
              </property>
@@ -2532,7 +2532,7 @@ QPushButton:hover {
                 </property>
                 <property name="icon">
                  <iconset>
-                  <normaloff>../../../../.designer/backup/imagens/pngwing.com.png</normaloff>../../../../.designer/backup/imagens/pngwing.com.png</iconset>
+                  <normaloff>imagens/pngwing.com.png</normaloff>imagens/pngwing.com.png</iconset>
                 </property>
                </widget>
               </item>
@@ -2572,7 +2572,7 @@ QPushButton:hover {
                 </property>
                 <property name="icon">
                  <iconset>
-                  <normaloff>../../../../.designer/backup/imagens/editar.png</normaloff>../../../../.designer/backup/imagens/editar.png</iconset>
+                  <normaloff>imagens/editar.png</normaloff>imagens/editar.png</iconset>
                 </property>
                </widget>
               </item>
@@ -2612,7 +2612,13 @@ QPushButton:hover {
                 </property>
                 <property name="icon">
                  <iconset>
-                  <normaloff>../../../../.designer/backup/imagens/sair.png</normaloff>../../../../.designer/backup/imagens/sair.png</iconset>
+                  <normaloff>imagens/sair.png</normaloff>imagens/sair.png</iconset>
+                </property>
+                <property name="iconSize">
+                 <size>
+                  <width>16</width>
+                  <height>16</height>
+                 </size>
                 </property>
                </widget>
               </item>
@@ -2652,7 +2658,7 @@ QPushButton:hover {
                 </property>
                 <property name="icon">
                  <iconset>
-                  <normaloff>../../../../.designer/backup/imagens/toppng.com-update-512x512.png</normaloff>../../../../.designer/backup/imagens/toppng.com-update-512x512.png</iconset>
+                  <normaloff>imagens/toppng.com-update-512x512.png</normaloff>imagens/toppng.com-update-512x512.png</iconset>
                 </property>
                </widget>
               </item>
@@ -2692,7 +2698,7 @@ QPushButton:hover {
                 </property>
                 <property name="icon">
                  <iconset>
-                  <normaloff>../../../../.designer/backup/imagens/Delete-Button-PNG-Download-Image.png</normaloff>../../../../.designer/backup/imagens/Delete-Button-PNG-Download-Image.png</iconset>
+                  <normaloff>imagens/Delete-Button-PNG-Download-Image.png</normaloff>imagens/Delete-Button-PNG-Download-Image.png</iconset>
                 </property>
                 <property name="iconSize">
                  <size>
@@ -3430,16 +3436,22 @@ QLineEdit::placeholderText {
            </item>
            <item row="2" column="3" rowspan="3">
             <widget class="QFrame" name="frame_imagem_produto_3">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
              <property name="minimumSize">
               <size>
-               <width>331</width>
+               <width>302</width>
                <height>321</height>
               </size>
              </property>
              <property name="maximumSize">
               <size>
-               <width>331</width>
-               <height>321</height>
+               <width>283</width>
+               <height>309</height>
               </size>
              </property>
              <property name="frameShape">
@@ -3507,7 +3519,7 @@ QPushButton:hover {
                 </property>
                 <property name="icon">
                  <iconset>
-                  <normaloff>../../../../.designer/backup/imagens/icons8-remover-imagem-16.png</normaloff>../../../../.designer/backup/imagens/icons8-remover-imagem-16.png</iconset>
+                  <normaloff>imagens/icons8-remover-imagem-16.png</normaloff>imagens/icons8-remover-imagem-16.png</iconset>
                 </property>
                </widget>
               </item>
@@ -3553,7 +3565,7 @@ QPushButton:hover {
                 </property>
                 <property name="icon">
                  <iconset>
-                  <normaloff>../../../../.designer/backup/imagens/014upload2_99941.png</normaloff>../../../../.designer/backup/imagens/014upload2_99941.png</iconset>
+                  <normaloff>imagens/014upload2_99941.png</normaloff>imagens/014upload2_99941.png</iconset>
                 </property>
                </widget>
               </item>
@@ -3776,7 +3788,7 @@ QPushButton:hover {
                 </property>
                 <property name="icon">
                  <iconset>
-                  <normaloff>../../../../.designer/backup/imagens/confirmacao.png</normaloff>../../../../.designer/backup/imagens/confirmacao.png</iconset>
+                  <normaloff>imagens/confirmacao.png</normaloff>imagens/confirmacao.png</iconset>
                 </property>
                </widget>
               </item>
@@ -3816,7 +3828,7 @@ QPushButton:hover {
                 </property>
                 <property name="icon">
                  <iconset>
-                  <normaloff>../../../../.designer/backup/imagens/74472.png</normaloff>../../../../.designer/backup/imagens/74472.png</iconset>
+                  <normaloff>imagens/74472.png</normaloff>imagens/74472.png</iconset>
                 </property>
                 <property name="iconSize">
                  <size>
@@ -3868,7 +3880,7 @@ QPushButton:hover {
                 </property>
                 <property name="icon">
                  <iconset>
-                  <normaloff>../../../../.designer/backup/imagens/pasta.png</normaloff>../../../../.designer/backup/imagens/pasta.png</iconset>
+                  <normaloff>imagens/pasta.png</normaloff>imagens/pasta.png</iconset>
                 </property>
                </widget>
               </item>
@@ -3994,7 +4006,7 @@ QPushButton:hover {
                 </property>
                 <property name="icon">
                  <iconset>
-                  <normaloff>../../../../.designer/backup/imagens/editar.png</normaloff>../../../../.designer/backup/imagens/editar.png</iconset>
+                  <normaloff>imagens/editar.png</normaloff>imagens/editar.png</iconset>
                 </property>
                 <property name="iconSize">
                  <size>
@@ -4046,7 +4058,7 @@ QPushButton:hover {
                 </property>
                 <property name="icon">
                  <iconset>
-                  <normaloff>../../../../.designer/backup/imagens/sair.png</normaloff>../../../../.designer/backup/imagens/sair.png</iconset>
+                  <normaloff>imagens/sair.png</normaloff>imagens/sair.png</iconset>
                 </property>
                 <property name="iconSize">
                  <size>
@@ -4098,7 +4110,7 @@ QPushButton:hover {
                 </property>
                 <property name="icon">
                  <iconset>
-                  <normaloff>../../../../.designer/backup/imagens/toppng.com-update-512x512.png</normaloff>../../../../.designer/backup/imagens/toppng.com-update-512x512.png</iconset>
+                  <normaloff>imagens/toppng.com-update-512x512.png</normaloff>imagens/toppng.com-update-512x512.png</iconset>
                 </property>
                 <property name="iconSize">
                  <size>
@@ -4150,7 +4162,7 @@ QPushButton:hover {
                 </property>
                 <property name="icon">
                  <iconset>
-                  <normaloff>../../../../.designer/backup/imagens/Delete-Button-PNG-Download-Image.png</normaloff>../../../../.designer/backup/imagens/Delete-Button-PNG-Download-Image.png</iconset>
+                  <normaloff>imagens/Delete-Button-PNG-Download-Image.png</normaloff>imagens/Delete-Button-PNG-Download-Image.png</iconset>
                 </property>
                 <property name="iconSize">
                  <size>
@@ -4202,7 +4214,7 @@ QPushButton:hover {
                 </property>
                 <property name="icon">
                  <iconset>
-                  <normaloff>../../../../.designer/backup/imagens/014upload2_99941.png</normaloff>../../../../.designer/backup/imagens/014upload2_99941.png</iconset>
+                  <normaloff>imagens/014upload2_99941.png</normaloff>imagens/014upload2_99941.png</iconset>
                 </property>
                 <property name="iconSize">
                  <size>
@@ -4254,7 +4266,7 @@ QPushButton:hover {
                 </property>
                 <property name="icon">
                  <iconset>
-                  <normaloff>../../../../.designer/backup/imagens/icons8-remover-imagem-16.png</normaloff>../../../../.designer/backup/imagens/icons8-remover-imagem-16.png</iconset>
+                  <normaloff>imagens/icons8-remover-imagem-16.png</normaloff>imagens/icons8-remover-imagem-16.png</iconset>
                 </property>
                 <property name="iconSize">
                  <size>
@@ -4306,7 +4318,7 @@ QPushButton:hover {
                 </property>
                 <property name="icon">
                  <iconset>
-                  <normaloff>../../../../.designer/backup/imagens/confirmacao.png</normaloff>../../../../.designer/backup/imagens/confirmacao.png</iconset>
+                  <normaloff>imagens/confirmacao.png</normaloff>imagens/confirmacao.png</iconset>
                 </property>
                 <property name="iconSize">
                  <size>
@@ -4358,7 +4370,7 @@ QPushButton:hover {
                 </property>
                 <property name="icon">
                  <iconset>
-                  <normaloff>../../../../.designer/backup/imagens/74472.png</normaloff>../../../../.designer/backup/imagens/74472.png</iconset>
+                  <normaloff>imagens/74472.png</normaloff>imagens/74472.png</iconset>
                 </property>
                 <property name="iconSize">
                  <size>
@@ -5991,7 +6003,7 @@ QLineEdit::placeholderText {
                   </size>
                  </property>
                  <property name="frameShape">
-                  <enum>QFrame::Box</enum>
+                  <enum>QFrame::NoFrame</enum>
                  </property>
                  <property name="frameShadow">
                   <enum>QFrame::Raised</enum>
@@ -6522,7 +6534,7 @@ QLineEdit::placeholderText {
                   </size>
                  </property>
                  <property name="frameShape">
-                  <enum>QFrame::Box</enum>
+                  <enum>QFrame::NoFrame</enum>
                  </property>
                  <property name="frameShadow">
                   <enum>QFrame::Raised</enum>
@@ -7097,7 +7109,7 @@ QTableWidget::item:selected {
               </size>
              </property>
              <property name="frameShape">
-              <enum>QFrame::Box</enum>
+              <enum>QFrame::NoFrame</enum>
              </property>
              <property name="frameShadow">
               <enum>QFrame::Raised</enum>
@@ -7503,7 +7515,7 @@ QTableWidget::item:selected {
               </size>
              </property>
              <property name="frameShape">
-              <enum>QFrame::Box</enum>
+              <enum>QFrame::NoFrame</enum>
              </property>
              <property name="frameShadow">
               <enum>QFrame::Raised</enum>

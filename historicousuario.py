@@ -258,19 +258,55 @@ class Pagina_Usuarios(QWidget):
             pass
         else:
             # Cria a mensagem de aviso com o checkbox
-            msg_aviso = QMessageBox(self)
-            msg_aviso.setIcon(QMessageBox.Warning)  # Ícone de aviso
-            msg_aviso.setWindowTitle("Aviso de Saída Irreversível")  # Título da janela
-            msg_aviso.setText("A função de saída de usuário é irreversível.\n\nUsuários removidos não poderão ser restaurados.")  # Texto do aviso
-            msg_aviso.setStandardButtons(QMessageBox.Ok)  # Botão Ok
+            msg_aviso_irreversivel = QMessageBox(self)
+            msg_aviso_irreversivel.setIcon(QMessageBox.Warning)  # Ícone de aviso
+            msg_aviso_irreversivel.setWindowTitle("Aviso de Saída Irreversível")  # Título da janela
+            msg_aviso_irreversivel.setText("A função de saída de usuário é irreversível.\n\nUsuários removidos não poderão ser restaurados.")  # Texto do aviso
+            msg_aviso_irreversivel.setStandardButtons(QMessageBox.Ok)  # Botão Ok
+            msg_aviso_irreversivel.setStyleSheet("""
+                QMessageBox {
+                    background-color: qlineargradient(
+                        x1:0, y1:0, x2:0, y2:1,
+                        stop:0 #FFD54F,   /* amarelo */
+                        stop:1 #8D6E63    /* marrom */
+                    );
+                    color: black;  /* cor do texto */
+                    font: bold 11pt "Segoe UI";
+                }
+
+                QMessageBox QLabel {
+                    background: transparent;                             
+                    color: black;
+                }
+
+                QMessageBox QPushButton {
+                    background-color: #6D4C41;
+                    color: white;
+                    border-radius: 6px;
+                    padding: 4px 12px;
+                }
+
+                QMessageBox QPushButton:hover {
+                    background-color: #8D6E63;
+                }
+
+                QMessageBox QPushButton:pressed {
+                    background-color: #5D4037;
+                }
+                QMessageBox QCheckBox{
+                    background: transparent;
+                    color: black;
+                }
+            """)
+
 
             # Adiciona o checkbox à caixa de mensagem
             checkbox = QCheckBox("Não mostrar esta mensagem novamente")
-            msg_aviso.setCheckBox(checkbox)
+            msg_aviso_irreversivel.setCheckBox(checkbox)
 
 
             # Exibe a mensagem de aviso
-            msg_aviso.exec()
+            msg_aviso_irreversivel.exec()
 
             # Verifica se o usuário marcou a opção para não mostrar novamente
             if checkbox.isChecked():

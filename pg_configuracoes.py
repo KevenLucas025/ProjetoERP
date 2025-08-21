@@ -457,14 +457,11 @@ class Pagina_Configuracoes(QWidget):
                 background-color: #005079;
                 color: #ffffff;
             }
-            #paginas_sistemas {
-                background-color: #005079;
-                color: #ffffff;
+            QPushButton#btn_opcoes_navegacao{
+                background: transparent;
+                qproperty-icon: url("imagens/54206.png");
             }
-            QStackedWidget {
-                background-color: #005079;
-                color: #ffffff;
-            }
+
             QPushButton#botao_lupa,
             QPushButton#botao_lupa {
                 qproperty-icon: url("imagens/botão_lupa.png");
@@ -480,6 +477,7 @@ class Pagina_Configuracoes(QWidget):
                 background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */
                 border: 4px solid transparent;
             }
+            
 
             QPushButton:hover{
                 background: qlineargradient(x1:0, y1:0, x2:0, y2:1, 
@@ -705,6 +703,7 @@ class Pagina_Configuracoes(QWidget):
                 gridline-color: black;
                 color: black;
                 selection-color: white;
+                border: 2px solid white;
             }
             /* Cabeçalho das colunas */
             QHeaderView::section {

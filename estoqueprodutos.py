@@ -392,13 +392,13 @@ class EstoqueProduto(QWidget):
                 msg_box = QMessageBox()
                 msg_box.setIcon(QMessageBox.Warning)
                 msg_box.setWindowTitle("Estorno inválido")
-                msg_box.setText(f"O produto '{produto}' tem quantidade 0 e não pode ser estornado.")
+                msg_box.setText(None,f"O produto '{produto}' tem quantidade 0 e não pode ser estornado.")
                 msg_box.exec()
                 continue
 
             if int(quantidade) > 1:
                 quantidade_estorno, ok = QInputDialog.getInt(
-                    self.main_window,
+                    None,
                     "Quantidade de Estorno",
                     f"O produto {produto} possui {quantidade} unidades. Quanto deseja estornar? ",
                     minValue=1,
@@ -1626,7 +1626,7 @@ class EstoqueProduto(QWidget):
         selected_rows = self.main_window.table_base.selectionModel().selectedRows()
 
         if not hasattr(self, 'nome_arquivo_excel') or not self.nome_arquivo_excel:
-            QMessageBox.warning(self, "Aviso", "Você precisa carregar uma planilha antes de cadastrar os produtos no sistema.")
+            QMessageBox.warning(None, "Aviso", "Você precisa carregar uma planilha antes de cadastrar os produtos no sistema.")
             return
 
         if not selected_rows:
