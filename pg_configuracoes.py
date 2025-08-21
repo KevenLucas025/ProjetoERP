@@ -501,7 +501,16 @@ class Pagina_Configuracoes(QWidget):
             QPushButton#btn_login:hover {
                 color: black;
             }
-            
+            QPushButton#btn_mostrar_senha{
+                qproperty-icon: url("imagens/829117.png");
+                qproperty-iconSize: 16px 16px;
+                background: transparent;
+                border: none;  
+            }
+            QPushButton#btn_mostrar_senha::pressed{
+                padding-left: 1px;
+                padding-top: 1px;      
+            }
 
             QLineEdit#txt_usuario,
             QLineEdit#txt_senha{
@@ -542,7 +551,18 @@ class Pagina_Configuracoes(QWidget):
             QLineEdit#txt_data_nascimento,
             QLineEdit#txt_rg,
             QLineEdit#txt_cpf,
-            QLineEdit#txt_cnpj {
+            QLineEdit#txt_cnpj,
+            QLineEdit#txt_produto,
+            QLineEdit#txt_quantidade,
+            QLineEdit#txt_valor_produto_3,
+            QLineEdit#txt_desconto_3,
+            QLineEdit#txt_codigo_item,
+            QLineEdit#txt_cliente_3,
+            QLineEdit#txt_descricao_produto_3,
+            QLineEdit#line_edit_massa_usuarios,
+            QLineEdit#line_edit_massa_produtos,
+            QLineEdit#line_excel_usuarios,
+            QLineEdit#line_excel{
                 color: black;
                 background-color: rgb(240, 240, 240); /* Cor de fundo cinza claro */
                 border: 2px solid rgb(50, 150, 250);  /* Borda azul */
@@ -565,8 +585,118 @@ class Pagina_Configuracoes(QWidget):
             QLineEdit#txt_data_nascimento::placeholderText,
             QLineEdit#txt_rg::placeholderText,
             QLineEdit#txt_cpf::placeholderText,
-            QLineEdit#txt_cnpj::placeholderText {
+            QLineEdit#txt_cnpj::placeholderText,
+            QLineEdit#txt_produto::placeholderText,
+            QLineEdit#txt_quantidade::placeholderText,
+            QLineEdit#txt_valor_produto_3::placeholderText,
+            QLineEdit#txt_desconto_3::placeholderText,
+            QLineEdit#txt_codigo_item::placeholderText,
+            QLineEdit#txt_cliente_3::placeholderText,
+            QLineEdit#line_edit_massa_usuarios::placeholderText,
+            QLineEdit#line_edit_massa_produtos::placeholderText,
+            QLineEdit#line_excel_usuarios::placeholderText,
+            QLineEdit#line_excel::placeholderText,
+            QLineEdit#txt_descricao_produto_3::placeholderText {
                 color: black; /* Cor do texto do placeholder */
+            }
+                
+            /* Estilo geral do QDateEdit */
+            QDateEdit {
+                color: black; 
+                background-color: white; 
+                border: 1px solid rgb(50, 150, 250);
+                border-radius: 5px;
+                padding: 2px 5px;
+            }
+
+            /* Remove o fundo das setas */
+            QDateEdit::up-button, 
+            QDateEdit::down-button {
+                background: transparent;
+                border: none;
+            }
+
+            /* Cor de fundo do calendário popup */
+            QDateEdit QCalendarWidget {
+                background-color: white;
+                border: 1px solid rgb(150, 150, 150);
+            }
+
+            /* Dias normais */
+            QDateEdit QCalendarWidget QAbstractItemView:enabled {
+                background-color: white;
+                color: black;
+                selection-background-color: rgb(0, 120, 215); /* Azul no dia selecionado */
+                selection-color: white;
+            }
+            /* Botões de navegação (setas) do calendário */
+            QDateEdit QCalendarWidget QToolButton {
+                background: transparent;   /* tira o fundo azul */
+                color: black;              /* deixa as setas pretas */
+                border: none;              /* sem borda */
+                icon-size: 16px 16px;      /* ajusta o tamanho do ícone */
+                padding: 2px;
+            }
+            QDateEdit QCalendarWidget QToolButton:hover {
+                background: rgb(220, 220, 220); /* cinza claro no hover */
+                border-radius: 4px;
+            }
+            /* Popup de meses/anos do calendário (QMenu) */
+            QDateEdit QCalendarWidget QMenu {
+                background-color: white;
+                border: 1px solid #ccc;
+                color: black;
+            }
+
+            QDateEdit QCalendarWidget QMenu::item {
+                background: transparent;
+                color: black;
+                padding: 6px 16px;
+            }
+
+            QDateEdit QCalendarWidget QMenu::item:selected {
+                background: rgb(0, 120, 215);
+                color: white;
+            }
+            QDateEdit QCalendarWidget QToolButton::menu-indicator {
+                image: none;   /* remove o ícone padrão */
+                width: 0px;    /* remove o espaço reservado */
+            }
+
+
+            
+            QComboBox { 
+                background-color: white; 
+                border:  2px solid rgb(50,150,250); 
+                border-radius: 5px; 
+                color: black; 
+                padding: 5px;
+            }
+            QComboBox QAbstractItemView {
+                background-color: white; 
+                color: black; 
+                border: 1px solid #ccc; 
+                selection-background-color: #e5e5e5; 
+                selection-color: black;
+            }
+            QComboBox QAbstractItemView QScrollBar:vertical {
+                background: #f5f5f5; 
+                width: 12px; 
+                border: none;
+            }
+            QComboBox QAbstractItemView QScrollBar::handle:vertical {
+                background: #cccccc; 
+                min-height: 20px; 
+                border-radius: 5px;
+            }
+            QComboBox QAbstractItemView QScrollBar::add-line:vertical, 
+            QComboBox QAbstractItemView QScrollBar::sub-line:vertical {
+                background: none;
+                height: 0px;  /* Remove os botões de linha (setas de cima e baixo) */
+            }
+            QComboBox QAbstractItemView QScrollBar::add-page:vertical, 
+            QComboBox QAbstractItemView QScrollBar::sub-page:vertical {
+                background: none;
             }
 
 
@@ -667,13 +797,42 @@ class Pagina_Configuracoes(QWidget):
                 color: white;
             }
 
-
-
-
-            #frame_botoes_navegacoes {
-                background-color: #005079;
-                color: #ffffff;
+            QFrame#frame_valor_total_produtos,
+            QFrame#frame_valor_do_desconto,
+            QFrame#frame_valor_com_desconto1,
+            QFrame#frame_quantidade{
+                background-color: rgb(100, 200, 100); 
             }
+            QLabel#label_titulo,
+            QLabel#label_valor{
+                font-size: 14px; color: white; 
+                font-family: Arial; font-weight: normal;
+                background: transparent;
+            }
+            QLabel#label_cadastramento_produtos,
+            QLabel#label_cadastramento,
+            QLabel#label_ativos,
+            QLabel#label_inativos,
+            QLabel#label_estoque,
+            QLabel#label_saida{
+                text-align: center; /* Centraliza o texto horizontalmente */
+                vertical-align: middle; /* Centraliza o texto verticalmente */
+                border: 3px solid white;
+            }
+            QProgressBar {
+                color: black;
+                border: 3px solid rgb(50,150,250);
+                border-radius: 13px;  /* Aumentei o valor para deixar a borda mais redonda */
+                background-color: #f0f0f0;  /* Cor cinza claro */
+            }
+
+            QProgressBar::chunk {
+                background-color: #4682b4;  /* Cor do progresso preenchido (azul) */
+                border-radius: 12px;  /* Faz com que o progresso também tenha bordas arredondadas */
+            }
+
+
+            
         """
         # Iterar sobre todos os widgets da aplicação e aplicar o estilo
         app = QApplication.instance()

@@ -1,6 +1,6 @@
-from PySide6.QtWidgets import QLineEdit, QToolButton,QMessageBox,QVBoxLayout, QLabel, QFrame
-from PySide6.QtGui import QIcon, QPixmap
-from PySide6.QtCore import Qt
+from PySide6.QtWidgets import QLineEdit, QPushButton,QVBoxLayout,QLabel,QFrame
+from PySide6.QtGui import QIcon, QPixmap, QTransform
+from PySide6.QtCore import Qt, QPropertyAnimation, QEasingCurve
 
 
 class MostrarSenha:
@@ -10,37 +10,20 @@ class MostrarSenha:
         self.botao_exibir_senha()
         self.main_window = main_window  
 
-        
-
     def botao_exibir_senha(self):
         # Criar botão dentro do QLineEdit
-        self.btn_mostrar_senha = QToolButton(self.line_edit)
+        self.btn_mostrar_senha = QPushButton(self.line_edit)
         self.btn_mostrar_senha.setCursor(Qt.PointingHandCursor)
-        self.btn_mostrar_senha.setIcon(QIcon(QPixmap("imagens/829117.png")))  # Ícone olho fechado
+        self.btn_mostrar_senha.setContentsMargins(0,0,0,0)
+        self.btn_mostrar_senha.setObjectName("btn_mostrar_senha")
         
         altura = self.line_edit.height() - 4
         self.btn_mostrar_senha.setFixedSize(altura, altura)
         self.btn_mostrar_senha.move(self.line_edit.width() - altura - 2, 2)
 
-        # Salvar estilo original
-        estilo_original = self.line_edit.styleSheet()
-        
-        # Ajustar padding do texto para não ficar atrás do botão
-        self.line_edit.setStyleSheet(estilo_original +"""
-            QLineEdit {                  
-                padding-right: 30px; /* Ajuste o valor conforme necessário */
-                }
-        """)
 
         # Conectar o clique para alternar mostrar/ocultar senha
         self.btn_mostrar_senha.clicked.connect(self.senha_visivel)
-
-        self.btn_mostrar_senha.setStyleSheet("""
-            QToolButton {
-                background-color: transparent;
-                border: none;
-            }                           
-        """)
 
         # Definir modo password inicialmente
         self.line_edit.setEchoMode(QLineEdit.Password)
@@ -53,9 +36,20 @@ class MostrarSenha:
         self.btn_mostrar_senha.setFixedSize(altura, altura)
         self.btn_mostrar_senha.move(self.line_edit.width() - altura - 2, 2)
         
-        # Se tiver um método original de resizeEvent, você pode chamar aqui, se quiser
+    def animar_botao(self):
+        rect = self.btn_mostrar_senha.geometry()
+        # botão “afunda” 2 pixels para baixo e direita
+        self.anim = QPropertyAnimation(self.btn_mostrar_senha, b"geometry")
+        self.anim.setDuration(100)
+        self.anim.setStartValue(rect)
+        self.anim.setKeyValueAt(0.5, rect.adjusted(2, 2, 2, 2))
+        self.anim.setEndValue(rect)
+        self.anim.start()
+
 
     def senha_visivel(self):
+        self.animar_botao()
+        
         if self._show_password:
             self.line_edit.setEchoMode(QLineEdit.Password)
             self.btn_mostrar_senha.setIcon(QIcon(QPixmap("imagens/829117.png")))
@@ -66,17 +60,18 @@ class MostrarSenha:
             self._show_password = True
 
 
+
 def configurar_frame_valores(frame: QFrame, titulo: str, valor_monetario: bool = True) -> QLabel:
     layout = QVBoxLayout(frame)
     layout.setAlignment(Qt.AlignCenter)
 
     label_titulo = QLabel(titulo)
     label_titulo.setAlignment(Qt.AlignCenter)
-    label_titulo.setStyleSheet("font-size: 14px; color: white; font-family: Arial; font-weight: normal;")
+    label_titulo.setObjectName("label_titulo")
 
     label_valor = QLabel("R$ 0,00" if valor_monetario else "")
     label_valor.setAlignment(Qt.AlignCenter)
-    label_valor.setStyleSheet("font-size: 20px; color: white; font-family: Arial; font-weight: bold;")
+    label_valor.setObjectName("label_valor")
 
     layout.addWidget(label_titulo)
     layout.addWidget(label_valor)

@@ -1105,6 +1105,7 @@ class Ui_MainWindow(object):
 "\n"
 "")
         self.line_excel_usuarios.setAlignment(Qt.AlignCenter)
+        self.line_excel_usuarios.setReadOnly(True)
 
         self.verticalLayout_19.addWidget(self.line_excel_usuarios)
 
@@ -1789,6 +1790,8 @@ class Ui_MainWindow(object):
 "    background-color: white; /* Cor de fundo */\n"
 "}\n"
 "")
+        self.dateEdit_3.setReadOnly(False)
+        self.dateEdit_3.setProperty(u"showGroupSeparator", True)
         self.dateEdit_3.setTime(QTime(3, 0, 0))
         self.dateEdit_3.setCalendarPopup(True)
 
@@ -2051,8 +2054,8 @@ class Ui_MainWindow(object):
         self.frame_6.setMaximumSize(QSize(350, 16777215))
         self.frame_6.setFrameShape(QFrame.NoFrame)
         self.frame_6.setFrameShadow(QFrame.Raised)
-        self.verticalLayout_15 = QVBoxLayout(self.frame_6)
-        self.verticalLayout_15.setObjectName(u"verticalLayout_15")
+        self.gridLayout_16 = QGridLayout(self.frame_6)
+        self.gridLayout_16.setObjectName(u"gridLayout_16")
         self.frame_valor_total_produtos = QFrame(self.frame_6)
         self.frame_valor_total_produtos.setObjectName(u"frame_valor_total_produtos")
         sizePolicy.setHeightForWidth(self.frame_valor_total_produtos.sizePolicy().hasHeightForWidth())
@@ -2064,7 +2067,7 @@ class Ui_MainWindow(object):
         self.frame_valor_total_produtos.setFrameShape(QFrame.StyledPanel)
         self.frame_valor_total_produtos.setFrameShadow(QFrame.Raised)
 
-        self.verticalLayout_15.addWidget(self.frame_valor_total_produtos)
+        self.gridLayout_16.addWidget(self.frame_valor_total_produtos, 0, 0, 1, 1)
 
         self.frame_valor_do_desconto = QFrame(self.frame_6)
         self.frame_valor_do_desconto.setObjectName(u"frame_valor_do_desconto")
@@ -2077,7 +2080,7 @@ class Ui_MainWindow(object):
         self.frame_valor_do_desconto.setFrameShape(QFrame.StyledPanel)
         self.frame_valor_do_desconto.setFrameShadow(QFrame.Raised)
 
-        self.verticalLayout_15.addWidget(self.frame_valor_do_desconto)
+        self.gridLayout_16.addWidget(self.frame_valor_do_desconto, 1, 0, 1, 1)
 
         self.frame_valor_com_desconto1 = QFrame(self.frame_6)
         self.frame_valor_com_desconto1.setObjectName(u"frame_valor_com_desconto1")
@@ -2090,7 +2093,7 @@ class Ui_MainWindow(object):
         self.frame_valor_com_desconto1.setFrameShape(QFrame.StyledPanel)
         self.frame_valor_com_desconto1.setFrameShadow(QFrame.Raised)
 
-        self.verticalLayout_15.addWidget(self.frame_valor_com_desconto1)
+        self.gridLayout_16.addWidget(self.frame_valor_com_desconto1, 2, 0, 1, 1)
 
         self.frame_quantidade = QFrame(self.frame_6)
         self.frame_quantidade.setObjectName(u"frame_quantidade")
@@ -2103,7 +2106,7 @@ class Ui_MainWindow(object):
         self.frame_quantidade.setFrameShape(QFrame.StyledPanel)
         self.frame_quantidade.setFrameShadow(QFrame.Raised)
 
-        self.verticalLayout_15.addWidget(self.frame_quantidade)
+        self.gridLayout_16.addWidget(self.frame_quantidade, 3, 0, 1, 1)
 
 
         self.gridLayout_11.addWidget(self.frame_6, 2, 2, 3, 1)
@@ -2228,6 +2231,220 @@ class Ui_MainWindow(object):
 "")
 
         self.gridLayout_27.addWidget(self.label_cadastramento, 0, 1, 1, 1)
+
+        self.frame_20 = QFrame(self.frame_pag_cadastrar_usuario)
+        self.frame_20.setObjectName(u"frame_20")
+        sizePolicy.setHeightForWidth(self.frame_20.sizePolicy().hasHeightForWidth())
+        self.frame_20.setSizePolicy(sizePolicy)
+        self.frame_20.setMaximumSize(QSize(230, 320))
+        self.frame_20.setFrameShape(QFrame.NoFrame)
+        self.frame_20.setFrameShadow(QFrame.Raised)
+        self.verticalLayout_16 = QVBoxLayout(self.frame_20)
+        self.verticalLayout_16.setObjectName(u"verticalLayout_16")
+        self.btn_editar_cadastro = QPushButton(self.frame_20)
+        self.btn_editar_cadastro.setObjectName(u"btn_editar_cadastro")
+        sizePolicy.setHeightForWidth(self.btn_editar_cadastro.sizePolicy().hasHeightForWidth())
+        self.btn_editar_cadastro.setSizePolicy(sizePolicy)
+        self.btn_editar_cadastro.setMinimumSize(QSize(0, 39))
+        self.btn_editar_cadastro.setMaximumSize(QSize(16777215, 39))
+        self.btn_editar_cadastro.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
+        self.btn_editar_cadastro.setStyleSheet(u"QPushButton {\n"
+"    color: rgb(255, 255, 255);\n"
+"    border-radius: 8px;\n"
+"    font-size: 16px;\n"
+"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */\n"
+"    border: 4px solid transparent;\n"
+"}\n"
+"\n"
+"QPushButton:hover {\n"
+"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */\n"
+"    color: black;\n"
+"}")
+        self.btn_editar_cadastro.setIcon(icon1)
+        self.btn_editar_cadastro.setIconSize(QSize(20, 20))
+
+        self.verticalLayout_16.addWidget(self.btn_editar_cadastro)
+
+        self.btn_sair_modo_edicao = QPushButton(self.frame_20)
+        self.btn_sair_modo_edicao.setObjectName(u"btn_sair_modo_edicao")
+        sizePolicy.setHeightForWidth(self.btn_sair_modo_edicao.sizePolicy().hasHeightForWidth())
+        self.btn_sair_modo_edicao.setSizePolicy(sizePolicy)
+        self.btn_sair_modo_edicao.setMinimumSize(QSize(0, 39))
+        self.btn_sair_modo_edicao.setMaximumSize(QSize(16777215, 39))
+        self.btn_sair_modo_edicao.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
+        self.btn_sair_modo_edicao.setStyleSheet(u"QPushButton {\n"
+"    color: rgb(255, 255, 255);\n"
+"    border-radius: 8px;\n"
+"    font-size: 16px;\n"
+"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */\n"
+"    border: 4px solid transparent;\n"
+"}\n"
+"\n"
+"QPushButton:hover {\n"
+"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */\n"
+"    color: black;\n"
+"}")
+        self.btn_sair_modo_edicao.setIcon(icon2)
+        self.btn_sair_modo_edicao.setIconSize(QSize(20, 20))
+
+        self.verticalLayout_16.addWidget(self.btn_sair_modo_edicao)
+
+        self.btn_atualizar_cadastro = QPushButton(self.frame_20)
+        self.btn_atualizar_cadastro.setObjectName(u"btn_atualizar_cadastro")
+        sizePolicy.setHeightForWidth(self.btn_atualizar_cadastro.sizePolicy().hasHeightForWidth())
+        self.btn_atualizar_cadastro.setSizePolicy(sizePolicy)
+        self.btn_atualizar_cadastro.setMinimumSize(QSize(0, 39))
+        self.btn_atualizar_cadastro.setMaximumSize(QSize(16777215, 39))
+        self.btn_atualizar_cadastro.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
+        self.btn_atualizar_cadastro.setStyleSheet(u"QPushButton {\n"
+"    color: rgb(255, 255, 255);\n"
+"    border-radius: 8px;\n"
+"    font-size: 16px;\n"
+"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */\n"
+"    border: 4px solid transparent;\n"
+"}\n"
+"\n"
+"QPushButton:hover {\n"
+"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */\n"
+"    color: black;\n"
+"}")
+        self.btn_atualizar_cadastro.setIcon(icon3)
+        self.btn_atualizar_cadastro.setIconSize(QSize(20, 20))
+
+        self.verticalLayout_16.addWidget(self.btn_atualizar_cadastro)
+
+        self.btn_apagar_cadastro = QPushButton(self.frame_20)
+        self.btn_apagar_cadastro.setObjectName(u"btn_apagar_cadastro")
+        sizePolicy.setHeightForWidth(self.btn_apagar_cadastro.sizePolicy().hasHeightForWidth())
+        self.btn_apagar_cadastro.setSizePolicy(sizePolicy)
+        self.btn_apagar_cadastro.setMinimumSize(QSize(0, 39))
+        self.btn_apagar_cadastro.setMaximumSize(QSize(16777215, 39))
+        self.btn_apagar_cadastro.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
+        self.btn_apagar_cadastro.setStyleSheet(u"QPushButton {\n"
+"    color: rgb(255, 255, 255);\n"
+"    border-radius: 8px;\n"
+"    font-size: 16px;\n"
+"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */\n"
+"    border: 4px solid transparent;\n"
+"}\n"
+"\n"
+"QPushButton:hover {\n"
+"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */\n"
+"    color: black;\n"
+"}")
+        self.btn_apagar_cadastro.setIcon(icon4)
+        self.btn_apagar_cadastro.setIconSize(QSize(20, 31))
+
+        self.verticalLayout_16.addWidget(self.btn_apagar_cadastro)
+
+        self.btn_carregar_imagem_4 = QPushButton(self.frame_20)
+        self.btn_carregar_imagem_4.setObjectName(u"btn_carregar_imagem_4")
+        sizePolicy.setHeightForWidth(self.btn_carregar_imagem_4.sizePolicy().hasHeightForWidth())
+        self.btn_carregar_imagem_4.setSizePolicy(sizePolicy)
+        self.btn_carregar_imagem_4.setMinimumSize(QSize(0, 39))
+        self.btn_carregar_imagem_4.setMaximumSize(QSize(16777215, 39))
+        self.btn_carregar_imagem_4.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
+        self.btn_carregar_imagem_4.setStyleSheet(u"QPushButton {\n"
+"    color: rgb(255, 255, 255);\n"
+"    border-radius: 8px;\n"
+"    font-size: 16px;\n"
+"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */\n"
+"    border: 4px solid transparent;\n"
+"}\n"
+"\n"
+"QPushButton:hover {\n"
+"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */\n"
+"    color: black;\n"
+"}")
+        self.btn_carregar_imagem_4.setIcon(icon6)
+        self.btn_carregar_imagem_4.setIconSize(QSize(20, 20))
+
+        self.verticalLayout_16.addWidget(self.btn_carregar_imagem_4)
+
+        self.btn_remover_imagem_usuario = QPushButton(self.frame_20)
+        self.btn_remover_imagem_usuario.setObjectName(u"btn_remover_imagem_usuario")
+        sizePolicy.setHeightForWidth(self.btn_remover_imagem_usuario.sizePolicy().hasHeightForWidth())
+        self.btn_remover_imagem_usuario.setSizePolicy(sizePolicy)
+        self.btn_remover_imagem_usuario.setMinimumSize(QSize(0, 39))
+        self.btn_remover_imagem_usuario.setMaximumSize(QSize(16777215, 39))
+        self.btn_remover_imagem_usuario.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
+        self.btn_remover_imagem_usuario.setStyleSheet(u"QPushButton {\n"
+"    color: rgb(255, 255, 255);\n"
+"    border-radius: 8px;\n"
+"    font-size: 16px;\n"
+"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */\n"
+"    border: 4px solid transparent;\n"
+"}\n"
+"\n"
+"QPushButton:hover {\n"
+"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */\n"
+"    color: black;\n"
+"}")
+        self.btn_remover_imagem_usuario.setIcon(icon5)
+        self.btn_remover_imagem_usuario.setIconSize(QSize(24, 31))
+
+        self.verticalLayout_16.addWidget(self.btn_remover_imagem_usuario)
+
+        self.btn_fazer_cadastro = QPushButton(self.frame_20)
+        self.btn_fazer_cadastro.setObjectName(u"btn_fazer_cadastro")
+        sizePolicy.setHeightForWidth(self.btn_fazer_cadastro.sizePolicy().hasHeightForWidth())
+        self.btn_fazer_cadastro.setSizePolicy(sizePolicy)
+        self.btn_fazer_cadastro.setMinimumSize(QSize(0, 39))
+        self.btn_fazer_cadastro.setMaximumSize(QSize(16777215, 39))
+        self.btn_fazer_cadastro.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
+        self.btn_fazer_cadastro.setStyleSheet(u"QPushButton {\n"
+"    color: rgb(255, 255, 255);\n"
+"    border-radius: 8px;\n"
+"    font-size: 16px;\n"
+"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */\n"
+"    border: 4px solid transparent;\n"
+"}\n"
+"\n"
+"QPushButton:hover {\n"
+"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */\n"
+"    color: black;\n"
+"}")
+        self.btn_fazer_cadastro.setIcon(icon7)
+        self.btn_fazer_cadastro.setIconSize(QSize(20, 20))
+
+        self.verticalLayout_16.addWidget(self.btn_fazer_cadastro)
+
+        self.btn_ver_usuario = QPushButton(self.frame_20)
+        self.btn_ver_usuario.setObjectName(u"btn_ver_usuario")
+        sizePolicy.setHeightForWidth(self.btn_ver_usuario.sizePolicy().hasHeightForWidth())
+        self.btn_ver_usuario.setSizePolicy(sizePolicy)
+        self.btn_ver_usuario.setMinimumSize(QSize(0, 39))
+        self.btn_ver_usuario.setMaximumSize(QSize(16777215, 39))
+        self.btn_ver_usuario.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
+        self.btn_ver_usuario.setStyleSheet(u"QPushButton {\n"
+"    color: rgb(255, 255, 255);\n"
+"    border-radius: 8px;\n"
+"    font-size: 16px;\n"
+"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */\n"
+"    border: 4px solid transparent;\n"
+"}\n"
+"\n"
+"QPushButton:hover {\n"
+"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */\n"
+"    color: black;\n"
+"}")
+        self.btn_ver_usuario.setIcon(icon8)
+        self.btn_ver_usuario.setIconSize(QSize(20, 28))
+
+        self.verticalLayout_16.addWidget(self.btn_ver_usuario)
+
+
+        self.gridLayout_27.addWidget(self.frame_20, 1, 1, 1, 1)
+
+        self.frame_imagem_cadastro = QFrame(self.frame_pag_cadastrar_usuario)
+        self.frame_imagem_cadastro.setObjectName(u"frame_imagem_cadastro")
+        sizePolicy.setHeightForWidth(self.frame_imagem_cadastro.sizePolicy().hasHeightForWidth())
+        self.frame_imagem_cadastro.setSizePolicy(sizePolicy)
+        self.frame_imagem_cadastro.setMaximumSize(QSize(300, 300))
+        self.frame_imagem_cadastro.setFrameShape(QFrame.NoFrame)
+        self.frame_imagem_cadastro.setFrameShadow(QFrame.Raised)
+
+        self.gridLayout_27.addWidget(self.frame_imagem_cadastro, 1, 2, 1, 1)
 
         self.frame_3 = QFrame(self.frame_pag_cadastrar_usuario)
         self.frame_3.setObjectName(u"frame_3")
@@ -3156,220 +3373,6 @@ class Ui_MainWindow(object):
 
         self.gridLayout_27.addWidget(self.frame_3, 1, 0, 1, 1)
 
-        self.frame_20 = QFrame(self.frame_pag_cadastrar_usuario)
-        self.frame_20.setObjectName(u"frame_20")
-        sizePolicy.setHeightForWidth(self.frame_20.sizePolicy().hasHeightForWidth())
-        self.frame_20.setSizePolicy(sizePolicy)
-        self.frame_20.setMaximumSize(QSize(230, 320))
-        self.frame_20.setFrameShape(QFrame.NoFrame)
-        self.frame_20.setFrameShadow(QFrame.Raised)
-        self.verticalLayout_16 = QVBoxLayout(self.frame_20)
-        self.verticalLayout_16.setObjectName(u"verticalLayout_16")
-        self.btn_editar_cadastro = QPushButton(self.frame_20)
-        self.btn_editar_cadastro.setObjectName(u"btn_editar_cadastro")
-        sizePolicy.setHeightForWidth(self.btn_editar_cadastro.sizePolicy().hasHeightForWidth())
-        self.btn_editar_cadastro.setSizePolicy(sizePolicy)
-        self.btn_editar_cadastro.setMinimumSize(QSize(0, 39))
-        self.btn_editar_cadastro.setMaximumSize(QSize(16777215, 39))
-        self.btn_editar_cadastro.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
-        self.btn_editar_cadastro.setStyleSheet(u"QPushButton {\n"
-"    color: rgb(255, 255, 255);\n"
-"    border-radius: 8px;\n"
-"    font-size: 16px;\n"
-"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */\n"
-"    border: 4px solid transparent;\n"
-"}\n"
-"\n"
-"QPushButton:hover {\n"
-"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */\n"
-"    color: black;\n"
-"}")
-        self.btn_editar_cadastro.setIcon(icon1)
-        self.btn_editar_cadastro.setIconSize(QSize(20, 20))
-
-        self.verticalLayout_16.addWidget(self.btn_editar_cadastro)
-
-        self.btn_sair_modo_edicao = QPushButton(self.frame_20)
-        self.btn_sair_modo_edicao.setObjectName(u"btn_sair_modo_edicao")
-        sizePolicy.setHeightForWidth(self.btn_sair_modo_edicao.sizePolicy().hasHeightForWidth())
-        self.btn_sair_modo_edicao.setSizePolicy(sizePolicy)
-        self.btn_sair_modo_edicao.setMinimumSize(QSize(0, 39))
-        self.btn_sair_modo_edicao.setMaximumSize(QSize(16777215, 39))
-        self.btn_sair_modo_edicao.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
-        self.btn_sair_modo_edicao.setStyleSheet(u"QPushButton {\n"
-"    color: rgb(255, 255, 255);\n"
-"    border-radius: 8px;\n"
-"    font-size: 16px;\n"
-"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */\n"
-"    border: 4px solid transparent;\n"
-"}\n"
-"\n"
-"QPushButton:hover {\n"
-"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */\n"
-"    color: black;\n"
-"}")
-        self.btn_sair_modo_edicao.setIcon(icon2)
-        self.btn_sair_modo_edicao.setIconSize(QSize(20, 20))
-
-        self.verticalLayout_16.addWidget(self.btn_sair_modo_edicao)
-
-        self.btn_atualizar_cadastro = QPushButton(self.frame_20)
-        self.btn_atualizar_cadastro.setObjectName(u"btn_atualizar_cadastro")
-        sizePolicy.setHeightForWidth(self.btn_atualizar_cadastro.sizePolicy().hasHeightForWidth())
-        self.btn_atualizar_cadastro.setSizePolicy(sizePolicy)
-        self.btn_atualizar_cadastro.setMinimumSize(QSize(0, 39))
-        self.btn_atualizar_cadastro.setMaximumSize(QSize(16777215, 39))
-        self.btn_atualizar_cadastro.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
-        self.btn_atualizar_cadastro.setStyleSheet(u"QPushButton {\n"
-"    color: rgb(255, 255, 255);\n"
-"    border-radius: 8px;\n"
-"    font-size: 16px;\n"
-"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */\n"
-"    border: 4px solid transparent;\n"
-"}\n"
-"\n"
-"QPushButton:hover {\n"
-"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */\n"
-"    color: black;\n"
-"}")
-        self.btn_atualizar_cadastro.setIcon(icon3)
-        self.btn_atualizar_cadastro.setIconSize(QSize(20, 20))
-
-        self.verticalLayout_16.addWidget(self.btn_atualizar_cadastro)
-
-        self.btn_apagar_cadastro = QPushButton(self.frame_20)
-        self.btn_apagar_cadastro.setObjectName(u"btn_apagar_cadastro")
-        sizePolicy.setHeightForWidth(self.btn_apagar_cadastro.sizePolicy().hasHeightForWidth())
-        self.btn_apagar_cadastro.setSizePolicy(sizePolicy)
-        self.btn_apagar_cadastro.setMinimumSize(QSize(0, 39))
-        self.btn_apagar_cadastro.setMaximumSize(QSize(16777215, 39))
-        self.btn_apagar_cadastro.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
-        self.btn_apagar_cadastro.setStyleSheet(u"QPushButton {\n"
-"    color: rgb(255, 255, 255);\n"
-"    border-radius: 8px;\n"
-"    font-size: 16px;\n"
-"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */\n"
-"    border: 4px solid transparent;\n"
-"}\n"
-"\n"
-"QPushButton:hover {\n"
-"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */\n"
-"    color: black;\n"
-"}")
-        self.btn_apagar_cadastro.setIcon(icon4)
-        self.btn_apagar_cadastro.setIconSize(QSize(20, 31))
-
-        self.verticalLayout_16.addWidget(self.btn_apagar_cadastro)
-
-        self.btn_carregar_imagem_4 = QPushButton(self.frame_20)
-        self.btn_carregar_imagem_4.setObjectName(u"btn_carregar_imagem_4")
-        sizePolicy.setHeightForWidth(self.btn_carregar_imagem_4.sizePolicy().hasHeightForWidth())
-        self.btn_carregar_imagem_4.setSizePolicy(sizePolicy)
-        self.btn_carregar_imagem_4.setMinimumSize(QSize(0, 39))
-        self.btn_carregar_imagem_4.setMaximumSize(QSize(16777215, 39))
-        self.btn_carregar_imagem_4.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
-        self.btn_carregar_imagem_4.setStyleSheet(u"QPushButton {\n"
-"    color: rgb(255, 255, 255);\n"
-"    border-radius: 8px;\n"
-"    font-size: 16px;\n"
-"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */\n"
-"    border: 4px solid transparent;\n"
-"}\n"
-"\n"
-"QPushButton:hover {\n"
-"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */\n"
-"    color: black;\n"
-"}")
-        self.btn_carregar_imagem_4.setIcon(icon6)
-        self.btn_carregar_imagem_4.setIconSize(QSize(20, 20))
-
-        self.verticalLayout_16.addWidget(self.btn_carregar_imagem_4)
-
-        self.btn_remover_imagem_usuario = QPushButton(self.frame_20)
-        self.btn_remover_imagem_usuario.setObjectName(u"btn_remover_imagem_usuario")
-        sizePolicy.setHeightForWidth(self.btn_remover_imagem_usuario.sizePolicy().hasHeightForWidth())
-        self.btn_remover_imagem_usuario.setSizePolicy(sizePolicy)
-        self.btn_remover_imagem_usuario.setMinimumSize(QSize(0, 39))
-        self.btn_remover_imagem_usuario.setMaximumSize(QSize(16777215, 39))
-        self.btn_remover_imagem_usuario.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
-        self.btn_remover_imagem_usuario.setStyleSheet(u"QPushButton {\n"
-"    color: rgb(255, 255, 255);\n"
-"    border-radius: 8px;\n"
-"    font-size: 16px;\n"
-"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */\n"
-"    border: 4px solid transparent;\n"
-"}\n"
-"\n"
-"QPushButton:hover {\n"
-"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */\n"
-"    color: black;\n"
-"}")
-        self.btn_remover_imagem_usuario.setIcon(icon5)
-        self.btn_remover_imagem_usuario.setIconSize(QSize(24, 31))
-
-        self.verticalLayout_16.addWidget(self.btn_remover_imagem_usuario)
-
-        self.btn_fazer_cadastro = QPushButton(self.frame_20)
-        self.btn_fazer_cadastro.setObjectName(u"btn_fazer_cadastro")
-        sizePolicy.setHeightForWidth(self.btn_fazer_cadastro.sizePolicy().hasHeightForWidth())
-        self.btn_fazer_cadastro.setSizePolicy(sizePolicy)
-        self.btn_fazer_cadastro.setMinimumSize(QSize(0, 39))
-        self.btn_fazer_cadastro.setMaximumSize(QSize(16777215, 39))
-        self.btn_fazer_cadastro.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
-        self.btn_fazer_cadastro.setStyleSheet(u"QPushButton {\n"
-"    color: rgb(255, 255, 255);\n"
-"    border-radius: 8px;\n"
-"    font-size: 16px;\n"
-"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */\n"
-"    border: 4px solid transparent;\n"
-"}\n"
-"\n"
-"QPushButton:hover {\n"
-"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */\n"
-"    color: black;\n"
-"}")
-        self.btn_fazer_cadastro.setIcon(icon7)
-        self.btn_fazer_cadastro.setIconSize(QSize(20, 20))
-
-        self.verticalLayout_16.addWidget(self.btn_fazer_cadastro)
-
-        self.btn_ver_usuario = QPushButton(self.frame_20)
-        self.btn_ver_usuario.setObjectName(u"btn_ver_usuario")
-        sizePolicy.setHeightForWidth(self.btn_ver_usuario.sizePolicy().hasHeightForWidth())
-        self.btn_ver_usuario.setSizePolicy(sizePolicy)
-        self.btn_ver_usuario.setMinimumSize(QSize(0, 39))
-        self.btn_ver_usuario.setMaximumSize(QSize(16777215, 39))
-        self.btn_ver_usuario.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
-        self.btn_ver_usuario.setStyleSheet(u"QPushButton {\n"
-"    color: rgb(255, 255, 255);\n"
-"    border-radius: 8px;\n"
-"    font-size: 16px;\n"
-"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */\n"
-"    border: 4px solid transparent;\n"
-"}\n"
-"\n"
-"QPushButton:hover {\n"
-"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */\n"
-"    color: black;\n"
-"}")
-        self.btn_ver_usuario.setIcon(icon8)
-        self.btn_ver_usuario.setIconSize(QSize(20, 28))
-
-        self.verticalLayout_16.addWidget(self.btn_ver_usuario)
-
-
-        self.gridLayout_27.addWidget(self.frame_20, 1, 1, 1, 1)
-
-        self.frame_imagem_cadastro = QFrame(self.frame_pag_cadastrar_usuario)
-        self.frame_imagem_cadastro.setObjectName(u"frame_imagem_cadastro")
-        sizePolicy.setHeightForWidth(self.frame_imagem_cadastro.sizePolicy().hasHeightForWidth())
-        self.frame_imagem_cadastro.setSizePolicy(sizePolicy)
-        self.frame_imagem_cadastro.setMaximumSize(QSize(300, 300))
-        self.frame_imagem_cadastro.setFrameShape(QFrame.NoFrame)
-        self.frame_imagem_cadastro.setFrameShadow(QFrame.Raised)
-
-        self.gridLayout_27.addWidget(self.frame_imagem_cadastro, 1, 2, 1, 1)
-
 
         self.gridLayout_13.addWidget(self.frame_pag_cadastrar_usuario, 0, 0, 1, 1)
 
@@ -4166,6 +4169,7 @@ class Ui_MainWindow(object):
 "\n"
 "")
         self.line_edit_massa_produtos.setAlignment(Qt.AlignCenter)
+        self.line_edit_massa_produtos.setReadOnly(True)
 
         self.verticalLayout_22.addWidget(self.line_edit_massa_produtos)
 
@@ -4357,6 +4361,7 @@ class Ui_MainWindow(object):
 "\n"
 "")
         self.line_edit_massa_usuarios.setAlignment(Qt.AlignCenter)
+        self.line_edit_massa_usuarios.setReadOnly(True)
 
         self.gridLayout_26.addWidget(self.line_edit_massa_usuarios, 4, 0, 1, 1)
 
@@ -4751,6 +4756,14 @@ class Ui_MainWindow(object):
         self.btn_ver_clientes_juridicos.setText(QCoreApplication.translate("MainWindow", u"VER CLIENTES", None))
         self.btn_ver_item.setText(QCoreApplication.translate("MainWindow", u"VER PRODUTOS", None))
         self.label_cadastramento.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p align=\"center\"><span style=\" font-size:14pt; font-weight:600; font-style:italic;\">CADASTRAMENTO DE USU\u00c1RIO</span></p></body></html>", None))
+        self.btn_editar_cadastro.setText(QCoreApplication.translate("MainWindow", u"EDITAR", None))
+        self.btn_sair_modo_edicao.setText(QCoreApplication.translate("MainWindow", u"SAIR DO MODO EDI\u00c7\u00c3O", None))
+        self.btn_atualizar_cadastro.setText(QCoreApplication.translate("MainWindow", u"ATUALIZAR", None))
+        self.btn_apagar_cadastro.setText(QCoreApplication.translate("MainWindow", u"APAGAR", None))
+        self.btn_carregar_imagem_4.setText(QCoreApplication.translate("MainWindow", u"CARREGAR IMAGEM", None))
+        self.btn_remover_imagem_usuario.setText(QCoreApplication.translate("MainWindow", u"REMOVER IMAGEM", None))
+        self.btn_fazer_cadastro.setText(QCoreApplication.translate("MainWindow", u"FAZER CADASTRO", None))
+        self.btn_ver_usuario.setText(QCoreApplication.translate("MainWindow", u"VER USU\u00c1RIO", None))
         self.label_confirmar_senha_3.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p><span style=\" font-weight:600;\">Bairro</span></p></body></html>", None))
         self.label_confirmar_senha_4.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p><span style=\" font-weight:600;\">CNPJ</span></p></body></html>", None))
         self.label_complemento.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p><span style=\" font-weight:600;\">Complemento</span></p></body></html>", None))
@@ -4805,14 +4818,6 @@ class Ui_MainWindow(object):
         self.perfil_estado.setItemText(27, QCoreApplication.translate("MainWindow", u"TO", None))
 
         self.label_confirmar_senha.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p><span style=\" font-weight:600;\">Confirmar Senha</span></p></body></html>", None))
-        self.btn_editar_cadastro.setText(QCoreApplication.translate("MainWindow", u"EDITAR", None))
-        self.btn_sair_modo_edicao.setText(QCoreApplication.translate("MainWindow", u"SAIR DO MODO EDI\u00c7\u00c3O", None))
-        self.btn_atualizar_cadastro.setText(QCoreApplication.translate("MainWindow", u"ATUALIZAR", None))
-        self.btn_apagar_cadastro.setText(QCoreApplication.translate("MainWindow", u"APAGAR", None))
-        self.btn_carregar_imagem_4.setText(QCoreApplication.translate("MainWindow", u"CARREGAR IMAGEM", None))
-        self.btn_remover_imagem_usuario.setText(QCoreApplication.translate("MainWindow", u"REMOVER IMAGEM", None))
-        self.btn_fazer_cadastro.setText(QCoreApplication.translate("MainWindow", u"FAZER CADASTRO", None))
-        self.btn_ver_usuario.setText(QCoreApplication.translate("MainWindow", u"VER USU\u00c1RIO", None))
         self.btn_adicionar_cliente_juridico.setText(QCoreApplication.translate("MainWindow", u"Criar cliente", None))
         self.btn_editar_clientes.setText(QCoreApplication.translate("MainWindow", u"Editar cliente", None))
         self.btn_excluir_clientes.setText(QCoreApplication.translate("MainWindow", u"Excluir cliente", None))
