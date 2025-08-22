@@ -457,6 +457,8 @@ class Pagina_Configuracoes(QWidget):
                 background-color: #005079;
                 color: #ffffff;
             }
+            
+
             QPushButton#btn_opcoes_navegacao{
                 background: transparent;
                 qproperty-icon: url("imagens/54206.png");
@@ -829,8 +831,60 @@ class Pagina_Configuracoes(QWidget):
                 background-color: #4682b4;  /* Cor do progresso preenchido (azul) */
                 border-radius: 12px;  /* Faz com que o progresso também tenha bordas arredondadas */
             }
+            QToolButton#btn_classe_atalhos{
+                font-size: 14px;
+            
+            }
+            QToolButton#btn_classe_tema,
+            QToolButton#btn_classe_atualizacoes,
+            QToolButton#btn_classe_hora,
+            QToolButton#btn_classe_fonte,
+            QToolButton#btn_classe_notificacoes{
+                color: rgb(255, 255, 255);
+                border-radius: 8px;
+                font-size: 16px;
+                width: 120px;
+                background: qlineargradient(
+                    x1:0, y1:0, x2:0, y2:1,
+                    stop:0 rgb(50, 150, 250),
+                    stop:1 rgb(100, 200, 255)
+                ); /* Gradiente de azul claro para azul mais claro */
+                border: 4px solid transparent;
+            }
 
+            QToolButton#btn_classe_tema:hover,
+            QToolButton#btn_classe_atualizacoes:hover,
+            QToolButton#btn_classe_hora:hover,
+            QToolButton#btn_classe_fonte:hover,
+            QToolButton#btn_classe_notificacoes:hover,
+            QToolButton#btn_classe_atalhos:hover {
+                background: qlineargradient(
+                    x1:0, y1:0, x2:0, y2:1,
+                    stop:0 rgb(100, 180, 255),
+                    stop:1 rgb(150, 220, 255)
+                ); /* Gradiente de azul mais claro para azul ainda mais claro */
+                color: black;
+            }
+            QMenu#menu_classe_tema,
+            QMenu#menu_classe_atualizacoes,
+            QMenu#menu_classe_hora,
+            QMenu#menu_classe_fonte,
+            QMenu#menu_classe_notificacoes,
+            QMenu#menu_classe_atalhos {
+                background-color: white;
+                color: black;
+                border: 1px solid gray;
+            }
 
+            QMenu#menu_classe_tema::item:selected,
+            QMenu#menu_classe_atualizacoes::item:selected,
+            QMenu#menu_classe_hora::item:selected,
+            QMenu#menu_classe_fonte::item:selected,
+            QMenu#menu_classe_notificacoes::item:selected,
+            QMenu#menu_classe_atalhos::item:selected {
+                background-color: #0078d7;
+                color: white;
+            }
             
         """
         # Iterar sobre todos os widgets da aplicação e aplicar o estilo
@@ -862,6 +916,7 @@ class Pagina_Configuracoes(QWidget):
         btn_tema.setPopupMode(QToolButton.InstantPopup)
         btn_tema.setToolButtonStyle(Qt.ToolButtonTextOnly)
         btn_tema.setObjectName("btn_classe_tema")  # identifica para o modo clássico
+        btn_tema.setFixedHeight(38)
         menu_tema = QMenu(self.janela_config)
         menu_tema.addAction("Modo escuro", self.aplicar_modo_escuro)
         menu_tema.addAction("Modo claro", self.aplicar_modo_claro)
@@ -875,6 +930,7 @@ class Pagina_Configuracoes(QWidget):
         btn_atualizacoes.setPopupMode(QToolButton.InstantPopup)
         btn_atualizacoes.setToolButtonStyle(Qt.ToolButtonTextOnly)
         btn_atualizacoes.setObjectName("btn_classe_atualizacoes")
+        btn_atualizacoes.setFixedHeight(38)
         menu_atualizacoes = QMenu(self.janela_config)
         menu_atualizacoes.addAction("Definir atualizações automaticamente")
         menu_atualizacoes.addAction("Não definir atualizações automáticas")
@@ -889,6 +945,7 @@ class Pagina_Configuracoes(QWidget):
         btn_hora.setPopupMode(QToolButton.InstantPopup)
         btn_hora.setToolButtonStyle(Qt.ToolButtonTextOnly)
         btn_hora.setObjectName("btn_classe_hora")
+        btn_hora.setFixedHeight(38)
         menu_hora = QMenu(self.janela_config)
         menu_hora.addAction("Exibir os segundos")
         menu_hora.addAction("Exibir relógio analógico")
@@ -907,6 +964,7 @@ class Pagina_Configuracoes(QWidget):
         btn_fonte.setPopupMode(QToolButton.InstantPopup)
         btn_fonte.setToolButtonStyle(Qt.ToolButtonTextOnly)
         btn_fonte.setObjectName("btn_classe_fonte")
+        btn_fonte.setFixedHeight(38)
         menu_fonte = QMenu(self.janela_config)
         for i in range(8, 37, 2):
             menu_fonte.addAction(str(i))
@@ -919,6 +977,7 @@ class Pagina_Configuracoes(QWidget):
         btn_notificacoes.setPopupMode(QToolButton.InstantPopup)
         btn_notificacoes.setToolButtonStyle(Qt.ToolButtonTextOnly)
         btn_notificacoes.setObjectName("btn_classe_notificacoes")
+        btn_notificacoes.setFixedHeight(38)
         menu_notificacoes = QMenu(self.janela_config)
         menu_notificacoes.addAction("Definir notificação de boas-vindas")
         btn_notificacoes.setMenu(menu_notificacoes)
@@ -930,6 +989,7 @@ class Pagina_Configuracoes(QWidget):
         btn_atalhos.setPopupMode(QToolButton.InstantPopup)
         btn_atalhos.setToolButtonStyle(Qt.ToolButtonTextOnly)
         btn_atalhos.setObjectName("btn_classe_atalhos")
+        btn_atalhos.setFixedHeight(38)
         menu_atalhos = QMenu(self.janela_config)
         menu_atalhos.addAction("Mapear teclas de atalhos")
         menu_atalhos.addAction("Abrir painel de atalhos")
