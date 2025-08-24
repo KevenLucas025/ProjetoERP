@@ -111,7 +111,7 @@ class Pagina_Configuracoes(QWidget):
 
         # Estilo geral dos botões (modo escuro)
         style_sheet = """
-        QMainWindow, QStackedWidget, QWidget, QFrame, QLabel {
+        QMainWindow, QStackedWidget, QWidget, QLabel {
             background-color: #202124;
             color: #ffffff;
         }
@@ -123,12 +123,12 @@ class Pagina_Configuracoes(QWidget):
                 selection-background-color: #7a7a7a;
                 selection-color: white;
             }
-
+            /* Coluna dos cabeçalhos */
             QHeaderView::section {
                 background-color: #ffffff;
                 color: black;
                 border: 1px solid #aaaaaa;
-                padding: 4px;
+                padding: 1px;
             }
 
             /* QTabWidget headers brancos */
@@ -141,33 +141,46 @@ class Pagina_Configuracoes(QWidget):
                 background-color: #ffffff; /* fundo branco */
                 color: black;
                 padding: 6px 12px;
-                border: 1px solid #aaaaaa;
+                border: 1px solid #888888;
                 border-bottom: none;
             }
 
             QTabBar::tab:selected {
-                background-color: #eeeeee; /* branco levemente mais escuro */
+                background-color: #d6d6d6;   /* cinza médio para destacar */
+                color: black;                /* texto bem visível */
+                font-weight: bold;           /* destaque no selecionado */
             }
 
             QTabBar::tab:hover {
                 background-color: #f5f5f5;
             }
+            QPushButton#botao_lupa,
+            QPushButton#botao_lupa {
+                qproperty-icon: url("imagens/botao_lupa_branco.png");
+                qproperty-iconSize: 16px 16px;
+                background: transparent;
+                border: none;
+            }
 
-        /* Botões gerais */
-        QPushButton {
-            border-radius: 5px;
-            color: #ffffff;
-        }
+            /* Botões gerais */
+            QPushButton {
+                border-radius: 8px;
+                background: qlineargradient(
+                    x1:0, y1:0, x2:0, y2:1,
+                    stop:0 rgb(60, 60, 60),   /* topo */
+                    stop:1 rgb(100, 100, 100) /* base */
+                );
+            }
 
-        QPushButton:hover {
-            background-color: #444444;
-        }
+            QPushButton:hover {
+                background-color: #444444;
+            }
 
-        QPushButton:pressed {
-            background-color: #555555;
-            border: 2px solid #888888;
-        }
-         /* Botões de menu principal */
+            QPushButton:pressed {
+                background-color: #555555;
+                border: 2px solid #888888;
+            }
+            /* Botões de menu principal */
             QPushButton#btn_home,
             QPushButton#btn_verificar_estoque,
             QPushButton#btn_verificar_usuarios,
@@ -211,33 +224,32 @@ class Pagina_Configuracoes(QWidget):
                 );
             }
 
+            /* Botão específico btn_opcoes_navegacao */
+            QPushButton#btn_opcoes_navegacao {
+                background: qlineargradient(
+                    x1:0, y1:0, x2:0, y2:1,
+                    stop:0 rgb(60, 60, 60),
+                    stop:1 rgb(100, 100, 100)
+                );
+                color: #ffffff;
+            }
 
-        /* Botão específico btn_opcoes_navegacao */
-        QPushButton#btn_opcoes_navegacao {
-            background: qlineargradient(
-                x1:0, y1:0, x2:0, y2:1,
-                stop:0 rgb(60, 60, 60),
-                stop:1 rgb(100, 100, 100)
-            );
-            color: #ffffff;
-        }
+            QPushButton#btn_opcoes_navegacao:hover {
+                background: qlineargradient(
+                    x1:0, y1:0, x2:0, y2:1,
+                    stop:0 rgb(90, 90, 90),
+                    stop:1 rgb(130, 130, 130)
+                );
+            }
 
-        QPushButton#btn_opcoes_navegacao:hover {
-            background: qlineargradient(
-                x1:0, y1:0, x2:0, y2:1,
-                stop:0 rgb(90, 90, 90),
-                stop:1 rgb(130, 130, 130)
-            );
-        }
-
-        QPushButton#btn_opcoes_navegacao:pressed {
-            background: qlineargradient(
-                x1:0, y1:0, x2:0, y2:1,
-                stop:0 rgb(50, 50, 50),
-                stop:1 rgb(80, 80, 80)
-            );
-        }
-        /* Botão de login */
+            QPushButton#btn_opcoes_navegacao:pressed {
+                background: qlineargradient(
+                    x1:0, y1:0, x2:0, y2:1,
+                    stop:0 rgb(50, 50, 50),
+                    stop:1 rgb(80, 80, 80)
+                );
+            }
+            /* Botão de login */
             QPushButton#btn_login {
                 border-radius: 8px;
                 width: 120px;   /* largura mínima */
@@ -302,6 +314,66 @@ class Pagina_Configuracoes(QWidget):
                 background-color: #2e2e2e;      /* fundo escuro */
                 color: #ffffff;                 /* texto branco */
             }
+            /* Placeholder */
+            QLineEdit#txt_usuario::placeholder,
+            QLineEdit#txt_senha::placeholder {
+                color: #bbbbbb;  /* placeholder cinza claro */
+            }
+            QLineEdit{
+                color: #ffffff; /* texto branco */
+                background-color: #2a2b2e; /* fundo escuro */
+                border: 2px solid #ffffff; /* branco */
+                border-radius: 6px; /* cantos arredondados */
+                padding: 3px;
+                selection-background-color: #3296fa; /* fundo da seleção */
+                selection-color: #ffffff; /* texto da seleção */
+            }
+
+            QLineEdit::placeholderText {
+                color: #bbbbbb; /* placeholder em cinza claro */
+            }
+
+            QComboBox#perfil_estado,
+            QComboBox#perfil_usuarios{
+                color: #f0f0f0;                 /* Texto claro */
+                border: 2px solid #ffffff;      /* Borda branca */
+                border-radius: 6px;
+                padding: 4px 10px;
+                background-color: #2b2b2b; /* Fundo do combobox */
+            
+            }
+            QComboBox#perfil_estado QAbstractItemView::item:hover,
+            QComboBox#perfil_usuarios QAbstractItemView::item:hover {
+                background-color: #444444; /* Cor de fundo quando o mouse passa por cima */
+                color: #f0f0f0;            /* Cor do texto quando o mouse passa por cima */
+            }
+            QComboBox#perfil_estado QAbstractItemView::item:selected,
+            QComboBox#perfil_usuarios QAbstractItemView::item:selected {
+                background-color: #696969; /* Fundo do item selecionado */
+                color: #f0f0f0;            /* Texto do item selecionado */
+            }
+
+
+            /* Scroll dentro do menu suspenso */
+            QComboBox#perfil_estado QAbstractItemView::item,
+            QComboBox#perfil_usuarios QAbstractItemView::item {
+                height: 24px; /* Altura de cada item */
+            }
+
+            /* Barra de scroll */
+            QComboBox#perfil_estado QScrollBar:vertical,
+            QComboBox#perfil_usuarios QScrollBar:vertical {
+                background: #2b2b2b;
+                width: 12px;
+                margin: 0px 0px 0px 0px;
+                border-radius: 6px;
+            }
+
+            QComboBox#perfil_estado QScrollBar::handle:vertical,
+            QComboBox#perfil_usuarios QScrollBar::handle:vertical {
+                background: #555555;
+                border-radius: 6px;
+            }
 
             QToolButton{
                 border-radius: 8px;
@@ -321,54 +393,35 @@ class Pagina_Configuracoes(QWidget):
                 stop:1 rgb(130, 130, 130)
             );
             }
-            QToolButton:pressed, {
+            QToolButton:pressed {
                 background: qlineargradient(
                     x1:0, y1:0, x2:0, y2:1,
                     stop:0 rgb(50, 50, 50),
                     stop:1 rgb(80, 80, 80)
                 );
             }
-
-            /* Placeholder */
-            QLineEdit#txt_usuario::placeholder,
-            QLineEdit#txt_senha::placeholder {
-                color: #bbbbbb;  /* placeholder cinza claro */
+            /* Item em hover/selecionado */
+            QToolButton#btn_mais_opcoes QMenu::item:selected {
+                background-color: #696969;
+                color: white;
             }
 
             /* Frames com valores */
-            #frame_valor_total_produtos,
-            #frame_valor_do_desconto,
-            #frame_valor_desconto,
-            #frame_quantidade {
-                background-color: #2a2b2e;
+            QFrame#frame_valor_total_produtos,
+            QFrame#frame_valor_do_desconto,
+            QFrame#frame_valor_desconto,
+            QFrame#frame_quantidade {
+                background: qlineargradient(
+                    x1:0, y1:0, x2:0, y2:1,
+                    stop:0 #3a3b3e,   /* topo mais claro */
+                    stop:1 #2a2b2e    /* base mais escura */
+                );
                 color: #ffffff;
-                border: 2px solid #ffffff;
+                border: 1px solid #444444;
                 border-radius: 10px;
             }
 
-            /* Labels dentro dos frames */
-            #label_valor_total_produtos,
-            #label_valor_do_desconto,
-            #label_valor_desconto,
-            #label_quantidade_2 {
-                background-color: #2a2b2e;
-                color: #ffffff;
-            }
-
-            /* Bordas especiais */
-            #label_8,
-            #label_cadastramento_produtos,
-            #label_10,
-            #label_base,
-            #label_saida {
-                border: 4px solid #ffffff;
-            }
-
-            /* Página de estoque */
-            #frame_pag_estoque {
-                background-color: #202124;
-                color: #ffffff;
-            }
+            
 
         """
         
@@ -457,7 +510,28 @@ class Pagina_Configuracoes(QWidget):
                 background-color: #005079;
                 color: #ffffff;
             }
-            
+            QMenu {
+                background-color: white;
+                color: black;
+                border: 1px solid gray;
+            }
+
+            QMenu::item {
+                background-color: white;
+                color: black;
+            }
+
+            QMenu::item:selected {
+                background-color: #0078d7; /* Azul para item selecionado */
+                color: white;
+            }
+
+            QMenu::separator {
+                height: 1px;
+                background: gray;
+                margin: 5px 10px;
+            }
+
 
             QPushButton#btn_opcoes_navegacao{
                 background: transparent;
@@ -699,8 +773,6 @@ class Pagina_Configuracoes(QWidget):
                 background: none;
             }
 
-
-
             QTableView{
                 gridline-color: black;
                 color: black;
@@ -915,6 +987,7 @@ class Pagina_Configuracoes(QWidget):
         btn_tema.setText("Tema do Sistema")
         btn_tema.setPopupMode(QToolButton.InstantPopup)
         btn_tema.setToolButtonStyle(Qt.ToolButtonTextOnly)
+        btn_tema.setCursor(Qt.PointingHandCursor)
         btn_tema.setObjectName("btn_classe_tema")  # identifica para o modo clássico
         btn_tema.setFixedHeight(38)
         menu_tema = QMenu(self.janela_config)
@@ -929,6 +1002,7 @@ class Pagina_Configuracoes(QWidget):
         btn_atualizacoes.setText("Atualizações")
         btn_atualizacoes.setPopupMode(QToolButton.InstantPopup)
         btn_atualizacoes.setToolButtonStyle(Qt.ToolButtonTextOnly)
+        btn_atualizacoes.setCursor(Qt.PointingHandCursor)
         btn_atualizacoes.setObjectName("btn_classe_atualizacoes")
         btn_atualizacoes.setFixedHeight(38)
         menu_atualizacoes = QMenu(self.janela_config)
@@ -944,6 +1018,7 @@ class Pagina_Configuracoes(QWidget):
         btn_hora.setText("Hora e Data")
         btn_hora.setPopupMode(QToolButton.InstantPopup)
         btn_hora.setToolButtonStyle(Qt.ToolButtonTextOnly)
+        btn_hora.setCursor(Qt.PointingHandCursor)
         btn_hora.setObjectName("btn_classe_hora")
         btn_hora.setFixedHeight(38)
         menu_hora = QMenu(self.janela_config)
@@ -963,6 +1038,7 @@ class Pagina_Configuracoes(QWidget):
         btn_fonte.setText("Fonte")
         btn_fonte.setPopupMode(QToolButton.InstantPopup)
         btn_fonte.setToolButtonStyle(Qt.ToolButtonTextOnly)
+        btn_fonte.setCursor(Qt.PointingHandCursor)
         btn_fonte.setObjectName("btn_classe_fonte")
         btn_fonte.setFixedHeight(38)
         menu_fonte = QMenu(self.janela_config)
@@ -976,6 +1052,7 @@ class Pagina_Configuracoes(QWidget):
         btn_notificacoes.setText("Notificações")
         btn_notificacoes.setPopupMode(QToolButton.InstantPopup)
         btn_notificacoes.setToolButtonStyle(Qt.ToolButtonTextOnly)
+        btn_notificacoes.setCursor(Qt.PointingHandCursor)
         btn_notificacoes.setObjectName("btn_classe_notificacoes")
         btn_notificacoes.setFixedHeight(38)
         menu_notificacoes = QMenu(self.janela_config)
@@ -988,6 +1065,7 @@ class Pagina_Configuracoes(QWidget):
         btn_atalhos.setText("Atalhos do Teclado")
         btn_atalhos.setPopupMode(QToolButton.InstantPopup)
         btn_atalhos.setToolButtonStyle(Qt.ToolButtonTextOnly)
+        btn_atalhos.setCursor(Qt.PointingHandCursor)
         btn_atalhos.setObjectName("btn_classe_atalhos")
         btn_atalhos.setFixedHeight(38)
         menu_atalhos = QMenu(self.janela_config)

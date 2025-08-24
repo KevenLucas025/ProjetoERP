@@ -3405,6 +3405,26 @@ class Ui_MainWindow(object):
         self.tab_clientes.setObjectName(u"tab_clientes")
         self.gridLayout_22 = QGridLayout(self.tab_clientes)
         self.gridLayout_22.setObjectName(u"gridLayout_22")
+        self.line_clientes = QLineEdit(self.tab_clientes)
+        self.line_clientes.setObjectName(u"line_clientes")
+        sizePolicy.setHeightForWidth(self.line_clientes.sizePolicy().hasHeightForWidth())
+        self.line_clientes.setSizePolicy(sizePolicy)
+        self.line_clientes.setMaximumSize(QSize(260, 30))
+        self.line_clientes.setStyleSheet(u"QLineEdit {\n"
+"	color: black;\n"
+"    background-color: rgb(240, 240, 240); /* Cor de fundo cinza claro */\n"
+"    border: 2px solid rgb(50, 150,250); /* Borda azul */\n"
+"    border-radius: 6px; /* Cantos arredondados */\n"
+"    padding: 3px; /* Espa\u00e7amento interno */\n"
+"}\n"
+"\n"
+"QLineEdit::placeholderText {\n"
+"    color: black; /* Cor do texto do placeholder */\n"
+"}\n"
+"")
+
+        self.gridLayout_22.addWidget(self.line_clientes, 0, 0, 1, 1)
+
         self.frame_7 = QFrame(self.tab_clientes)
         self.frame_7.setObjectName(u"frame_7")
         sizePolicy.setHeightForWidth(self.frame_7.sizePolicy().hasHeightForWidth())
@@ -3420,6 +3440,7 @@ class Ui_MainWindow(object):
         self.btn_adicionar_cliente_juridico.setObjectName(u"btn_adicionar_cliente_juridico")
         sizePolicy.setHeightForWidth(self.btn_adicionar_cliente_juridico.sizePolicy().hasHeightForWidth())
         self.btn_adicionar_cliente_juridico.setSizePolicy(sizePolicy)
+        self.btn_adicionar_cliente_juridico.setMaximumSize(QSize(16777215, 16777215))
         self.btn_adicionar_cliente_juridico.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.btn_adicionar_cliente_juridico.setStyleSheet(u"QPushButton {\n"
 "    color: rgb(255, 255, 255);\n"
@@ -3440,7 +3461,7 @@ class Ui_MainWindow(object):
         self.btn_editar_clientes.setObjectName(u"btn_editar_clientes")
         sizePolicy.setHeightForWidth(self.btn_editar_clientes.sizePolicy().hasHeightForWidth())
         self.btn_editar_clientes.setSizePolicy(sizePolicy)
-        self.btn_editar_clientes.setMaximumSize(QSize(145, 30))
+        self.btn_editar_clientes.setMaximumSize(QSize(16777215, 16777215))
         self.btn_editar_clientes.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.btn_editar_clientes.setAutoFillBackground(False)
         self.btn_editar_clientes.setStyleSheet(u"QPushButton {\n"
@@ -3462,7 +3483,7 @@ class Ui_MainWindow(object):
         self.btn_excluir_clientes.setObjectName(u"btn_excluir_clientes")
         sizePolicy.setHeightForWidth(self.btn_excluir_clientes.sizePolicy().hasHeightForWidth())
         self.btn_excluir_clientes.setSizePolicy(sizePolicy)
-        self.btn_excluir_clientes.setMaximumSize(QSize(145, 30))
+        self.btn_excluir_clientes.setMaximumSize(QSize(16777215, 16777215))
         self.btn_excluir_clientes.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.btn_excluir_clientes.setAutoFillBackground(False)
         self.btn_excluir_clientes.setStyleSheet(u"QPushButton {\n"
@@ -3484,7 +3505,7 @@ class Ui_MainWindow(object):
         self.btn_gerar_relatorio_clientes.setObjectName(u"btn_gerar_relatorio_clientes")
         sizePolicy.setHeightForWidth(self.btn_gerar_relatorio_clientes.sizePolicy().hasHeightForWidth())
         self.btn_gerar_relatorio_clientes.setSizePolicy(sizePolicy)
-        self.btn_gerar_relatorio_clientes.setMaximumSize(QSize(145, 27))
+        self.btn_gerar_relatorio_clientes.setMaximumSize(QSize(16777215, 16777215))
         self.btn_gerar_relatorio_clientes.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.btn_gerar_relatorio_clientes.setAutoFillBackground(False)
         self.btn_gerar_relatorio_clientes.setStyleSheet(u"QPushButton {\n"
@@ -3506,7 +3527,7 @@ class Ui_MainWindow(object):
         self.btn_marcar_como_clientes.setObjectName(u"btn_marcar_como_clientes")
         sizePolicy.setHeightForWidth(self.btn_marcar_como_clientes.sizePolicy().hasHeightForWidth())
         self.btn_marcar_como_clientes.setSizePolicy(sizePolicy)
-        self.btn_marcar_como_clientes.setMaximumSize(QSize(145, 27))
+        self.btn_marcar_como_clientes.setMaximumSize(QSize(16777215, 16777215))
         self.btn_marcar_como_clientes.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.btn_marcar_como_clientes.setAutoFillBackground(False)
         self.btn_marcar_como_clientes.setStyleSheet(u"QPushButton {\n"
@@ -3528,7 +3549,7 @@ class Ui_MainWindow(object):
         self.btn_historico_clientes.setObjectName(u"btn_historico_clientes")
         sizePolicy.setHeightForWidth(self.btn_historico_clientes.sizePolicy().hasHeightForWidth())
         self.btn_historico_clientes.setSizePolicy(sizePolicy)
-        self.btn_historico_clientes.setMaximumSize(QSize(145, 27))
+        self.btn_historico_clientes.setMaximumSize(QSize(16777215, 16777215))
         self.btn_historico_clientes.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.btn_historico_clientes.setAutoFillBackground(False)
         self.btn_historico_clientes.setStyleSheet(u"QPushButton {\n"
@@ -3551,26 +3572,6 @@ class Ui_MainWindow(object):
 
 
         self.gridLayout_22.addWidget(self.frame_7, 0, 1, 1, 1)
-
-        self.line_clientes = QLineEdit(self.tab_clientes)
-        self.line_clientes.setObjectName(u"line_clientes")
-        sizePolicy.setHeightForWidth(self.line_clientes.sizePolicy().hasHeightForWidth())
-        self.line_clientes.setSizePolicy(sizePolicy)
-        self.line_clientes.setMaximumSize(QSize(260, 30))
-        self.line_clientes.setStyleSheet(u"QLineEdit {\n"
-"	color: black;\n"
-"    background-color: rgb(240, 240, 240); /* Cor de fundo cinza claro */\n"
-"    border: 2px solid rgb(50, 150,250); /* Borda azul */\n"
-"    border-radius: 6px; /* Cantos arredondados */\n"
-"    padding: 3px; /* Espa\u00e7amento interno */\n"
-"}\n"
-"\n"
-"QLineEdit::placeholderText {\n"
-"    color: black; /* Cor do texto do placeholder */\n"
-"}\n"
-"")
-
-        self.gridLayout_22.addWidget(self.line_clientes, 0, 0, 1, 1)
 
         self.table_clientes_juridicos = QTableWidget(self.tab_clientes)
         if (self.table_clientes_juridicos.columnCount() < 24):
@@ -3753,7 +3754,7 @@ class Ui_MainWindow(object):
         self.btn_editar_clientes_fisicos.setObjectName(u"btn_editar_clientes_fisicos")
         sizePolicy.setHeightForWidth(self.btn_editar_clientes_fisicos.sizePolicy().hasHeightForWidth())
         self.btn_editar_clientes_fisicos.setSizePolicy(sizePolicy)
-        self.btn_editar_clientes_fisicos.setMaximumSize(QSize(145, 30))
+        self.btn_editar_clientes_fisicos.setMaximumSize(QSize(16777215, 16777215))
         self.btn_editar_clientes_fisicos.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.btn_editar_clientes_fisicos.setAutoFillBackground(False)
         self.btn_editar_clientes_fisicos.setStyleSheet(u"QPushButton {\n"
@@ -3775,7 +3776,7 @@ class Ui_MainWindow(object):
         self.btn_excluir_clientes_fisicos.setObjectName(u"btn_excluir_clientes_fisicos")
         sizePolicy.setHeightForWidth(self.btn_excluir_clientes_fisicos.sizePolicy().hasHeightForWidth())
         self.btn_excluir_clientes_fisicos.setSizePolicy(sizePolicy)
-        self.btn_excluir_clientes_fisicos.setMaximumSize(QSize(145, 30))
+        self.btn_excluir_clientes_fisicos.setMaximumSize(QSize(16777215, 16777215))
         self.btn_excluir_clientes_fisicos.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.btn_excluir_clientes_fisicos.setAutoFillBackground(False)
         self.btn_excluir_clientes_fisicos.setStyleSheet(u"QPushButton {\n"
@@ -3797,7 +3798,7 @@ class Ui_MainWindow(object):
         self.btn_gerar_relatorio_clientes_fisicos.setObjectName(u"btn_gerar_relatorio_clientes_fisicos")
         sizePolicy.setHeightForWidth(self.btn_gerar_relatorio_clientes_fisicos.sizePolicy().hasHeightForWidth())
         self.btn_gerar_relatorio_clientes_fisicos.setSizePolicy(sizePolicy)
-        self.btn_gerar_relatorio_clientes_fisicos.setMaximumSize(QSize(145, 27))
+        self.btn_gerar_relatorio_clientes_fisicos.setMaximumSize(QSize(16777215, 16777215))
         self.btn_gerar_relatorio_clientes_fisicos.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.btn_gerar_relatorio_clientes_fisicos.setAutoFillBackground(False)
         self.btn_gerar_relatorio_clientes_fisicos.setStyleSheet(u"QPushButton {\n"
@@ -3819,7 +3820,7 @@ class Ui_MainWindow(object):
         self.btn_marcar_como_clientes_fisicos.setObjectName(u"btn_marcar_como_clientes_fisicos")
         sizePolicy.setHeightForWidth(self.btn_marcar_como_clientes_fisicos.sizePolicy().hasHeightForWidth())
         self.btn_marcar_como_clientes_fisicos.setSizePolicy(sizePolicy)
-        self.btn_marcar_como_clientes_fisicos.setMaximumSize(QSize(145, 27))
+        self.btn_marcar_como_clientes_fisicos.setMaximumSize(QSize(16777215, 16777215))
         self.btn_marcar_como_clientes_fisicos.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.btn_marcar_como_clientes_fisicos.setAutoFillBackground(False)
         self.btn_marcar_como_clientes_fisicos.setStyleSheet(u"QPushButton {\n"
@@ -3841,7 +3842,7 @@ class Ui_MainWindow(object):
         self.btn_historico_clientes_fisicos.setObjectName(u"btn_historico_clientes_fisicos")
         sizePolicy.setHeightForWidth(self.btn_historico_clientes_fisicos.sizePolicy().hasHeightForWidth())
         self.btn_historico_clientes_fisicos.setSizePolicy(sizePolicy)
-        self.btn_historico_clientes_fisicos.setMaximumSize(QSize(145, 27))
+        self.btn_historico_clientes_fisicos.setMaximumSize(QSize(16777215, 16777215))
         self.btn_historico_clientes_fisicos.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.btn_historico_clientes_fisicos.setAutoFillBackground(False)
         self.btn_historico_clientes_fisicos.setStyleSheet(u"QPushButton {\n"
@@ -4821,13 +4822,13 @@ class Ui_MainWindow(object):
         self.perfil_estado.setItemText(27, QCoreApplication.translate("MainWindow", u"TO", None))
 
         self.label_confirmar_senha.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p><span style=\" font-weight:600;\">Confirmar Senha</span></p></body></html>", None))
+        self.line_clientes.setPlaceholderText(QCoreApplication.translate("MainWindow", u"Pesquisar", None))
         self.btn_adicionar_cliente_juridico.setText(QCoreApplication.translate("MainWindow", u"Criar cliente", None))
         self.btn_editar_clientes.setText(QCoreApplication.translate("MainWindow", u"Editar cliente", None))
         self.btn_excluir_clientes.setText(QCoreApplication.translate("MainWindow", u"Excluir cliente", None))
         self.btn_gerar_relatorio_clientes.setText(QCoreApplication.translate("MainWindow", u"Gerar Relat\u00f3rio", None))
         self.btn_marcar_como_clientes.setText(QCoreApplication.translate("MainWindow", u"Marcar como", None))
         self.btn_historico_clientes.setText(QCoreApplication.translate("MainWindow", u"Hist\u00f3rico", None))
-        self.line_clientes.setPlaceholderText(QCoreApplication.translate("MainWindow", u"Pesquisar", None))
         ___qtablewidgetitem70 = self.table_clientes_juridicos.horizontalHeaderItem(0)
         ___qtablewidgetitem70.setText(QCoreApplication.translate("MainWindow", u"Nome do Cliente", None));
         ___qtablewidgetitem71 = self.table_clientes_juridicos.horizontalHeaderItem(1)
