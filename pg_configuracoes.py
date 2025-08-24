@@ -136,6 +136,60 @@ class Pagina_Configuracoes(QWidget):
                 border: 1px solid #444444;
                 background-color: #202124;
             }
+            /* Estiliza a barra de rolagem horizontal */
+            QTableView QScrollBar:horizontal {
+                border: none;
+                background-color: #ffffff;
+                height: 12px;
+                margin: 0px;
+                border-radius: 5px;
+            }
+
+            /* Estiliza a barra de rolagem vertical */
+            QTableView QScrollBar:vertical {
+                border: none;
+                background-color: #ffffff;  
+                width: 12px;
+                margin: 0px;
+                border-radius: 5px;
+            }
+            
+
+            /* Parte que você arrasta */
+            QTableView QScrollBar::handle:vertical {
+                background-color: #777777;  /* cinza médio */
+                min-height: 22px;
+                border-radius: 5px;
+            }
+
+            QTableView QScrollBar::handle:horizontal {
+                background-color: #777777;
+                min-width: 22px;
+                border-radius: 5px;
+            }
+
+            /* Groove horizontal */
+            QTableView QScrollBar::groove:horizontal {
+                background-color: #3a3a3a;  /* faixa mais clara */
+                border-radius: 5px;
+                height: 15px;
+                margin: 0px 10px 0px 10px;
+            }
+
+            /* Groove vertical */
+            QTableView QScrollBar::groove:vertical {
+                background-color: #3a3a3a;
+                border-radius: 5px;
+                width: 25px;
+                margin: 10px 0px 10px 10px;
+            }
+
+            /* Estilo para item selecionado */
+            QTableWidget::item:selected {
+                background-color: #555555;  /* cinza de seleção */
+                color: white;
+            }
+            
 
             QTabBar::tab {
                 background-color: #ffffff; /* fundo branco */
@@ -420,7 +474,22 @@ class Pagina_Configuracoes(QWidget):
                 border: 1px solid #444444;
                 border-radius: 10px;
             }
-
+            QLabel#label_titulo,
+            QLabel#label_valor{
+                font-size: 14px; color: white; 
+                font-family: Arial; font-weight: normal;
+                background: transparent;
+            }
+            QLabel#label_cadastramento_produtos,
+            QLabel#label_cadastramento,
+            QLabel#label_ativos,
+            QLabel#label_inativos,
+            QLabel#label_estoque,
+            QLabel#label_saida{
+                text-align: center; /* Centraliza o texto horizontalmente */
+                vertical-align: middle; /* Centraliza o texto verticalmente */
+                border: 3px solid white;
+            }
             
 
         """

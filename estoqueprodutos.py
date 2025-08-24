@@ -52,7 +52,7 @@ class EstoqueProduto(QWidget):
         self.btn_abrir_planilha_massa_produtos = btn_abrir_planilha_massa_produtos
         self.progress_massa_produtos = progress_massa_produtos
         self.line_edit_massa_produtos = line_edit_massa_produtos
-        
+        self.table_base.horizontalHeader().setSectionResizeMode(QHeaderView.Interactive)
 
 
         self.btn_gerar_pdf.clicked.connect(self.exibir_pdf)
@@ -69,7 +69,7 @@ class EstoqueProduto(QWidget):
         self.btn_abrir_planilha_massa_produtos.clicked.connect(self.abrir_planilha_em_massa_produtos)
         self.main_window.table_base.viewport().installEventFilter(self)
         self.main_window.table_saida.viewport().installEventFilter(self)
-
+        
         
 
 
@@ -112,9 +112,12 @@ class EstoqueProduto(QWidget):
             self.table_base.insertRow(row_index)  # Inserir nova linha
             for col_index, data in enumerate(row_data):
                 item = self.criar_item(str(data))  # Usando a função auxiliar
-                
                 # Adicionando o item à QTableWidget
                 self.table_base.setItem(row_index, col_index, item)
+
+        # Ajusta largura de todas as colunas ao conteúdo
+        self.table_base.resizeColumnsToContents()
+        self.table_base.resizeRowsToContents()
 
 
 

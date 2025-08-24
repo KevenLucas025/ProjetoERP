@@ -433,7 +433,7 @@ QToolButton:hover {
               <string/>
              </property>
              <property name="pixmap">
-              <pixmap>../../../../Pictures/ProjetoERP/Projeto ERP/Projeto ERP/54206.cur</pixmap>
+              <pixmap>../../../../../../Pictures/ProjetoERP/Projeto ERP/Projeto ERP/54206.cur</pixmap>
              </property>
              <property name="scaledContents">
               <bool>true</bool>
@@ -557,97 +557,153 @@ QToolButton:hover {
                <string>Base</string>
               </attribute>
               <layout class="QGridLayout" name="gridLayout_7">
-               <item row="0" column="0" colspan="8">
-                <layout class="QVBoxLayout" name="verticalLayout">
-                 <item>
-                  <widget class="QPushButton" name="btn_abrir_planilha">
-                   <property name="cursor">
-                    <cursorShape>PointingHandCursor</cursorShape>
-                   </property>
-                   <property name="styleSheet">
-                    <string notr="true">QPushButton {
-    color: rgb(255, 255, 255);
-    border-radius: 8px;
-    font-size: 16px;
-    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */
-    border: 4px solid transparent;
-}
-
-QPushButton:hover {
-    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */
+               <item row="4" column="0" colspan="8">
+                <widget class="QTableWidget" name="table_saida">
+                 <property name="styleSheet">
+                  <string notr="true">/* Estiliza apenas o QTableView com objectName &quot;table_ativos&quot; */
+QTableView {
+    gridline-color: black;
+    border: 2px solid white;
     color: black;
+    selection-color: white;
+}
+
+/* Estiliza a barra de rolagem horizontal */
+QTableView QScrollBar:horizontal {
+    border: none;
+    background-color: rgb(255, 255, 255);
+    height: 15px;
+    margin: 0px 10px 0px 10px;
+}
+
+/* Estiliza a barra de rolagem vertical */
+QTableView QScrollBar:vertical {
+    border: none;
+    background-color: rgb(255, 255, 255); /* branco */
+    width: 35px;
+    margin: 0px 10px 0px 10px;
+}
+
+/* Parte que você arrasta */
+QTableView QScrollBar::handle:vertical {
+    background-color: rgb(180, 180,150);  /* cinza */
+    min-height: 30px;
+	border-radius: 5px;
+}
+
+QTableView QScrollBar::handle:horizontal{
+	background-color: rgb(180,180,150);
+	min-height: 30px;
+	border-radius: 5px;
+}
+
+/* Remove os botões */
+QTableView QScrollBar::add-line:vertical,
+QTableView QScrollBar::sub-line:vertical {
+    height: 0px;
+    width: 0px;
+    border: none;
+    background: none;
+}
+
+QTableView QScrollBar::groove:horizontal{
+	background-color: rgb(100,240,240);
+	border-radius: 2px;
+	height: 15px;
+	margin: 0px 10px 0px 10px;
+}
+
+/* Estilo para item selecionado */
+QTableWidget::item:selected {
+    background-color: rgb(0, 120, 215);
+    color: white;
 }</string>
-                   </property>
-                   <property name="text">
-                    <string>Abrir Planilha</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QLineEdit" name="line_excel">
-                   <property name="styleSheet">
-                    <string notr="true">QLineEdit {
-	color: black;
-    background-color: rgb(240, 240, 240); /* Cor de fundo cinza claro */
-    border: 2px solid rgb(50, 150,250); /* Borda azul */
-    border-radius: 12px; /* Cantos arredondados */
-    padding: 3px; /* Espaçamento interno */
-}
-
-QLineEdit::placeholderText {
-    color: black; /* Cor do texto do placeholder */
-}
-
-</string>
-                   </property>
-                   <property name="alignment">
-                    <set>Qt::AlignCenter</set>
-                   </property>
-                   <property name="readOnly">
-                    <bool>true</bool>
-                   </property>
-                   <property name="placeholderText">
-                    <string>Arquivo em excel aparecerá aqui</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QProgressBar" name="progress_excel">
-                   <property name="sizePolicy">
-                    <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-                     <horstretch>0</horstretch>
-                     <verstretch>0</verstretch>
-                    </sizepolicy>
-                   </property>
-                   <property name="styleSheet">
-                    <string notr="true">QProgressBar {
-	color: black;
-    border: 3px solid rgb(50,150,250);
-    border-radius: 13px;  /* Aumentei o valor para deixar a borda mais redonda */
-    background-color: #f0f0f0;  /* Cor cinza claro */
-}
-
-QProgressBar::chunk {
-    background-color: #4682b4;  /* Cor do progresso preenchido (azul) */
-    border-radius: 12px;  /* Faz com que o progresso também tenha bordas arredondadas */
-}
-</string>
-                   </property>
-                   <property name="value">
-                    <number>0</number>
-                   </property>
-                   <property name="alignment">
-                    <set>Qt::AlignCenter</set>
-                   </property>
-                   <property name="textVisible">
-                    <bool>true</bool>
-                   </property>
-                   <property name="invertedAppearance">
-                    <bool>false</bool>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
+                 </property>
+                 <property name="frameShadow">
+                  <enum>QFrame::Sunken</enum>
+                 </property>
+                 <property name="editTriggers">
+                  <set>QAbstractItemView::NoEditTriggers</set>
+                 </property>
+                 <property name="selectionMode">
+                  <enum>QAbstractItemView::ExtendedSelection</enum>
+                 </property>
+                 <property name="selectionBehavior">
+                  <enum>QAbstractItemView::SelectRows</enum>
+                 </property>
+                 <property name="cornerButtonEnabled">
+                  <bool>false</bool>
+                 </property>
+                 <attribute name="horizontalHeaderCascadingSectionResizes">
+                  <bool>false</bool>
+                 </attribute>
+                 <attribute name="horizontalHeaderDefaultSectionSize">
+                  <number>112</number>
+                 </attribute>
+                 <attribute name="verticalHeaderCascadingSectionResizes">
+                  <bool>false</bool>
+                 </attribute>
+                 <column>
+                  <property name="text">
+                   <string>Produto</string>
+                  </property>
+                 </column>
+                 <column>
+                  <property name="text">
+                   <string>Quantidade</string>
+                  </property>
+                 </column>
+                 <column>
+                  <property name="text">
+                   <string>Valor do Produto</string>
+                  </property>
+                 </column>
+                 <column>
+                  <property name="text">
+                   <string>Desconto</string>
+                  </property>
+                 </column>
+                 <column>
+                  <property name="text">
+                   <string>Valor Total</string>
+                  </property>
+                 </column>
+                 <column>
+                  <property name="text">
+                   <string>Data da Saída</string>
+                  </property>
+                 </column>
+                 <column>
+                  <property name="text">
+                   <string>Data do Cadastro</string>
+                  </property>
+                 </column>
+                 <column>
+                  <property name="text">
+                   <string>Código do Produto</string>
+                  </property>
+                 </column>
+                 <column>
+                  <property name="text">
+                   <string>Cliente</string>
+                  </property>
+                 </column>
+                 <column>
+                  <property name="text">
+                   <string>Descrição do Produto</string>
+                  </property>
+                 </column>
+                 <column>
+                  <property name="text">
+                   <string>Usuário</string>
+                  </property>
+                 </column>
+                 <column>
+                  <property name="text">
+                   <string>Status da Saída</string>
+                  </property>
+                 </column>
+                </widget>
                </item>
                <item row="0" column="8" rowspan="5">
                 <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -985,7 +1041,7 @@ QTableView QScrollBar:horizontal {
 /* Estiliza a barra de rolagem vertical */
 QTableView QScrollBar:vertical {
     border: none;
-    background-color: rgb(255, 255, 255); /* branco */
+    background-color: rgb(255, 255, 256); /* branco */
     width: 35px;
     margin: 0px 10px 0px 10px;
 }
@@ -1033,6 +1089,9 @@ QTableWidget::item:selected {
                  </property>
                  <property name="dragDropOverwriteMode">
                   <bool>true</bool>
+                 </property>
+                 <property name="dragDropMode">
+                  <enum>QAbstractItemView::NoDragDrop</enum>
                  </property>
                  <property name="alternatingRowColors">
                   <bool>false</bool>
@@ -1157,156 +1216,21 @@ QTableWidget::item:selected {
                  </property>
                 </widget>
                </item>
-               <item row="4" column="0" colspan="8">
-                <widget class="QTableWidget" name="table_saida">
-                 <property name="styleSheet">
-                  <string notr="true">/* Estiliza apenas o QTableView com objectName &quot;table_ativos&quot; */
-QTableView {
-    gridline-color: black;
-    border: 2px solid white;
-    color: black;
-    selection-color: white;
-}
-
-/* Estiliza a barra de rolagem horizontal */
-QTableView QScrollBar:horizontal {
-    border: none;
-    background-color: rgb(255, 255, 255);
-    height: 15px;
-    margin: 0px 10px 0px 10px;
-}
-
-/* Estiliza a barra de rolagem vertical */
-QTableView QScrollBar:vertical {
-    border: none;
-    background-color: rgb(255, 255, 255); /* branco */
-    width: 35px;
-    margin: 0px 10px 0px 10px;
-}
-
-/* Parte que você arrasta */
-QTableView QScrollBar::handle:vertical {
-    background-color: rgb(180, 180,150);  /* cinza */
-    min-height: 30px;
-	border-radius: 5px;
-}
-
-QTableView QScrollBar::handle:horizontal{
-	background-color: rgb(180,180,150);
-	min-height: 30px;
-	border-radius: 5px;
-}
-
-/* Remove os botões */
-QTableView QScrollBar::add-line:vertical,
-QTableView QScrollBar::sub-line:vertical {
-    height: 0px;
-    width: 0px;
-    border: none;
-    background: none;
-}
-
-QTableView QScrollBar::groove:horizontal{
-	background-color: rgb(100,240,240);
-	border-radius: 2px;
-	height: 15px;
-	margin: 0px 10px 0px 10px;
-}
-
-/* Estilo para item selecionado */
-QTableWidget::item:selected {
-    background-color: rgb(0, 120, 215);
-    color: white;
-}</string>
-                 </property>
-                 <property name="frameShadow">
-                  <enum>QFrame::Sunken</enum>
-                 </property>
-                 <property name="editTriggers">
-                  <set>QAbstractItemView::NoEditTriggers</set>
-                 </property>
-                 <property name="selectionMode">
-                  <enum>QAbstractItemView::ExtendedSelection</enum>
-                 </property>
-                 <property name="selectionBehavior">
-                  <enum>QAbstractItemView::SelectRows</enum>
-                 </property>
-                 <property name="cornerButtonEnabled">
-                  <bool>false</bool>
-                 </property>
-                 <attribute name="horizontalHeaderCascadingSectionResizes">
-                  <bool>false</bool>
-                 </attribute>
-                 <attribute name="horizontalHeaderDefaultSectionSize">
-                  <number>112</number>
-                 </attribute>
-                 <attribute name="verticalHeaderCascadingSectionResizes">
-                  <bool>false</bool>
-                 </attribute>
-                 <column>
-                  <property name="text">
-                   <string>Produto</string>
-                  </property>
-                 </column>
-                 <column>
-                  <property name="text">
-                   <string>Quantidade</string>
-                  </property>
-                 </column>
-                 <column>
-                  <property name="text">
-                   <string>Valor do Produto</string>
-                  </property>
-                 </column>
-                 <column>
-                  <property name="text">
-                   <string>Desconto</string>
-                  </property>
-                 </column>
-                 <column>
-                  <property name="text">
-                   <string>Valor Total</string>
-                  </property>
-                 </column>
-                 <column>
-                  <property name="text">
-                   <string>Data da Saída</string>
-                  </property>
-                 </column>
-                 <column>
-                  <property name="text">
-                   <string>Data do Cadastro</string>
-                  </property>
-                 </column>
-                 <column>
-                  <property name="text">
-                   <string>Código do Produto</string>
-                  </property>
-                 </column>
-                 <column>
-                  <property name="text">
-                   <string>Cliente</string>
-                  </property>
-                 </column>
-                 <column>
-                  <property name="text">
-                   <string>Descrição do Produto</string>
-                  </property>
-                 </column>
-                 <column>
-                  <property name="text">
-                   <string>Usuário</string>
-                  </property>
-                 </column>
-                 <column>
-                  <property name="text">
-                   <string>Status da Saída</string>
-                  </property>
-                 </column>
-                </widget>
-               </item>
                <item row="3" column="2">
                 <spacer name="horizontalSpacer">
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>40</width>
+                   <height>20</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+               <item row="3" column="4">
+                <spacer name="horizontalSpacer_2">
                  <property name="orientation">
                   <enum>Qt::Horizontal</enum>
                  </property>
@@ -1353,19 +1277,6 @@ QPushButton:hover {
                   <string>Importar</string>
                  </property>
                 </widget>
-               </item>
-               <item row="3" column="4">
-                <spacer name="horizontalSpacer_2">
-                 <property name="orientation">
-                  <enum>Qt::Horizontal</enum>
-                 </property>
-                 <property name="sizeHint" stdset="0">
-                  <size>
-                   <width>40</width>
-                   <height>20</height>
-                  </size>
-                 </property>
-                </spacer>
                </item>
                <item row="3" column="5">
                 <widget class="QPushButton" name="btn_gerar_saida">
@@ -1439,6 +1350,152 @@ QPushButton:hover {
                  </property>
                 </widget>
                </item>
+               <item row="0" column="0" colspan="8">
+                <widget class="QFrame" name="frame_4">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="minimumSize">
+                  <size>
+                   <width>0</width>
+                   <height>0</height>
+                  </size>
+                 </property>
+                 <property name="maximumSize">
+                  <size>
+                   <width>16777215</width>
+                   <height>117</height>
+                  </size>
+                 </property>
+                 <property name="frameShape">
+                  <enum>QFrame::StyledPanel</enum>
+                 </property>
+                 <property name="frameShadow">
+                  <enum>QFrame::Raised</enum>
+                 </property>
+                 <layout class="QHBoxLayout" name="horizontalLayout_24">
+                  <item>
+                   <layout class="QVBoxLayout" name="verticalLayout">
+                    <property name="leftMargin">
+                     <number>0</number>
+                    </property>
+                    <property name="rightMargin">
+                     <number>1</number>
+                    </property>
+                    <item>
+                     <widget class="QPushButton" name="btn_abrir_planilha">
+                      <property name="sizePolicy">
+                       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                        <horstretch>0</horstretch>
+                        <verstretch>0</verstretch>
+                       </sizepolicy>
+                      </property>
+                      <property name="maximumSize">
+                       <size>
+                        <width>16777215</width>
+                        <height>16777215</height>
+                       </size>
+                      </property>
+                      <property name="cursor">
+                       <cursorShape>PointingHandCursor</cursorShape>
+                      </property>
+                      <property name="styleSheet">
+                       <string notr="true">QPushButton {
+    color: rgb(255, 255, 255);
+    border-radius: 8px;
+    font-size: 16px;
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */
+    border: 4px solid transparent;
+}
+
+QPushButton:hover {
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */
+    color: black;
+}</string>
+                      </property>
+                      <property name="text">
+                       <string>Abrir Planilha</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QLineEdit" name="line_excel">
+                      <property name="sizePolicy">
+                       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                        <horstretch>0</horstretch>
+                        <verstretch>0</verstretch>
+                       </sizepolicy>
+                      </property>
+                      <property name="styleSheet">
+                       <string notr="true">QLineEdit {
+	color: black;
+    background-color: rgb(240, 240, 240); /* Cor de fundo cinza claro */
+    border: 2px solid rgb(50, 150,250); /* Borda azul */
+    border-radius: 12px; /* Cantos arredondados */
+    padding: 3px; /* Espaçamento interno */
+}
+
+QLineEdit::placeholderText {
+    color: black; /* Cor do texto do placeholder */
+}
+
+</string>
+                      </property>
+                      <property name="alignment">
+                       <set>Qt::AlignCenter</set>
+                      </property>
+                      <property name="readOnly">
+                       <bool>true</bool>
+                      </property>
+                      <property name="placeholderText">
+                       <string>Arquivo em excel aparecerá aqui</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QProgressBar" name="progress_excel">
+                      <property name="sizePolicy">
+                       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                        <horstretch>0</horstretch>
+                        <verstretch>0</verstretch>
+                       </sizepolicy>
+                      </property>
+                      <property name="styleSheet">
+                       <string notr="true">QProgressBar {
+	color: black;
+    border: 3px solid rgb(50,150,250);
+    border-radius: 13px;  /* Aumentei o valor para deixar a borda mais redonda */
+    background-color: #f0f0f0;  /* Cor cinza claro */
+}
+
+QProgressBar::chunk {
+    background-color: #4682b4;  /* Cor do progresso preenchido (azul) */
+    border-radius: 12px;  /* Faz com que o progresso também tenha bordas arredondadas */
+}
+</string>
+                      </property>
+                      <property name="value">
+                       <number>0</number>
+                      </property>
+                      <property name="alignment">
+                       <set>Qt::AlignCenter</set>
+                      </property>
+                      <property name="textVisible">
+                       <bool>true</bool>
+                      </property>
+                      <property name="invertedAppearance">
+                       <bool>false</bool>
+                      </property>
+                     </widget>
+                    </item>
+                   </layout>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
               </layout>
              </widget>
             </widget>
@@ -1477,20 +1534,7 @@ QPushButton:hover {
            <enum>QFrame::Raised</enum>
           </property>
           <layout class="QGridLayout" name="gridLayout_21">
-           <item row="3" column="5">
-            <spacer name="horizontalSpacer_12">
-             <property name="orientation">
-              <enum>Qt::Horizontal</enum>
-             </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>8</width>
-               <height>20</height>
-              </size>
-             </property>
-            </spacer>
-           </item>
-           <item row="0" column="6" rowspan="5">
+           <item row="0" column="6" rowspan="6">
             <widget class="QFrame" name="frame_5">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
@@ -1706,78 +1750,14 @@ QPushButton:hover {
              </layout>
             </widget>
            </item>
-           <item row="3" column="0">
-            <widget class="QFrame" name="frame_4">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="maximumSize">
-              <size>
-               <width>16777215</width>
-               <height>60</height>
-              </size>
-             </property>
-             <property name="frameShape">
-              <enum>QFrame::NoFrame</enum>
-             </property>
-             <property name="frameShadow">
-              <enum>QFrame::Raised</enum>
-             </property>
-             <layout class="QHBoxLayout" name="horizontalLayout_24">
-              <item>
-               <widget class="QLabel" name="label_inativos">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="minimumSize">
-                 <size>
-                  <width>0</width>
-                  <height>0</height>
-                 </size>
-                </property>
-                <property name="maximumSize">
-                 <size>
-                  <width>143</width>
-                  <height>40</height>
-                 </size>
-                </property>
-                <property name="whatsThis">
-                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:18pt; font-weight:600; font-style:italic;&quot;&gt;ESTOQUE&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                </property>
-                <property name="styleSheet">
-                 <string notr="true">QLabel {
-    color: white;
-    text-align: center; /* Centraliza o texto horizontalmente */
-    vertical-align: middle; /* Centraliza o texto verticalmente */
-	border: 3px solid white;
-}
-</string>
-                </property>
-                <property name="text">
-                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:18pt; font-weight:600; font-style:italic;&quot;&gt;INATIVOS&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                </property>
-                <property name="scaledContents">
-                 <bool>false</bool>
-                </property>
-               </widget>
-              </item>
-             </layout>
-            </widget>
-           </item>
-           <item row="3" column="1">
-            <spacer name="horizontalSpacer_10">
+           <item row="3" column="5">
+            <spacer name="horizontalSpacer_12">
              <property name="orientation">
               <enum>Qt::Horizontal</enum>
              </property>
              <property name="sizeHint" stdset="0">
               <size>
-               <width>128</width>
+               <width>8</width>
                <height>20</height>
               </size>
              </property>
@@ -1824,6 +1804,19 @@ QPushButton:hover {
               <string>Gerar Saída</string>
              </property>
             </widget>
+           </item>
+           <item row="3" column="1">
+            <spacer name="horizontalSpacer_10">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>129</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
            </item>
            <item row="3" column="2">
             <widget class="QPushButton" name="btn_importar_usuarios">
@@ -1915,6 +1908,18 @@ QPushButton:hover {
             <layout class="QVBoxLayout" name="verticalLayout_19">
              <item>
               <widget class="QPushButton" name="btn_abrir_planilha_usuarios">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>16777215</width>
+                 <height>30</height>
+                </size>
+               </property>
                <property name="cursor">
                 <cursorShape>PointingHandCursor</cursorShape>
                </property>
@@ -2003,7 +2008,7 @@ QProgressBar::chunk {
              </item>
             </layout>
            </item>
-           <item row="4" column="0" colspan="6">
+           <item row="5" column="0" colspan="6">
             <widget class="QTableWidget" name="table_inativos">
              <property name="styleSheet">
               <string notr="true">/* Estiliza apenas o QTableView com objectName &quot;table_ativos&quot; */
@@ -2435,6 +2440,46 @@ QTableWidget::item:selected {
              </column>
             </widget>
            </item>
+           <item row="3" column="0">
+            <widget class="QLabel" name="label_inativos">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="minimumSize">
+              <size>
+               <width>0</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>143</width>
+               <height>40</height>
+              </size>
+             </property>
+             <property name="whatsThis">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:18pt; font-weight:600; font-style:italic;&quot;&gt;ESTOQUE&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">QLabel {
+    color: white;
+    text-align: center; /* Centraliza o texto horizontalmente */
+    vertical-align: middle; /* Centraliza o texto verticalmente */
+	border: 3px solid white;
+}
+</string>
+             </property>
+             <property name="text">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:18pt; font-weight:600; font-style:italic;&quot;&gt;INATIVOS&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
+             <property name="scaledContents">
+              <bool>false</bool>
+             </property>
+            </widget>
+           </item>
           </layout>
          </widget>
         </item>
@@ -2532,7 +2577,7 @@ QPushButton:hover {
                 </property>
                 <property name="icon">
                  <iconset>
-                  <normaloff>imagens/pngwing.com.png</normaloff>imagens/pngwing.com.png</iconset>
+                  <normaloff>../../../../.designer/backup/imagens/pngwing.com.png</normaloff>../../../../.designer/backup/imagens/pngwing.com.png</iconset>
                 </property>
                </widget>
               </item>
@@ -2572,7 +2617,7 @@ QPushButton:hover {
                 </property>
                 <property name="icon">
                  <iconset>
-                  <normaloff>imagens/editar.png</normaloff>imagens/editar.png</iconset>
+                  <normaloff>../../../../.designer/backup/imagens/editar.png</normaloff>../../../../.designer/backup/imagens/editar.png</iconset>
                 </property>
                </widget>
               </item>
@@ -2612,7 +2657,7 @@ QPushButton:hover {
                 </property>
                 <property name="icon">
                  <iconset>
-                  <normaloff>imagens/sair.png</normaloff>imagens/sair.png</iconset>
+                  <normaloff>../../../../.designer/backup/imagens/sair.png</normaloff>../../../../.designer/backup/imagens/sair.png</iconset>
                 </property>
                 <property name="iconSize">
                  <size>
@@ -2658,7 +2703,7 @@ QPushButton:hover {
                 </property>
                 <property name="icon">
                  <iconset>
-                  <normaloff>imagens/toppng.com-update-512x512.png</normaloff>imagens/toppng.com-update-512x512.png</iconset>
+                  <normaloff>../../../../.designer/backup/imagens/toppng.com-update-512x512.png</normaloff>../../../../.designer/backup/imagens/toppng.com-update-512x512.png</iconset>
                 </property>
                </widget>
               </item>
@@ -2698,7 +2743,7 @@ QPushButton:hover {
                 </property>
                 <property name="icon">
                  <iconset>
-                  <normaloff>imagens/Delete-Button-PNG-Download-Image.png</normaloff>imagens/Delete-Button-PNG-Download-Image.png</iconset>
+                  <normaloff>../../../../.designer/backup/imagens/Delete-Button-PNG-Download-Image.png</normaloff>../../../../.designer/backup/imagens/Delete-Button-PNG-Download-Image.png</iconset>
                 </property>
                 <property name="iconSize">
                  <size>
@@ -3519,7 +3564,7 @@ QPushButton:hover {
                 </property>
                 <property name="icon">
                  <iconset>
-                  <normaloff>imagens/icons8-remover-imagem-16.png</normaloff>imagens/icons8-remover-imagem-16.png</iconset>
+                  <normaloff>../../../../.designer/backup/imagens/icons8-remover-imagem-16.png</normaloff>../../../../.designer/backup/imagens/icons8-remover-imagem-16.png</iconset>
                 </property>
                </widget>
               </item>
@@ -3565,7 +3610,7 @@ QPushButton:hover {
                 </property>
                 <property name="icon">
                  <iconset>
-                  <normaloff>imagens/014upload2_99941.png</normaloff>imagens/014upload2_99941.png</iconset>
+                  <normaloff>../../../../.designer/backup/imagens/014upload2_99941.png</normaloff>../../../../.designer/backup/imagens/014upload2_99941.png</iconset>
                 </property>
                </widget>
               </item>
@@ -3788,7 +3833,7 @@ QPushButton:hover {
                 </property>
                 <property name="icon">
                  <iconset>
-                  <normaloff>imagens/confirmacao.png</normaloff>imagens/confirmacao.png</iconset>
+                  <normaloff>../../../../.designer/backup/imagens/confirmacao.png</normaloff>../../../../.designer/backup/imagens/confirmacao.png</iconset>
                 </property>
                </widget>
               </item>
@@ -3828,7 +3873,7 @@ QPushButton:hover {
                 </property>
                 <property name="icon">
                  <iconset>
-                  <normaloff>imagens/74472.png</normaloff>imagens/74472.png</iconset>
+                  <normaloff>../../../../.designer/backup/imagens/74472.png</normaloff>../../../../.designer/backup/imagens/74472.png</iconset>
                 </property>
                 <property name="iconSize">
                  <size>
@@ -3880,7 +3925,7 @@ QPushButton:hover {
                 </property>
                 <property name="icon">
                  <iconset>
-                  <normaloff>imagens/pasta.png</normaloff>imagens/pasta.png</iconset>
+                  <normaloff>../../../../.designer/backup/imagens/pasta.png</normaloff>../../../../.designer/backup/imagens/pasta.png</iconset>
                 </property>
                </widget>
               </item>
@@ -4006,7 +4051,7 @@ QPushButton:hover {
                 </property>
                 <property name="icon">
                  <iconset>
-                  <normaloff>imagens/editar.png</normaloff>imagens/editar.png</iconset>
+                  <normaloff>../../../../.designer/backup/imagens/editar.png</normaloff>../../../../.designer/backup/imagens/editar.png</iconset>
                 </property>
                 <property name="iconSize">
                  <size>
@@ -4058,7 +4103,7 @@ QPushButton:hover {
                 </property>
                 <property name="icon">
                  <iconset>
-                  <normaloff>imagens/sair.png</normaloff>imagens/sair.png</iconset>
+                  <normaloff>../../../../.designer/backup/imagens/sair.png</normaloff>../../../../.designer/backup/imagens/sair.png</iconset>
                 </property>
                 <property name="iconSize">
                  <size>
@@ -4110,7 +4155,7 @@ QPushButton:hover {
                 </property>
                 <property name="icon">
                  <iconset>
-                  <normaloff>imagens/toppng.com-update-512x512.png</normaloff>imagens/toppng.com-update-512x512.png</iconset>
+                  <normaloff>../../../../.designer/backup/imagens/toppng.com-update-512x512.png</normaloff>../../../../.designer/backup/imagens/toppng.com-update-512x512.png</iconset>
                 </property>
                 <property name="iconSize">
                  <size>
@@ -4162,7 +4207,7 @@ QPushButton:hover {
                 </property>
                 <property name="icon">
                  <iconset>
-                  <normaloff>imagens/Delete-Button-PNG-Download-Image.png</normaloff>imagens/Delete-Button-PNG-Download-Image.png</iconset>
+                  <normaloff>../../../../.designer/backup/imagens/Delete-Button-PNG-Download-Image.png</normaloff>../../../../.designer/backup/imagens/Delete-Button-PNG-Download-Image.png</iconset>
                 </property>
                 <property name="iconSize">
                  <size>
@@ -4214,7 +4259,7 @@ QPushButton:hover {
                 </property>
                 <property name="icon">
                  <iconset>
-                  <normaloff>imagens/014upload2_99941.png</normaloff>imagens/014upload2_99941.png</iconset>
+                  <normaloff>../../../../.designer/backup/imagens/014upload2_99941.png</normaloff>../../../../.designer/backup/imagens/014upload2_99941.png</iconset>
                 </property>
                 <property name="iconSize">
                  <size>
@@ -4266,7 +4311,7 @@ QPushButton:hover {
                 </property>
                 <property name="icon">
                  <iconset>
-                  <normaloff>imagens/icons8-remover-imagem-16.png</normaloff>imagens/icons8-remover-imagem-16.png</iconset>
+                  <normaloff>../../../../.designer/backup/imagens/icons8-remover-imagem-16.png</normaloff>../../../../.designer/backup/imagens/icons8-remover-imagem-16.png</iconset>
                 </property>
                 <property name="iconSize">
                  <size>
@@ -4318,7 +4363,7 @@ QPushButton:hover {
                 </property>
                 <property name="icon">
                  <iconset>
-                  <normaloff>imagens/confirmacao.png</normaloff>imagens/confirmacao.png</iconset>
+                  <normaloff>../../../../.designer/backup/imagens/confirmacao.png</normaloff>../../../../.designer/backup/imagens/confirmacao.png</iconset>
                 </property>
                 <property name="iconSize">
                  <size>
@@ -4370,7 +4415,7 @@ QPushButton:hover {
                 </property>
                 <property name="icon">
                  <iconset>
-                  <normaloff>imagens/74472.png</normaloff>imagens/74472.png</iconset>
+                  <normaloff>../../../../.designer/backup/imagens/74472.png</normaloff>../../../../.designer/backup/imagens/74472.png</iconset>
                 </property>
                 <property name="iconSize">
                  <size>
