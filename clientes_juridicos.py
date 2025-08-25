@@ -513,7 +513,7 @@ class Clientes_Juridicos(QWidget):
     def editar_cliente_juridico(self):
         linha_selecionada = self.table_clientes_juridicos.currentRow()
         if linha_selecionada < 0:
-            QMessageBox.warning(None, "Aviso", "Nenhum cliente selecionado para edição.")
+            QMessageBox.warning(self, "Aviso", "Nenhum cliente selecionado para edição.")
             return
         
         coluna_offset = 1 if self.coluna_checkboxes_clientes_adicionada else 0
@@ -540,7 +540,8 @@ class Clientes_Juridicos(QWidget):
         self.janela_cadastro = QMainWindow()
         self.janela_cadastro.resize(700, 550)
         self.janela_cadastro.setWindowTitle("Cadastro do Cliente")
-        self.janela_cadastro.setStyleSheet("background-color: rgb(0, 80, 121);")
+        self.janela_cadastro.setObjectName("janela_cadastro")
+
 
         # Centralizar a janela
         screen = QGuiApplication.primaryScreen()
@@ -1181,7 +1182,7 @@ class Clientes_Juridicos(QWidget):
                 # Modo sem checkbox (seleção direta)
                 linha_selecionadas = self.table_clientes_juridicos.selectionModel().selectedRows()
                 if not linha_selecionadas:
-                    QMessageBox.information(None, "Aviso", "Nenhum cliente selecionado para exclusão.")
+                    QMessageBox.information(self, "Aviso", "Nenhum cliente selecionado para exclusão.")
                     return
                 
                 for index in linha_selecionadas:
@@ -1190,7 +1191,7 @@ class Clientes_Juridicos(QWidget):
                     clientes_para_excluir.append((linha,nome_cliente))
 
             if not clientes_para_excluir:
-                QMessageBox.information(None, "Aviso", "Nenhum cliente selecionado para exclusão.")
+                QMessageBox.information(self, "Aviso", "Nenhum cliente selecionado para exclusão.")
                 return
             
             # Mensagem personalizada

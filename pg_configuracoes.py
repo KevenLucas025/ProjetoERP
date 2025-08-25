@@ -111,7 +111,7 @@ class Pagina_Configuracoes(QWidget):
 
         # Estilo geral dos botões (modo escuro)
         style_sheet = """
-        QMainWindow, QStackedWidget, QWidget, QLabel {
+        QMainWindow, QStackedWidget, QWidget {
             background-color: #202124;
             color: #ffffff;
         }
@@ -358,6 +358,10 @@ class Pagina_Configuracoes(QWidget):
                 );
                 border: 2px solid #888888;
             }
+            QPushButton#btn_abrir_planilha,
+            QPushButton#btn_abrir_planilha_usuarios{
+                
+            }
 
             /* Campos de entrada */
             QLineEdit#txt_senha,
@@ -490,7 +494,34 @@ class Pagina_Configuracoes(QWidget):
                 vertical-align: middle; /* Centraliza o texto verticalmente */
                 border: 3px solid white;
             }
-            
+            QMessageBox {
+                background-color: #2b2b2b;   /* fundo escuro */
+                color: #f0f0f0;              /* texto claro */
+                border: 2px solid #555555;
+                border-radius: 10px;
+            }
+            QMessageBox QLabel {
+                color: #f0f0f0;              /* cor do texto */
+                font-size: 14px;
+                background: transparent;
+            }
+            QMessageBox QDialogButtonBox QPushButton {
+                background-color: #444444;
+                color: #ffffff;
+                border-radius: 6px;
+                padding: 4px 10px;
+            }
+            QMessageBox QDialogButtonBox QPushButton:hover {
+                background-color: #666666;
+            }
+            QMessageBox QDialogButtonBox QPushButton:pressed {
+                background-color: #888888;
+            }
+
+            QMainWindow#janela_cadastro{
+                background-color: #202124;
+                color: #000000;
+            }
 
         """
         
