@@ -117,6 +117,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             "txt_cnpj": self.txt_cnpj
         }
         
+        
 
         self.table_base.verticalHeader().setVisible(True)
         self.table_saida.verticalHeader().setVisible(True)
@@ -176,6 +177,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.is_editing_produto = False
         self.selected_produto_id = None
 
+
         self.pagina_clientes_juridicos = Clientes_Juridicos(self.line_clientes,self,self.btn_adicionar_cliente_juridico,self.btn_editar_clientes,
                                         self.btn_excluir_clientes,self.btn_gerar_relatorio_clientes,self.btn_marcar_como_clientes,
                                         self.btn_historico_clientes)
@@ -183,6 +185,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.pagina_clientes_fisicos = Clientes_Fisicos(self.line_clientes_fisicos,self,self.btn_adicionar_cliente_fisico,self.btn_editar_clientes_fisicos,
                                                         self.btn_excluir_clientes_fisicos,self.btn_gerar_relatorio_clientes_fisicos,self.btn_historico_clientes_fisicos,
                                                         self.btn_marcar_como_clientes_fisicos)
+        
+        
 
         # Crie o layout para o frame_imagem_cadastro e adicione o QLabel
         self.label_imagem_usuario = QLabel(self)
@@ -2526,11 +2530,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             successMsgBox.exec()
         else:
             # Mostrar mensagem de aviso se nenhum campo estiver preenchido
-            msgBox = QMessageBox()
-            msgBox.setIcon(QMessageBox.Warning)
-            msgBox.setText("Não há campos preenchidos para limpar.")
-            msgBox.setWindowTitle("Aviso")
-            msgBox.exec()
+            QMessageBox.information(self,"Aviso","Não há campos preenchidos para limpar.")
+            
 #*******************************************************************************************************
     def apagar_imagem_produto_btn_apagar_campos(self):
         # Verificar se o QFrame contém um QLabel para imagem
@@ -2917,6 +2918,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     # Caminho completo do banco de dados
     caminho_banco = os.path.join(pasta_dados, "banco_de_dados.db")
 
+    
+
+
 # Função principal
 if __name__ == '__main__':
     app = QApplication(sys.argv)
@@ -2926,6 +2930,7 @@ if __name__ == '__main__':
     # Usa estilo nativo do Windows explicitamente
     app.setStyle("WindowsVista")
     app.setWindowIcon(QIcon("imagens/ícone_sistema_provisório.png"))
+    
     
     
     login_window.show()

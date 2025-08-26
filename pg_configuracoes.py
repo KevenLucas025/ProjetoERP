@@ -7,7 +7,6 @@ import json
 from login import Login
 import sys
 from configuracoes import Configuracoes_Login
-from clientes_juridicos import Clientes_Juridicos
 from mane_python import Ui_MainWindow
 
 class Pagina_Configuracoes(QWidget):
@@ -1179,7 +1178,7 @@ class Pagina_Configuracoes(QWidget):
         # Mostrar janela
         self.janela_config.show()
     
-
+    
 
 
 class ProgressDialog(QDialog):
@@ -1217,5 +1216,6 @@ class ProgressDialog(QDialog):
 
 
 
+    
 
         

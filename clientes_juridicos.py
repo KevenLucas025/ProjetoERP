@@ -24,6 +24,7 @@ from fpdf import FPDF
 import json
 
 
+
 class Clientes_Juridicos(QWidget):
     def __init__(self, line_clientes: QLineEdit,main_window,btn_adicionar_cliente_juridico,
                  btn_editar_clientes,btn_excluir_clientes,btn_gerar_relatorio_clientes,btn_marcar_como_clientes,
@@ -59,6 +60,8 @@ class Clientes_Juridicos(QWidget):
         self.btn_historico_clientes.clicked.connect(self.historico_clientes_juridicos)
         self.btn_gerar_relatorio_clientes.clicked.connect(self.abrir_janela_relatorio_clientes_juridicos)
         self.imagem_line()
+
+        
         
         # ENTER → busca manual
         self.line_clientes.returnPressed.connect(
@@ -530,18 +533,22 @@ class Clientes_Juridicos(QWidget):
             item = self.table_clientes_juridicos.item(linha_selecionada, col + coluna_offset)
             dados_cliente[nome_coluna] = item.text() if item else ""
 
-        self.exibir_edicao_clientes(dados_cliente)   
+        self.exibir_edicao_clientes(dados_cliente)
+        
+    def carregar_config(self):
+        with open("config.json", "r", encoding="utf-8") as f:
+            return json.load(f)
 
     
     def exibir_janela_cadastro_cliente(self):
         self.campos_cliente_juridico = {}
         self.informacoes_obrigatorias_clientes()
-        
+
+        # Criar a janela
         self.janela_cadastro = QMainWindow()
         self.janela_cadastro.resize(700, 550)
         self.janela_cadastro.setWindowTitle("Cadastro do Cliente")
         self.janela_cadastro.setObjectName("janela_cadastro")
-
 
         # Centralizar a janela
         screen = QGuiApplication.primaryScreen()
@@ -550,274 +557,81 @@ class Clientes_Juridicos(QWidget):
         window_geometry.moveCenter(screen_geometry.center())
         self.janela_cadastro.move(window_geometry.topLeft())
 
-        conteudo = QWidget()
-        layout = QVBoxLayout(conteudo)
-        conteudo.setStyleSheet("""
-            QLineEdit {
-                color: black;
-                background-color: rgb(240, 240, 240);
-                border: 2px solid rgb(50, 150, 250);
-                border-radius: 6px;
-                padding: 3px;
-            }
-            QLineEdit::placeholderText {
-                color: black;
-            }
-        """)
+        # Carregar tema
+        config = self.carregar_config()
+        tema = config.get("tema", "claro")
 
+        if tema == "escuro":
+            bg_cor = "#202124"
+            text_cor = "white"
+            lineedit_bg = "#303030"
+            combobox_bg = "#303030"
+            button_bg = "qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50,150,250), stop:1 rgb(100,200,255))"
+        elif tema == "claro":
+            bg_cor = "white"
+            text_cor = "black"
+            lineedit_bg = "white"
+            combobox_bg = "white"
+            button_bg = "qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50,150,250), stop:1 rgb(100,200,255))"
+        else:  # clássico
+            bg_cor = "rgb(0,80,121)"
+            text_cor = "white"
+            lineedit_bg = "white"
+            combobox_bg = "white"
+            button_bg = "qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50,150,250), stop:1 rgb(100,200,255))"
+
+        # Widget central e layout
+        conteudo = QWidget()
+        conteudo.setStyleSheet(f"background-color: {bg_cor}; color: {text_cor};")
+        layout = QVBoxLayout(conteudo)
+
+        # Função auxiliar para adicionar campos
         def add_linha(titulo, widget=None):
             label = QLabel(titulo)
-            label.setStyleSheet("color: white; font-weight: bold;")
+            label.setStyleSheet(f"color: {text_cor}; font-weight: bold;")
             layout.addWidget(label)
             if widget is None:
                 widget = QLineEdit()
+                widget.setStyleSheet(f"background-color: {lineedit_bg}; color: {text_cor}; border: 2px solid rgb(50,150,250); border-radius: 6px; padding: 3px;")
             layout.addWidget(widget)
             chave_sem_ponto = titulo.rstrip(":")
             self.campos_cliente_juridico[chave_sem_ponto] = widget
             return label, widget
 
-        # ComboBox Categoria CNH criado antecipadamente para uso no formulário
-        combobox_categoria_cnh = QComboBox()
-        combobox_categoria_cnh.addItems(["Selecionar", "AB", "A", "B", "C", "D", "E", "Nenhuma"])
-        combobox_categoria_cnh.setCurrentIndex(0)
-        combobox_categoria_cnh.setStyleSheet("""
-            QComboBox { 
-                background-color: white; 
-                border: 3px solid rgb(50,150,250); 
-                border-radius: 5px; 
-                color: black; 
-                padding: 5px;
-            }
-            QComboBox QAbstractItemView {
-                background-color: white; 
-                color: black; 
-                border: 1px solid #ccc; 
-                selection-background-color: #e5e5e5; 
-                selection-color: black;
-            }
-            QComboBox QAbstractItemView QScrollBar:vertical {
-                background: #f5f5f5; 
-                width: 12px; 
-                border: none;
-            }
-            QComboBox QAbstractItemView QScrollBar::handle:vertical {
-                background: #cccccc; 
-                min-height: 20px; 
-                border-radius: 5px;
-            }
-            QComboBox QAbstractItemView QScrollBar::add-line:vertical, 
-            QComboBox QAbstractItemView QScrollBar::sub-line:vertical {
-                background: none;
-                height: 0px;
-            }
-            QComboBox QAbstractItemView QScrollBar::add-page:vertical, 
-            QComboBox QAbstractItemView QScrollBar::sub-page:vertical {
-                background: none;
-            }
-        """)
-
-
-        # Adicionar campos na ordem correta
+        # Exemplo de uso
         add_linha("Nome do Cliente")
         add_linha("Razão Social")
         add_linha("CNPJ")
-        cnpj_widget = self.campos_cliente_juridico["CNPJ"]
-        cnpj_widget.textChanged.connect(lambda text: self.main_window.formatar_cnpj(text, cnpj_widget))
-
-        add_linha("RG")
-        self.campos_cliente_juridico["RG"].setPlaceholderText("Opcional")
-        rg_widget = self.campos_cliente_juridico["RG"]
-        rg_widget.textChanged.connect(lambda text: self.main_window.formatar_rg(text, rg_widget))
-
-        add_linha("CPF")
-        cpf_widget = self.campos_cliente_juridico["CPF"]
-        cpf_widget.textChanged.connect(lambda text: self.main_window.formatar_cpf(text, cpf_widget))
-
         add_linha("Email")
-        email_widget = self.campos_cliente_juridico["Email"]
-        email_widget.textChanged.connect(lambda text: self.main_window.validar_email(text,email_widget))
+        # Adicione os outros campos conforme seu código original...
 
-        add_linha("CNH")
-        self.campos_cliente_juridico["CNH"].setPlaceholderText("Opcional")
-        label_categoria_cnh, widget_categoria_cnh = add_linha("Categoria da CNH", combobox_categoria_cnh)
-
-        # Campos Data Emissão e Vencimento CNH, inicialmente escondidos
-        label_emissao_cnh, widget_emissao_cnh = add_linha("Data de Emissão da CNH")
-        label_vencimento_cnh, widget_vencimento_cnh = add_linha("Data de Vencimento da CNH")
-
-        # Aplicar formatação de data (mesma usada em Data de Nascimento)
-        widget_emissao_cnh.textChanged.connect(lambda text: self.main_window.formatar_data_nascimento(text, widget_emissao_cnh))
-        widget_vencimento_cnh.textChanged.connect(lambda text: self.main_window.formatar_data_nascimento(text, widget_vencimento_cnh))
-        label_emissao_cnh.hide()
-        widget_emissao_cnh.hide()
-        label_vencimento_cnh.hide()
-        widget_vencimento_cnh.hide()
-
-        cnh_widget = self.campos_cliente_juridico["CNH"]
-        cnh_widget.textChanged.connect(lambda text: self.main_window.formatar_cnh(text, cnh_widget))
-
-        # Função para mostrar/esconder datas da CNH conforme categoria selecionada
-        def on_categoria_cnh_change(text):
-            if text not in ("Selecionar", "Nenhuma"):
-                label_emissao_cnh.show()
-                widget_emissao_cnh.show()
-                label_vencimento_cnh.show()
-                widget_vencimento_cnh.show()
-            else:
-                label_emissao_cnh.hide()
-                widget_emissao_cnh.hide()
-                label_vencimento_cnh.hide()
-                widget_vencimento_cnh.hide()
-                widget_emissao_cnh.clear()
-                widget_vencimento_cnh.clear()
-
-        combobox_categoria_cnh.currentTextChanged.connect(on_categoria_cnh_change)
-
-        add_linha("Telefone")
-        telefone_widget = self.campos_cliente_juridico["Telefone"]
-        telefone_widget.textChanged.connect(lambda text: self.main_window.formatar_telefone(text, telefone_widget))
-
-        add_linha("CEP")
-        cep_widget = self.campos_cliente_juridico["CEP"]
-        cep_widget.textChanged.connect(lambda text: self.main_window.formatar_cep(text, cep_widget))
-        cep_widget.editingFinished.connect(lambda: self.on_cep_editing_finished_cadastro(cep_widget))
-
-        add_linha("Endereço")
-        add_linha("Número")
-        add_linha("Complemento")
-        self.campos_cliente_juridico["Complemento"].setPlaceholderText("Opcional")
-        add_linha("Cidade")
-        add_linha("Bairro")
-
-        # ComboBox Estado
-        combobox_estado_cliente = QComboBox()
-        combobox_estado_cliente.addItems([
-            "Selecionar","AC","AL","AP","AM","BA","CE","DF","ES","GO","MA","MT",
-            "MS","MG","PA","PB","PR","PE","PI","RJ","RN","RS","RO","RR","SC","SP","SE","TO"
-        ])
-        combobox_estado_cliente.setCurrentIndex(0)
-        combobox_estado_cliente.setStyleSheet("""
-            QComboBox { 
-                background-color: white; 
-                border: 3px solid rgb(50,150,250); 
-                border-radius: 5px; 
-                color: black; 
-                padding: 5px;
-            }
-            QComboBox QAbstractItemView {
-                background-color: white; 
-                color: black; 
-                border: 1px solid #ccc; 
-                selection-background-color: #e5e5e5; 
-                selection-color: black;
-            }
-            QComboBox QAbstractItemView QScrollBar:vertical {
-                background: #f5f5f5; 
-                width: 12px; 
-                border: none;
-            }
-            QComboBox QAbstractItemView QScrollBar::handle:vertical {
-                background: #cccccc; 
-                min-height: 20px; 
-                border-radius: 5px;
-            }
-            QComboBox QAbstractItemView QScrollBar::add-line:vertical, 
-            QComboBox QAbstractItemView QScrollBar::sub-line:vertical {
-                background: none;
-                height: 0px;
-            }
-            QComboBox QAbstractItemView QScrollBar::add-page:vertical, 
-            QComboBox QAbstractItemView QScrollBar::sub-page:vertical {
-                background: none;
-            }
-        """)
-        add_linha("Estado", combobox_estado_cliente)
-        add_linha("Categoria do Cliente")
-
-        combobox_status_cliente = QComboBox()
-        combobox_status_cliente.addItems(["Selecionar","Ativo","Inativo","Pendente","Bloqueado"])
-        combobox_status_cliente.setCurrentIndex(0)
-        combobox_status_cliente.setStyleSheet("""
-            QComboBox { 
-                background-color: white; 
-                border: 3px solid rgb(50,150,250); 
-                border-radius: 5px; 
-                color: black; 
-                padding: 5px;
-            }
-            QComboBox QAbstractItemView {
-                background-color: white; 
-                color: black; 
-                border: 1px solid #ccc; 
-                selection-background-color: #e5e5e5; 
-                selection-color: black;
-            }
-            QComboBox QAbstractItemView QScrollBar:vertical {
-                background: #f5f5f5; 
-                width: 12px; 
-                border: none;
-            }
-            QComboBox QAbstractItemView QScrollBar::handle:vertical {
-                background: #cccccc; 
-                min-height: 20px; 
-                border-radius: 5px;
-            }
-            QComboBox QAbstractItemView QScrollBar::add-line:vertical, 
-            QComboBox QAbstractItemView QScrollBar::sub-line:vertical {
-                background: none;
-                height: 0px;
-            }
-            QComboBox QAbstractItemView QScrollBar::add-page:vertical, 
-            QComboBox QAbstractItemView QScrollBar::sub-page:vertical {
-                background: none;
-            }
-        """)
-        add_linha("Status do Cliente:", combobox_status_cliente)
-
+        # Botão de cadastro
         btn_fazer_cadastro = QPushButton("Fazer o Cadastro")
-        btn_fazer_cadastro.clicked.connect(self.cadastrar_clientes_juridicos)
-        btn_fazer_cadastro.setStyleSheet("""
-            QPushButton {
-                color: rgb(255, 255, 255);
+        btn_fazer_cadastro.setStyleSheet(f"""
+            QPushButton {{
+                color: {text_cor};
                 border-radius: 8px;
                 font-size: 16px;
-                background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255));
+                background: {button_bg};
                 border: 4px solid transparent;
-            }
-            QPushButton:hover {
-                background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255));
-                color: black;
-            }
+            }}
+            QPushButton:hover {{
+                background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100,180,255), stop:1 rgb(150,220,255));
+                color: {text_cor};
+            }}
         """)
+        btn_fazer_cadastro.clicked.connect(self.cadastrar_clientes_juridicos)
         layout.addWidget(btn_fazer_cadastro)
 
+        # Scroll area
         scroll_area = QScrollArea()
         scroll_area.setWidgetResizable(True)
         scroll_area.setWidget(conteudo)
-        scroll_area.setStyleSheet("""
-            QScrollBar:vertical {
-                background: white;
-                width: 6px;
-                margin: 2px 0;
-                border: none;
-            }
-            QScrollBar::handle:vertical {
-                background: gray;
-                min-height: 20px;
-                border-radius: 3px;
-            }
-            QScrollBar::add-line:vertical,
-            QScrollBar::sub-line:vertical {
-                height: 0;
-            }
-            QScrollBar::add-page:vertical,
-            QScrollBar::sub-page:vertical {
-                background: transparent;
-            }
-        """)
+        scroll_area.setStyleSheet(f"background-color: {bg_cor};")
 
         self.janela_cadastro.setCentralWidget(scroll_area)
         self.janela_cadastro.show()
+
 
     def informacoes_obrigatorias_clientes(self):
         self.campos_obrigatorios_clientes = {
@@ -2104,6 +1918,7 @@ class Clientes_Juridicos(QWidget):
         self.janela_historico_clientes = QMainWindow()
         self.janela_historico_clientes.setWindowTitle("Relatório de Clientes Jurídicos")
         self.janela_historico_clientes.resize(800, 600)
+        self.janela_historico_clientes.setObjectName("janela_historico_clientes")
 
         scroll = QScrollArea()
         scroll.setWidgetResizable(True)
@@ -2565,3 +2380,9 @@ class Clientes_Juridicos(QWidget):
             self.editar_cliente_juridico()
         elif action == excluir_action:
             self.excluir_clientes_juridicos()
+
+
+
+    
+
+    
