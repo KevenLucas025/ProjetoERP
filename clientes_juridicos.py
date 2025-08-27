@@ -332,15 +332,22 @@ class Clientes_Juridicos(QWidget):
             index_estado = self.campos_cliente_juridico["Estado"].findText(estado)
             if index_estado >= 0:
                 self.campos_cliente_juridico["Estado"].setCurrentIndex(index_estado)
+
                 
     def exibir_edicao_clientes(self, dados_cliente: dict):
         self.dados_originais_cliente = dados_cliente.copy()
         self.alteracoes_realizadas = False
+
+        # Inicializa o dicionário para armazenar os widgets
+        self.campos_cliente_juridico = {}
+
+        # Criar a janela
         self.janela_editar_cliente = QMainWindow()
         self.janela_editar_cliente.setWindowTitle("Editar Cliente")
         self.janela_editar_cliente.resize(683, 600)
         self.janela_editar_cliente.setStyleSheet("background-color: rgb(0, 80, 121);")
 
+        # Centralizar a janela
         screen = QGuiApplication.primaryScreen()
         screen_geometry = screen.availableGeometry()
         window_geometry = self.janela_editar_cliente.frameGeometry()
@@ -351,166 +358,383 @@ class Clientes_Juridicos(QWidget):
         layout = QGridLayout(central_widget)
         layout.setSpacing(10)
         layout.setContentsMargins(30, 30, 30, 30)
+
+         # Carregar tema
+        config = self.carregar_config()
+        tema = config.get("tema", "claro")
+
+        # Definições de tema
+        if tema == "escuro":
+            bg_cor = "#202124"
+            text_cor = "white"
+            lineedit_bg = "#303030"
+            button_style = """
+                QPushButton {
+                    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                                                stop:0 rgb(60,60,60),
+                                                stop:1 rgb(100,100,100));
+                    color: white;
+                    border-radius: 8px;
+                    font-size: 16px;
+                    border: 2px solid #666666;
+                    padding: 6px;
+                }
+                QPushButton:hover {
+                    background-color: #444444;
+                }
+                QPushButton:pressed {
+                    background-color: #555555;
+                    border: 2px solid #888888;
+                }
+            """
+            combobox_style = """
+                QComboBox {
+                    color: #f0f0f0;
+                    border: 2px solid #ffffff;
+                    border-radius: 6px;
+                    padding: 4px 10px;
+                    background-color: #2b2b2b;
+                }
+                QComboBox QAbstractItemView::item:hover {
+                    background-color: #444444;
+                    color: #f0f0f0;
+                }
+                QComboBox QAbstractItemView::item:selected {
+                    background-color: #696969;
+                    color: #f0f0f0;
+                }
+            """
+            scroll_style = """
+                QScrollBar:vertical {
+                    background: #ffffff;
+                    width: 12px;
+                    border-radius: 6px;
+                }
+                QScrollBar::handle:vertical {
+                    background: #555555;
+                    border-radius: 6px;
+                    min-height: 20px;
+                }
+            """
+            lineedit_style = f"""
+                QLineEdit {{
+                    background-color: {lineedit_bg};
+                    color: {text_cor};
+                    border: 2px solid white;
+                    border-radius: 6px;
+                    padding: 3px;
+                }}
+            """
+
+        elif tema == "claro":
+            bg_cor = "white"
+            text_cor = "black"
+            lineedit_bg = "white"
+            button_style = """
+                QPushButton {
+                    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                                                stop:0 rgb(50,150,250),
+                                                stop:1 rgb(100,200,255));
+                    color: black;
+                    border-radius: 8px;
+                    font-size: 16px;
+                    border: 2px solid rgb(50,150,250);
+                    padding: 6px;
+                }
+                QPushButton:hover {
+                    background-color: #e5f3ff;
+                }
+                QPushButton:pressed {
+                    background-color: #cce7ff;
+                    border: 2px solid #3399ff;
+                }
+            """
+            combobox_style = """
+                QComboBox {
+                    background-color: white;
+                    border: 2px solid rgb(50,150,250);
+                    border-radius: 5px;
+                    color: black;
+                    padding: 5px;
+                }
+                QComboBox QAbstractItemView {
+                    background-color: white;
+                    color: black;
+                    border: 1px solid #ccc;
+                    selection-background-color: #e5e5e5;
+                    selection-color: black;
+                }
+                QComboBox QScrollBar:vertical {
+                    background: #f5f5f5;
+                    width: 12px;
+                    border: none;
+                }
+                QComboBox QScrollBar::handle:vertical {
+                    background: #cccccc;
+                    min-height: 20px;
+                    border-radius: 5px;
+                }
+            """
+            scroll_style = """
+                QScrollBar:vertical {
+                    background: #ffffff;
+                    width: 12px;
+                    border-radius: 6px;
+                }
+                QScrollBar::handle:vertical {
+                    background: #cccccc;
+                    min-height: 20px;
+                    border-radius: 5px;
+                }
+            """
+            lineedit_style = """
+                QLineEdit {
+                    background-color: white;
+                    color: black;
+                    border: 2px solid rgb(50,150,250);
+                    border-radius: 6px;
+                    padding: 3px;
+                }
+            """
+
+        else:  # clássico
+            bg_cor = "rgb(0,80,121)"
+            text_cor = "white"
+            button_style = """
+                QPushButton {
+                    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                                                stop:0 rgb(0,120,180),
+                                                stop:1 rgb(0,150,220));
+                    color: white;
+                    border-radius: 8px;
+                    font-size: 16px;
+                    border: 2px solid rgb(0,100,160);
+                    padding: 6px;
+                }
+                QPushButton:hover {
+                    background-color: #007acc;
+                }
+                QPushButton:pressed {
+                    background-color: #006bb3;
+                    border: 2px solid #005c99;
+                }
+            """
+            combobox_style = """
+                QComboBox {
+                    background-color: white;
+                    border: 3px solid rgb(50,150,250);
+                    border-radius: 5px;
+                    color: black;
+                    padding: 5px;
+                }
+                QComboBox QAbstractItemView {
+                    background-color: white;
+                    color: black;
+                    border: 1px solid #ccc;
+                    selection-background-color: #e5e5e5;
+                    selection-color: black;
+                }
+            """
+            scroll_style = """
+                QScrollBar:vertical {
+                    background: #ffffff;
+                    width: 12px;
+                    border-radius: 6px;
+                }
+                QScrollBar::handle:vertical {
+                    background: #b4b4b4;
+                    min-height: 20px;
+                    border-radius: 5px;
+                }
+            """
+            lineedit_style = """
+                QLineEdit {
+                    background-color: white;
+                    color: black;
+                    border: 2px solid rgb(50,150,250);
+                    border-radius: 6px;
+                    padding: 3px;
+                }
+            """
         
-        scroll_area = QScrollArea()
-        scroll_area.setWidgetResizable(True)
-        scroll_area.setWidget(central_widget)
-        scroll_area.setStyleSheet("""
-            QScrollBar:vertical {
-                background: white;
-                width: 6px;
-                margin: 2px 0;
-                border: none;
-            }
-
-            QScrollBar::handle:vertical {
-                background: gray;
-                min-height: 20px;
-                border-radius: 3px;
-            }
-
-            QScrollBar::add-line:vertical,
-            QScrollBar::sub-line:vertical {
-                height: 0;
-            }
-
-            QScrollBar::add-page:vertical,
-            QScrollBar::sub-page:vertical {
-                background: transparent;
-            }
-        """)
+        # Widget central e layout
+        conteudo = QWidget()
+        conteudo.setStyleSheet(f"background-color: {bg_cor}; color: {text_cor};")
+        layout = QVBoxLayout(conteudo)
 
 
-        colunas = [
-            "Nome do Cliente", "Razão Social", "Data da Inclusão", "CNPJ","RG","CPF","Email","CNH","Categoria da CNH","Data de Emissão da CNH",
-            "Data de Vencimento da CNH","Telefone","CEP", "Endereço", "Número", "Complemento", "Cidade", "Bairro","Estado", 
-            "Status do Cliente","Categoria do Cliente","Última Atualização", "Valor Gasto Total", "Última Compra"
-        ]
+         # Função auxiliar para adicionar campos
+        def add_linha(titulo, widget=None):
+            label = QLabel(titulo)
+            label.setStyleSheet(f"color: {text_cor};")
+            layout.addWidget(label)
+            if widget is None:
+                widget = QLineEdit()
+                widget.setStyleSheet(lineedit_style)
+                # Preencher valor existente
+                chave = titulo.rstrip(":")
+                widget.setText(dados_cliente.get(chave, ""))
+            layout.addWidget(widget)
+            chave_sem_ponto = titulo.rstrip(":")
+            self.campos_cliente_juridico[chave_sem_ponto] = widget
+            return label, widget
 
-        self.campos_cliente_juridico = {}
+        # Campos básicos
+        add_linha("Nome do Cliente")
+        add_linha("Razão Social")
+        add_linha("Data da Inclusão")
+        add_linha("CNPJ")
+        add_linha("RG")
+        add_linha("CPF")
+        add_linha("Email")
+        add_linha("CNH")
 
-        for i, campo in enumerate(colunas):
-            label = QLabel(campo + ":")
-            label.setStyleSheet("color: white; font-weight: bold;")
-            label.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
+        # Categoria CNH
+        combobox_categoria_cnh = QComboBox()
+        combobox_categoria_cnh.addItems(["Selecionar","AB","A","B","C","D","E","Nenhuma"])
+        valor_categoria = dados_cliente.get("Categoria da CNH", "Selecionar")
+        index_categoria = combobox_categoria_cnh.findText(valor_categoria)
+        combobox_categoria_cnh.setCurrentIndex(index_categoria if index_categoria >=0 else 0)
+        combobox_categoria_cnh.setStyleSheet(combobox_style)
+        label_categoria, widget_categoria = add_linha("Categoria da CNH", combobox_categoria_cnh)
 
-            if campo in ["Estado", "Status do Cliente","Categoria da CNH"]:
-                entrada = QComboBox()
-                entrada.setStyleSheet("""
-                    QComboBox {
-                        background-color: white;
-                        border: 2px solid rgb(50,150,250);
-                        border-radius: 5px;
-                        color: black;
-                        padding: 5px;
-                    }
+         # Datas CNH
+        label_emissao_cnh, widget_emissao_cnh = add_linha("Data de Emissão da CNH")
+        widget_emissao_cnh.setText(dados_cliente.get("Data de Emissão da CNH",""))
+        label_vencimento_cnh, widget_vencimento_cnh = add_linha("Data de Vencimento da CNH")
+        widget_vencimento_cnh.setText(dados_cliente.get("Data de Vencimento da CNH",""))
 
-                    QComboBox QAbstractItemView {
-                        background-color: white;
-                        color: black;
-                        selection-background-color: rgb(220, 220, 220);
-                        border: 1px solid lightgray;
-                    }
-
-                    QComboBox QScrollBar:vertical {
-                        border: none;
-                        background: transparent;
-                        width: 6px;
-                        margin: 2px 0 2px 0;
-                    }
-
-                    QComboBox QScrollBar::handle:vertical {
-                        background: gray;
-                        min-height: 20px;
-                        border-radius: 3px;
-                    }
-
-                    QComboBox QScrollBar::add-line:vertical,
-                    QComboBox QScrollBar::sub-line:vertical {
-                        height: 0;
-                    }
-
-                    QComboBox QScrollBar::add-page:vertical,
-                    QComboBox QScrollBar::sub-page:vertical {
-                        background: white;
-                    }
-                """)
-
-                if campo == "Estado":
-                    entrada.addItems(["Selecione", "AC", "AL", "AP", "AM", "BA", "CE", "DF", "ES", "GO", "MA",
-                                    "MT", "MS", "MG", "PA", "PB", "PR", "PE", "PI", "RJ", "RN", "RS", "RO",
-                                    "RR", "SC", "SP", "SE", "TO"])
-                elif campo == "Status do Cliente":
-                    entrada.addItems(["Selecione", "Ativo", "Inativo", "Pendente", "Bloqueado"])
-                elif campo == "Categoria da CNH":
-                    entrada.addItems(["Selecione","AB","A","B","C","D","E","Nenhuma"])
-                index = entrada.findText(dados_cliente.get(campo, "Selecione"))
-                entrada.setCurrentIndex(index if index >= 0 else 0)
+        # Mostrar/esconder datas conforme categoria
+        def on_categoria_cnh_change(text):
+            if text not in ("Selecionar","Nenhuma"):
+                label_emissao_cnh.show()
+                widget_emissao_cnh.show()
+                label_vencimento_cnh.show()
+                widget_vencimento_cnh.show()
             else:
-                entrada = QLineEdit()
-                entrada.setText(dados_cliente[campo])
-            if isinstance(entrada,QComboBox):
-                entrada.currentTextChanged.connect(self.marcar_alteracao)
-            else:
-                entrada.textChanged.connect(self.marcar_alteracao)
-                entrada.setStyleSheet("""
-                    QLineEdit {
-                        color: black;
-                        background-color: rgb(240, 240, 240);
-                        border: 2px solid rgb(50, 150,250);
-                        border-radius: 6px;
-                        padding: 3px;
-                    }
-                    QLineEdit::placeholderText {
-                        color: black;
-                    }
-                """)
-            if campo == "CNPJ":
-                entrada.textChanged.connect(lambda texto, w=entrada: self.main_window.formatar_cnpj(texto,w))
-            elif campo == "RG":
-                entrada.textChanged.connect(lambda texto, w=entrada: self.main_window.formatar_rg(texto, w))
-                self.main_window.formatar_rg(dados_cliente[campo],entrada)
-            elif campo == "CPF":
-                entrada.textChanged.connect(lambda texto, w=entrada: self.main_window.formatar_cpf(texto,w))
-            elif campo == "Email":
-                entrada.textChanged.connect(lambda texto, w=entrada: self.main_window.validar_email(texto,w))
-            elif campo == "CNH":
-                entrada.textChanged.connect(lambda texto, w=entrada: self.main_window.formatar_cnh(texto,w))
-            elif campo in ["Data de Emissão da CNH", "Data de Vencimento da CNH", "Última Compra", "Data da Inclusão", "Última Atualização"]:
-                entrada.textChanged.connect(lambda texto, w=entrada: self.main_window.formatar_data_nascimento(texto, w))
-                entrada.editingFinished.connect(lambda w=entrada: self.main_window.validar_data_quando_finalizar(w.text(), w))
-            elif campo == "Telefone":
-                entrada.textChanged.connect(lambda texto, w=entrada: self.main_window.formatar_telefone(texto, w))
-            elif campo == "CEP":
-                entrada.textChanged.connect(lambda texto, w=entrada: self.main_window.formatar_cep(texto,w))
-                entrada.editingFinished.connect(lambda e=entrada: self.formatar_e_buscar_cep(e))
-            elif campo == "Valor Gasto Total":
-                entrada.editingFinished.connect(lambda w=entrada: self.main_window.formatar_moeda(w))
+                label_emissao_cnh.hide()
+                widget_emissao_cnh.hide()
+                label_vencimento_cnh.hide()
+                widget_vencimento_cnh.hide()
+                widget_emissao_cnh.clear()
+                widget_vencimento_cnh.clear()
+
+        combobox_categoria_cnh.currentTextChanged.connect(on_categoria_cnh_change)
+        on_categoria_cnh_change(valor_categoria)
+
+        add_linha("Telefone")
+        add_linha("CEP")
+        add_linha("Endereço")
+        add_linha("Número")
+        add_linha("Complemento")
+        add_linha("Cidade")
+        add_linha("Bairro")
+
+        # Estado
+        combobox_estado_cliente = QComboBox()
+        combobox_estado_cliente.addItems([
+            "Selecionar","AC","AL","AP","AM","BA","CE","DF","ES","GO","MA","MT","MS","MG",
+            "PA","PB","PR","PE","PI","RJ","RN","RS","RO","RR","SC","SP","SE","TO"
+        ])
+        valor_estado = dados_cliente.get("Estado", "Selecionar")
+        index_estado = combobox_estado_cliente.findText(valor_estado)
+        combobox_estado_cliente.setCurrentIndex(index_estado if index_estado >=0 else 0)
+        combobox_estado_cliente.setStyleSheet(combobox_style)
+        add_linha("Estado", combobox_estado_cliente)
+
+        # Categoria do cliente
+        add_linha("Categoria do Cliente")
+
+        # Status do cliente
+        combobox_status_cliente = QComboBox()
+        combobox_status_cliente.addItems(["Selecionar","Ativo","Inativo","Pendente","Bloqueado"])
+        valor_status = dados_cliente.get("Status do Cliente","Selecionar")
+        index_status = combobox_status_cliente.findText(valor_status)
+        combobox_status_cliente.setCurrentIndex(index_status if index_status >=0 else 0)
+        combobox_status_cliente.setStyleSheet(combobox_style)
+        add_linha("Status do Cliente", combobox_status_cliente)
+
+        add_linha("Última Atualização")
+
+
+        # Valor gasto total
+        add_linha("Valor Gasto Total")
+        self.campos_cliente_juridico["Valor Gasto Total"].setText(dados_cliente.get("Valor Gasto Total",""))
+
+        # Última Compra
+        add_linha("Última Compra")
+        self.campos_cliente_juridico["Última Compra"].setText(dados_cliente.get("Última Compra",""))
 
                 
+        # Conectar formatações
+        self.campos_cliente_juridico["CNPJ"].textChanged.connect(
+            lambda text: self.main_window.formatar_cnpj(text, self.campos_cliente_juridico["CNPJ"])
+        )
+        self.campos_cliente_juridico["RG"].textChanged.connect(
+            lambda text: self.main_window.formatar_rg(text, self.campos_cliente_juridico["RG"])
+        )
+        self.campos_cliente_juridico["CPF"].textChanged.connect(
+            lambda text: self.main_window.formatar_cpf(text, self.campos_cliente_juridico["CPF"])
+        )
+        self.campos_cliente_juridico["Email"].textChanged.connect(
+            lambda text: self.main_window.validar_email(text, self.campos_cliente_juridico["Email"])
+        )
+        self.campos_cliente_juridico["CNH"].textChanged.connect(
+            lambda text: self.main_window.formatar_cnh(text, self.campos_cliente_juridico["CNH"])
+        )
+        widget_emissao_cnh.textChanged.connect(
+            lambda text: self.main_window.formatar_data_nascimento(text, widget_emissao_cnh)
+        )
+        widget_vencimento_cnh.textChanged.connect(
+            lambda text: self.main_window.formatar_data_nascimento(text, widget_vencimento_cnh)
+        )
+        self.campos_cliente_juridico["Telefone"].textChanged.connect(
+            lambda text: self.main_window.formatar_telefone(text, self.campos_cliente_juridico["Telefone"])
+        )
+        self.campos_cliente_juridico["CEP"].textChanged.connect(
+            lambda text: self.main_window.formatar_cep(text, self.campos_cliente_juridico["CEP"])
+        )
+        self.campos_cliente_juridico["CEP"].editingFinished.connect(
+            lambda: self.formatar_e_buscar_cep(self.campos_cliente_juridico["CEP"])
+        )
+        self.campos_cliente_juridico["Valor Gasto Total"].editingFinished.connect(
+            lambda: self.main_window.formatar_moeda(self.campos_cliente_juridico["Valor Gasto Total"])
+        )
+        
+         # Campos de data conectados corretamente
+        campos_data = ["Data de Emissão da CNH", "Data de Vencimento da CNH",
+                   "Última Compra", "Data da Inclusão", "Última Atualização"]
+        
+        for campo in campos_data:
+            if campo in self.campos_cliente_juridico:
+                widget = self.campos_cliente_juridico[campo]
+                widget.textChanged.connect(
+                    lambda texto, w=widget: self.main_window.formatar_data_nascimento(texto, w)
+                )
+                widget.editingFinished.connect(
+                    lambda w=widget: self.main_window.validar_data_quando_finalizar(w.text(), w)
+                )
+        for campo, widget in self.campos_cliente_juridico.items():
+            if isinstance(widget, QLineEdit):
+                widget.textChanged.connect(self.marcar_alteracao)
+            elif isinstance(widget, QComboBox):
+                widget.currentTextChanged.connect(self.marcar_alteracao)
 
-            layout.addWidget(label, i, 0)
-            layout.addWidget(entrada, i, 1)
-            self.campos_cliente_juridico[campo] = entrada
 
         # Botão atualizar
         botao_atualizar = QPushButton("Atualizar")
-        botao_atualizar.setStyleSheet("""
-            QPushButton {
-                background-color: white;
-                padding: 8px;
-                font-weight: bold;
-                border-radius: 10px;
-            }
-            QPushButton:hover {
-                background-color: lightgray;
-            }
-        """)
+        botao_atualizar.setStyleSheet(button_style)
         botao_atualizar.clicked.connect(self.atualizar_dados_clientes)
-        layout.addWidget(botao_atualizar, len(colunas), 0, 1, 2, alignment=Qt.AlignCenter)
+        layout.addWidget(botao_atualizar)
+
+        # Scroll area
+        scroll_area = QScrollArea()
+        scroll_area.setWidgetResizable(True)
+        scroll_area.setWidget(conteudo)
+        scroll_area.setStyleSheet(scroll_style)
 
         self.janela_editar_cliente.setCentralWidget(scroll_area)
-        self.janela_editar_cliente.show()  
+        self.janela_editar_cliente.show()
     
                 
     def editar_cliente_juridico(self):
@@ -566,7 +790,7 @@ class Clientes_Juridicos(QWidget):
             bg_cor = "#202124"
             text_cor = "white"
             lineedit_bg = "#303030"
-            combobox_bg = "#303030"
+
             button_style = """
                 QPushButton {
                     background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
@@ -586,6 +810,65 @@ class Clientes_Juridicos(QWidget):
                     border: 2px solid #888888;
                 }
             """
+            combobox_style = """
+                QComboBox {
+                    color: #f0f0f0;
+                    border: 2px solid #ffffff;
+                    border-radius: 6px;
+                    padding: 4px 10px;
+                    background-color: #2b2b2b;
+                }
+                QComboBox QAbstractItemView::item:hover {
+                    background-color: #444444;
+                    color: #f0f0f0;
+                }
+                QComboBox QAbstractItemView::item:selected {
+                    background-color: #696969;
+                    color: #f0f0f0;
+                }
+                QComboBox QAbstractItemView::item {
+                    height: 24px;
+                }
+                QComboBox QScrollBar:vertical {
+                    background: #ffffff;
+                    width: 12px;
+                    border-radius: 6px;
+                }
+                QComboBox QScrollBar::handle:vertical {
+                    background: #555555;
+                    border-radius: 6px;
+                }
+            """
+            scroll_style = """
+            /* Scrollbar vertical */
+            QScrollBar:vertical {
+                background: #ffffff;   /* fundo do track */
+                width: 12px;
+                margin: 0px;
+                border-radius: 6px;
+            }
+
+            QScrollBar::handle:vertical {
+                background: #555555;   /* cor do handle */
+                border-radius: 6px;
+                min-height: 20px;
+            }
+
+            QScrollBar::handle:vertical:hover {
+                background: #777777;   /* hover no handle */
+            }
+
+            QScrollBar::add-line:vertical,
+            QScrollBar::sub-line:vertical {
+                background: none;
+                height: 0px;
+            }
+
+            QScrollBar::add-page:vertical,
+            QScrollBar::sub-page:vertical {
+                background: none;
+            }
+            """
             lineedit_style = f"""
                 QLineEdit {{
                     background-color: {lineedit_bg};
@@ -595,17 +878,58 @@ class Clientes_Juridicos(QWidget):
                     padding: 3px;
                 }}
             """
+
         elif tema == "claro":
             bg_cor = "white"
             text_cor = "black"
             lineedit_bg = "white"
-            combobox_bg = "white"
-            button_bg = "qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50,150,250), stop:1 rgb(100,200,255))"
 
-        else:  # clássico
-            bg_cor = "rgb(0,80,121)"
-            text_cor = "white"
-            combobox_bg = "white"
+            button_style = """
+                QPushButton {
+                    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                                                stop:0 rgb(50,150,250),
+                                                stop:1 rgb(100,200,255));
+                    color: black;
+                    border-radius: 8px;
+                    font-size: 16px;
+                    border: 2px solid rgb(50,150,250);
+                    padding: 6px;
+                }
+                QPushButton:hover {
+                    background-color: #e5f3ff;
+                }
+                QPushButton:pressed {
+                    background-color: #cce7ff;
+                    border: 2px solid #3399ff;
+                }
+            """
+            combobox_style = """
+                QComboBox {
+                    background-color: white;
+                    border: 2px solid rgb(50,150,250);
+                    border-radius: 5px;
+                    color: black;
+                    padding: 5px;
+                }
+                QComboBox QAbstractItemView {
+                    background-color: white;
+                    color: black;
+                    border: 1px solid #ccc;
+                    selection-background-color: #e5e5e5;
+                    selection-color: black;
+                }
+                QComboBox QScrollBar:vertical {
+                    background: #f5f5f5;
+                    width: 12px;
+                    border: none;
+                }
+                QComboBox QScrollBar::handle:vertical {
+                    background: #cccccc;
+                    min-height: 20px;
+                    border-radius: 5px;
+                }
+                
+            """
             lineedit_style = """
                 QLineEdit {
                     background-color: white;
@@ -615,25 +939,80 @@ class Clientes_Juridicos(QWidget):
                     padding: 3px;
                 }
             """
+
+        else:  # clássico
+            bg_cor = "rgb(0,80,121)"
+            text_cor = "white"
+
             button_style = """
                 QPushButton {
+                    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                                                stop:0 rgb(0,120,180),
+                                                stop:1 rgb(0,150,220));
                     color: white;
                     border-radius: 8px;
                     font-size: 16px;
-                    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                                                stop:0 rgb(50,150,250),
-                                                stop:1 rgb(100,200,255));
-                    border: 4px solid transparent;
+                    border: 2px solid rgb(0,100,160);
                     padding: 6px;
                 }
                 QPushButton:hover {
-                    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                                                stop:0 rgb(100,180,255),
-                                                stop:1 rgb(150,220,255));
+                    background-color: #007acc;
+                }
+                QPushButton:pressed {
+                    background-color: #006bb3;
+                    border: 2px solid #005c99;
+                }
+            """
+            combobox_style = """
+                QComboBox {
+                    background-color: white;
+                    border: 3px solid rgb(50,150,250);
+                    border-radius: 5px;
+                    color: black;
+                    padding: 5px;
+                }
+                QComboBox QAbstractItemView {
+                    background-color: white;
+                    color: black;
+                    border: 1px solid #ccc;
+                    selection-background-color: #e5e5e5;
+                    selection-color: black;
+                }
+                QComboBox QScrollBar:vertical {
+                    background: #f5f5f5;
+                    width: 12px;
+                    border: none;
+                }
+                QComboBox QScrollBar::handle:vertical {
+                    background: #cccccc;
+                    min-height: 20px;
+                    border-radius: 5px;
+                }
+            """
+            scroll_style = """
+                QScrollBar:vertical {
+                border: none;
+                background-color: rgb(255, 255, 256); /* branco */
+                width: 30px;
+                margin: 0px 10px 0px 10px;
+            }
+             QScrollBar::handle:vertical {
+                background-color: rgb(180, 180,180);  /* cinza */
+                min-height: 30px;
+                border-radius: 5px;
+            }
+            """
+            lineedit_style = """
+                QLineEdit {
+                    background-color: white;
+                    color: black;
+                    border: 2px solid rgb(50,150,250);
+                    border-radius: 6px;
+                    padding: 3px;
                 }
             """
 
-
+        # --------------------------
         # Widget central e layout
         conteudo = QWidget()
         conteudo.setStyleSheet(f"background-color: {bg_cor}; color: {text_cor};")
@@ -642,7 +1021,7 @@ class Clientes_Juridicos(QWidget):
         # Função auxiliar para adicionar campos
         def add_linha(titulo, widget=None):
             label = QLabel(titulo)
-            label.setStyleSheet(f"color: {text_cor}; font-weight: bold;")
+            label.setStyleSheet(f"color: {text_cor};")
             layout.addWidget(label)
             if widget is None:
                 widget = QLineEdit()
@@ -656,6 +1035,7 @@ class Clientes_Juridicos(QWidget):
         # ComboBox Categoria CNH criado antecipadamente para uso no formulário 
         combobox_categoria_cnh = QComboBox() 
         combobox_categoria_cnh.addItems(["Selecionar", "AB", "A", "B", "C", "D", "E", "Nenhuma"])
+        combobox_categoria_cnh.setStyleSheet(combobox_style)
 
         # Exemplo de uso
         add_linha("Nome do Cliente")
@@ -734,50 +1114,7 @@ class Clientes_Juridicos(QWidget):
                                           "RS","RO","RR","SC","SP","SE","TO" ])
         
         combobox_estado_cliente.setCurrentIndex(0) 
-        combobox_estado_cliente.setStyleSheet(""" 
-            QComboBox {
-                background-color: white; border: 3px solid rgb(50,150,250); 
-                border-radius: 5px; color: black; padding: 5px; 
-            }                                  
-            """
-                                              
-            """QComboBox QAbstractItemView { 
-                background-color: white; 
-                color: black; 
-                border: 1px solid #ccc; 
-                selection-background-color: #e5e5e5; 
-                selection-color: black; 
-            }
-            """ 
-
-            """QComboBox QAbstractItemView QScrollBar:vertical { 
-                background: #f5f5f5; 
-                width: 12px; 
-                border: none;
-            }
-            """
-
-            """QComboBox QAbstractItemView QScrollBar::handle:vertical {
-                background: #cccccc; 
-                min-height: 20px; 
-                border-radius: 5px;
-             }
-             """ 
-            
-            
-            
-            """QComboBox QAbstractItemView QScrollBar::add-line:vertical, 
-                QComboBox QAbstractItemView QScrollBar::sub-line:vertical{ 
-                background: none; height: 0px; 
-            } 
-            """
-            
-            """QComboBox QAbstractItemView QScrollBar::add-page:vertical, 
-            QComboBox QAbstractItemView QScrollBar::sub-page:vertical {
-            background: none; 
-            }
-            """
-            )
+        combobox_estado_cliente.setStyleSheet(combobox_style)
             
         add_linha("Estado", combobox_estado_cliente) 
         add_linha("Categoria do Cliente")
@@ -786,55 +1123,7 @@ class Clientes_Juridicos(QWidget):
 
         combobox_status_cliente.addItems(["Selecionar","Ativo","Inativo","Pendente","Bloqueado"]) 
         combobox_status_cliente.setCurrentIndex(0) 
-        combobox_status_cliente.setStyleSheet(""" 
-        QComboBox { 
-        background-color: white; 
-        border: 3px solid rgb(50,150,250); 
-        border-radius: 5px; color: black; 
-        padding: 5px; 
-        }
-        """
-                                              
-        """QComboBox QAbstractItemView { 
-            background-color: white; 
-            color: black; 
-            border: 1px solid #ccc; 
-            selection-background-color: #e5e5e5; 
-            selection-color: black; 
-        }
-        """
-         
-    
-        """QComboBox QAbstractItemView QScrollBar:vertical { 
-            background: #f5f5f5; 
-            width: 12px; 
-            border: none;
-            } 
-        """
-
-        """QComboBox QAbstractItemView QScrollBar::handle:vertical { 
-            background: #cccccc; 
-            min-height: 20px; 
-            border-radius: 5px; 
-         }
-         """
-        
-        
-        """QComboBox QAbstractItemView QScrollBar::add-line:vertical, 
-        QComboBox QAbstractItemView QScrollBar::sub-line:vertical { 
-            background: none; 
-            height: 0px; 
-         }
-        """
-    
-        
-        """QComboBox QAbstractItemView QScrollBar::add-page:vertical, 
-        QComboBox QAbstractItemView QScrollBar::sub-page:vertical { 
-            background: none; } 
-        
-        """) 
-        
-        
+        combobox_status_cliente.setStyleSheet(combobox_style) 
         add_linha("Status do Cliente:", combobox_status_cliente)                                  
 
         # Botão de cadastro
@@ -848,7 +1137,7 @@ class Clientes_Juridicos(QWidget):
         scroll_area = QScrollArea()
         scroll_area.setWidgetResizable(True)
         scroll_area.setWidget(conteudo)
-        scroll_area.setStyleSheet(f"background-color: {bg_cor};")
+        scroll_area.setStyleSheet(scroll_style)
 
         self.janela_cadastro.setCentralWidget(scroll_area)
         self.janela_cadastro.show()
@@ -872,9 +1161,9 @@ class Clientes_Juridicos(QWidget):
             "Categoria do Cliente": "O campo Categoria do Cliente é obrigatório.",
             "Status do Cliente": "Você deve selecionar um status válido para o cliente.",
             "Última Atualização": "O campo Última Atualização é obrigatório.",
-            "Data da Inclusão": "O campo Última Atualização é obrigatório.",
-            "Valor Gasto Total": "O campo Última Atualização é obrigatório.",
-            "Última Compra": "O campo Última Atualização é obrigatório."
+            "Data da Inclusão": "O campo Data da Inclusão é obrigatório.",
+            "Valor Gasto Total": "O campo Valor Gasto Total é obrigatório.",
+            "Última Compra": "O campo Última Compra é obrigatório."
             
         }
 
@@ -885,7 +1174,7 @@ class Clientes_Juridicos(QWidget):
         elif isinstance(cnh_widget, QComboBox):
             cnh_valor = cnh_widget.currentText().strip()
                 
-        if cnh_valor and cnh_valor.lower() not in ["não cadastrado", "selecione"]:
+        if cnh_valor and cnh_valor.lower() not in ["não cadastrado", "selecionar"]:
             self.campos_obrigatorios_clientes.update({
                 "Categoria da CNH": "Informe a Categoria da CNH.",
                 "Data de Emissão da CNH": "Informe a Data de Emissão da CNH.",
@@ -910,12 +1199,6 @@ class Clientes_Juridicos(QWidget):
 
             print(f"Validando campo '{campo}': valor capturado '{valor}'")  # <-- print para debug
 
-            if not valor:
-                QMessageBox.warning(None, "Campo obrigatório", mensagem_erro)
-                # Foca no widget para ajudar o usuário a preencher
-                widget.setFocus()
-                return False
-
         return True
 
     def atualizar_dados_clientes(self):
@@ -932,22 +1215,24 @@ class Clientes_Juridicos(QWidget):
             else:
                 valor = str(widget).strip()
 
-            if not valor or (isinstance(widget, QComboBox) and valor.lower() == "selecione"):
-                QMessageBox.warning(None, "Atenção", mensagem)
+            if not valor or (isinstance(widget, QComboBox) and valor.lower() == "selecionar"):
+                QMessageBox.warning(self, "Atenção", mensagem)
                 return
 
 
         if not self.alteracoes_realizadas:
-            QMessageBox.information(None, "Sem alterações", "Nenhuma modificação foi feita.")
+            QMessageBox.information(self, "Sem alterações", "Nenhuma modificação foi feita.")
             return
         
         # --- COLETA DOS DADOS ---
         dados_atualizados = {}
         for campo, widget in self.campos_cliente_juridico.items():
-            if isinstance(widget, QComboBox):
+            if isinstance(widget, QLineEdit):
+                dados_atualizados[campo] = widget.text()
+            elif isinstance(widget, QComboBox):
                 dados_atualizados[campo] = widget.currentText()
             else:
-                dados_atualizados[campo] = widget.text()
+                dados_atualizados[campo] = str(widget)
 
         # --- VERIFICAÇÃO DE CAMPOS SENSÍVEIS ---
         campos_sensiveis = ["Data da Inclusão","Última Atualização", "Valor Gasto Total", "Última Compra"]
@@ -962,28 +1247,48 @@ class Clientes_Juridicos(QWidget):
                     config = json.load(f)
                     senha_correta = config.get("senha", "")
             except Exception as e:
-                QMessageBox.critical(None, "Erro", f"Não foi possível carregar a senha do sistema\n {e}")
+                QMessageBox.critical(self, "Erro", f"Não foi possível carregar a senha do sistema\n {e}")
                 return
 
             tentativas = 0
             while tentativas < 3:
-                senha, ok = QInputDialog.getText(
-                    None, "Confirmação de Segurança",
-                    "Digite a senha do sistema:", QLineEdit.Password
-                )
-
-                if not ok:  # Cancelou
-                    return
-
+                msg = QMessageBox(self)
+                msg.setWindowTitle("Confirmação de Segurança")
+                msg.setText("Digite a senha do sistema:")
+                msg.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
+                msg.button(QMessageBox.Ok).setText("OK")
+                msg.button(QMessageBox.Cancel).setText("Cancelar")
+                
+                # Para capturar senha, adiciona QLineEdit no layout
+                input_senha = QLineEdit(msg)
+                input_senha.setEchoMode(QLineEdit.Password)
+                msg.layout().addWidget(input_senha, 1, 1)
+                
+                ret = msg.exec()
+                
+                if ret == QMessageBox.Cancel:
+                    return  # Cancelou
+                
+                senha = input_senha.text()
                 if senha.strip() == senha_correta.strip():
-                    break  # Sai do loop se a senha estiver correta
+                    break
+                
+                tentativas += 1
+                if tentativas < 3:
+                    QMessageBox.critical(self, "Acesso Negado",
+                                        f"Senha incorreta. Tentativas restantes: {3 - tentativas}")
+                else:
+                    QMessageBox.critical(self, "Acesso Negado",
+                                        "Você excedeu o número máximo de tentativas.\nO sistema será encerrado.")
+                    QApplication.quit()
+                    return
 
                 tentativas += 1
                 if tentativas < 3:
-                    QMessageBox.critical(None, "Acesso Negado",
+                    QMessageBox.critical(self, "Acesso Negado",
                                         f"Senha incorreta. Tentativas restantes: {3 - tentativas}")
                 else:
-                    QMessageBox.critical(None, "Acesso Negado",
+                    QMessageBox.critical(self, "Acesso Negado",
                                         "Você excedeu o número máximo de tentativas.\nO sistema será encerrado.")
                     QApplication.quit()
                     return
@@ -1028,12 +1333,14 @@ class Clientes_Juridicos(QWidget):
                 f"Cliente {dados_atualizados['Nome do Cliente']} editado com sucesso"
             )
 
-            QMessageBox.information(None, "Sucesso", "Cliente atualizado com sucesso.")
+            QMessageBox.information(self, "Sucesso", "Cliente atualizado com sucesso.")
             self.carregar_clientes_juridicos()
             self.janela_editar_cliente.close()
         except Exception as e:
-            QMessageBox.critical(None, "Erro", f"Erro ao atualizar cliente: {e}")
+            QMessageBox.critical(self, "Erro", f"Erro ao atualizar cliente: {e}")
 
+    def marcar_alteracao(self):
+        self.alteracoes_realizadas = True
     
     def cadastrar_clientes_juridicos(self):
         self.informacoes_obrigatorias_clientes()
@@ -1072,34 +1379,34 @@ class Clientes_Juridicos(QWidget):
                 # Verificar campos únicos individualmente
                 cursor.execute('SELECT 1 FROM clientes_juridicos WHERE CNPJ = ?',(cnpj,))
                 if cursor.fetchone():
-                    QMessageBox.information(None,"Duplicidade","Já existe um cliente cadastrado com este CNPJ.")
+                    QMessageBox.information(self,"Duplicidade","Já existe um cliente cadastrado com este CNPJ.")
                     return
                 cursor.execute("SELECT 1 FROM clientes_juridicos WHERE 'Razão Social' = ?",(razao_social,))
                 if cursor.fetchone():
-                    QMessageBox.information(None,"Duplicidade","Já existe um cliente cadastrado com esta Razão Social.")
+                    QMessageBox.information(self,"Duplicidade","Já existe um cliente cadastrado com esta Razão Social.")
                     return
                 cursor.execute('SELECT 1 FROM clientes_juridicos WHERE Telefone = ?',(telefone,))
                 if cursor.fetchone():
-                    QMessageBox.information(None,"Duplicidade","Já existe um cliente cadastrado com este Telefone.")
+                    QMessageBox.information(self,"Duplicidade","Já existe um cliente cadastrado com este Telefone.")
                     return
                 cursor.execute('SELECT 1 FROM clientes_juridicos WHERE RG = ?',(rg,))
                 if cursor.fetchone():
-                    QMessageBox.information(None,"Duplicidade","Já existe um cliente cadastrado com este RG.")
+                    QMessageBox.information(self,"Duplicidade","Já existe um cliente cadastrado com este RG.")
                     return
                 
                 cursor.execute('SELECT 1 FROM clientes_juridicos WHERE CPF = ?',(cpf,))
                 if cursor.fetchone():
-                    QMessageBox.information(None,"Duplicidade","Já existe um cliente cadastrado com este CPF.")
+                    QMessageBox.information(self,"Duplicidade","Já existe um cliente cadastrado com este CPF.")
                     return
                 
                 cursor.execute('SELECT 1 FROM clientes_juridicos WHERE Email = ?',(email,))
                 if cursor.fetchone():
-                    QMessageBox.information(None,"Duplicidade","Já existe um cliente cadastrado com este Email.")
+                    QMessageBox.information(self,"Duplicidade","Já existe um cliente cadastrado com este Email.")
                     return
                 
                 cursor.execute('SELECT 1 FROM clientes_juridicos WHERE CNH = ?',(cnh,))
                 if cursor.fetchone():
-                    QMessageBox.information(None,"Duplicidade","Já existe um cliente cadastrado com esta CNH.")
+                    QMessageBox.information(self,"Duplicidade","Já existe um cliente cadastrado com esta CNH.")
                     return
 
                 # Validação de todos os campos obrigatórios
@@ -1108,7 +1415,7 @@ class Clientes_Juridicos(QWidget):
                     valor = widget.text().strip() if isinstance(widget, QLineEdit) else widget.currentText()
                     
                     if not valor or (isinstance(widget, QComboBox) and valor == "Selecionar"):
-                        QMessageBox.warning(None, "Atenção", mensagem)
+                        QMessageBox.warning(self, "Atenção", mensagem)
                         return
                     
 
@@ -1149,7 +1456,7 @@ class Clientes_Juridicos(QWidget):
                     "Cadastro de Cliente", f"Cliente {nome} cadastrado com sucesso"
                 )
                 
-                QMessageBox.information(None, "Sucesso", "Cliente cadastrado com sucesso!")
+                QMessageBox.information(self, "Sucesso", "Cliente cadastrado com sucesso!")
                 # Redimensiona apenas uma vez após preencher
                 self.table_clientes_juridicos.resizeColumnsToContents()
                 self.table_clientes_juridicos.resizeRowsToContents()
@@ -1158,7 +1465,7 @@ class Clientes_Juridicos(QWidget):
                 
 
         except Exception as e:
-            QMessageBox.critical(None, "Erro", f"Erro ao cadastrar cliente: \n{e}")
+            QMessageBox.critical(self, "Erro", f"Erro ao cadastrar cliente: \n{e}")
 
         
     def limpar_campos_clientes(self):
@@ -1238,7 +1545,7 @@ class Clientes_Juridicos(QWidget):
                 mensagem = f"Tem certeza que deseja excluir os seguintes clientes?\n{nomes}"
 
             # Criar QMessageBox manualmente para alterar os textos dos botões
-            msgbox = QMessageBox()
+            msgbox = QMessageBox(self)
             msgbox.setIcon(QMessageBox.Question)
             msgbox.setWindowTitle("Confirmar Exclusão")
             msgbox.setText(mensagem)
@@ -1279,7 +1586,7 @@ class Clientes_Juridicos(QWidget):
             
     def marcar_como_clientes(self):
         if self.table_clientes_juridicos.rowCount() == 0:
-            QMessageBox.warning(None,"Aviso","Nenhum cliente cadastrado para selecionar.")
+            QMessageBox.warning(self,"Aviso","Nenhum cliente cadastrado para selecionar.")
              # Desmarca o checkbox header visualmente
             if hasattr(self, "checkbox_header_clientes") and isinstance(self.checkbox_header_clientes, QCheckBox):
                 QTimer.singleShot(0, lambda: self.checkbox_header_clientes.setChecked(False))
@@ -1418,14 +1725,14 @@ class Clientes_Juridicos(QWidget):
         return super().eventFilter(source,event)
     
     
-    def marcar_alteracao(self):
-        self.alteracoes_realizadas = True
+    
 
 
     def historico_clientes_juridicos(self):
         self.janela_historico_clientes = QMainWindow()
         self.janela_historico_clientes.resize(800,650)
         self.janela_historico_clientes.setWindowTitle("Histórico de Clientes")
+        self.janela_historico_clientes.setObjectName("janela_historico_clientes")
 
         # Centralizar a janela na tela
         screen = QGuiApplication.primaryScreen()
@@ -1434,9 +1741,317 @@ class Clientes_Juridicos(QWidget):
         window_geometry.moveCenter(screen_geometry.center())
         self.janela_historico_clientes.move(window_geometry.topLeft())
 
+
         # Criação do layout e tabela para exibir o histórico
         central_widget = QWidget()
         layout = QVBoxLayout(central_widget)
+
+        # Carregar tema
+        config = self.carregar_config()
+        tema = config.get("tema", "claro")
+
+        # Definições de tema
+        if tema == "escuro":
+            bg_cor = "#202124"
+            text_cor = "white"
+            lineedit_bg = "#303030"
+
+            button_style = """
+                QPushButton {
+                    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                                                stop:0 rgb(60,60,60),
+                                                stop:1 rgb(100,100,100));
+                    color: white;
+                    border-radius: 8px;
+                    font-size: 12px;
+                    border: 2px solid #666666;
+                    padding: 3px;
+                }
+                QPushButton:hover {
+                    background-color: #444444;
+                }
+                QPushButton:pressed {
+                    background-color: #555555;
+                    border: 2px solid #888888;
+                }
+            """
+            combobox_style = """
+                QComboBox {
+                    color: #f0f0f0;
+                    border: 2px solid #ffffff;
+                    border-radius: 6px;
+                    padding: 4px 10px;
+                    background-color: #2b2b2b;
+                }
+                QComboBox QAbstractItemView::item:hover {
+                    background-color: #444444;
+                    color: #f0f0f0;
+                }
+                QComboBox QAbstractItemView::item:selected {
+                    background-color: #696969;
+                    color: #f0f0f0;
+                }
+                QComboBox QAbstractItemView::item {
+                    height: 24px;
+                }
+                QComboBox QScrollBar:vertical {
+                    background: #ffffff;
+                    width: 12px;
+                    border-radius: 6px;
+                }
+                QComboBox QScrollBar::handle:vertical {
+                    background: #555555;
+                    border-radius: 6px;
+                }
+            """
+            scroll_style = """
+            /* Scrollbar vertical */
+            QScrollBar:vertical {
+                background: #ffffff;   /* fundo do track */
+                width: 12px;
+                margin: 0px;
+                border-radius: 6px;
+            }
+
+            QScrollBar::handle:vertical {
+                background: #555555;   /* cor do handle */
+                border-radius: 6px;
+                min-height: 20px;
+            }
+
+            QScrollBar::handle:vertical:hover {
+                background: #777777;   /* hover no handle */
+            }
+
+            QScrollBar::add-line:vertical,
+            QScrollBar::sub-line:vertical {
+                background: none;
+                height: 0px;
+            }
+
+            QScrollBar::add-page:vertical,
+            QScrollBar::sub-page:vertical {
+                background: none;
+            }
+            """
+            table_view_style = """
+                /* QTableView com seleção diferenciada */
+            QTableView {
+                background-color: #202124;
+                color: white;
+                gridline-color: #555555;
+                selection-background-color: #7a7a7a;
+                selection-color: white;
+            }
+            /* Coluna dos cabeçalhos */
+            QHeaderView::section {
+                background-color: #202124;
+                color: white;
+                border: 1px solid #aaaaaa;
+                padding: 1px;
+            }
+
+            /* QTabWidget headers brancos */
+            QTabWidget::pane {
+                border: 1px solid #444444;
+                background-color: #202124;
+            }
+            /* Estiliza a barra de rolagem horizontal */
+            QTableView QScrollBar:horizontal {
+                border: none;
+                background-color: #ffffff;
+                height: 12px;
+                margin: 0px;
+                border-radius: 5px;
+            }
+
+            /* Estiliza a barra de rolagem vertical */
+            QTableView QScrollBar:vertical {
+                border: none;
+                background-color: #ffffff;  
+                width: 12px;
+                margin: 0px;
+                border-radius: 5px;
+            }
+            
+
+            /* Parte que você arrasta */
+            QTableView QScrollBar::handle:vertical {
+                background-color: #777777;  /* cinza médio */
+                min-height: 22px;
+                border-radius: 5px;
+            }
+
+            QTableView QScrollBar::handle:horizontal {
+                background-color: #777777;
+                min-width: 22px;
+                border-radius: 5px;
+            }
+
+            /* Groove horizontal */
+            QTableView QScrollBar::groove:horizontal {
+                background-color: #3a3a3a;  /* faixa mais clara */
+                border-radius: 5px;
+                height: 15px;
+                margin: 0px 10px 0px 10px;
+            }
+
+            /* Groove vertical */
+            QTableView QScrollBar::groove:vertical {
+                background-color: #3a3a3a;
+                border-radius: 5px;
+                width: 25px;
+                margin: 10px 0px 10px 10px;
+            }
+
+            /* Estilo para item selecionado */
+            QTableWidget::item:selected {
+                background-color: #555555;  /* cinza de seleção */
+                color: white;
+            }
+            """
+            lineedit_style = f"""
+                QLineEdit {{
+                    background-color: {lineedit_bg};
+                    color: {text_cor};
+                    border: 2px solid white;
+                    border-radius: 6px;
+                    padding: 3px;
+                }}
+            """
+
+        elif tema == "claro":
+            bg_cor = "white"
+            text_cor = "black"
+            lineedit_bg = "white"
+
+            button_style = """
+                QPushButton {
+                    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                                                stop:0 rgb(50,150,250),
+                                                stop:1 rgb(100,200,255));
+                    color: black;
+                    border-radius: 8px;
+                    font-size: 16px;
+                    border: 2px solid rgb(50,150,250);
+                    padding: 6px;
+                }
+                QPushButton:hover {
+                    background-color: #e5f3ff;
+                }
+                QPushButton:pressed {
+                    background-color: #cce7ff;
+                    border: 2px solid #3399ff;
+                }
+            """
+            combobox_style = """
+                QComboBox {
+                    background-color: white;
+                    border: 2px solid rgb(50,150,250);
+                    border-radius: 5px;
+                    color: black;
+                    padding: 5px;
+                }
+                QComboBox QAbstractItemView {
+                    background-color: white;
+                    color: black;
+                    border: 1px solid #ccc;
+                    selection-background-color: #e5e5e5;
+                    selection-color: black;
+                }
+                QComboBox QScrollBar:vertical {
+                    background: #f5f5f5;
+                    width: 12px;
+                    border: none;
+                }
+                QComboBox QScrollBar::handle:vertical {
+                    background: #cccccc;
+                    min-height: 20px;
+                    border-radius: 5px;
+                }
+                
+            """
+            lineedit_style = """
+                QLineEdit {
+                    background-color: white;
+                    color: black;
+                    border: 2px solid rgb(50,150,250);
+                    border-radius: 6px;
+                    padding: 3px;
+                }
+            """
+
+        else:  # clássico
+            bg_cor = "rgb(0,80,121)"
+            text_cor = "white"
+
+            button_style = """
+                QPushButton {
+                    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                                                stop:0 rgb(0,120,180),
+                                                stop:1 rgb(0,150,220));
+                    color: white;
+                    border-radius: 8px;
+                    font-size: 16px;
+                    border: 2px solid rgb(0,100,160);
+                    padding: 6px;
+                }
+                QPushButton:hover {
+                    background-color: #007acc;
+                }
+                QPushButton:pressed {
+                    background-color: #006bb3;
+                    border: 2px solid #005c99;
+                }
+            """
+            combobox_style = """
+                QComboBox {
+                    background-color: white;
+                    border: 3px solid rgb(50,150,250);
+                    border-radius: 5px;
+                    color: black;
+                    padding: 5px;
+                }
+                QComboBox QAbstractItemView {
+                    background-color: white;
+                    color: black;
+                    border: 1px solid #ccc;
+                    selection-background-color: #e5e5e5;
+                    selection-color: black;
+                }
+                QComboBox QScrollBar:vertical {
+                    background: #f5f5f5;
+                    width: 12px;
+                    border: none;
+                }
+                QComboBox QScrollBar::handle:vertical {
+                    background: #cccccc;
+                    min-height: 20px;
+                    border-radius: 5px;
+                }
+            """
+            scroll_style = """
+                QScrollBar:vertical {
+                border: none;
+                background-color: rgb(255, 255, 256); /* branco */
+                width: 30px;
+                margin: 0px 10px 0px 10px;
+            }
+             QScrollBar::handle:vertical {
+                background-color: rgb(180, 180,180);  /* cinza */
+                min-height: 30px;
+                border-radius: 5px;
+            }
+            """
+            lineedit_style = """
+                QLineEdit {
+                    background-color: white;
+                    color: black;
+                    border: 2px solid rgb(50,150,250);
+                    border-radius: 6px;
+                    padding: 3px;
+                }
+            """
 
         # Tabela do histórico
         self.tabela_historico_clientes = QTableWidget()
@@ -1446,38 +2061,47 @@ class Clientes_Juridicos(QWidget):
         # Botão Atualizar
         botao_atualizar = QPushButton("Atualizar Histórico")
         botao_atualizar.clicked.connect(self.atualizar_historico_clientes_jurididos)
+        botao_atualizar.setStyleSheet(button_style)
 
         # Botão Apagar
         botao_apagar = QPushButton("Apagar Histórico")
         botao_apagar.clicked.connect(self.apagar_historico_cliente_juridicos)
+        botao_apagar.setStyleSheet(button_style)
 
         # Botão Exportar CSV
         botao_exportar_csv = QPushButton("Exportar para CSV")
         botao_exportar_csv.clicked.connect(self.exportar_csv_juridicos)
+        botao_exportar_csv.setStyleSheet(button_style)
 
         
         # Botão Exportar Excel
         botao_exportar_excel = QPushButton("Exportar para Excel")
         botao_exportar_excel.clicked.connect(self.exportar_excel_juridicos)
+        botao_exportar_excel.setStyleSheet(button_style)
 
         # Botão PDF
         botao_exportar_pdf = QPushButton("Exportar PDF")
         botao_exportar_pdf.clicked.connect(self.exportar_pdf_juridicos)
+        botao_exportar_pdf.setStyleSheet(button_style)
 
         botao_pausar_historico = QPushButton("Pausar Histórico")
         botao_pausar_historico.clicked.connect(self.pausar_historico_juridicos)
+        botao_pausar_historico.setStyleSheet(button_style)
 
 
         botao_filtrar_historico = QPushButton("Filtrar Histórico")
         botao_filtrar_historico.clicked.connect(self.filtrar_historico_clientes_juridicos)
+        botao_filtrar_historico.setStyleSheet(button_style)
 
         botao_ordenar_historico = QPushButton("Ordenar Histórico")
         botao_ordenar_historico.clicked.connect(self.ordenar_historico_clientes_juridicos)
+        botao_ordenar_historico.setStyleSheet(button_style)
 
 
         # Criar checkbox "Selecionar Individualmente" toda vez que a janela for aberta
         self.checkbox_selecionar = QCheckBox("Selecionar")
         self.checkbox_selecionar.stateChanged.connect(self.selecionar_individual_juridicos)
+        self.checkbox_selecionar.setStyleSheet(f"color: {text_cor};")
 
         # Adicionar outros botões ao layout
         layout.addWidget(botao_atualizar)
@@ -1492,10 +2116,13 @@ class Clientes_Juridicos(QWidget):
         layout.addWidget(self.tabela_historico_clientes)
         
 
-
         # Configurar o widget central e exibir a janela
         self.janela_historico_clientes.setCentralWidget(central_widget)
         self.janela_historico_clientes.show()
+        self.janela_historico_clientes.setStyleSheet(f"background-color: {bg_cor}; color: {text_cor};")
+
+        # Estilo da tabela
+        self.tabela_historico_clientes.setStyleSheet(table_view_style)
 
          # Redimensionar colunas e linhas
         self.carregar_historico_clientes_juridicos()
@@ -1526,7 +2153,7 @@ class Clientes_Juridicos(QWidget):
                 self.tabela_historico_clientes.setItem(i, 3 + deslocamento, QTableWidgetItem(descricao))
 
     def atualizar_historico_clientes_jurididos(self):
-        QMessageBox.information(None, "Sucesso", "Dados carregados com sucesso!")
+        QMessageBox.information(self, "Sucesso", "Dados carregados com sucesso!")
         self.carregar_historico_clientes_juridicos()
 
     def confirmar_historico_cliente_juridicos_apagado(self, mensagem):
@@ -1665,7 +2292,7 @@ class Clientes_Juridicos(QWidget):
      # Função para adicionar checkboxes selecionar_individual na tabela de histórico
     def selecionar_individual_juridicos(self):
         if self.tabela_historico_clientes.rowCount() == 0:
-            QMessageBox.warning(None, "Aviso", "Nenhum histórico para selecionar.")
+            QMessageBox.warning(self, "Aviso", "Nenhum histórico para selecionar.")
             self.checkbox_selecionar_individual.setChecked(False)
             return
 
@@ -1747,7 +2374,7 @@ class Clientes_Juridicos(QWidget):
     def ordenar_historico_clientes_juridicos(self):
         if hasattr(self, "checkbox_header_juridicos"):
             QMessageBox.warning(
-                None,
+                self,
                 "Aviso",
                 "Desmarque o checkbox antes de ordenar o histórico."
             )
@@ -1811,7 +2438,7 @@ class Clientes_Juridicos(QWidget):
     def filtrar_historico_clientes_juridicos(self):
         if hasattr(self,"checkbox_header_juridicos"):
             QMessageBox.warning(
-                None,
+                self,
                 "Aviso",
                 "Desmarque o checkbox antes de filtrar o histórico."
             )
@@ -2092,7 +2719,7 @@ class Clientes_Juridicos(QWidget):
 
     def pausar_historico_juridicos(self):
         # Criação da nova janela de histórico como QMainWindow
-        self.janela_escolha = QMainWindow()
+        self.janela_escolha = QMainWindow(self)
         self.janela_escolha.setWindowTitle("Pausar Histórico")
         self.janela_escolha.resize(255, 150)
 
@@ -2144,6 +2771,237 @@ class Clientes_Juridicos(QWidget):
         scroll = QScrollArea()
         scroll.setWidgetResizable(True)
 
+        # Carregar tema
+        config = self.carregar_config()
+        tema = config.get("tema", "claro")
+
+        # Definições de tema
+        if tema == "escuro":
+            bg_cor = "#202124"
+            text_cor = "white"
+            lineedit_bg = "#303030"
+
+            button_style = """
+                QPushButton {
+                    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                                                stop:0 rgb(60,60,60),
+                                                stop:1 rgb(100,100,100));
+                    color: white;
+                    border-radius: 8px;
+                    font-size: 16px;
+                    border: 2px solid #666666;
+                    padding: 6px;
+                }
+                QPushButton:hover {
+                    background-color: #444444;
+                }
+                QPushButton:pressed {
+                    background-color: #555555;
+                    border: 2px solid #888888;
+                }
+            """
+            combobox_style = """
+                QComboBox {
+                    color: #f0f0f0;
+                    border: 2px solid #ffffff;
+                    border-radius: 6px;
+                    padding: 4px 10px;
+                    background-color: #2b2b2b;
+                }
+                QComboBox QAbstractItemView::item:hover {
+                    background-color: #444444;
+                    color: #f0f0f0;
+                }
+                QComboBox QAbstractItemView::item:selected {
+                    background-color: #696969;
+                    color: #f0f0f0;
+                }
+                QComboBox QAbstractItemView::item {
+                    height: 24px;
+                }
+                QComboBox QScrollBar:vertical {
+                    background: #ffffff;
+                    width: 12px;
+                    border-radius: 6px;
+                }
+                QComboBox QScrollBar::handle:vertical {
+                    background: #555555;
+                    border-radius: 6px;
+                }
+            """
+            scroll_style = """
+            /* Scrollbar vertical */
+            QScrollBar:vertical {
+                background: #ffffff;   /* fundo do track */
+                width: 12px;
+                margin: 0px;
+                border-radius: 6px;
+            }
+
+            QScrollBar::handle:vertical {
+                background: #555555;   /* cor do handle */
+                border-radius: 6px;
+                min-height: 20px;
+            }
+
+            QScrollBar::handle:vertical:hover {
+                background: #777777;   /* hover no handle */
+            }
+
+            QScrollBar::add-line:vertical,
+            QScrollBar::sub-line:vertical {
+                background: none;
+                height: 0px;
+            }
+
+            QScrollBar::add-page:vertical,
+            QScrollBar::sub-page:vertical {
+                background: none;
+            }
+            """
+            lineedit_style = f"""
+                QLineEdit {{
+                    background-color: {lineedit_bg};
+                    color: {text_cor};
+                    border: 2px solid white;
+                    border-radius: 6px;
+                    padding: 3px;
+                }}
+            """
+
+        elif tema == "claro":
+            bg_cor = "white"
+            text_cor = "black"
+            lineedit_bg = "white"
+
+            button_style = """
+                QPushButton {
+                    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                                                stop:0 rgb(50,150,250),
+                                                stop:1 rgb(100,200,255));
+                    color: black;
+                    border-radius: 8px;
+                    font-size: 16px;
+                    border: 2px solid rgb(50,150,250);
+                    padding: 6px;
+                }
+                QPushButton:hover {
+                    background-color: #e5f3ff;
+                }
+                QPushButton:pressed {
+                    background-color: #cce7ff;
+                    border: 2px solid #3399ff;
+                }
+            """
+            combobox_style = """
+                QComboBox {
+                    background-color: white;
+                    border: 2px solid rgb(50,150,250);
+                    border-radius: 5px;
+                    color: black;
+                    padding: 5px;
+                }
+                QComboBox QAbstractItemView {
+                    background-color: white;
+                    color: black;
+                    border: 1px solid #ccc;
+                    selection-background-color: #e5e5e5;
+                    selection-color: black;
+                }
+                QComboBox QScrollBar:vertical {
+                    background: #f5f5f5;
+                    width: 12px;
+                    border: none;
+                }
+                QComboBox QScrollBar::handle:vertical {
+                    background: #cccccc;
+                    min-height: 20px;
+                    border-radius: 5px;
+                }
+                
+            """
+            lineedit_style = """
+                QLineEdit {
+                    background-color: white;
+                    color: black;
+                    border: 2px solid rgb(50,150,250);
+                    border-radius: 6px;
+                    padding: 3px;
+                }
+            """
+
+        else:  # clássico
+            bg_cor = "rgb(0,80,121)"
+            text_cor = "white"
+
+            button_style = """
+                QPushButton {
+                    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                                                stop:0 rgb(0,120,180),
+                                                stop:1 rgb(0,150,220));
+                    color: white;
+                    border-radius: 8px;
+                    font-size: 16px;
+                    border: 2px solid rgb(0,100,160);
+                    padding: 6px;
+                }
+                QPushButton:hover {
+                    background-color: #007acc;
+                }
+                QPushButton:pressed {
+                    background-color: #006bb3;
+                    border: 2px solid #005c99;
+                }
+            """
+            combobox_style = """
+                QComboBox {
+                    background-color: white;
+                    border: 3px solid rgb(50,150,250);
+                    border-radius: 5px;
+                    color: black;
+                    padding: 5px;
+                }
+                QComboBox QAbstractItemView {
+                    background-color: white;
+                    color: black;
+                    border: 1px solid #ccc;
+                    selection-background-color: #e5e5e5;
+                    selection-color: black;
+                }
+                QComboBox QScrollBar:vertical {
+                    background: #f5f5f5;
+                    width: 12px;
+                    border: none;
+                }
+                QComboBox QScrollBar::handle:vertical {
+                    background: #cccccc;
+                    min-height: 20px;
+                    border-radius: 5px;
+                }
+            """
+            scroll_style = """
+                QScrollBar:vertical {
+                border: none;
+                background-color: rgb(255, 255, 256); /* branco */
+                width: 30px;
+                margin: 0px 10px 0px 10px;
+            }
+             QScrollBar::handle:vertical {
+                background-color: rgb(180, 180,180);  /* cinza */
+                min-height: 30px;
+                border-radius: 5px;
+            }
+            """
+            lineedit_style = """
+                QLineEdit {
+                    background-color: white;
+                    color: black;
+                    border: 2px solid rgb(50,150,250);
+                    border-radius: 6px;
+                    padding: 3px;
+                }
+            """
+
         central_widget = QWidget()
         layout_principal = QVBoxLayout(central_widget)
 
@@ -2153,23 +3011,28 @@ class Clientes_Juridicos(QWidget):
         self.combo_status = QComboBox()
         self.combo_status.addItems(["Todos", "Ativo", "Inativo", "Bloqueado", "Pendente"])
         layout_filtros.addRow("Status do Cliente:", self.combo_status)
+        self.combo_status.setStyleSheet(combobox_style)
 
         self.combo_categoria = QComboBox()
         layout_filtros.addRow("Categoria do Cliente:", self.combo_categoria)
+        self.combo_categoria.setStyleSheet(combobox_style)
 
         self.date_de = QDateEdit()
         self.date_de.setDate(QDate.currentDate().addMonths(-1))
         self.date_de.setCalendarPopup(True)
+        self.date_de.setStyleSheet(lineedit_style)
 
         self.date_ate = QDateEdit()
         self.date_ate.setDate(QDate.currentDate())
         self.date_ate.setCalendarPopup(True)
+        self.date_ate.setStyleSheet(lineedit_style)
 
         layout_filtros.addRow("Última Compra - De:", self.date_de)
         layout_filtros.addRow("Última Compra - Até:", self.date_ate)
 
         self.combo_origem = QComboBox()
         layout_filtros.addRow("Origem do Cliente:", self.combo_origem)
+        self.combo_origem.setStyleSheet(combobox_style)
 
         grupo_filtros.setLayout(layout_filtros)
         layout_principal.addWidget(grupo_filtros)
@@ -2207,6 +3070,9 @@ class Clientes_Juridicos(QWidget):
         btn_gerar = QPushButton("Gerar Relatório em PDF")
         btn_gerar_excel = QPushButton("Gerar Relatório em Excel")
         btn_cancelar = QPushButton("Cancelar")
+        btn_gerar.setStyleSheet(button_style)
+        btn_gerar_excel.setStyleSheet(button_style)
+        btn_cancelar.setStyleSheet(button_style)
 
         layout_botoes.addStretch()
         layout_botoes.addWidget(btn_gerar)
@@ -2219,6 +3085,8 @@ class Clientes_Juridicos(QWidget):
         btn_gerar_excel.clicked.connect(self.gerar_excel_clientes_juridicos)
 
         scroll.setWidget(central_widget)
+        scroll.setStyleSheet(scroll_style)
+        self.janela_historico_clientes.setStyleSheet(f"background-color: {bg_cor}; color: {text_cor};")
         self.janela_historico_clientes.setCentralWidget(scroll)
         self.janela_historico_clientes.show()
         
@@ -2227,7 +3095,7 @@ class Clientes_Juridicos(QWidget):
             return
         
         # AVISO: Recomendação
-        aviso = QMessageBox()
+        aviso = QMessageBox(self)
         aviso.setWindowTitle("Aviso")
         aviso.setIcon(QMessageBox.Information) # Ícone de aviso
         aviso.setText("Para uma melhor experiência recomendamos a geração do relatório em Excel.")
@@ -2257,7 +3125,7 @@ class Clientes_Juridicos(QWidget):
         ]
 
         if not campos_selecionados:
-            QMessageBox.warning(None, "Aviso", "Selecione ao menos um campo para incluir no relatório.")
+            QMessageBox.warning(self, "Aviso", "Selecione ao menos um campo para incluir no relatório.")
             return
 
         mapeamento_colunas = {
@@ -2319,15 +3187,15 @@ class Clientes_Juridicos(QWidget):
             cursor.execute(sql, params)
             resultados = cursor.fetchall()
         except Exception as e:
-            QMessageBox.critical(None, "Erro", f"Erro ao buscar dados: \n{e}")
+            QMessageBox.critical(self, "Erro", f"Erro ao buscar dados: \n{e}")
             return
 
         if not resultados:
-            QMessageBox.information(None, "Aviso", "Nenhum cliente encontrado com os filtros aplicados")
+            QMessageBox.information(self, "Aviso", "Nenhum cliente encontrado com os filtros aplicados")
             return
 
         caminho_pdf, _ = QFileDialog.getSaveFileName(
-            None,
+            self,
             "Salvar Relatório",
             "relatorio_clientes_juridicos.pdf",
             "Arquivos PDF (*.pdf)"
@@ -2403,7 +3271,7 @@ class Clientes_Juridicos(QWidget):
                     pdf.set_xy(x + largura, y)
                 pdf.set_y(y_inicial + max_altura)
             pdf.output(caminho_pdf)
-            QMessageBox.information(None, "Sucesso", "Relatório gerado com sucesso.")
+            QMessageBox.information(self, "Sucesso", "Relatório gerado com sucesso.")
 
         except Exception as e:
             QMessageBox.critical(self, "Erro", f"Erro ao gerar PDF:\n{e}")
@@ -2422,7 +3290,7 @@ class Clientes_Juridicos(QWidget):
         ]
 
         if not campos_selecionados:
-            QMessageBox.warning(None, "Aviso", "Selecione ao menos um campo para incluir no relatório.")
+            QMessageBox.warning(self, "Aviso", "Selecione ao menos um campo para incluir no relatório.")
             return
 
         mapeamento_colunas = {
@@ -2484,15 +3352,15 @@ class Clientes_Juridicos(QWidget):
             cursor.execute(sql, params)
             resultados = cursor.fetchall()
         except Exception as e:
-            QMessageBox.critical(None, "Erro", f"Erro ao buscar dados: \n{e}")
+            QMessageBox.critical(self, "Erro", f"Erro ao buscar dados: \n{e}")
             return
 
         if not resultados:
-            QMessageBox.information(None, "Aviso", "Nenhum cliente encontrado com os filtros aplicados")
+            QMessageBox.information(self, "Aviso", "Nenhum cliente encontrado com os filtros aplicados")
             return
 
         caminho_excel, _ = QFileDialog.getSaveFileName(
-            None,
+            self,
             "Salvar Relatório",
             "relatorio_clientes_juridicos.xlsx",
             "Arquivos Excel (*.xlsx)"
@@ -2524,9 +3392,9 @@ class Clientes_Juridicos(QWidget):
                         pass
                 ws.column_dimensions[col_letter].width = max_length + 2  # Ajusta a largura da coluna    
             wb.save(caminho_excel)
-            QMessageBox.information(None, "Sucesso", "Relatório Excel gerado com sucesso.")
+            QMessageBox.information(self, "Sucesso", "Relatório Excel gerado com sucesso.")
         except Exception as e:
-            QMessageBox.critical(None, "Erro", f"Erro ao gerar Excel:\n{e}")
+            QMessageBox.critical(self, "Erro", f"Erro ao gerar Excel:\n{e}")
 
 
     def selecionar_todos_checkboxes(self,estado):

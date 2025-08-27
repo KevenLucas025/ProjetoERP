@@ -517,10 +517,22 @@ class Pagina_Configuracoes(QWidget):
                 background-color: #888888;
             }
 
-            QMainWindow#janela_cadastro{
-                background-color: #202124;
-                color: #000000;
+           QDialog{
+                background-color: #2b2b2b;
+           } 
+           QLabel{
+                background: transparent;
+           }
+           QDialog QPushButton {
+                background-color: #444444;
+                color: #ffffff;
+                border-radius: 6px;
+                padding: 4px 10px;
             }
+            QDialog QPushButton:hover {
+                background-color: #666666;    /* Hover do botão */
+            }
+
 
         """
         
@@ -605,7 +617,7 @@ class Pagina_Configuracoes(QWidget):
 
     def finalizar_aplicacao_modo_classico(self,progress_dialog):
         style_sheet = """
-            QMainWindow, QStackedWidget, QWidget, QFrame, QLabel,QTableWidget {
+            QMainWindow, QStackedWidget, QWidget, QFrame,QTableWidget {
                 background-color: #005079;
                 color: #ffffff;
             }

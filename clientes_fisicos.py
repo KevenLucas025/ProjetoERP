@@ -328,7 +328,7 @@ class Clientes_Fisicos(QWidget):
     def editar_cliente_fisico(self):
         linha_selecionada = self.table_clientes_fisicos.currentRow()
         if linha_selecionada < 0:
-            QMessageBox.warning(None, "Aviso", "Nenhum cliente selecionado para edição.")
+            QMessageBox.warning(self, "Aviso", "Nenhum cliente selecionado para edição.")
             return
         
         coluna_offset = 1 if self.coluna_checkboxes_clientes_fisicos_adicionada else 0
@@ -884,12 +884,6 @@ class Clientes_Fisicos(QWidget):
 
             print(f"Validando campo '{campo}': valor capturado '{valor}'")  # <-- print para debug
 
-            if not valor:
-                QMessageBox.warning(None, "Campo obrigatório", mensagem_erro)
-                # Foca no widget para ajudar o usuário a preencher
-                widget.setFocus()
-                return False
-
         return True
 
     def cadastrar_clientes_fisicos(self):
@@ -927,24 +921,24 @@ class Clientes_Fisicos(QWidget):
                 # Verificar campos únicos individualmente
                 cursor.execute('SELECT 1 FROM clientes_fisicos WHERE RG = ?',(rg,))
                 if cursor.fetchone():
-                    QMessageBox.information(None,"Duplicidade","Já existe um cliente cadastrado com este RG.")
+                    QMessageBox.information(self,"Duplicidade","Já existe um cliente cadastrado com este RG.")
                     return
                 cursor.execute("SELECT 1 FROM clientes_fisicos WHERE CPF = ?",(cpf,))
                 if cursor.fetchone():
-                    QMessageBox.information(None,"Duplicidade","Já existe um cliente cadastrado com este CPF.")
+                    QMessageBox.information(self,"Duplicidade","Já existe um cliente cadastrado com este CPF.")
                     return
                 cursor.execute('SELECT 1 FROM clientes_fisicos WHERE Email = ?',(email,))
                 if cursor.fetchone():
-                    QMessageBox.information(None,"Duplicidade","Já existe um cliente cadastrado com este Email.")
+                    QMessageBox.information(self,"Duplicidade","Já existe um cliente cadastrado com este Email.")
                     return
                 cursor.execute('SELECT 1 FROM clientes_fisicos WHERE RG = ?',(telefone,))
                 if cursor.fetchone():
-                    QMessageBox.information(None,"Duplicidade","Já existe um cliente cadastrado com este Telefone.")
+                    QMessageBox.information(self,"Duplicidade","Já existe um cliente cadastrado com este Telefone.")
                     return
 
                 cursor.execute('SELECT 1 FROM clientes_fisicos WHERE CNH = ?',(cnh,))
                 if cursor.fetchone():
-                    QMessageBox.information(None,"Duplicidade","Já existe um cliente cadastrado com esta CNH.")
+                    QMessageBox.information(self,"Duplicidade","Já existe um cliente cadastrado com esta CNH.")
                     return
 
                 # Validação de todos os campos obrigatórios
@@ -953,7 +947,7 @@ class Clientes_Fisicos(QWidget):
                     valor = widget.text().strip() if isinstance(widget, QLineEdit) else widget.currentText()
                     
                     if not valor or (isinstance(widget, QComboBox) and valor == "Selecionar"):
-                        QMessageBox.warning(None, "Atenção", mensagem)
+                        QMessageBox.warning(self, "Atenção", mensagem)
                         return
                     
 
@@ -992,14 +986,14 @@ class Clientes_Fisicos(QWidget):
                     "Cadastro de Cliente", f"Cliente {nome} cadastrado com sucesso"
                 )
                 
-                QMessageBox.information(None, "Sucesso", "Cliente cadastrado com sucesso!")
+                QMessageBox.information(self, "Sucesso", "Cliente cadastrado com sucesso!")
                 # Redimensiona apenas uma vez após preencher
                 self.table_clientes_fisicos.resizeColumnsToContents()
                 self.table_clientes_fisicos.resizeRowsToContents()
                 self.limpar_campos_clientes_fisicos()
                 self.carregar_clientes_fisicos()       
         except Exception as e:
-            QMessageBox.critical(None, "Erro", f"Erro ao cadastrar cliente: \n{e}")
+            QMessageBox.critical(self, "Erro", f"Erro ao cadastrar cliente: \n{e}")
             
     def atualizar_dados_clientes_fisicos(self):
         # Atualiza campos obrigatórios de acordo com a CNH
@@ -1007,7 +1001,7 @@ class Clientes_Fisicos(QWidget):
             return
         
         if not self.alteracoes_realizadas:
-            QMessageBox.information(None, "Sem alterações", "Nenhuma modificação foi feita.")
+            QMessageBox.information(self, "Sem alterações", "Nenhuma modificação foi feita.")
             return
         
         # --- VALIDAÇÃO DOS CAMPOS OBRIGATÓRIOS ---
@@ -1021,7 +1015,7 @@ class Clientes_Fisicos(QWidget):
                 valor = str(widget).strip()
 
             if not valor or (isinstance(widget, QComboBox) and valor.lower() == "selecione"):
-                QMessageBox.warning(None, "Atenção", mensagem)
+                QMessageBox.warning(self, "Atenção", mensagem)
                 return
 
 
@@ -1045,12 +1039,12 @@ class Clientes_Fisicos(QWidget):
                     config = json.load(f)
                     senha_correta = config.get("senha", "")
             except Exception as e:
-                QMessageBox.critical(None, "Erro", f"Não foi possível carregar a senha do sistema\n {e}")
+                QMessageBox.critical(self, "Erro", f"Não foi possível carregar a senha do sistema\n {e}")
                 return
             tentativas = 0
             while tentativas < 3:
                 senha, ok = QInputDialog.getText(
-                    None, "Confirmação de Segurança",
+                    self, "Confirmação de Segurança",
                     "Digite a senha do sistema:", QLineEdit.Password
                 )
                 if not ok:  # Cancelou
@@ -1061,10 +1055,10 @@ class Clientes_Fisicos(QWidget):
 
                 tentativas += 1
                 if tentativas < 3:
-                    QMessageBox.critical(None, "Acesso Negado",
+                    QMessageBox.critical(self, "Acesso Negado",
                                         f"Senha incorreta. Tentativas restantes: {3 - tentativas}")
                 else:
-                    QMessageBox.critical(None, "Acesso Negado",
+                    QMessageBox.critical(self, "Acesso Negado",
                                         "Você excedeu o número máximo de tentativas.\nO sistema será encerrado.")
                     QApplication.quit()
                     return
@@ -1111,13 +1105,13 @@ class Clientes_Fisicos(QWidget):
             self.main_window.registrar_historico_clientes_fisicos(
                 "Edição de Clientes", f"Cliente {dados_atualizados['Nome do Cliente']} editado com sucesso"
             )
-            QMessageBox.information(None, "Sucesso", "Cliente atualizado com sucesso.")
+            QMessageBox.information(self, "Sucesso", "Cliente atualizado com sucesso.")
             self.carregar_clientes_fisicos()
             self.janela_editar_cliente_fisico.close()
             
 
         except Exception as e:
-            QMessageBox.critical(None, "Erro", f"Erro ao atualizar cliente: {e}")
+            QMessageBox.critical(self, "Erro", f"Erro ao atualizar cliente: {e}")
 
     def limpar_campos_clientes_fisicos(self):
         for campo, widget in self.campos_cliente_fisico.items():
@@ -1175,7 +1169,7 @@ class Clientes_Fisicos(QWidget):
                 # Modo sem checkbox (seleção direta)
                 linha_selecionadas = self.table_clientes_fisicos.selectionModel().selectedRows()
                 if not linha_selecionadas:
-                    QMessageBox.information(None, "Aviso", "Nenhum cliente selecionado para exclusão.")
+                    QMessageBox.information(self, "Aviso", "Nenhum cliente selecionado para exclusão.")
                     return
                 
                 for index in linha_selecionadas:
@@ -1184,7 +1178,7 @@ class Clientes_Fisicos(QWidget):
                     clientes_para_excluir.append((linha,nome_cliente))
 
             if not clientes_para_excluir:
-                QMessageBox.information(None, "Aviso", "Nenhum cliente selecionado para exclusão.")
+                QMessageBox.information(self, "Aviso", "Nenhum cliente selecionado para exclusão.")
                 return
             
             # Mensagem personalizada
@@ -1231,13 +1225,13 @@ class Clientes_Fisicos(QWidget):
                 "Exclusão de Cliente(s)",
                 f"Cliente(s) excluído(s): {nomes_excluidos}"
             )
-            QMessageBox.information(None, "Sucesso", "Cliente(s) excluído(s) com sucesso.")
+            QMessageBox.information(self, "Sucesso", "Cliente(s) excluído(s) com sucesso.")
         except Exception as e:
-            QMessageBox.critical(None, "Erro", f"Erro ao excluir clientes:\n{e}")
+            QMessageBox.critical(self, "Erro", f"Erro ao excluir clientes:\n{e}")
 
     def marcar_como_clientes_fisicos(self):
         if self.table_clientes_fisicos.rowCount() == 0:
-            QMessageBox.warning(None,"Aviso","Nenhum cliente cadastrado para selecionar.")
+            QMessageBox.warning(self,"Aviso","Nenhum cliente cadastrado para selecionar.")
              # Desmarca o checkbox header visualmente
             if hasattr(self, "checkbox_header_clientes_fisicos_table") and isinstance(self.checkbox_header_clientes_fisicos_table, QCheckBox):
                 QTimer.singleShot(0, lambda: self.checkbox_header_clientes_fisicos_table.setChecked(False))
@@ -1486,7 +1480,7 @@ class Clientes_Fisicos(QWidget):
                 self.tabela_historico_clientes_fisicos.setItem(i, 3 + deslocamento, QTableWidgetItem(descricao))
 
     def atualizar_historico_clientes_fisicos(self):
-        QMessageBox.information(None, "Sucesso", "Dados carregados com sucesso!")
+        QMessageBox.information(self, "Sucesso", "Dados carregados com sucesso!")
         self.carregar_historico_clientes_fisicos()
 
     def confirmar_historico_cliente_fisicos_apagado(self, mensagem):
@@ -1604,7 +1598,7 @@ class Clientes_Fisicos(QWidget):
      # Função para adicionar checkboxes selecionar_individual na tabela de histórico
     def selecionar_individual_fisicos(self):
         if self.tabela_historico_clientes_fisicos.rowCount() == 0:
-            QMessageBox.warning(None, "Aviso", "Nenhum histórico para selecionar.")
+            QMessageBox.warning(self, "Aviso", "Nenhum histórico para selecionar.")
             self.checkbox_selecionar_individual.setChecked(False)
             return
 
@@ -1686,7 +1680,7 @@ class Clientes_Fisicos(QWidget):
     def ordenar_historico_clientes_fisicos(self):
         if hasattr(self, "checkbox_header_clientes_fisicos"):
             QMessageBox.warning(
-                None,
+                self,
                 "Aviso",
                 "Desmarque o checkbox antes de ordenar o histórico."
             )
@@ -1750,7 +1744,7 @@ class Clientes_Fisicos(QWidget):
     def filtrar_historico_clientes_fisicos(self):
         if hasattr(self,"checkbox_header_clientes_fisicos"):
             QMessageBox.warning(
-                None,
+                self,
                 "Aviso",
                 "Desmarque o checkbox antes de filtrar o histórico."
             )
@@ -2188,7 +2182,7 @@ class Clientes_Fisicos(QWidget):
         ]
 
         if not campos_selecionados:
-            QMessageBox.warning(None, "Aviso", "Selecione ao menos um campo para incluir no relatório.")
+            QMessageBox.warning(self, "Aviso", "Selecione ao menos um campo para incluir no relatório.")
             return
 
         mapeamento_colunas = {
@@ -2250,15 +2244,15 @@ class Clientes_Fisicos(QWidget):
             cursor.execute(sql, params)
             resultados = cursor.fetchall()
         except Exception as e:
-            QMessageBox.critical(None, "Erro", f"Erro ao buscar dados: \n{e}")
+            QMessageBox.critical(self, "Erro", f"Erro ao buscar dados: \n{e}")
             return
 
         if not resultados:
-            QMessageBox.information(None, "Aviso", "Nenhum cliente encontrado com os filtros aplicados")
+            QMessageBox.information(self, "Aviso", "Nenhum cliente encontrado com os filtros aplicados")
             return
 
         caminho_pdf, _ = QFileDialog.getSaveFileName(
-            None,
+            self,
             "Salvar Relatório",
             "relatorio_clientes_fisicos.pdf",
             "Arquivos PDF (*.pdf)"
@@ -2334,7 +2328,7 @@ class Clientes_Fisicos(QWidget):
                     pdf.set_xy(x + largura, y)
                 pdf.set_y(y_inicial + max_altura)
             pdf.output(caminho_pdf)
-            QMessageBox.information(None, "Sucesso", "Relatório gerado com sucesso.")
+            QMessageBox.information(self, "Sucesso", "Relatório gerado com sucesso.")
 
         except Exception as e:
             QMessageBox.critical(self, "Erro", f"Erro ao gerar PDF:\n{e}")
@@ -2353,7 +2347,7 @@ class Clientes_Fisicos(QWidget):
         ]
 
         if not campos_selecionados:
-            QMessageBox.warning(None, "Aviso", "Selecione ao menos um campo para incluir no relatório.")
+            QMessageBox.warning(self, "Aviso", "Selecione ao menos um campo para incluir no relatório.")
             return
 
         mapeamento_colunas = {
@@ -2415,15 +2409,15 @@ class Clientes_Fisicos(QWidget):
             cursor.execute(sql, params)
             resultados = cursor.fetchall()
         except Exception as e:
-            QMessageBox.critical(None, "Erro", f"Erro ao buscar dados: \n{e}")
+            QMessageBox.critical(self, "Erro", f"Erro ao buscar dados: \n{e}")
             return
 
         if not resultados:
-            QMessageBox.information(None, "Aviso", "Nenhum cliente encontrado com os filtros aplicados")
+            QMessageBox.information(self, "Aviso", "Nenhum cliente encontrado com os filtros aplicados")
             return
 
         caminho_excel, _ = QFileDialog.getSaveFileName(
-            None,
+            self,
             "Salvar Relatório",
             "relatorio_clientes_fisicos.xlsx",
             "Arquivos Excel (*.xlsx)"
@@ -2455,9 +2449,9 @@ class Clientes_Fisicos(QWidget):
                         pass
                 ws.column_dimensions[col_letter].width = max_length + 2  # Ajusta a largura da coluna    
             wb.save(caminho_excel)
-            QMessageBox.information(None, "Sucesso", "Relatório Excel gerado com sucesso.")
+            QMessageBox.information(self, "Sucesso", "Relatório Excel gerado com sucesso.")
         except Exception as e:
-            QMessageBox.critical(None, "Erro", f"Erro ao gerar Excel:\n{e}")
+            QMessageBox.critical(self, "Erro", f"Erro ao gerar Excel:\n{e}")
 
 
     def selecionar_todos_checkboxes_fisicos(self,estado):
