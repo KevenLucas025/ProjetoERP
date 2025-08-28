@@ -16,6 +16,7 @@ from openpyxl import load_workbook
 from openpyxl.utils import get_column_letter
 from openpyxl.styles import Alignment
 import json
+from PySide6.QtGui import QGuiApplication
 
 class TabelaUsuario(QMainWindow):
     def __init__(self, main_window, parent=None):
@@ -23,9 +24,11 @@ class TabelaUsuario(QMainWindow):
         self.main_window = main_window
         self.frame_imagem_cadastro = QFrame()
         self.db = DataBase()
+        
+
         self.setWindowTitle("Tabela de Usuários")
-        self.setMinimumWidth(800)
-        self.setMinimumHeight(600)
+        self.resize(800, 600)
+
 
         self.config = Configuracoes_Login(self)
         self.config.carregar()
@@ -37,24 +40,28 @@ class TabelaUsuario(QMainWindow):
         
         self.coluna_checkboxes_adicionada = False  # Variável para controlar se a coluna de checkbox foi adicionada
 
-        # Widget central e layout principal vertical
-        widget_central = QWidget()
-        self.layout_tabela = QVBoxLayout(widget_central)
+       
 
         self.limpar_campos_de_texto()
 
-        
+        config = self.carregar_config()
+        tema = config.get("tema", "claro")
 
         # Criar tabela
         self.table_widget = QTableWidget(self)
+        self.table_widget.setObjectName("tabelaUsuarios")
+        self.setStyleSheet(self.aplicar_tema(tema))
         self.table_widget.setColumnCount(24)
         self.table_widget.setFocusPolicy(Qt.StrongFocus)
         self.table_widget.setHorizontalScrollMode(QAbstractItemView.ScrollPerPixel)
         self.table_widget.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
         font = self.table_widget.horizontalHeader().font()
-        font.setBold(True)
         self.table_widget.horizontalHeader().setFont(font)
         self.table_widget.verticalHeader().setFont(font)
+
+         # Widget central e layout principal vertical
+        widget_central = QWidget()
+        self.layout_tabela = QVBoxLayout(widget_central)
 
         # Criar QLabel para imagem
         self.label_imagem_usuario = QLabel()
@@ -117,10 +124,11 @@ class TabelaUsuario(QMainWindow):
         self.btn_atualizar_tabela.clicked.connect(self.atualizar_tabela_usuario)
         self.btn_gerar_excel.clicked.connect(self.gerar_arquivo_excel_usuarios)
 
-        # Carregar tema
-        config = self.carregar_config()
-        tema = config.get("tema", "claro")
+    
+    
 
+    
+    def aplicar_tema(self, tema: str) -> str:
         # Definições de tema
         if tema == "escuro":
             bg_cor = "#202124"
@@ -295,7 +303,6 @@ class TabelaUsuario(QMainWindow):
                     padding: 3px;
                 }}
             """
-
         elif tema == "claro":
             bg_cor = "white"
             text_cor = "black"
@@ -356,7 +363,6 @@ class TabelaUsuario(QMainWindow):
                     padding: 3px;
                 }
             """
-
         else:  # clássico
             bg_cor = "rgb(0,80,121)"
             text_cor = "white"
@@ -413,7 +419,7 @@ class TabelaUsuario(QMainWindow):
                 width: 30px;
                 margin: 0px 10px 0px 10px;
             }
-             QScrollBar::handle:vertical {
+                QScrollBar::handle:vertical {
                 background-color: rgb(180, 180,180);  /* cinza */
                 min-height: 30px;
                 border-radius: 5px;
@@ -427,15 +433,27 @@ class TabelaUsuario(QMainWindow):
                     border-radius: 6px;
                     padding: 3px;
                 }
-            """
+        """
+        estilo_completo = f"""
+        QMainWindow {{
+            background-color: {bg_cor};
+        }}
+        {button_style}
+        {lineedit_style}
+        {combobox_style}
+        {table_view_style}
+        {scroll_style}
+        """
+        return estilo_completo
 
-        
+
     def carregar_config(self):
-        with open("config.json", "r", encoding="utf-8") as f:
-            return json.load(f)
+            with open("config.json", "r", encoding="utf-8") as f:
+                return json.load(f)
     
     def preencher_tabela_usuario(self):
         self.table_widget.setRowCount(0)
+
         column_titles = [
             "ID","Nome", "Usuário", "Senha", "Confirmar Senha", "CEP", "Endereço",
             "Número", "Cidade", "Bairro", "Estado", "Complemento", "Telefone", "Email",
@@ -446,7 +464,6 @@ class TabelaUsuario(QMainWindow):
 
         for col, title in enumerate(column_titles):
             self.table_widget.setHorizontalHeaderItem(col, QTableWidgetItem(title))
-            self.table_widget.setStyleSheet(table_view_style)
 
         try:
             self.db.connecta()
