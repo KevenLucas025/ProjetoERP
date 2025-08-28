@@ -343,7 +343,7 @@ class Clientes_Juridicos(QWidget):
 
         # Criar a janela
         self.janela_editar_cliente = QMainWindow()
-        self.janela_editar_cliente.setWindowTitle("Editar Cliente")
+        self.janela_editar_cliente.setWindowTitle("Editar Cliente Jurídico")
         self.janela_editar_cliente.resize(683, 600)
         self.janela_editar_cliente.setStyleSheet("background-color: rgb(0, 80, 121);")
 
@@ -403,18 +403,45 @@ class Clientes_Juridicos(QWidget):
                     background-color: #696969;
                     color: #f0f0f0;
                 }
-            """
-            scroll_style = """
-                QScrollBar:vertical {
+                QComboBox QScrollBar:vertical {
                     background: #ffffff;
                     width: 12px;
                     border-radius: 6px;
                 }
-                QScrollBar::handle:vertical {
+                QComboBox QScrollBar::handle:vertical {
                     background: #555555;
                     border-radius: 6px;
-                    min-height: 20px;
                 }
+            """
+            scroll_style = """
+            /* Scrollbar vertical */
+            QScrollBar:vertical {
+                background: #ffffff;   /* fundo do track */
+                width: 12px;
+                margin: 0px;
+                border-radius: 6px;
+            }
+
+            QScrollBar::handle:vertical {
+                background: #555555;   /* cor do handle */
+                border-radius: 6px;
+                min-height: 20px;
+            }
+
+            QScrollBar::handle:vertical:hover {
+                background: #777777;   /* hover no handle */
+            }
+
+            QScrollBar::add-line:vertical,
+            QScrollBar::sub-line:vertical {
+                background: none;
+                height: 0px;
+            }
+
+            QScrollBar::add-page:vertical,
+            QScrollBar::sub-page:vertical {
+                background: none;
+            }
             """
             lineedit_style = f"""
                 QLineEdit {{
@@ -766,12 +793,12 @@ class Clientes_Juridicos(QWidget):
     
     def exibir_janela_cadastro_cliente(self):
         self.campos_cliente_juridico = {}
-        self.informacoes_obrigatorias_clientes()
+        self.informacoes_obrigatorias_cadastro_clientes()
 
         # Criar a janela
         self.janela_cadastro = QMainWindow()
         self.janela_cadastro.resize(700, 550)
-        self.janela_cadastro.setWindowTitle("Cadastro do Cliente")
+        self.janela_cadastro.setWindowTitle("Cadastro de Cliente Jurídico")
         self.janela_cadastro.setObjectName("janela_cadastro")
 
         # Centralizar a janela
@@ -1041,7 +1068,6 @@ class Clientes_Juridicos(QWidget):
         add_linha("Nome do Cliente")
         add_linha("Razão Social")
         add_linha("CNPJ")
-        add_linha("Email")
         cnpj_widget = self.campos_cliente_juridico["CNPJ"] 
         cnpj_widget.textChanged.connect(lambda text: self.main_window.formatar_cnpj(text, cnpj_widget))
         add_linha("RG") 
@@ -1143,30 +1169,27 @@ class Clientes_Juridicos(QWidget):
         self.janela_cadastro.show()
 
 
-    def informacoes_obrigatorias_clientes(self):
+    def informacoes_obrigatorias_cadastro_clientes(self):
+        """Valida campos obrigatórios apenas no cadastro"""
         self.campos_obrigatorios_clientes = {
             "Nome do Cliente": "O campo Nome do Cliente é obrigatório.",
-            "Razão Social": "O campo de Razão Social é obrigatório",
+            "Razão Social": "O campo de Razão Social é obrigatório.",
             "CNPJ": "O campo CNPJ é obrigatório.",
             "RG": "O campo de RG é obrigatório.",
-            "CPF": "O campo de CPF é obrigatório",
-            "Email": "O campo de E-mail é obrigatório",
+            "CPF": "O campo de CPF é obrigatório.",
+            "Email": "O campo de E-mail é obrigatório.",
             "Telefone": "O campo Telefone é obrigatório.",
             "CEP": "O campo CEP é obrigatório.",
             "Endereço": "O campo Endereço é obrigatório.",
             "Número": "O campo Número é obrigatório.",
             "Cidade": "O campo Cidade é obrigatório.",
             "Bairro": "O campo Bairro é obrigatório.",
-            "Estado": "O campo de Estado é obrigatório",
+            "Estado": "O campo de Estado é obrigatório.",
             "Categoria do Cliente": "O campo Categoria do Cliente é obrigatório.",
-            "Status do Cliente": "Você deve selecionar um status válido para o cliente.",
-            "Última Atualização": "O campo Última Atualização é obrigatório.",
-            "Data da Inclusão": "O campo Data da Inclusão é obrigatório.",
-            "Valor Gasto Total": "O campo Valor Gasto Total é obrigatório.",
-            "Última Compra": "O campo Última Compra é obrigatório."
-            
+            "Status do Cliente": "Você deve selecionar um status válido para o cliente."
         }
 
+        # Se CNH foi informada, exige os outros campos relacionados
         cnh_widget = self.campos_cliente_juridico.get("CNH")
         cnh_valor = ""
         if isinstance(cnh_widget, QLineEdit):
@@ -1174,14 +1197,14 @@ class Clientes_Juridicos(QWidget):
         elif isinstance(cnh_widget, QComboBox):
             cnh_valor = cnh_widget.currentText().strip()
                 
-        if cnh_valor and cnh_valor.lower() not in ["não cadastrado", "selecionar"]:
+        if cnh_valor and cnh_valor.lower() not in ["não cadastrado", "selecione"]:
             self.campos_obrigatorios_clientes.update({
                 "Categoria da CNH": "Informe a Categoria da CNH.",
                 "Data de Emissão da CNH": "Informe a Data de Emissão da CNH.",
                 "Data de Vencimento da CNH": "Informe a Data de Vencimento da CNH."
             })
 
-
+        # Validação genérica dos campos
         for campo, mensagem_erro in self.campos_obrigatorios_clientes.items():
             widget = self.campos_cliente_juridico.get(campo)
             if widget is None:
@@ -1192,17 +1215,52 @@ class Clientes_Juridicos(QWidget):
                 valor = widget.text().strip()
             elif isinstance(widget, QComboBox):
                 valor = widget.currentText().strip()
-                if valor.lower() == "selecione":
+                if valor.lower() in ["selecione", "selecionar"]:
                     valor = ""
             else:
                 valor = str(widget).strip()
 
-            print(f"Validando campo '{campo}': valor capturado '{valor}'")  # <-- print para debug
+            print(f"[Cadastro] Validando campo '{campo}': valor '{valor}'")  # debug
 
         return True
 
+
+    def informacoes_obrigatorias_edicao_clientes(self):
+        """Valida também campos automáticos na edição"""
+        # Primeiro roda a validação padrão de cadastro
+        self.informacoes_obrigatorias_cadastro_clientes()
+
+        # Adiciona os extras que só são exigidos na edição
+        self.campos_obrigatorios_clientes.update({
+            "Última Atualização": "O campo Última Atualização é obrigatório.",
+            "Data da Inclusão": "O campo Data da Inclusão é obrigatório.",
+            "Valor Gasto Total": "O campo Valor Gasto Total é obrigatório.",
+            "Última Compra": "O campo Última Compra é obrigatório."
+        })
+
+        # Validação genérica novamente
+        for campo, mensagem_erro in self.campos_obrigatorios_clientes.items():
+            widget = self.campos_cliente_juridico.get(campo)
+            if widget is None:
+                continue
+
+            valor = ""
+            if isinstance(widget, QLineEdit):
+                valor = widget.text().strip()
+            elif isinstance(widget, QComboBox):
+                valor = widget.currentText().strip()
+                if valor.lower() in ["selecione", "selecionar"]:
+                    valor = ""
+            else:
+                valor = str(widget).strip()
+
+            print(f"[Edição] Validando campo '{campo}': valor '{valor}'")  # debug
+
+        return True
+
+
     def atualizar_dados_clientes(self):
-        if not self.informacoes_obrigatorias_clientes():
+        if not self.informacoes_obrigatorias_edicao_clientes():
             return
 
         # --- VALIDAÇÃO DOS CAMPOS OBRIGATÓRIOS ---
@@ -1343,7 +1401,7 @@ class Clientes_Juridicos(QWidget):
         self.alteracoes_realizadas = True
     
     def cadastrar_clientes_juridicos(self):
-        self.informacoes_obrigatorias_clientes()
+        self.informacoes_obrigatorias_cadastro_clientes()
         try:
             with self.db.connecta() as conexao:
                 cursor = conexao.cursor()
@@ -1381,7 +1439,7 @@ class Clientes_Juridicos(QWidget):
                 if cursor.fetchone():
                     QMessageBox.information(self,"Duplicidade","Já existe um cliente cadastrado com este CNPJ.")
                     return
-                cursor.execute("SELECT 1 FROM clientes_juridicos WHERE 'Razão Social' = ?",(razao_social,))
+                cursor.execute('SELECT 1 FROM clientes_juridicos WHERE "Razão Social" = ?',(razao_social,))
                 if cursor.fetchone():
                     QMessageBox.information(self,"Duplicidade","Já existe um cliente cadastrado com esta Razão Social.")
                     return
@@ -1731,7 +1789,7 @@ class Clientes_Juridicos(QWidget):
     def historico_clientes_juridicos(self):
         self.janela_historico_clientes = QMainWindow()
         self.janela_historico_clientes.resize(800,650)
-        self.janela_historico_clientes.setWindowTitle("Histórico de Clientes")
+        self.janela_historico_clientes.setWindowTitle("Histórico de Clientes Jurídico")
         self.janela_historico_clientes.setObjectName("janela_historico_clientes")
 
         # Centralizar a janela na tela
@@ -1835,7 +1893,7 @@ class Clientes_Juridicos(QWidget):
             }
             """
             table_view_style = """
-                /* QTableView com seleção diferenciada */
+            /* QTableView com seleção diferenciada */
             QTableView {
                 background-color: #202124;
                 color: white;
@@ -1859,7 +1917,7 @@ class Clientes_Juridicos(QWidget):
             /* Estiliza a barra de rolagem horizontal */
             QTableView QScrollBar:horizontal {
                 border: none;
-                background-color: #ffffff;
+                background-color: none;
                 height: 12px;
                 margin: 0px;
                 border-radius: 5px;
@@ -1868,7 +1926,7 @@ class Clientes_Juridicos(QWidget):
             /* Estiliza a barra de rolagem vertical */
             QTableView QScrollBar:vertical {
                 border: none;
-                background-color: #ffffff;  
+                background-color: none; 
                 width: 12px;
                 margin: 0px;
                 border-radius: 5px;
@@ -1890,7 +1948,7 @@ class Clientes_Juridicos(QWidget):
 
             /* Groove horizontal */
             QTableView QScrollBar::groove:horizontal {
-                background-color: #3a3a3a;  /* faixa mais clara */
+                background-color: transparent;
                 border-radius: 5px;
                 height: 15px;
                 margin: 0px 10px 0px 10px;
@@ -1898,7 +1956,7 @@ class Clientes_Juridicos(QWidget):
 
             /* Groove vertical */
             QTableView QScrollBar::groove:vertical {
-                background-color: #3a3a3a;
+                background-color: transparent;
                 border-radius: 5px;
                 width: 25px;
                 margin: 10px 0px 10px 10px;
@@ -1909,6 +1967,11 @@ class Clientes_Juridicos(QWidget):
                 background-color: #555555;  /* cinza de seleção */
                 color: white;
             }
+            QTableCornerButton::section {
+                background-color: #202124;  /* mesma cor da tabela */
+                border: none;
+            }
+
             """
             lineedit_style = f"""
                 QLineEdit {{
@@ -2057,6 +2120,8 @@ class Clientes_Juridicos(QWidget):
         self.tabela_historico_clientes = QTableWidget()
         self.tabela_historico_clientes.setColumnCount(4)
         self.tabela_historico_clientes.setHorizontalHeaderLabels(["Data/Hora", "Usuário", "Ação", "Descrição"])
+        # Ocultar o quadrado do canto
+        self.tabela_historico_clientes.setCornerButtonEnabled(False)
 
         # Botão Atualizar
         botao_atualizar = QPushButton("Atualizar Histórico")
@@ -2427,13 +2492,54 @@ class Clientes_Juridicos(QWidget):
 
     def obter_coluna_para_ordenar_clientes_juridicos(self):
         colunas = ["Data/Hora", "Usuário", "Ação", "Descrição"]
-        coluna, ok = QInputDialog.getItem(self, "Ordenar por", "Escolha a coluna:", colunas, 0, False)
-        return coluna if ok else None
+
+        msg = QMessageBox(self)
+        msg.setWindowTitle("Ordenar por")
+        msg.setText("Escolha a coluna para ordenar:")
+        msg.setIcon(QMessageBox.Question)
+
+        botoes = {}
+        for coluna in colunas:
+            botoes[coluna] = msg.addButton(coluna, QMessageBox.ActionRole)
+
+        btn_cancelar = msg.addButton("Cancelar", QMessageBox.RejectRole)
+
+        msg.exec_()
+
+        if msg.clickedButton() == btn_cancelar:
+            return None
+        
+        for coluna, botao in botoes.items():
+            if msg.clickedButton() == botao:
+                return coluna
+
+        return None
+
 
     def obter_direcao_ordenacao_clientes_juridicos(self):
         direcoes = ["Crescente", "Decrescente"]
-        direcao, ok = QInputDialog.getItem(self, "Direção da Ordenação", "Escolha a direção:", direcoes, 0, False)
-        return direcao if ok else None
+
+        msg = QMessageBox(self)
+        msg.setWindowTitle("Direção da Ordenação")
+        msg.setText("Escolha a direção de ordenação:")
+        msg.setIcon(QMessageBox.Question)
+
+        botoes = {}
+        for direcao in direcoes:
+            botoes[direcao] = msg.addButton(direcao, QMessageBox.ActionRole)
+
+        btn_cancelar = msg.addButton("Cancelar", QMessageBox.RejectRole)
+
+        msg.exec_()
+
+        if msg.clickedButton() == btn_cancelar:
+            return None
+        
+        for direcao, botao in botoes.items():
+            if msg.clickedButton() == botao:
+                return direcao
+
+        return None
 
     def filtrar_historico_clientes_juridicos(self):
         if hasattr(self,"checkbox_header_juridicos"):
