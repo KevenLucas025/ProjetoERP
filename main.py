@@ -50,7 +50,7 @@ import shutil
 
 class MainWindow(QMainWindow, Ui_MainWindow):
     fechar_janela_login_signal = Signal(str)
-    def __init__(self, user=None, login_window=None, tipo_usuario=None, connection=None):
+    def __init__(self, user=None, login_window=None, tipo_usuario=None, connection=None,app=None):
         super(MainWindow, self).__init__()
         self.setupUi(self)
         self.setWindowTitle("Sistema de Gerenciamento")
@@ -60,11 +60,16 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.historico_usuario_pausado = False
         self.imagem_removida_usuario = False
         self.usuario_tem_imagem_salva = False
+    
         
         # Atalho F5 global
         self.atalho_f5 = QShortcut(QKeySequence("F5"), self)
         self.atalho_f5.activated.connect(self.tratar_f5_global)
 
+        # Dentro do seu método, após criar o QDateEdit:
+        calendario = self.dateEdit_3.calendarWidget()  # pega o QCalendarWidget do QDateEdit
+        calendario.setFixedSize(220, 200)           # define tamanho menor do popup
+        
 
         # Inicialize o banco de dados antes de qualquer operação que dependa dele
         self.db = DataBase('banco_de_dados.db')
@@ -91,6 +96,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.db.create_table_clientes_fisicos()
         self.db.create_table_historico_fisico()
         self.db.create_table_historico_juridico()
+
+        
+        # Carregar tema do sistema ou da sua configuração
+        config = self.carregar_config()  # sua função de config
+        tema_atual = config.get("tema", "claro")
+
+        if app is not None:
+            self.aplicar_tema_global(app, tema_atual)
 
         # Mapeia os campos com identificadores únicos
         self.campos_com_autocomplete = {
@@ -426,6 +439,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                                                          self.frame_valor_do_desconto,self.frame_valor_com_desconto1,self.frame_quantidade)
 
 
+    def carregar_config(self):
+            with open("config.json", "r", encoding="utf-8") as f:
+                return json.load(f)
+            
     def abrir_menu_opcoes(self):
         # Verifica se já armazenamos a posição original da página
         if not hasattr(self, "posicao_original_paginas"):
@@ -2919,19 +2936,129 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     caminho_banco = os.path.join(pasta_dados, "banco_de_dados.db")
 
     
+    def aplicar_tema_global(self,app: QApplication, tema: str):
+        if tema == "escuro":
+            app.setStyleSheet("""
+                QWidget {
+                    background-color: #202124;
+                    color: white;
+                    font-size: 12px;
+                }
 
+                QMessageBox {
+                    background-color: #2b2b2b;   /* fundo escuro */
+                    color: #f0f0f0;              /* texto claro */
+                    border: 2px solid #555555;
+                    border-radius: 10px;
+                }
+                QMessageBox QLabel {
+                    color: #f0f0f0;              /* cor do texto */
+                    font-size: 14px;
+                    background: transparent;
+                }
+                QMessageBox QDialogButtonBox QPushButton {
+                    background-color: #444444;
+                    color: #ffffff;
+                    border-radius: 6px;
+                    padding: 4px 10px;
+                }
+                QMessageBox QDialogButtonBox QPushButton:hover {
+                    background-color: #666666;
+                }
+                QMessageBox QDialogButtonBox QPushButton:pressed {
+                    background-color: #888888;
+                }
+                /* Estilo geral do QDateEdit */
+                QDateEdit {
+                    color: black; 
+                    background-color: 2b2b2b; 
+                    border: 1px solid 3399ff;
+                    border-radius: 5px;
+                    padding: 2px 5px;
+                }
+
+                /* Remove o fundo das setas */
+                QDateEdit::up-button, 
+                QDateEdit::down-button {
+                    background: transparent;
+                    border: none;
+                }
+
+                /* Cor de fundo do calendário popup */
+                QDateEdit QCalendarWidget {
+                    background-color: 2b2b2b;
+                    border: 1px solid #555555;
+                }
+
+                /* Dias normais */
+                QDateEdit QCalendarWidget QAbstractItemView:enabled {
+                    background-color: #2b2b2b;
+                    color: black;
+                    selection-background-color: rgb(0, 120, 215); /* Azul no dia selecionado */
+                    selection-color: white;
+                }
+                /* Botões de navegação (setas) do calendário */
+                QDateEdit QCalendarWidget QToolButton {
+                    background: transparent;   /* tira o fundo azul */
+                    color: black;              /* deixa as setas pretas */
+                    border: none;              /* sem borda */
+                    icon-size: 16px 16px;      /* ajusta o tamanho do ícone */
+                    padding: 2px;
+                }
+                QDateEdit QCalendarWidget QToolButton:hover {
+                    background: rgb(220, 220, 220); /* cinza claro no hover */
+                    border-radius: 4px;
+                }
+                /* Popup de meses/anos do calendário (QMenu) */
+                QDateEdit QCalendarWidget QMenu {
+                    background-color: white;
+                    border: 1px solid #ccc;
+                    color: black;
+                }
+
+                QDateEdit QCalendarWidget QMenu::item {
+                    background: transparent;
+                    color: black;
+                    padding: 6px 16px;
+                }
+
+                QDateEdit QCalendarWidget QMenu::item:selected {
+                    background: rgb(0, 120, 215);
+                    color: white;
+                }
+                QDateEdit QCalendarWidget QToolButton::menu-indicator {
+                    image: none;   /* remove o ícone padrão */
+                    width: 0px;    /* remove o espaço reservado */
+                }
+            """)
+        elif tema == "claro":
+            app.setStyleSheet("""
+                QWidget {
+                    background-color: white;
+                    color: black;
+                    font-size: 12px;
+                }
+            """)
+        else:  # clássico
+            app.setStyleSheet("""
+                QWidget {
+                    background-color: rgb(0,80,121);
+                    color: white;
+                    font-size: 12px;
+                }
+            """)
 
 # Função principal
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     login_window = Login(login_window=None)
-    main_window = MainWindow (user=None, tipo_usuario=None, login_window=login_window)
+    main_window = MainWindow (user=None, tipo_usuario=None, login_window=login_window,app=app)
     
     # Usa estilo nativo do Windows explicitamente
     app.setStyle("WindowsVista")
     app.setWindowIcon(QIcon("imagens/ícone_sistema_provisório.png"))
     
-    
+
     
     login_window.show()
     sys.exit(app.exec())

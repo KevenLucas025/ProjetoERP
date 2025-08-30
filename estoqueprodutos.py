@@ -1519,7 +1519,7 @@ class EstoqueProduto(QWidget):
                 df = df.fillna("Não informado")
 
                 colunas_table_base = ["Produto", "Quantidade", "Valor do Produto", "Desconto", "Data da Compra",
-                                    "Código do Item", "Cliente", "Descrição do Produto", "Usuário"]
+                                    "Código do Item", "Cliente", "Descrição do Produto", "Usuário","Status da Saída"]
 
                 if df.shape[1] != len(colunas_table_base):
                     QMessageBox.warning(self, "Erro", "O número de colunas no arquivo Excel não corresponde ao número esperado.")

@@ -466,7 +466,7 @@ class Pagina_Configuracoes(QWidget):
             /* Frames com valores */
             QFrame#frame_valor_total_produtos,
             QFrame#frame_valor_do_desconto,
-            QFrame#frame_valor_desconto,
+            QFrame#frame_valor_com_desconto1,
             QFrame#frame_quantidade {
                 background: qlineargradient(
                     x1:0, y1:0, x2:0, y2:1,
@@ -532,8 +532,61 @@ class Pagina_Configuracoes(QWidget):
             QDialog QPushButton:hover {
                 background-color: #666666;    /* Hover do botão */
             }
+            QDateEdit {
+                color: white; 
+                background-color: #3b3b3b;  /* fundo escuro */
+                border: 1px solid #ffffff;
+                border-radius: 5px;
+                padding: 2px 5px;
+            }
 
+            QDateEdit QCalendarWidget {
+                background-color: #2b2b2b;   /* fundo escuro do popup */
+                border: 1px solid #555555;
+            }
 
+            QDateEdit QCalendarWidget QAbstractItemView:enabled {
+                background-color: #2b2b2b;
+                color: white;
+                selection-background-color: #555555;
+                selection-color: white;
+            }
+
+            QDateEdit QCalendarWidget QToolButton {
+                color: white;   /* setas claras */
+                min-width: 20px;     /* menor largura dos botões de navegação */
+                min-height: 20px;    /* menor altura */
+                padding: 1px;
+                background: transparent;
+            }
+
+            QDateEdit QCalendarWidget QToolButton:hover {
+                background: #444444;
+            }
+
+            QDateEdit QCalendarWidget QMenu {
+                background-color: #3b3b3b;
+                color: white;
+            }
+
+            QDateEdit QCalendarWidget QMenu::item:selected {
+                background: #555555;
+                color: white;
+            }
+            QProgressBar {
+                color: white;                        /* texto branco */
+                border: 3px solid #ffffff;           /* borda branca  */
+                border-radius: 13px;                 /* bordas arredondadas */
+                background-color: #2b2b2b;           /* fundo escuro */
+                text-align: center;                   /* centraliza o texto do progresso */
+            }
+
+            QProgressBar::chunk {
+                background-color: #4682b4;           /* azul do progresso preenchido */
+                border-radius: 12px;                  /* mantém arredondado */
+            }
+
+            
         """
         
          # Iterar sobre todos os widgets da aplicação e aplicar o estilo

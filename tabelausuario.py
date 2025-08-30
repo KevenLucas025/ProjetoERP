@@ -55,9 +55,8 @@ class TabelaUsuario(QMainWindow):
         self.table_widget.setFocusPolicy(Qt.StrongFocus)
         self.table_widget.setHorizontalScrollMode(QAbstractItemView.ScrollPerPixel)
         self.table_widget.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
-        font = self.table_widget.horizontalHeader().font()
-        self.table_widget.horizontalHeader().setFont(font)
-        self.table_widget.verticalHeader().setFont(font)
+
+
 
          # Widget central e layout principal vertical
         widget_central = QWidget()
@@ -182,7 +181,9 @@ class TabelaUsuario(QMainWindow):
                     background: #555555;
                     border-radius: 6px;
                 }
+                
             """
+            
             scroll_style = """
             /* Scrollbar vertical */
             QScrollBar:vertical {
@@ -229,10 +230,32 @@ class TabelaUsuario(QMainWindow):
                 border: 1px solid #aaaaaa;
                 padding: 1px;
             }
+             /* Cabeçalho horizontal */
+            QHeaderView::section:horizontal {
+                background-color: #202124;
+                color: white;
+                border: 1px solid #555;
+            }
+
+            
+            /* Cabeçalho vertical (números das linhas) */
+            QTableView QHeaderView::section:vertical {
+                background-color: #202124;
+                color: white;
+                border: 1px solid #555555;
+                padding: 4px;
+            }
 
             /* QTabWidget headers brancos */
             QTabWidget::pane {
                 border: 1px solid #444444;
+                background-color: #202124;
+            }
+            QTableView::corner {
+                background-color: #202124;
+            }
+
+            QTableView::empty {
                 background-color: #202124;
             }
             /* Estiliza a barra de rolagem horizontal */
@@ -291,6 +314,10 @@ class TabelaUsuario(QMainWindow):
             QTableCornerButton::section {
                 background-color: #202124;  /* mesma cor da tabela */
                 border: none;
+            }
+            /* Forçar cor do texto do QCheckBox */
+            QCheckBox {
+                color: white;
             }
 
             """
@@ -519,6 +546,7 @@ class TabelaUsuario(QMainWindow):
             msg_box = QMessageBox(self)
             msg_box.setWindowTitle("Confirmar")
             msg_box.setText("Você tem certeza que deseja apagar este usuário?")
+
             
             sim_button = QPushButton("Sim")
             sim_button.clicked.connect(self.apagar_usuario_confirmado)
@@ -531,7 +559,7 @@ class TabelaUsuario(QMainWindow):
             # Exibir a caixa de mensagem
             msg_box.exec()
         else:
-            QMessageBox.warning(self, "Aviso", "Nenhum usuário selecionado.")
+            QMessageBox.warning(self, "Aviso", "Nenhum usuário selecionado para apagar.")
 #*******************************************************************************************************
     def apagar_usuario_confirmado(self):
         # Obter o índice da linha selecionada
