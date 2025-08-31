@@ -207,8 +207,18 @@ class Pagina_Configuracoes(QWidget):
             QTabBar::tab:hover {
                 background-color: #f5f5f5;
             }
-            QPushButton#botao_lupa,
-            QPushButton#botao_lupa {
+            QPushButton#btn_mostrar_senha{
+                qproperty-icon: url("imagens/olho_branco.png");
+                qproperty-iconSize: 16px 16px;
+                background: transparent;
+                border: none;  
+            }
+            QPushButton#btn_mostrar_senha::pressed{
+                padding-left: 1px;
+                padding-top: 1px;      
+            }
+            QPushButton#botao_lupa_juridicos,
+            QPushButton#botao_lupa_fisicos {
                 qproperty-icon: url("imagens/botao_lupa_branco.png");
                 qproperty-iconSize: 16px 16px;
                 background: transparent;
@@ -417,15 +427,15 @@ class Pagina_Configuracoes(QWidget):
                 height: 24px; /* Altura de cada item */
             }
 
-            /* Barra de scroll */
+            /* Fundo da barra do  scroll */
             QComboBox#perfil_estado QScrollBar:vertical,
             QComboBox#perfil_usuarios QScrollBar:vertical {
-                background: #2b2b2b;
+                background: #ffffff;
                 width: 12px;
                 margin: 0px 0px 0px 0px;
                 border-radius: 6px;
             }
-
+            /* Barra do scroll na cor cinza */
             QComboBox#perfil_estado QScrollBar::handle:vertical,
             QComboBox#perfil_usuarios QScrollBar::handle:vertical {
                 background: #555555;
@@ -738,16 +748,6 @@ class Pagina_Configuracoes(QWidget):
             }
             QPushButton#btn_login:hover {
                 color: black;
-            }
-            QPushButton#btn_mostrar_senha{
-                qproperty-icon: url("imagens/829117.png");
-                qproperty-iconSize: 16px 16px;
-                background: transparent;
-                border: none;  
-            }
-            QPushButton#btn_mostrar_senha::pressed{
-                padding-left: 1px;
-                padding-top: 1px;      
             }
 
             QLineEdit#txt_usuario,

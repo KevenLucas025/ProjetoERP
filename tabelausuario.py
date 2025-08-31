@@ -79,6 +79,20 @@ class TabelaUsuario(QMainWindow):
         self.btn_atualizar_tabela = QPushButton("Atualizar Tabela")
         self.btn_gerar_excel = QPushButton("Gerar arquivo Excel")
 
+        # Colocar todos os botões numa lista
+        botoes = [
+            self.btn_apagar_usuario,
+            self.btn_editar_usuario,
+            self.btn_filtrar_usuario,
+            self.btn_ordenar_usuario,
+            self.btn_visualizar_imagem,
+            self.btn_atualizar_tabela,
+            self.btn_gerar_excel
+        ]
+        for btn in botoes:
+            btn.setCursor(Qt.PointingHandCursor)
+
+
         layout_botoes = QVBoxLayout()
         layout_botoes.addWidget(self.btn_apagar_usuario)
         layout_botoes.addWidget(self.btn_editar_usuario)
@@ -136,13 +150,13 @@ class TabelaUsuario(QMainWindow):
 
             button_style = """
                 QPushButton {
-                    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                                                stop:0 rgb(60,60,60),
-                                                stop:1 rgb(100,100,100));
-                    color: white;
                     border-radius: 8px;
+                    background: qlineargradient(
+                        x1:0, y1:0, x2:0, y2:1,
+                        stop:0 rgb(60, 60, 60),   /* topo */
+                        stop:1 rgb(100, 100, 100) /* base */
+                    );
                     font-size: 12px;
-                    border: 2px solid #666666;
                     padding: 3px;
                 }
                 QPushButton:hover {

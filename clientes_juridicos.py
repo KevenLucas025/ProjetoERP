@@ -2,7 +2,7 @@ from PySide6.QtWidgets import (QLineEdit, QToolButton,QTableWidgetItem,
                                QMessageBox,QMainWindow,QVBoxLayout,QWidget,QLabel,QCheckBox,
                                QPushButton,QScrollArea,QComboBox,QGridLayout,QHeaderView,QHBoxLayout,
                                QGraphicsOpacityEffect,QTableWidget,QInputDialog,QDialog,
-                               QRadioButton,QGroupBox,QFileDialog,QFormLayout,QDateEdit,QMenu,QApplication,QTextEdit)
+                               QRadioButton,QGroupBox,QFileDialog,QFormLayout,QDateEdit,QMenu,QApplication)
 from PySide6.QtGui import QPixmap, QIcon,QColor,QBrush,QGuiApplication
 from PySide6.QtCore import Qt,QTimer,QPropertyAnimation,QEvent,QDate,QPoint
 from database import DataBase
@@ -11,6 +11,7 @@ import pandas as pd
 from configuracoes import Configuracoes_Login
 from datetime import datetime
 from PySide6.QtGui import QKeySequence, QShortcut
+from dialogos import ComboDialog
 import csv
 from reportlab.lib import colors
 from reportlab.lib.pagesizes import letter
@@ -69,7 +70,7 @@ class Clientes_Juridicos(QWidget):
         )
 
         # Botão lupa → busca manual
-        self.botao_lupa.clicked.connect(
+        self.botao_lupa_juridicos.clicked.connect(
             lambda: self.buscar_cliente_juridico_dinamico(manual=True)
         )
 
@@ -171,22 +172,22 @@ class Clientes_Juridicos(QWidget):
 
     def imagem_line(self):
         # Criar botão da lupa
-        self.botao_lupa = QPushButton(self.line_clientes)
-        self.botao_lupa.setCursor(Qt.PointingHandCursor)  # Muda o cursor ao passar o mouse
-        self.botao_lupa.setContentsMargins(0,0,0,0)
-        self.botao_lupa.setObjectName("botao_lupa")
+        self.botao_lupa_juridicos = QPushButton(self.line_clientes)
+        self.botao_lupa_juridicos.setCursor(Qt.PointingHandCursor)  # Muda o cursor ao passar o mouse
+        self.botao_lupa_juridicos.setContentsMargins(0,0,0,0)
+        self.botao_lupa_juridicos.setObjectName("botao_lupa_juridicos")
         
         # Definir tamanho do botão
         altura = self.line_clientes.height() - 4  # Ajustar altura conforme a LineEdit
-        self.botao_lupa.setFixedSize(altura, altura)
+        self.botao_lupa_juridicos.setFixedSize(altura, altura)
 
         # Posicionar o botão no canto direito da LineEdit
-        self.botao_lupa.move(self.line_clientes.width() - altura + 1, 2)
+        self.botao_lupa_juridicos.move(self.line_clientes.width() - altura + 1, 2)
 
         
 
         # Conectar clique do botão a uma função
-        self.botao_lupa.clicked.connect(self.buscar_cliente_juridico_dinamico)
+        self.botao_lupa_juridicos.clicked.connect(self.buscar_cliente_juridico_dinamico)
 
     def _buscar_clientes_juridicos(self, texto):
         """Executa a busca no banco e retorna lista de resultados."""
@@ -2492,55 +2493,19 @@ class Clientes_Juridicos(QWidget):
 
     def obter_coluna_para_ordenar_clientes_juridicos(self):
         colunas = ["Data/Hora", "Usuário", "Ação", "Descrição"]
-
-        msg = QMessageBox(self)
-        msg.setWindowTitle("Ordenar por")
-        msg.setText("Escolha a coluna para ordenar:")
-        msg.setIcon(QMessageBox.Question)
-
-        botoes = {}
-        for coluna in colunas:
-            botoes[coluna] = msg.addButton(coluna, QMessageBox.ActionRole)
-
-        btn_cancelar = msg.addButton("Cancelar", QMessageBox.RejectRole)
-
-        msg.exec_()
-
-        if msg.clickedButton() == btn_cancelar:
-            return None
-        
-        for coluna, botao in botoes.items():
-            if msg.clickedButton() == botao:
-                return coluna
-
+        dialog = ComboDialog("Ordenar por", "Escolha a coluna:", colunas, self)
+        if dialog.exec() == QDialog.Accepted:
+            return dialog.escolha()
         return None
 
 
     def obter_direcao_ordenacao_clientes_juridicos(self):
         direcoes = ["Crescente", "Decrescente"]
-
-        msg = QMessageBox(self)
-        msg.setWindowTitle("Direção da Ordenação")
-        msg.setText("Escolha a direção de ordenação:")
-        msg.setIcon(QMessageBox.Question)
-
-        botoes = {}
-        for direcao in direcoes:
-            botoes[direcao] = msg.addButton(direcao, QMessageBox.ActionRole)
-
-        btn_cancelar = msg.addButton("Cancelar", QMessageBox.RejectRole)
-
-        msg.exec_()
-
-        if msg.clickedButton() == btn_cancelar:
-            return None
-        
-        for direcao, botao in botoes.items():
-            if msg.clickedButton() == botao:
-                return direcao
-
+        dialog = ComboDialog("Direção da Ordenação", "Escolha a direção:", direcoes, self)
+        if dialog.exec() == QDialog.Accepted:
+            return dialog.escolha()
         return None
-
+    
     def filtrar_historico_clientes_juridicos(self):
         if hasattr(self,"checkbox_header_juridicos"):
             QMessageBox.warning(

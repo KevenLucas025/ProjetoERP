@@ -1,5 +1,6 @@
 from PySide6.QtWidgets import (QDialog, QPushButton, QVBoxLayout, QMessageBox, QAbstractItemView)
 from tabelaprodutos import TabelaProdutos
+from PySide6.QtCore import Qt
 import sys
 
 class AtualizarProduto(QDialog):
@@ -10,11 +11,58 @@ class AtualizarProduto(QDialog):
 
         # Definir layout para a janela de diálogo
         layout = QVBoxLayout()
+
+        # Carregar config
+        config = self.main_window.carregar_config()
+        tema = config.get("tema", "claro")
+
+         # Definir estilo do botão baseado no tema
+        if tema == "escuro":
+            button_style = """
+                QPushButton {
+                    border-radius: 8px;
+                    background: qlineargradient(
+                        x1:0, y1:0, x2:0, y2:1,
+                        stop:0 rgb(60, 60, 60),   /* topo */
+                        stop:1 rgb(100, 100, 100) /* base */
+                    );
+                    color: white;
+                    padding: 6px;
+                }
+                QPushButton:hover {
+                    background-color: #444444;
+                }
+                QPushButton:pressed {
+                    background-color: #555555;
+                    border: 2px solid #888888;
+                }
+            """
+        else:  # claro
+            button_style = """
+                QPushButton {
+                    border-radius: 8px;
+                    background: qlineargradient(
+                        x1:0, y1:0, x2:0, y2:1,
+                        stop:0 rgb(220, 220, 220),   /* topo */
+                        stop:1 rgb(255, 255, 255)   /* base */
+                    );
+                    color: black;
+                    padding: 6px;
+                }
+                QPushButton:hover {
+                    background-color: #e5e5e5;
+                }
+                QPushButton:pressed {
+                    background-color: #cccccc;
+                    border: 2px solid #888888;
+                }
+            """
         
         # Botão para abrir a lista de produtos
-        btn_mostrar_produtos = QPushButton("Mostrar Produtos")
-        btn_mostrar_produtos.clicked.connect(self.atualizar_tabela_produtos)
-        layout.addWidget(btn_mostrar_produtos)
+        self.btn_mostrar_produtos = QPushButton("Exibir Tabela de Produtos")
+        self.btn_mostrar_produtos.setCursor(Qt.PointingHandCursor)
+        self.btn_mostrar_produtos.clicked.connect(self.atualizar_tabela_produtos)
+        layout.addWidget(self.btn_mostrar_produtos)
         
         # Adicionar o layout à janela de diálogo
         self.setLayout(layout)

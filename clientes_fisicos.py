@@ -66,7 +66,7 @@ class Clientes_Fisicos(QWidget):
         )
 
         # Botão lupa → busca manual
-        self.botao_lupa.clicked.connect(
+        self.botao_lupa_fisicos.clicked.connect(
             lambda: self.buscar_cliente_fisico_dinamico(manual=True)
         )
 
@@ -290,19 +290,19 @@ class Clientes_Fisicos(QWidget):
 
     def imagem_line_fisico(self):
         # Criar botão da lupa
-        self.botao_lupa = QPushButton(self.line_clientes_fisicos)
-        self.botao_lupa.setCursor(Qt.PointingHandCursor)  # Muda o cursor ao passar o mouse
-        self.botao_lupa.setObjectName("botao_lupa")
+        self.botao_lupa_fisicos = QPushButton(self.line_clientes_fisicos)
+        self.botao_lupa_fisicos.setCursor(Qt.PointingHandCursor)  # Muda o cursor ao passar o mouse
+        self.botao_lupa_fisicos.setObjectName("botao_lupa_fisicos")
         
         # Definir tamanho do botão
         altura = self.line_clientes_fisicos.height() - 4  # Ajustar altura conforme a LineEdit
-        self.botao_lupa.setFixedSize(altura, altura)
+        self.botao_lupa_fisicos.setFixedSize(altura, altura)
 
         # Posicionar o botão no canto direito da LineEdit
-        self.botao_lupa.move(self.line_clientes_fisicos.width() - altura + 160, 2)
+        self.botao_lupa_fisicos.move(self.line_clientes_fisicos.width() - altura + 160, 2)
 
         # Conectar clique do botão a uma função
-        self.botao_lupa.clicked.connect(self.buscar_cliente_fisico_dinamico)
+        self.botao_lupa_fisicos.clicked.connect(self.buscar_cliente_fisico_dinamico)
 
 
     

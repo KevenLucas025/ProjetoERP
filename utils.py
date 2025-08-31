@@ -52,11 +52,9 @@ class MostrarSenha:
         
         if self._show_password:
             self.line_edit.setEchoMode(QLineEdit.Password)
-            self.btn_mostrar_senha.setIcon(QIcon(QPixmap("imagens/829117.png")))
             self._show_password = False
         else:
             self.line_edit.setEchoMode(QLineEdit.Normal)
-            self.btn_mostrar_senha.setIcon(QIcon(QPixmap("imagens/829117.png")))
             self._show_password = True
 
 

@@ -6,7 +6,7 @@ from PySide6 import QtCore
 from PySide6.QtWidgets import (QMainWindow, QMessageBox, QPushButton,
                                QLabel, QFileDialog, QVBoxLayout,
                                QMenu,QTableWidgetItem,QCheckBox,QApplication,QToolButton,QHeaderView,QCompleter,
-                               QComboBox,QInputDialog,QProgressDialog)
+                               QComboBox,QInputDialog,QProgressDialog,QDialog)
 from PySide6.QtGui import (QDoubleValidator, QIcon, QColor, QPixmap,QBrush,
                            QAction,QMovie,QImage,QShortcut,QKeySequence)
 from PySide6 import QtWidgets
@@ -27,6 +27,7 @@ from historicousuario import Pagina_Usuarios
 from utils import MostrarSenha,configurar_frame_valores
 from clientes_juridicos import Clientes_Juridicos
 from clientes_fisicos import Clientes_Fisicos
+from dialogos import EscolherPlanilhaDialog
 import json
 import sqlite3
 import os
@@ -2652,21 +2653,19 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
 
     def exibir_planilhas_exemplo(self):
-        opcoes = ["Planilha de Exemplo 1", "Planilha de Exemplo 2"]
-        escolha, ok = QInputDialog.getItem(
-            None,
-            "Escolher Planilha de Exemplo", 
-            "Selecione uma planilha de exemplo:",
-            opcoes,
-            0,  # Índice padrão
-            False,  # Não permitir edição
-        )
-        if not ok or not escolha:
+        # Abre o dialog customizado
+        dialog = EscolherPlanilhaDialog(self)
+        if dialog.exec() != QDialog.Accepted:
+            print("Operação cancelada pelo usuário.")
+            return
+
+        escolha = dialog.escolha()
+        if not escolha:
             print("Operação cancelada pelo usuário.")
             return
 
         # Agora, a escolha é diretamente mapeada
-        if escolha == "Planilha de Exemplo 1":
+        if escolha == "Planilha de Exemplo 1 - Produtos":
             nome_sugestao = "Produtos Exemplo.xlsx"
             sheet_name = 'Produtos'
             dados = {
@@ -2708,6 +2707,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 "CNPJ": ["00.000.000/0001-01", "00.000.000/0001-02", "00.000.000/0001-03", "00.000.000/0001-04"],   
                 "Acesso": ["Convidado", "Usuário", "Usuário", "Convidado"]
             }
+
         # Gerar a planilha com os dados corretos
         df = pd.DataFrame(dados)
 
@@ -2734,26 +2734,23 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             max_length = 0
             col_letter = get_column_letter(col[0].column)
             for cell in col:
-                # Centralizar
                 cell.alignment = Alignment(horizontal='center', vertical='center')
                 try:
                     if cell.value:
                         max_length = max(max_length, len(str(cell.value)))
                 except:
                     pass
-                # Ajustar largura da coluna
                 ws.column_dimensions[col_letter].width = max_length + 2
 
-        # Salvar as alterações
         wb.save(file_path)
 
-        # Mostrar a mensagem de sucesso
         QMessageBox.information(
             None,
             "Sucesso",
             f"Planilha '{escolha}' salva com sucesso em {file_path}!",
             QMessageBox.Ok
         )
+
      
     def pagina_cadastro_em_massa_produtos(self):
         selected_action = self.sender()
