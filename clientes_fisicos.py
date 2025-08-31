@@ -947,7 +947,7 @@ class Clientes_Fisicos(QWidget):
             scroll_style = """
                 QScrollBar:vertical {
                 border: none;
-                background-color: rgb(255, 255, 256); /* branco */
+                background-color: rgb(255, 255, 255); /* branco */
                 width: 30px;
                 margin: 0px 10px 0px 10px;
             }
@@ -2027,7 +2027,7 @@ class Clientes_Fisicos(QWidget):
             scroll_style = """
                 QScrollBar:vertical {
                 border: none;
-                background-color: rgb(255, 255, 256); /* branco */
+                background-color: rgb(255, 255, 255); /* branco */
                 width: 30px;
                 margin: 0px 10px 0px 10px;
             }
@@ -2936,7 +2936,7 @@ class Clientes_Fisicos(QWidget):
             scroll_style = """
                 QScrollBar:vertical {
                 border: none;
-                background-color: rgb(255, 255, 256); /* branco */
+                background-color: rgb(255, 255, 255); /* branco */
                 width: 30px;
                 margin: 0px 10px 0px 10px;
             }
