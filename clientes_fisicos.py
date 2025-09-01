@@ -9,6 +9,7 @@ from database import DataBase
 import sqlite3
 import pandas as pd
 from configuracoes import Configuracoes_Login
+from dialogos import ComboDialog
 from datetime import datetime
 from PySide6.QtGui import QKeySequence, QShortcut
 import csv
@@ -2404,13 +2405,17 @@ class Clientes_Fisicos(QWidget):
 
     def obter_coluna_para_ordenar_clientes_fisicos(self):
         colunas = ["Data/Hora", "Usuário", "Ação", "Descrição"]
-        coluna, ok = QInputDialog.getItem(self, "Ordenar por", "Escolha a coluna:", colunas, 0, False)
-        return coluna if ok else None
+        dialog = ComboDialog("Ordenar por", "Escolha a coluna:", colunas, self)
+        if dialog.exec() == QDialog.Accepted:
+            return dialog.escolha()
+        return None
 
     def obter_direcao_ordenacao_clientes_fisicos(self):
         direcoes = ["Crescente", "Decrescente"]
-        direcao, ok = QInputDialog.getItem(self, "Direção da Ordenação", "Escolha a direção:", direcoes, 0, False)
-        return direcao if ok else None
+        dialog = ComboDialog("Direção da Ordenação", "Escolha a direção:", direcoes, self)
+        if dialog.exec() == QDialog.Accepted:
+            return dialog.escolha()
+        return None
 
     def filtrar_historico_clientes_fisicos(self):
         if hasattr(self,"checkbox_header_clientes_fisicos"):

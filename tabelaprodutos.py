@@ -1,11 +1,10 @@
 from PySide6.QtWidgets import (QDialog, QPushButton, QVBoxLayout, QTableWidget, 
                                QTableWidgetItem, QMessageBox, QCheckBox, QLabel, QLineEdit, 
-                               QLabel, QFrame,QDateEdit,QGridLayout,
-                               QFileDialog,QMainWindow,QWidget,QSizePolicy,QApplication,QHBoxLayout,
-                               QComboBox,QAbstractItemView,QDialogButtonBox,QHeaderView)
+                               QLabel,QGridLayout,QFileDialog,QWidget,QHBoxLayout,
+                               QComboBox,QDialogButtonBox,QHeaderView,QMainWindow)
 from PySide6 import QtWidgets
-from PySide6.QtGui import QPixmap, Qt, QImage
-from PySide6.QtCore import QDate, Qt,QSize,QTimer
+from PySide6.QtGui import QPixmap, Qt
+from PySide6.QtCore import QDate, Qt,QTimer
 from database import DataBase, sqlite3
 import base64
 import locale
@@ -13,9 +12,10 @@ import pandas as pd
 import openpyxl
 import os
 from datetime import datetime
+import json
 
 
-class TabelaProdutos(QDialog):
+class TabelaProdutos(QMainWindow):
     def __init__(self, main_window, date_edit, parent=None):
         super().__init__(parent)
         self.main_window = main_window
@@ -46,6 +46,9 @@ class TabelaProdutos(QDialog):
 
 
         cursor = None
+
+        config = self.carregar_config()
+        tema = config.get("tema", "claro")
         
         # Layout principal da janela
         layout = QVBoxLayout()
@@ -55,6 +58,8 @@ class TabelaProdutos(QDialog):
         # Tabela para exibir os produtos
         self.table_widget = QTableWidget()
         self.table_widget.setColumnCount(12)  # Definindo o número de colunas
+        self.table_widget.setObjectName("tabelaProdutos")
+        self.setStyleSheet(self.aplicar_tema(tema))
         self.table_widget.setHorizontalHeaderLabels(["ID", "Produto", "Quantidade", "Valor do Produto", 
                                                      "Desconto","Valor Total", "Data do Cadastro", "Código do Produto", 
                                                      "Cliente", "Descrição do Produto","Usuário","Status da Saída"])  # Definindo os rótulos das colunas
@@ -99,6 +104,20 @@ class TabelaProdutos(QDialog):
         
         # Definir o layout da janela
         self.setLayout(layout)
+
+        botoes = [
+            self.btn_apagar_produto,
+            self.checkbox_selecionar_produtos,
+            self.btn_duplicar_produto,
+            self.btn_gerar_excel,
+            self.btn_atualizar_tabela_produtos,
+            self.btn_visualizar_imagem,
+            self.btn_ordenar_produtos,
+            self.btn_filtrar_produtos,
+            self.btn_editar_produto
+        ]
+        for btn in botoes:
+            btn.setCursor(Qt.PointingHandCursor)
  
 
         self.btn_apagar_produto.clicked.connect(self.apagar_produto_confirmado)
@@ -110,6 +129,357 @@ class TabelaProdutos(QDialog):
         self.btn_duplicar_produto.clicked.connect(self.duplicar_produto)
         self.btn_gerar_excel.clicked.connect(self.gerar_arquivo_excel)
         self.checkbox_selecionar_produtos.clicked.connect(self.selecionar_individual)
+
+
+    def aplicar_tema(self, tema: str) -> str:
+        # Definições de tema
+        if tema == "escuro":
+            bg_cor = "#202124"
+            text_cor = "white"
+            lineedit_bg = "#303030"
+
+            button_style = """
+                QPushButton {
+                    border-radius: 8px;
+                    background: qlineargradient(
+                        x1:0, y1:0, x2:0, y2:1,
+                        stop:0 rgb(60, 60, 60),   /* topo */
+                        stop:1 rgb(100, 100, 100) /* base */
+                    );
+                    font-size: 12px;
+                    padding: 3px;
+                }
+                QPushButton:hover {
+                    background-color: #444444;
+                }
+                QPushButton:pressed {
+                    background-color: #555555;
+                    border: 2px solid #888888;
+                }
+            """
+            combobox_style = """
+                QComboBox {
+                    color: #f0f0f0;
+                    border: 2px solid #ffffff;
+                    border-radius: 6px;
+                    padding: 4px 10px;
+                    background-color: #2b2b2b;
+                }
+                QComboBox QAbstractItemView::item:hover {
+                    background-color: #444444;
+                    color: #f0f0f0;
+                }
+                QComboBox QAbstractItemView::item:selected {
+                    background-color: #696969;
+                    color: #f0f0f0;
+                }
+                QComboBox QAbstractItemView::item {
+                    height: 24px;
+                }
+                QComboBox QScrollBar:vertical {
+                    background: #ffffff;
+                    width: 12px;
+                    border-radius: 6px;
+                }
+                QComboBox QScrollBar::handle:vertical {
+                    background: #555555;
+                    border-radius: 6px;
+                }
+                
+            """
+            
+            scroll_style = """
+            /* Scrollbar vertical */
+            QScrollBar:vertical {
+                background: #ffffff;   /* fundo do track */
+                width: 12px;
+                margin: 0px;
+                border-radius: 6px;
+            }
+
+            QScrollBar::handle:vertical {
+                background: #555555;   /* cor do handle */
+                border-radius: 6px;
+                min-height: 20px;
+            }
+
+            QScrollBar::handle:vertical:hover {
+                background: #777777;   /* hover no handle */
+            }
+
+            QScrollBar::add-line:vertical,
+            QScrollBar::sub-line:vertical {
+                background: none;
+                height: 0px;
+            }
+
+            QScrollBar::add-page:vertical,
+            QScrollBar::sub-page:vertical {
+                background: none;
+            }
+            """
+            table_view_style = """
+            /* QTableView com seleção diferenciada */
+            QTableView {
+                background-color: #202124;
+                color: white;
+                gridline-color: #555555;
+                selection-background-color: #7a7a7a;
+                selection-color: white;
+            }
+            /* Coluna dos cabeçalhos */
+            QHeaderView::section {
+                background-color: #ffffff;
+                color: white;
+                border: 1px solid #aaaaaa;
+                padding: 1px;
+            }
+             /* Cabeçalho horizontal */
+            QHeaderView::section:horizontal {
+                background-color: #ffffff;
+                color: black;
+                border: 1px solid #555;
+            }
+            
+            /* Cabeçalho vertical (números das linhas) */
+            QTableView QHeaderView::section:vertical {
+                background-color: #ffffff;
+                color: black;
+                border: 1px solid #555555;
+                padding: 2px;
+            }
+
+            /* QTabWidget headers brancos */
+            QTabWidget::pane {
+                border: 1px solid #444444;
+                background-color: #202124;
+            }
+            QTableView::corner {
+                background-color: #202124;
+            }
+
+            QTableView::empty {
+                background-color: #202124;
+            }
+            /* Estiliza a barra de rolagem horizontal */
+            QTableView QScrollBar:horizontal {
+                border: none;
+                background-color: none;
+                height: 12px;
+                margin: 0px;
+                border-radius: 5px;
+            }
+
+            /* Estiliza a barra de rolagem vertical */
+            QTableView QScrollBar:vertical {
+                border: none;
+                background-color: none; 
+                width: 12px;
+                margin: 0px;
+                border-radius: 5px;
+            }
+            
+
+            /* Parte que você arrasta */
+            QTableView QScrollBar::handle:vertical {
+                background-color: #777777;  /* cinza médio */
+                min-height: 22px;
+                border-radius: 5px;
+            }
+
+            QTableView QScrollBar::handle:horizontal {
+                background-color: #777777;
+                min-width: 22px;
+                border-radius: 5px;
+            }
+
+            /* Groove horizontal */
+            QTableView QScrollBar::groove:horizontal {
+                background-color: transparent;
+                border-radius: 5px;
+                height: 15px;
+                margin: 0px 10px 0px 10px;
+            }
+
+            /* Groove vertical */
+            QTableView QScrollBar::groove:vertical {
+                background-color: transparent;
+                border-radius: 5px;
+                width: 25px;
+                margin: 10px 0px 10px 10px;
+            }
+
+            /* Estilo para item selecionado */
+            QTableWidget::item:selected {
+                background-color: #555555;  /* cinza de seleção */
+                color: white;
+            }
+            QTableCornerButton::section {
+                background-color: #ffffff;  /* branca */
+                border: none;
+            }
+            /* Forçar cor do texto do QCheckBox */
+            QCheckBox {
+                color: white;
+            }
+
+            """
+            lineedit_style = f"""
+                QLineEdit {{
+                    background-color: {lineedit_bg};
+                    color: {text_cor};
+                    border: 2px solid white;
+                    border-radius: 6px;
+                    padding: 3px;
+                }}
+            """
+        elif tema == "claro":
+            bg_cor = "white"
+            text_cor = "black"
+            lineedit_bg = "white"
+
+            button_style = """
+                QPushButton {
+                    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                                                stop:0 rgb(50,150,250),
+                                                stop:1 rgb(100,200,255));
+                    color: black;
+                    border-radius: 8px;
+                    font-size: 16px;
+                    border: 2px solid rgb(50,150,250);
+                    padding: 6px;
+                }
+                QPushButton:hover {
+                    background-color: #e5f3ff;
+                }
+                QPushButton:pressed {
+                    background-color: #cce7ff;
+                    border: 2px solid #3399ff;
+                }
+            """
+            combobox_style = """
+                QComboBox {
+                    background-color: white;
+                    border: 2px solid rgb(50,150,250);
+                    border-radius: 5px;
+                    color: black;
+                    padding: 5px;
+                }
+                QComboBox QAbstractItemView {
+                    background-color: white;
+                    color: black;
+                    border: 1px solid #ccc;
+                    selection-background-color: #e5e5e5;
+                    selection-color: black;
+                }
+                QComboBox QScrollBar:vertical {
+                    background: #f5f5f5;
+                    width: 12px;
+                    border: none;
+                }
+                QComboBox QScrollBar::handle:vertical {
+                    background: #cccccc;
+                    min-height: 20px;
+                    border-radius: 5px;
+                }
+                
+            """
+            lineedit_style = """
+                QLineEdit {
+                    background-color: white;
+                    color: black;
+                    border: 2px solid rgb(50,150,250);
+                    border-radius: 6px;
+                    padding: 3px;
+                }
+            """
+        else:  # clássico
+            bg_cor = "rgb(0,80,121)"
+            text_cor = "white"
+
+            button_style = """
+                QPushButton {
+                    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                                                stop:0 rgb(0,120,180),
+                                                stop:1 rgb(0,150,220));
+                    color: white;
+                    border-radius: 8px;
+                    font-size: 16px;
+                    border: 2px solid rgb(0,100,160);
+                    padding: 6px;
+                }
+                QPushButton:hover {
+                    background-color: #007acc;
+                }
+                QPushButton:pressed {
+                    background-color: #006bb3;
+                    border: 2px solid #005c99;
+                }
+            """
+            combobox_style = """
+                QComboBox {
+                    background-color: white;
+                    border: 3px solid rgb(50,150,250);
+                    border-radius: 5px;
+                    color: black;
+                    padding: 5px;
+                }
+                QComboBox QAbstractItemView {
+                    background-color: white;
+                    color: black;
+                    border: 1px solid #ccc;
+                    selection-background-color: #e5e5e5;
+                    selection-color: black;
+                }
+                QComboBox QScrollBar:vertical {
+                    background: #f5f5f5;
+                    width: 12px;
+                    border: none;
+                }
+                QComboBox QScrollBar::handle:vertical {
+                    background: #cccccc;
+                    min-height: 20px;
+                    border-radius: 5px;
+                }
+            """
+            scroll_style = """
+                QScrollBar:vertical {
+                border: none;
+                background-color: rgb(255, 255, 255); /* branco */
+                width: 30px;
+                margin: 0px 10px 0px 10px;
+            }
+                QScrollBar::handle:vertical {
+                background-color: rgb(180, 180,180);  /* cinza */
+                min-height: 30px;
+                border-radius: 5px;
+            }
+            """
+            lineedit_style = """
+                QLineEdit {
+                    background-color: white;
+                    color: black;
+                    border: 2px solid rgb(50,150,250);
+                    border-radius: 6px;
+                    padding: 3px;
+                }
+        """
+        estilo_completo = f"""
+        QMainWindow {{
+            background-color: {bg_cor};
+        }}
+        {button_style}
+        {lineedit_style}
+        {combobox_style}
+        {table_view_style}
+        {scroll_style}
+        """
+        return estilo_completo
+
+
+    def carregar_config(self):
+            with open("config.json", "r", encoding="utf-8") as f:
+                return json.load(f)
 #*******************************************************************************************************
     def preencher_tabela_produtos(self):
         # Limpar a tabela antes de preencher

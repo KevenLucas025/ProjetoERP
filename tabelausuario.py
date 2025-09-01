@@ -239,25 +239,22 @@ class TabelaUsuario(QMainWindow):
             }
             /* Coluna dos cabeçalhos */
             QHeaderView::section {
-                background-color: #202124;
-                color: white;
-                border: 1px solid #aaaaaa;
+                background-color: #ffffff;
+                color: black;
                 padding: 1px;
             }
              /* Cabeçalho horizontal */
             QHeaderView::section:horizontal {
-                background-color: #202124;
-                color: white;
-                border: 1px solid #555;
+                background-color: #ffffff;
+                color: black;
             }
 
             
             /* Cabeçalho vertical (números das linhas) */
             QTableView QHeaderView::section:vertical {
-                background-color: #202124;
-                color: white;
-                border: 1px solid #555555;
-                padding: 4px;
+                background-color: #ffffff;
+                color: black;
+                padding: 2px;
             }
 
             /* QTabWidget headers brancos */
@@ -326,8 +323,8 @@ class TabelaUsuario(QMainWindow):
                 color: white;
             }
             QTableCornerButton::section {
-                background-color: #202124;  /* mesma cor da tabela */
-                border: none;
+                background-color: #ffffff;  /* mesma cor da tabela */
+                border: 1px solid #aaaaaa;
             }
             /* Forçar cor do texto do QCheckBox */
             QCheckBox {
@@ -874,7 +871,7 @@ class TabelaUsuario(QMainWindow):
                     "Filtrar Por CPF": "CPF do Usuário:",
                     "Filtrar Por CNPJ": "CNPJ do Usuário:"
                 }
-                lbl_criterio.setText(mapeamento.get(texto, "Digite o valor:"))
+                lbl_criterio.setText(mapeamento.get(texto, "Digite o valor: "))
 
             combo.currentIndexChanged.connect(atualizar_label)
 
@@ -1272,7 +1269,7 @@ class TabelaUsuario(QMainWindow):
         QMessageBox.information(self,"Aviso","Arquivo excel gerado com sucesso")
 
 
-     # Função auxiliar para criar um QTableWidgetItem com texto centralizado e branco
+    # Função auxiliar para criar um QTableWidgetItem com texto centralizado e branco
     def formatar_texto(self, text):
         item = QTableWidgetItem(text)
         item.setTextAlignment(Qt.AlignCenter)
