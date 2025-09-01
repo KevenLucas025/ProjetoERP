@@ -7,7 +7,7 @@ class AtualizarProduto(QDialog):
     def __init__(self, main_window, parent=None):
         super().__init__(parent)
         self.main_window = main_window
-        self.setWindowTitle("Atualizar Produto")
+        self.setWindowTitle("Edição de Produtos")
 
         # Definir layout para a janela de diálogo
         layout = QVBoxLayout()
@@ -61,6 +61,7 @@ class AtualizarProduto(QDialog):
         # Botão para abrir a lista de produtos
         self.btn_mostrar_produtos = QPushButton("Exibir Tabela de Produtos")
         self.btn_mostrar_produtos.setCursor(Qt.PointingHandCursor)
+        self.btn_mostrar_produtos.setStyleSheet(button_style)
         self.btn_mostrar_produtos.clicked.connect(self.atualizar_tabela_produtos)
         layout.addWidget(self.btn_mostrar_produtos)
         
@@ -70,10 +71,13 @@ class AtualizarProduto(QDialog):
         self.resize(300, 100)
 
     def atualizar_tabela_produtos(self):
-        dialog_tabela = TabelaProdutos(self.main_window, self.main_window.dateEdit_3)
-        dialog_tabela.preencher_tabela_produtos()
-        dialog_tabela.exec()
+        self.dialog_tabela = TabelaProdutos(self.main_window, self.main_window.dateEdit_3)
+        self.dialog_tabela.preencher_tabela_produtos()
+        self.dialog_tabela.show()
 
         self.close()
+
+    def listar_produtos(self):
+        self.btn_mostrar_produtos.setVisible(True)
 
        

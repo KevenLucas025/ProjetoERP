@@ -16,7 +16,7 @@ from openpyxl import load_workbook
 from openpyxl.utils import get_column_letter
 from openpyxl.styles import Alignment
 import json
-from PySide6.QtGui import QGuiApplication
+
 
 class TabelaUsuario(QMainWindow):
     def __init__(self, main_window, parent=None):
@@ -241,20 +241,8 @@ class TabelaUsuario(QMainWindow):
             QHeaderView::section {
                 background-color: #ffffff;
                 color: black;
+                border: 1px solid #aaaaaa;
                 padding: 1px;
-            }
-             /* Cabeçalho horizontal */
-            QHeaderView::section:horizontal {
-                background-color: #ffffff;
-                color: black;
-            }
-
-            
-            /* Cabeçalho vertical (números das linhas) */
-            QTableView QHeaderView::section:vertical {
-                background-color: #ffffff;
-                color: black;
-                padding: 2px;
             }
 
             /* QTabWidget headers brancos */
@@ -262,11 +250,27 @@ class TabelaUsuario(QMainWindow):
                 border: 1px solid #444444;
                 background-color: #202124;
             }
-            QTableView::corner {
-                background-color: #202124;
+            /* Estiliza a barra de rolagem horizontal */
+            QTableView QScrollBar:horizontal {
+                border: none;
+                background-color: #ffffff;
+                height: 12px;
+                margin: 0px;
+                border-radius: 5px;
             }
 
-            QTableView::empty {
+            /* Estiliza a barra de rolagem vertical */
+            QTableView QScrollBar:vertical {
+                border: none;
+                background-color: #ffffff;  
+                width: 12px;
+                margin: 0px;
+                border-radius: 5px;
+            }
+
+            /* QTabWidget headers brancos */
+            QTabWidget::pane {
+                border: 1px solid #444444;
                 background-color: #202124;
             }
             /* Estiliza a barra de rolagem horizontal */
@@ -322,9 +326,11 @@ class TabelaUsuario(QMainWindow):
                 background-color: #555555;  /* cinza de seleção */
                 color: white;
             }
+            /* CornerButton (canto superior esquerdo) */
             QTableCornerButton::section {
-                background-color: #ffffff;  /* mesma cor da tabela */
+                background-color: #ffffff;
                 border: 1px solid #aaaaaa;
+                padding: 2px;
             }
             /* Forçar cor do texto do QCheckBox */
             QCheckBox {
@@ -1039,6 +1045,7 @@ class TabelaUsuario(QMainWindow):
         # Checkbox do cabeçalho
         self.checkbox_header_users = QCheckBox(self.table_widget)
         self.checkbox_header_users.setToolTip("Selecionar todos")
+        self.checkbox_header_users.setStyleSheet("""QCheckBox{background: transparent;}""")
         self.checkbox_header_users.setChecked(False)
         self.checkbox_header_users.setFixedSize(20, 20)
         self.checkbox_header_users.stateChanged.connect(self.selecionar_todos_users)

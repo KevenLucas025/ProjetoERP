@@ -50,10 +50,6 @@ class TabelaProdutos(QMainWindow):
         config = self.carregar_config()
         tema = config.get("tema", "claro")
         
-        # Layout principal da janela
-        layout = QVBoxLayout()
-
-        self.grid_layout = QGridLayout()
 
         # Tabela para exibir os produtos
         self.table_widget = QTableWidget()
@@ -64,9 +60,13 @@ class TabelaProdutos(QMainWindow):
                                                      "Desconto","Valor Total", "Data do Cadastro", "Código do Produto", 
                                                      "Cliente", "Descrição do Produto","Usuário","Status da Saída"])  # Definindo os rótulos das colunas
         
+         # Widget central e layout principal vertical
+        widget_central = QWidget()
+        # Layout principal da janela
+        layout = QVBoxLayout(widget_central)
+        
         # Personalizar o estilo dos cabeçalhos de linha e coluna
         font = self.table_widget.horizontalHeader().font()
-        font.setBold(True)
         self.table_widget.horizontalHeader().setFont(font)
         self.table_widget.verticalHeader().setFont(font)
 
@@ -103,7 +103,9 @@ class TabelaProdutos(QMainWindow):
         layout.addWidget(self.table_widget)
         
         # Definir o layout da janela
-        self.setLayout(layout)
+        self.setCentralWidget(widget_central)
+
+        self.preencher_tabela_produtos()
 
         botoes = [
             self.btn_apagar_produto,
@@ -219,7 +221,7 @@ class TabelaProdutos(QMainWindow):
             }
             """
             table_view_style = """
-            /* QTableView com seleção diferenciada */
+             /* QTableView com seleção diferenciada */
             QTableView {
                 background-color: #202124;
                 color: white;
@@ -230,23 +232,9 @@ class TabelaProdutos(QMainWindow):
             /* Coluna dos cabeçalhos */
             QHeaderView::section {
                 background-color: #ffffff;
-                color: white;
+                color: black;
                 border: 1px solid #aaaaaa;
                 padding: 1px;
-            }
-             /* Cabeçalho horizontal */
-            QHeaderView::section:horizontal {
-                background-color: #ffffff;
-                color: black;
-                border: 1px solid #555;
-            }
-            
-            /* Cabeçalho vertical (números das linhas) */
-            QTableView QHeaderView::section:vertical {
-                background-color: #ffffff;
-                color: black;
-                border: 1px solid #555555;
-                padding: 2px;
             }
 
             /* QTabWidget headers brancos */
@@ -254,11 +242,27 @@ class TabelaProdutos(QMainWindow):
                 border: 1px solid #444444;
                 background-color: #202124;
             }
-            QTableView::corner {
-                background-color: #202124;
+            /* Estiliza a barra de rolagem horizontal */
+            QTableView QScrollBar:horizontal {
+                border: none;
+                background-color: #ffffff;
+                height: 12px;
+                margin: 0px;
+                border-radius: 5px;
             }
 
-            QTableView::empty {
+            /* Estiliza a barra de rolagem vertical */
+            QTableView QScrollBar:vertical {
+                border: none;
+                background-color: #ffffff;  
+                width: 12px;
+                margin: 0px;
+                border-radius: 5px;
+            }
+
+            /* QTabWidget headers brancos */
+            QTabWidget::pane {
+                border: 1px solid #444444;
                 background-color: #202124;
             }
             /* Estiliza a barra de rolagem horizontal */
@@ -314,9 +318,11 @@ class TabelaProdutos(QMainWindow):
                 background-color: #555555;  /* cinza de seleção */
                 color: white;
             }
+            /* CornerButton (canto superior esquerdo) */
             QTableCornerButton::section {
-                background-color: #ffffff;  /* branca */
-                border: none;
+                background-color: #ffffff;
+                border: 1px solid #aaaaaa;
+                padding: 2px;
             }
             /* Forçar cor do texto do QCheckBox */
             QCheckBox {
@@ -1119,47 +1125,57 @@ class TabelaProdutos(QMainWindow):
 #*******************************************************************************************************
     def selecionar_todos(self):
         if not self.coluna_checkboxes_produtos_adicionada:
-            QMessageBox.warning(self, "Aviso", "Ative a opção 'Selecionar' antes.")
-            if hasattr(self, "checkbox_header_produtos"):
-                self.checkbox_header_produtos.setChecked(False)
+            self.selecionar_individual()
             return
 
-        estado = self.checkbox_header_produtos.checkState() == Qt.Checked
-        self.checkboxes.clear()  # Reinicia a lista para manter consistência
+        if not hasattr(self,"checkbox_header_produtos") or self.checkbox_header_produtos is None:
+            return # evita o erro
+
+        estado = self.checkbox_header_produtos.checkState()
+
+        if estado == Qt.Unchecked and all(not cb.isChecked() for cb in self.checkboxes):
+            self.selecionar_individual()
+            return
         
-        for row in range(self.table_widget.rowCount()):
-            widget = self.table_widget.cellWidget(row, 0)
-            if widget is not None:
-                checkbox = widget.findChild(QCheckBox)
-                if checkbox:
-                    checkbox.blockSignals(True)
-                    checkbox.setChecked(estado)
-                    checkbox.blockSignals(False)
+        # Marca ou desmarca todos os checkboxes individuais de acordo com o estado do cabeçalho
+        estado_checked = estado == Qt.Checked
+        for checkbox in self.checkboxes:
+            checkbox.blockSignals(True)
+            checkbox.setChecked(estado_checked)
+            checkbox.blockSignals(False)
 
 #*******************************************************************************************************
     # Função para adicionar checkboxes selecionar_individual na tabela de histórico
     def selecionar_individual(self):
         if self.table_widget.rowCount() == 0:
             QMessageBox.warning(self, "Aviso", "Nenhum histórico para selecionar.")
-             # Desmarca o checkbox header visualmente
+            # Desmarca o checkbox visualmente
             if hasattr(self, "checkbox_selecionar_produtos") and isinstance(self.checkbox_selecionar_produtos, QCheckBox):
                 QTimer.singleShot(0, lambda: self.checkbox_selecionar_produtos.setChecked(False))
+            return
 
-            return  # Impede que o restante da função execute!
-
+        # Se a coluna já está adicionada, remove-a
         if self.coluna_checkboxes_produtos_adicionada:
+            # Remove sinais para evitar efeitos colaterais
+            if hasattr(self, "checkbox_header_produtos") and self.checkbox_header_produtos:
+                self.checkbox_header_produtos.blockSignals(True)
+
+            # Remove a coluna
             self.table_widget.removeColumn(0)
             self.table_widget.verticalHeader().setVisible(True)
             self.coluna_checkboxes_produtos_adicionada = False
 
-            if hasattr(self, "checkbox_header_produtos"):
-                self.checkbox_header_produtos.setChecked(False)
+            # Remove o header checkbox
+            if hasattr(self, "checkbox_header_produtos") and self.checkbox_header_produtos:
+                self.checkbox_header_produtos.setParent(None)
                 self.checkbox_header_produtos.deleteLater()
-                del self.checkbox_header_produtos
+                self.checkbox_header_produtos = None
 
+            # Limpa lista de checkboxes
             self.checkboxes.clear()
             return
 
+        # Caso contrário, adiciona a coluna novamente
         self.table_widget.insertColumn(0)
         self.table_widget.setHorizontalHeaderItem(0, QTableWidgetItem(""))
         self.table_widget.setColumnWidth(0, 30)
@@ -1167,21 +1183,19 @@ class TabelaProdutos(QMainWindow):
         self.table_widget.horizontalHeader().setSectionResizeMode(0, QHeaderView.Fixed)
 
         # Checkbox do cabeçalho
-        self.checkbox_header_produtos = QCheckBox(self.table_widget)
+        header = self.table_widget.horizontalHeader()
+        self.checkbox_header_produtos = QCheckBox(header.viewport())
         self.checkbox_header_produtos.setToolTip("Selecionar todos")
         self.checkbox_header_produtos.setChecked(False)
+        self.checkbox_header_produtos.setStyleSheet("QCheckBox{background: transparent;}")
         self.checkbox_header_produtos.stateChanged.connect(self.selecionar_todos)
         self.checkbox_header_produtos.setFixedSize(20, 20)
         self.checkbox_header_produtos.show()
 
-        header = self.table_widget.horizontalHeader()
         self.atualizar_posicao_checkbox_header_produtos()
-        header.sectionResized.connect(self.atualizar_posicao_checkbox_header_produtos)
 
+        # Limpa lista de checkboxes e adiciona novos
         self.checkboxes.clear()
-
-        QTimer.singleShot(0,self.atualizar_posicao_checkbox_header_produtos)
-
         for row in range(self.table_widget.rowCount()):
             checkbox = QCheckBox()
             checkbox.stateChanged.connect(self.atualizar_selecao_todos)
@@ -1196,7 +1210,9 @@ class TabelaProdutos(QMainWindow):
             self.checkboxes.append(checkbox)
 
         self.table_widget.verticalHeader().setVisible(False)
-        self.coluna_checkboxes_produtos_adicionada  = True
+        self.table_widget.horizontalScrollBar().valueChanged.connect(self.atualizar_posicao_checkbox_header_produtos)
+        self.coluna_checkboxes_produtos_adicionada = True
+
 
     def atualizar_selecao_todos(self):
         self.checkbox_header_produtos.blockSignals(True)
@@ -1218,11 +1234,14 @@ class TabelaProdutos(QMainWindow):
         if hasattr(self, "checkbox_header_produtos") and self.coluna_checkboxes_produtos_adicionada:
             header = self.table_widget.horizontalHeader()
 
-            x = header.sectionViewportPosition(0) + (header.sectionSize(0) - self.checkbox_header_produtos.width()) // 2 + 4
+            # posição horizontal da coluna no viewport
+            x = header.sectionViewportPosition(0) + (header.sectionSize(0) - self.checkbox_header_produtos.width()) // 2
+
+            # posição vertical centralizada
             y = (header.height() - self.checkbox_header_produtos.height()) // 2
 
             self.checkbox_header_produtos.move(x, y)
-  
+
 #*******************************************************************************************************
     def ordenar_produtos(self):
         # Verificar se a tabela está vazia

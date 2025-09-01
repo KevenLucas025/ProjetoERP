@@ -419,7 +419,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.btn_sair_modo_edicao_produtos.clicked.connect(self.sair_modo_edicao_produto)
 
         self.btn_fazer_cadastro.clicked.connect(self.subscribe_user)
-        self.btn_editar.clicked.connect(self.exibir_tabela_produtos)
+        self.btn_editar.clicked.connect(self.mostrar_tabela_produtos)
         self.btn_atualizar_produto.clicked.connect(self.atualizar_produto)
         self.btn_carregar_imagem.clicked.connect(self.carregar_imagem_produto)
         self.btn_opcoes_navegacao.clicked.connect(self.abrir_menu_opcoes)
@@ -832,6 +832,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # Exibir a janela da tabela de usuários
         self.tabela_usuario_dialogo.show()
         self.tabela_usuario_dialogo.listar_usuarios()
+
+    def mostrar_tabela_produtos(self):
+        # Criar uma instância da classe AtualizarProduto
+        self.tabela_produtos_dialogo = AtualizarProduto(self)
+        # Exibir a janela da tabela de produtos
+        self.tabela_produtos_dialogo.show()
+        self.tabela_produtos_dialogo.listar_produtos()
 
 #*********************************************************************************************************************
     def carregar_dados_usuario(self, user_id):

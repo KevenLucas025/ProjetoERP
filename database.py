@@ -49,9 +49,6 @@ class DataBase:
 #*********************************************************************************************************************    
     def create_table_users(self):
         try:
-            if self.tabela_existe("users"):
-                print("A tabela 'users' já está criada.")
-                return
             cursor = self.connection.cursor()
             cursor.execute("""
                 CREATE TABLE IF NOT EXISTS users(
@@ -82,15 +79,11 @@ class DataBase:
                     Acesso TEXT NOT NULL
                 )
             """)
-            print("Tabela de usuários criada com sucesso!")
         except Exception as e:
             print("Erro ao criar tabela de usuários:", e)
 #*********************************************************************************************************************
     def create_table_users_inativos(self):
          try:
-            if self.tabela_existe("users_inativos"):
-                print("A tabela 'users_inativos' já está criada.")
-                return
             cursor = self.connection.cursor()
             cursor.execute("""
                 CREATE TABLE IF NOT EXISTS users_inativos(
@@ -122,7 +115,6 @@ class DataBase:
                                     
                 )
             """)
-            print("Tabela de usuário inativos criada com sucesso! ")
          except Exception as e:
              print("Erro ao criar a tabela users_inativos", e)
 
@@ -131,9 +123,6 @@ class DataBase:
         try:
             if self.connection is None:
                 raise Exception("Conexão com o banco de dados não estabelecida.")
-            if self.tabela_existe("products"):
-                print("A tabela 'produtos' já está criada.")
-                return
             cursor = self.connection.cursor()
             cursor.execute("""
                 CREATE TABLE IF NOT EXISTS products(
@@ -153,7 +142,6 @@ class DataBase:
                 )
             """)
             self.connection.commit()  # Confirmar a transação
-            print("Tabela de produtos criada com sucesso!")
         except Exception as e:
             print("Erro ao criar tabela de produtos:", e)
 #*********************************************************************************************************************
@@ -161,9 +149,6 @@ class DataBase:
         try:
             if self.connection is None:
                 raise Exception("Conexão com o banco de dados não estabelecida.")
-            if self.tabela_existe("products_saida"):
-                print("A tabela 'produtos saída' já está criada.")
-                return
             cursor = self.connection.cursor()
             cursor.execute("""
                 CREATE TABLE IF NOT EXISTS products_saida(
@@ -184,15 +169,11 @@ class DataBase:
                 )
             """)
             self.connection.commit()  # Confirmar a transação
-            print("Tabela de produtos saída criada com sucesso!")
         except Exception as e:
             print("Erro ao criar tabela de produtos:", e)
 #*********************************************************************************************************************
     def create_table_historico(self):
         try:
-            if self.tabela_existe("historico"):
-                print("A tabela 'histórico' já está criada.")
-                return
             cursor = self.connection.cursor()
             cursor.execute("""
                  CREATE TABLE IF NOT EXISTS historico(
@@ -203,15 +184,11 @@ class DataBase:
                  )          
             """)
             self.connection.commit() # Confirmar a transação
-            print("Tabela de histórico criada com sucesso! ")
         except Exception as e:
             print("Erro ao criar tabela de histórico: ", e)
 #*********************************************************************************************************************            
     def create_table_historico_usuario(self):
         try:
-            if self.tabela_existe("historico_usuarios"):
-                print("A tabela 'historico_usuarios' já está criada")
-                return
             cursor = self.connection.cursor()
             cursor.execute("""
                 CREATE TABLE IF NOT EXISTS historico_usuarios(
@@ -222,15 +199,11 @@ class DataBase:
                 )           
             """)
             self.connection.commit()
-            print("Tabela de histórico usuários criada com sucesso! ")
         except Exception as e:
             print("Erro ao criar tabela de historico_usuarios: ", e)
 #*********************************************************************************************************************
     def create_table_clientes_juridicos(self):
         try:
-            if self.tabela_existe("clientes_juridicos"):
-                print("A tabela 'clientes_juridicos' já está criada")
-                return
             cursor = self.connection.cursor()
             cursor.execute("""
                 CREATE TABLE IF NOT EXISTS clientes_juridicos(
@@ -262,15 +235,11 @@ class DataBase:
                     )
                 """)
             self.connection.commit()
-            print("Tabela de clientes jurídicos criada com sucesso! ")
         except Exception as e:
             print("Erro ao criar tabela de clientes_juridicos: ", e)
 #*********************************************************************************************************************
     def create_table_clientes_fisicos(self):
         try:
-            if self.tabela_existe("clientes_fisicos"):
-                print("A tabela 'clientes_fisicos' já está criada")
-                return
             cursor = self.connection.cursor()
             cursor.execute("""
                 CREATE TABLE IF NOT EXISTS clientes_fisicos(
@@ -300,15 +269,11 @@ class DataBase:
                     )
                 """)
             self.connection.commit()
-            print("Tabela de clientes fisícos criada com sucesso! ")
         except Exception as e:
             print("Erro ao criar tabela de clientes_fisicos: ", e)
             
     def create_table_historico_juridico(self):
         try:
-            if self.tabela_existe("historico_clientes_juridicos"):
-                print("A tabela 'historico_clientes_juridicos' já está criada")
-                return
             cursor = self.connection.cursor()
             cursor.execute("""
                 CREATE TABLE IF NOT EXISTS historico_clientes_juridicos(
@@ -319,15 +284,11 @@ class DataBase:
                 )           
             """)
             self.connection.commit()
-            print("Tabela de histórico usuários criada com sucesso! ")
         except Exception as e:
             print("Erro ao criar tabela de historico_clientes_juridicos: ", e)
 
     def create_table_historico_fisico(self):
         try:
-            if self.tabela_existe("historico_clientes_fisicos"):
-                print("A tabela 'historico_clientes_fisicos' já está criada")
-                return
             cursor = self.connection.cursor()
             cursor.execute("""
                 CREATE TABLE IF NOT EXISTS historico_clientes_fisicos(
@@ -338,7 +299,6 @@ class DataBase:
                 )           
             """)
             self.connection.commit()
-            print("Tabela de histórico usuários criada com sucesso! ")
         except Exception as e:
             print("Erro ao criar tabela de historico_clientes_fisicos: ", e)
 #*********************************************************************************************************************
