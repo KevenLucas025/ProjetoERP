@@ -109,7 +109,6 @@ class TabelaProdutos(QMainWindow):
 
         botoes = [
             self.btn_apagar_produto,
-            self.checkbox_selecionar_produtos,
             self.btn_duplicar_produto,
             self.btn_gerar_excel,
             self.btn_atualizar_tabela_produtos,
@@ -1192,7 +1191,8 @@ class TabelaProdutos(QMainWindow):
         self.checkbox_header_produtos.setFixedSize(20, 20)
         self.checkbox_header_produtos.show()
 
-        self.atualizar_posicao_checkbox_header_produtos()
+        # Aguarda o layout estar pronto para centralizar corretamente
+        QTimer.singleShot(0, self.atualizar_posicao_checkbox_header_produtos)
 
         # Limpa lista de checkboxes e adiciona novos
         self.checkboxes.clear()
@@ -1211,6 +1211,8 @@ class TabelaProdutos(QMainWindow):
 
         self.table_widget.verticalHeader().setVisible(False)
         self.table_widget.horizontalScrollBar().valueChanged.connect(self.atualizar_posicao_checkbox_header_produtos)
+        header.sectionResized.connect(self.atualizar_posicao_checkbox_header_produtos)
+        header.geometriesChanged.connect(self.atualizar_posicao_checkbox_header_produtos)
         self.coluna_checkboxes_produtos_adicionada = True
 
 
@@ -1234,13 +1236,18 @@ class TabelaProdutos(QMainWindow):
         if hasattr(self, "checkbox_header_produtos") and self.coluna_checkboxes_produtos_adicionada:
             header = self.table_widget.horizontalHeader()
 
-            # posição horizontal da coluna no viewport
-            x = header.sectionViewportPosition(0) + (header.sectionSize(0) - self.checkbox_header_produtos.width()) // 2
+            # largura da seção da coluna 0
+            section_width = header.sectionSize(0)
+            section_pos = header.sectionViewportPosition(0)
 
-            # posição vertical centralizada
+            # centralizar horizontalmente
+            x = section_pos + (section_width - self.checkbox_header_produtos.width()) // 2 + 4
+
+            # centralizar verticalmente
             y = (header.height() - self.checkbox_header_produtos.height()) // 2
 
             self.checkbox_header_produtos.move(x, y)
+
 
 #*******************************************************************************************************
     def ordenar_produtos(self):

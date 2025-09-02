@@ -1043,7 +1043,8 @@ class TabelaUsuario(QMainWindow):
         self.table_widget.horizontalHeader().setSectionResizeMode(0, QHeaderView.Fixed)
 
         # Checkbox do cabeçalho
-        self.checkbox_header_users = QCheckBox(self.table_widget)
+        header_usuarios = self.table_widget.horizontalHeader()
+        self.checkbox_header_users = QCheckBox(header_usuarios.viewport())
         self.checkbox_header_users.setToolTip("Selecionar todos")
         self.checkbox_header_users.setStyleSheet("""QCheckBox{background: transparent;}""")
         self.checkbox_header_users.setChecked(False)
@@ -1051,9 +1052,9 @@ class TabelaUsuario(QMainWindow):
         self.checkbox_header_users.stateChanged.connect(self.selecionar_todos_users)
         self.checkbox_header_users.show()
 
-        self.atualizar_posicao_checkbox_header_users()
-        self.table_widget.horizontalHeader().sectionResized.connect(self.atualizar_posicao_checkbox_header_users)
         QTimer.singleShot(0, self.atualizar_posicao_checkbox_header_users)
+
+        
 
         self.checkboxes.clear()
 
@@ -1071,6 +1072,9 @@ class TabelaUsuario(QMainWindow):
             self.checkboxes.append(checkbox)
 
         self.table_widget.verticalHeader().setVisible(False)
+        self.table_widget.horizontalScrollBar().valueChanged.connect(self.atualizar_posicao_checkbox_header_users)
+        header_usuarios.sectionResized.connect(self.atualizar_posicao_checkbox_header_users)
+        header_usuarios.geometriesChanged.connect(self.atualizar_posicao_checkbox_header_users)
         self.coluna_checkboxes_adicionada = True
 
         
