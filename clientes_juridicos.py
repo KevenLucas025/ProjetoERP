@@ -1,16 +1,15 @@
-from PySide6.QtWidgets import (QLineEdit, QToolButton,QTableWidgetItem,
+from PySide6.QtWidgets import (QLineEdit,QTableWidgetItem,
                                QMessageBox,QMainWindow,QVBoxLayout,QWidget,QLabel,QCheckBox,
                                QPushButton,QScrollArea,QComboBox,QGridLayout,QHeaderView,QHBoxLayout,
-                               QGraphicsOpacityEffect,QTableWidget,QInputDialog,QDialog,
+                               QGraphicsOpacityEffect,QTableWidget,QDialog,
                                QRadioButton,QGroupBox,QFileDialog,QFormLayout,QDateEdit,QMenu,QApplication)
-from PySide6.QtGui import QPixmap, QIcon,QColor,QBrush,QGuiApplication
+from PySide6.QtGui import QColor,QBrush,QGuiApplication
 from PySide6.QtCore import Qt,QTimer,QPropertyAnimation,QEvent,QDate,QPoint
 from database import DataBase
 import sqlite3
 import pandas as pd
 from configuracoes import Configuracoes_Login
 from datetime import datetime
-from PySide6.QtGui import QKeySequence, QShortcut
 from dialogos import ComboDialog
 import csv
 from reportlab.lib import colors
@@ -20,7 +19,6 @@ from reportlab.platypus import SimpleDocTemplate, Table, TableStyle,Paragraph,Sp
 from reportlab.lib.styles import getSampleStyleSheet
 from openpyxl import load_workbook
 from openpyxl.utils import get_column_letter
-from openpyxl.styles import Alignment
 from fpdf import FPDF
 import json
 

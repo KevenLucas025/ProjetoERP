@@ -1,5 +1,5 @@
 from PySide6.QtWidgets import (QWidget,QTableWidget,QMessageBox,
-                               QTableWidgetItem,QInputDialog,QLineEdit,QCheckBox,
+                               QTableWidgetItem,QLineEdit,QCheckBox,
                                QFileDialog,QMainWindow,QVBoxLayout,QPushButton,QHBoxLayout,
                                QLabel,QRadioButton,QGroupBox,QDialog,QHeaderView)
 from PySide6.QtGui import QBrush,QColor,QGuiApplication
@@ -10,8 +10,9 @@ import pandas as pd
 import csv
 from datetime import datetime
 from configuracoes import Configuracoes_Login
-from reportlab.lib.pagesizes import letter,landscape,A4
-from reportlab.platypus import SimpleDocTemplate, Table, TableStyle,Spacer,Paragraph
+from dialogos import ComboDialog
+from reportlab.lib.pagesizes import letter,landscape
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle
 from reportlab.lib import colors
 from openpyxl.utils import get_column_letter
 from openpyxl.styles import Alignment, Font
@@ -33,7 +34,8 @@ class Pagina_Usuarios(QWidget):
 
         self.checkboxes = []  # Lista para armazenar os checkboxes
         self.coluna_checkboxes_usuarios_adicionada = False
-        self.todos_selecionados = False
+        self.checkbox_header_usuarios = None
+
       
         
 
@@ -815,6 +817,8 @@ class Pagina_Usuarios(QWidget):
         return super().eventFilter(source, event)
 
     def exibir_tabela_historico_usuario(self):
+        if self.coluna_checkboxes_usuarios_adicionada:
+            self.remover_coluna_checkboxes()
         self.janela_historico = QMainWindow()
         self.janela_historico.setWindowTitle("Histórico de Ações")
         self.janela_historico.resize(800,650)
@@ -1275,7 +1279,7 @@ class Pagina_Usuarios(QWidget):
 
 
     def atualizar_historico_usuario(self):
-        QMessageBox.information(self.janela_historico, "Sucesso", "Dados carregados com sucesso!")
+        QMessageBox.information(self, "Sucesso", "Dados carregados com sucesso!")
         self.carregar_historico_usuario()
 
     def apagar_historico_usuario(self):
@@ -1438,25 +1442,11 @@ class Pagina_Usuarios(QWidget):
                 QTimer.singleShot(0, lambda: self.checkbox_selecionar.setChecked(False))
             return
 
+        # ---- Se a coluna já existe, remove ----
         if self.coluna_checkboxes_usuarios_adicionada:
-            # Antes de remover a coluna, garante que o header checkbox é limpo
-            if self.checkbox_header_usuarios:
-                try:
-                    self.checkbox_header_usuarios.stateChanged.disconnect()
-                    self.checkbox_header_usuarios.setParent(None)
-                    self.checkbox_header_usuarios.deleteLater()
-                except RuntimeError:
-                    pass  # já foi deletado pelo Qt
-                finally:
-                    self.checkbox_header_usuarios = None
-
-            # Remove a coluna
-            self.tabela_historico_usuarios.removeColumn(0)
-            self.tabela_historico_usuarios.verticalHeader().setVisible(True)
-            self.coluna_checkboxes_usuarios_adicionada = False
-
-            self.checkboxes.clear()
+            self.remover_coluna_checkboxes()
             return
+
 
         # ----- Caso contrário, adiciona a coluna -----
         self.tabela_historico_usuarios.insertColumn(0)
@@ -1499,8 +1489,44 @@ class Pagina_Usuarios(QWidget):
 
         self.coluna_checkboxes_usuarios_adicionada = True
 
-    
-  
+    def remover_coluna_checkboxes(self):
+        """Remove a coluna de checkboxes de forma segura"""
+        if self.checkbox_header_usuarios is not None:
+            try:
+                # Desconecta sinais
+                self.checkbox_header_usuarios.stateChanged.disconnect()
+            except (RuntimeError, TypeError):
+                pass
+
+            try:
+                # Remove do parent e agenda deleção
+                self.checkbox_header_usuarios.setParent(None)
+                self.checkbox_header_usuarios.deleteLater()
+            except RuntimeError:
+                pass
+
+            self.checkbox_header_usuarios = None
+
+        # Remove a coluna de fato
+        try:
+            self.tabela_historico_usuarios.removeColumn(0)
+        except Exception:
+            pass
+
+        self.tabela_historico_usuarios.verticalHeader().setVisible(True)
+        self.coluna_checkboxes_usuarios_adicionada = False
+        self.checkboxes.clear()
+
+
+
+    def closeEvent(self, event):
+        if getattr(self, "coluna_checkboxes_usuarios_adicionada", False):
+            self.remover_coluna_checkboxes()
+        # Desmarcar o checkbox principal se existir
+        if hasattr(self, "checkbox_selecionar") and isinstance(self.checkbox_selecionar, QCheckBox):
+            self.checkbox_selecionar.setChecked(False)
+        super().closeEvent(event)
+
     
     def atualizar_selecao_todos_usuarios(self):
         self.checkbox_header_usuarios.blockSignals(True)
@@ -1520,25 +1546,33 @@ class Pagina_Usuarios(QWidget):
 
         
     def atualizar_posicao_checkbox_header_usuarios(self):
-        if hasattr(self, "checkbox_header_usuarios") and self.coluna_checkboxes_usuarios_adicionada:
-            header = self.tabela_historico_usuarios.horizontalHeader()
+        if (
+            getattr(self, "checkbox_header_usuarios", None) is not None
+            and self.coluna_checkboxes_usuarios_adicionada
+        ):
+            try:
+                header = self.tabela_historico_usuarios.horizontalHeader()
 
-            # largura da seção da coluna 0
-            section_width = header.sectionSize(0)
-            section_pos = header.sectionViewportPosition(0)
+                # largura da seção da coluna 0
+                section_width = header.sectionSize(0)
+                section_pos = header.sectionViewportPosition(0)
 
-            # centralizar horizontalmente
-            x = section_pos + (section_width - self.checkbox_header_usuarios.width()) // 2 + 4
+                # centralizar horizontalmente
+                x = section_pos + (section_width - self.checkbox_header_usuarios.width()) // 2 + 4
 
-            # centralizar verticalmente
-            y = (header.height() - self.checkbox_header_usuarios.height()) // 2
+                # centralizar verticalmente
+                y = (header.height() - self.checkbox_header_usuarios.height()) // 2
 
-            self.checkbox_header_usuarios.move(x, y)
+                self.checkbox_header_usuarios.move(x, y)
+            except RuntimeError:
+                # objeto já foi deletado pelo Qt
+                self.checkbox_header_usuarios = None
+
 
     def ordenar_historico_usuario(self):
-        if hasattr(self,"checkbox_header_usuarios"):
+        if getattr(self, "checkbox_selecionar", None) and self.checkbox_selecionar.isChecked():
             QMessageBox.warning(
-                None,
+                self,
                 "Aviso",
                 "Desmarque o checkbox antes de ordernar o histórico de usuários."
             )
@@ -1591,18 +1625,22 @@ class Pagina_Usuarios(QWidget):
 
     def obter_coluna_usuario_para_ordenar(self):
         colunas = ["Data/Hora", "Usuário", "Ação", "Descrição"]
-        coluna, ok = QInputDialog.getItem(self, "Ordenar por", "Escolha a coluna:", colunas, 0, False)
-        return coluna if ok else None
+        dialog = ComboDialog("Ordenar por", "Escolha a coluna:", colunas, self)
+        if dialog.exec() == QDialog.Accepted:
+            return dialog.escolha()
+        return None
 
     def obter_direcao_ordenacao_usuario(self):
         direcoes = ["Crescente", "Decrescente"]
-        direcao, ok = QInputDialog.getItem(self, "Direção da Ordenação", "Escolha a direção:", direcoes, 0, False)
-        return direcao if ok else None
+        dialog = ComboDialog("Direção da Ordenação", "Escolha a direção:", direcoes, self)
+        if dialog.exec() == QDialog.Accepted:
+            return dialog.escolha()
+        return None
     
     def filtrar_historico_usuarios(self):
-        if hasattr(self, "checkbox_header_usuarios"):
+        if getattr(self, "checkbox_selecionar") and self.checkbox_selecionar.isChecked():
             QMessageBox.warning(
-                None,
+                self,
                 "Aviso",
                 "Desmarque o checkbox antes de filtrar o histórico de usuários."
             )
@@ -1876,14 +1914,357 @@ class Pagina_Usuarios(QWidget):
         self.janela_escolha.setWindowTitle("Pausar Histórico")
         self.janela_escolha.resize(255, 150)
 
+        # Carregar tema
+        config = self.carregar_config()
+        tema = config.get("tema", "claro")
+
+        # Definições de tema
+        if tema == "escuro":
+            bg_cor = "#202124"
+            text_cor = "white"
+            lineedit_bg = "#303030"
+
+            button_style = """
+                QPushButton {
+                    border-radius: 8px;
+                    background: qlineargradient(
+                        x1:0, y1:0, x2:0, y2:1,
+                        stop:0 rgb(60, 60, 60),   /* topo */
+                        stop:1 rgb(100, 100, 100) /* base */
+                    );
+                    font-size: 12px;
+                    padding: 3px;
+                }
+                QPushButton:hover {
+                    background-color: #444444;
+                }
+                QPushButton:pressed {
+                    background-color: #555555;
+                    border: 2px solid #888888;
+                }
+            """
+            combobox_style = """
+                QComboBox {
+                    color: #f0f0f0;
+                    border: 2px solid #ffffff;
+                    border-radius: 6px;
+                    padding: 4px 10px;
+                    background-color: #2b2b2b;
+                }
+                QComboBox QAbstractItemView::item:hover {
+                    background-color: #444444;
+                    color: #f0f0f0;
+                }
+                QComboBox QAbstractItemView::item:selected {
+                    background-color: #696969;
+                    color: #f0f0f0;
+                }
+                QComboBox QAbstractItemView::item {
+                    height: 24px;
+                }
+                QComboBox QScrollBar:vertical {
+                    background: #ffffff;
+                    width: 12px;
+                    border-radius: 6px;
+                }
+                QComboBox QScrollBar::handle:vertical {
+                    background: #555555;
+                    border-radius: 6px;
+                }
+                
+            """
+            
+            scroll_style = """
+            /* Scrollbar vertical */
+            QScrollBar:vertical {
+                background: #ffffff;   /* fundo do track */
+                width: 12px;
+                margin: 0px;
+                border-radius: 6px;
+            }
+
+            QScrollBar::handle:vertical {
+                background: #555555;   /* cor do handle */
+                border-radius: 6px;
+                min-height: 20px;
+            }
+
+            QScrollBar::handle:vertical:hover {
+                background: #777777;   /* hover no handle */
+            }
+
+            QScrollBar::add-line:vertical,
+            QScrollBar::sub-line:vertical {
+                background: none;
+                height: 0px;
+            }
+
+            QScrollBar::add-page:vertical,
+            QScrollBar::sub-page:vertical {
+                background: none;
+            }
+            """
+            table_view_style = """
+            /* QTableView com seleção diferenciada */
+            QTableView {
+                background-color: #202124;
+                color: white;
+                gridline-color: #555555;
+                selection-background-color: #7a7a7a;
+                selection-color: white;
+            }
+            /* Coluna dos cabeçalhos */
+            QHeaderView::section {
+                background-color: #ffffff;
+                color: black;
+                border: 1px solid #aaaaaa;
+                padding: 1px;
+            }
+
+            /* QTabWidget headers brancos */
+            QTabWidget::pane {
+                border: 1px solid #444444;
+                background-color: #202124;
+            }
+            /* Estiliza a barra de rolagem horizontal */
+            QTableView QScrollBar:horizontal {
+                border: none;
+                background-color: #ffffff;
+                height: 12px;
+                margin: 0px;
+                border-radius: 5px;
+            }
+
+            /* Estiliza a barra de rolagem vertical */
+            QTableView QScrollBar:vertical {
+                border: none;
+                background-color: #ffffff;  
+                width: 12px;
+                margin: 0px;
+                border-radius: 5px;
+            }
+
+            /* QTabWidget headers brancos */
+            QTabWidget::pane {
+                border: 1px solid #444444;
+                background-color: #202124;
+            }
+            /* Estiliza a barra de rolagem horizontal */
+            QTableView QScrollBar:horizontal {
+                border: none;
+                background-color: none;
+                height: 12px;
+                margin: 0px;
+                border-radius: 5px;
+            }
+
+            /* Estiliza a barra de rolagem vertical */
+            QTableView QScrollBar:vertical {
+                border: none;
+                background-color: none; 
+                width: 12px;
+                margin: 0px;
+                border-radius: 5px;
+            }
+            
+
+            /* Parte que você arrasta */
+            QTableView QScrollBar::handle:vertical {
+                background-color: #777777;  /* cinza médio */
+                min-height: 22px;
+                border-radius: 5px;
+            }
+
+            QTableView QScrollBar::handle:horizontal {
+                background-color: #777777;
+                min-width: 22px;
+                border-radius: 5px;
+            }
+
+            /* Groove horizontal */
+            QTableView QScrollBar::groove:horizontal {
+                background-color: transparent;
+                border-radius: 5px;
+                height: 15px;
+                margin: 0px 10px 0px 10px;
+            }
+
+            /* Groove vertical */
+            QTableView QScrollBar::groove:vertical {
+                background-color: transparent;
+                border-radius: 5px;
+                width: 25px;
+                margin: 10px 0px 10px 10px;
+            }
+
+            /* Estilo para item selecionado */
+            QTableWidget::item:selected {
+                background-color: #555555;  /* cinza de seleção */
+                color: white;
+            }
+            /* CornerButton (canto superior esquerdo) */
+            QTableCornerButton::section {
+                background-color: #ffffff;
+                border: 1px solid #aaaaaa;
+                padding: 2px;
+            }
+            /* Forçar cor do texto do QCheckBox */
+            QCheckBox {
+                color: white;
+            }
+
+            """
+            lineedit_style = f"""
+                QLineEdit {{
+                    background-color: {lineedit_bg};
+                    color: {text_cor};
+                    border: 2px solid white;
+                    border-radius: 6px;
+                    padding: 3px;
+                }}
+            """
+        elif tema == "claro":
+            bg_cor = "white"
+            text_cor = "black"
+            lineedit_bg = "white"
+
+            button_style = """
+                QPushButton {
+                    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                                                stop:0 rgb(50,150,250),
+                                                stop:1 rgb(100,200,255));
+                    color: black;
+                    border-radius: 8px;
+                    font-size: 16px;
+                    border: 2px solid rgb(50,150,250);
+                    padding: 6px;
+                }
+                QPushButton:hover {
+                    background-color: #e5f3ff;
+                }
+                QPushButton:pressed {
+                    background-color: #cce7ff;
+                    border: 2px solid #3399ff;
+                }
+            """
+            combobox_style = """
+                QComboBox {
+                    background-color: white;
+                    border: 2px solid rgb(50,150,250);
+                    border-radius: 5px;
+                    color: black;
+                    padding: 5px;
+                }
+                QComboBox QAbstractItemView {
+                    background-color: white;
+                    color: black;
+                    border: 1px solid #ccc;
+                    selection-background-color: #e5e5e5;
+                    selection-color: black;
+                }
+                QComboBox QScrollBar:vertical {
+                    background: #f5f5f5;
+                    width: 12px;
+                    border: none;
+                }
+                QComboBox QScrollBar::handle:vertical {
+                    background: #cccccc;
+                    min-height: 20px;
+                    border-radius: 5px;
+                }
+                
+            """
+            lineedit_style = """
+                QLineEdit {
+                    background-color: white;
+                    color: black;
+                    border: 2px solid rgb(50,150,250);
+                    border-radius: 6px;
+                    padding: 3px;
+                }
+            """
+        else:  # clássico
+            bg_cor = "rgb(0,80,121)"
+            text_cor = "white"
+
+            button_style = """
+                QPushButton {
+                    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                                                stop:0 rgb(0,120,180),
+                                                stop:1 rgb(0,150,220));
+                    color: white;
+                    border-radius: 8px;
+                    font-size: 16px;
+                    border: 2px solid rgb(0,100,160);
+                    padding: 6px;
+                }
+                QPushButton:hover {
+                    background-color: #007acc;
+                }
+                QPushButton:pressed {
+                    background-color: #006bb3;
+                    border: 2px solid #005c99;
+                }
+            """
+            combobox_style = """
+                QComboBox {
+                    background-color: white;
+                    border: 3px solid rgb(50,150,250);
+                    border-radius: 5px;
+                    color: black;
+                    padding: 5px;
+                }
+                QComboBox QAbstractItemView {
+                    background-color: white;
+                    color: black;
+                    border: 1px solid #ccc;
+                    selection-background-color: #e5e5e5;
+                    selection-color: black;
+                }
+                QComboBox QScrollBar:vertical {
+                    background: #f5f5f5;
+                    width: 12px;
+                    border: none;
+                }
+                QComboBox QScrollBar::handle:vertical {
+                    background: #cccccc;
+                    min-height: 20px;
+                    border-radius: 5px;
+                }
+            """
+            scroll_style = """
+                QScrollBar:vertical {
+                border: none;
+                background-color: rgb(255, 255, 255); /* branco */
+                width: 30px;
+                margin: 0px 10px 0px 10px;
+            }
+                QScrollBar::handle:vertical {
+                background-color: rgb(180, 180,180);  /* cinza */
+                min-height: 30px;
+                border-radius: 5px;
+            }
+            """
+            lineedit_style = """
+                QLineEdit {
+                    background-color: white;
+                    color: black;
+                    border: 2px solid rgb(50,150,250);
+                    border-radius: 6px;
+                    padding: 3px;
+                }
+        """
+
 
         # Botão "Sim"
         botao_sim = QPushButton("Sim")
         botao_sim.clicked.connect(self.historico_ativo_usuario)
+        botao_sim.setStyleSheet(button_style)
 
         # Botão "Não"
         botao_nao = QPushButton("Não")
         botao_nao.clicked.connect(self.historico_inativo_usuario)
+        botao_nao.setStyleSheet(button_style)
 
 
         # Criação do layout e tabela para exibir o histórico
