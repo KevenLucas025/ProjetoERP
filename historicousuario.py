@@ -1224,7 +1224,8 @@ class Pagina_Usuarios(QWidget):
             botao_exportar_excel,
             botao_exportar_pdf,
             botao_pausar_historico,
-            botao_filtrar_historico
+            botao_filtrar_historico,
+            botao_ordenar_historico
         ]
         for btn in botoes:
             btn.setCursor(Qt.PointingHandCursor)

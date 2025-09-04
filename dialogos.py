@@ -67,6 +67,36 @@ class DialogoEstilizado(QDialog):
                     color: white;
                 }
             """
+            scroll_style = """
+                /* Scrollbar vertical */
+            QScrollBar:vertical {
+                background: #ffffff;   /* fundo do track */
+                width: 12px;
+                margin: 0px;
+                border-radius: 6px;
+            }
+
+            QScrollBar::handle:vertical {
+                background: #555555;   /* cor do handle */
+                border-radius: 6px;
+                min-height: 20px;
+            }
+
+            QScrollBar::handle:vertical:hover {
+                background: #777777;   /* hover no handle */
+            }
+
+            QScrollBar::add-line:vertical,
+            QScrollBar::sub-line:vertical {
+                background: none;
+                height: 0px;
+            }
+
+            QScrollBar::add-page:vertical,
+            QScrollBar::sub-page:vertical {
+                background: none;
+            }
+            """
         else:  # claro
             bg_cor = "white"
             text_cor = "black"
@@ -116,6 +146,7 @@ class DialogoEstilizado(QDialog):
             }}
             {button_style}
             {combo_style}
+            {scroll_style}
             QLabel {{
                 color: {text_cor};
                 font-size: 12px;

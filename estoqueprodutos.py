@@ -7,13 +7,14 @@ import sqlite3
 import pandas as pd
 from datetime import datetime
 from database import DataBase
+from dialogos import ComboDialog
 import csv
 from reportlab.lib import colors
 from reportlab.lib.pagesizes import letter,landscape,A4
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle
 from reportlab.pdfgen import canvas
 from configuracoes import Configuracoes_Login
-
+import json
 
 class EstoqueProduto(QWidget):
     def __init__(self, main_window, btn_gerar_pdf, btn_gerar_estorno, 
@@ -72,7 +73,10 @@ class EstoqueProduto(QWidget):
         
         
 
-
+    def carregar_config(self):
+            with open("config.json", "r", encoding="utf-8") as f:
+                return json.load(f)
+            
     # Função auxiliar para criar um QTableWidgetItem com texto centralizado
     def criar_item(self, text):
         item = QTableWidgetItem(text)
@@ -357,7 +361,7 @@ class EstoqueProduto(QWidget):
         row_count = self.main_window.table_saida.rowCount()
 
         if row_count == 0:
-            msg_box = QMessageBox()
+            msg_box = QMessageBox(self)
             msg_box.setIcon(QMessageBox.Warning)
             msg_box.setWindowTitle("ERRO")
             msg_box.setText("Não há nenhum dado disponível na tabela para gerar estorno!")
@@ -392,7 +396,7 @@ class EstoqueProduto(QWidget):
 
             #  Verifica se a quantidade é válida
             if int(quantidade) <= 0:
-                msg_box = QMessageBox()
+                msg_box = QMessageBox(self)
                 msg_box.setIcon(QMessageBox.Warning)
                 msg_box.setWindowTitle("Estorno inválido")
                 msg_box.setText(None,f"O produto '{produto}' tem quantidade 0 e não pode ser estornado.")
@@ -400,19 +404,23 @@ class EstoqueProduto(QWidget):
                 continue
 
             if int(quantidade) > 1:
-                quantidade_estorno, ok = QInputDialog.getInt(
-                    None,
+                # Criar lista de opções como strings: ["1", "2", ..., str(quantidade)]
+                opcoes = [str(i) for i in range(1, int(quantidade) + 1)]
+                # Criar o diálogo personalizado
+                dialog = ComboDialog(
                     "Quantidade de Estorno",
-                    f"O produto {produto} possui {quantidade} unidades. Quanto deseja estornar? ",
-                    minValue=1,
-                    maxValue=quantidade,
-                    value=1
+                    f"O produto {produto} possui {quantidade} unidades. Quanto deseja estornar?",
+                    opcoes,
+                    parent=self  # ou None se for fora de um QMainWindow
                 )
-                if not ok:
-                    return
+
+                # Executar o diálogo
+                if dialog.exec() == QDialog.Accepted:
+                    quantidade_estorno = int(dialog.escolha())
+                else:
+                    return  # Cancelado
             else:
                 quantidade_estorno = 1
-
             # Recupera imagem do banco
             imagem = self.recuperar_imagem_produto_bd_products_saida(codigo_produto)
 
@@ -499,7 +507,7 @@ class EstoqueProduto(QWidget):
         self.main_window.table_saida.setRowCount(0)
 
         # Mensagem de sucesso
-        msg_box = QMessageBox()
+        msg_box = QMessageBox(self)
         msg_box.setIcon(QMessageBox.Information)
         msg_box.setWindowTitle("Sucesso")
         msg_box.setText("Estorno realizado com sucesso.")
@@ -729,7 +737,7 @@ class EstoqueProduto(QWidget):
             msg.exec()
 
         except Exception as e:
-            msg = QMessageBox()
+            msg = QMessageBox(self)
             msg.setIcon(QMessageBox.Critical)
             msg.setWindowTitle("Erro")
             msg.setText(f"Erro ao gerar PDF: {str(e)}")
@@ -760,6 +768,347 @@ class EstoqueProduto(QWidget):
         central_widget = QWidget()
         layout = QVBoxLayout(central_widget)
 
+        # Carregar tema
+        config = self.carregar_config()
+        tema = config.get("tema", "claro")
+
+        # Definições de tema
+        if tema == "escuro":
+            bg_cor = "#202124"
+            text_cor = "white"
+            lineedit_bg = "#303030"
+
+            button_style = """
+                QPushButton {
+                    border-radius: 8px;
+                    background: qlineargradient(
+                        x1:0, y1:0, x2:0, y2:1,
+                        stop:0 rgb(60, 60, 60),   /* topo */
+                        stop:1 rgb(100, 100, 100) /* base */
+                    );
+                    font-size: 12px;
+                    padding: 3px;
+                }
+                QPushButton:hover {
+                    background-color: #444444;
+                }
+                QPushButton:pressed {
+                    background-color: #555555;
+                    border: 2px solid #888888;
+                }
+            """
+            combobox_style = """
+                QComboBox {
+                    color: #f0f0f0;
+                    border: 2px solid #ffffff;
+                    border-radius: 6px;
+                    padding: 4px 10px;
+                    background-color: #2b2b2b;
+                }
+                QComboBox QAbstractItemView::item:hover {
+                    background-color: #444444;
+                    color: #f0f0f0;
+                }
+                QComboBox QAbstractItemView::item:selected {
+                    background-color: #696969;
+                    color: #f0f0f0;
+                }
+                QComboBox QAbstractItemView::item {
+                    height: 24px;
+                }
+                QComboBox QScrollBar:vertical {
+                    background: #ffffff;
+                    width: 12px;
+                    border-radius: 6px;
+                }
+                QComboBox QScrollBar::handle:vertical {
+                    background: #555555;
+                    border-radius: 6px;
+                }
+                
+            """
+            
+            scroll_style = """
+            /* Scrollbar vertical */
+            QScrollBar:vertical {
+                background: #ffffff;   /* fundo do track */
+                width: 12px;
+                margin: 0px;
+                border-radius: 6px;
+            }
+
+            QScrollBar::handle:vertical {
+                background: #555555;   /* cor do handle */
+                border-radius: 6px;
+                min-height: 20px;
+            }
+
+            QScrollBar::handle:vertical:hover {
+                background: #777777;   /* hover no handle */
+            }
+
+            QScrollBar::add-line:vertical,
+            QScrollBar::sub-line:vertical {
+                background: none;
+                height: 0px;
+            }
+
+            QScrollBar::add-page:vertical,
+            QScrollBar::sub-page:vertical {
+                background: none;
+            }
+            """
+            table_view_style = """
+            /* QTableView com seleção diferenciada */
+            QTableView {
+                background-color: #202124;
+                color: white;
+                gridline-color: #555555;
+                selection-background-color: #7a7a7a;
+                selection-color: white;
+            }
+            /* Coluna dos cabeçalhos */
+            QHeaderView::section {
+                background-color: #ffffff;
+                color: black;
+                border: 1px solid #aaaaaa;
+                padding: 1px;
+            }
+
+            /* QTabWidget headers brancos */
+            QTabWidget::pane {
+                border: 1px solid #444444;
+                background-color: #202124;
+            }
+            /* Estiliza a barra de rolagem horizontal */
+            QTableView QScrollBar:horizontal {
+                border: none;
+                background-color: #ffffff;
+                height: 12px;
+                margin: 0px;
+                border-radius: 5px;
+            }
+
+            /* Estiliza a barra de rolagem vertical */
+            QTableView QScrollBar:vertical {
+                border: none;
+                background-color: #ffffff;  
+                width: 12px;
+                margin: 0px;
+                border-radius: 5px;
+            }
+
+            /* QTabWidget headers brancos */
+            QTabWidget::pane {
+                border: 1px solid #444444;
+                background-color: #202124;
+            }
+            /* Estiliza a barra de rolagem horizontal */
+            QTableView QScrollBar:horizontal {
+                border: none;
+                background-color: none;
+                height: 12px;
+                margin: 0px;
+                border-radius: 5px;
+            }
+
+            /* Estiliza a barra de rolagem vertical */
+            QTableView QScrollBar:vertical {
+                border: none;
+                background-color: none; 
+                width: 12px;
+                margin: 0px;
+                border-radius: 5px;
+            }
+            
+
+            /* Parte que você arrasta */
+            QTableView QScrollBar::handle:vertical {
+                background-color: #777777;  /* cinza médio */
+                min-height: 22px;
+                border-radius: 5px;
+            }
+
+            QTableView QScrollBar::handle:horizontal {
+                background-color: #777777;
+                min-width: 22px;
+                border-radius: 5px;
+            }
+
+            /* Groove horizontal */
+            QTableView QScrollBar::groove:horizontal {
+                background-color: transparent;
+                border-radius: 5px;
+                height: 15px;
+                margin: 0px 10px 0px 10px;
+            }
+
+            /* Groove vertical */
+            QTableView QScrollBar::groove:vertical {
+                background-color: transparent;
+                border-radius: 5px;
+                width: 25px;
+                margin: 10px 0px 10px 10px;
+            }
+
+            /* Estilo para item selecionado */
+            QTableWidget::item:selected {
+                background-color: #555555;  /* cinza de seleção */
+                color: white;
+            }
+            /* CornerButton (canto superior esquerdo) */
+            QTableCornerButton::section {
+                background-color: #ffffff;
+                border: 1px solid #aaaaaa;
+                padding: 2px;
+            }
+            /* Forçar cor do texto do QCheckBox */
+            QCheckBox {
+                color: white;
+            }
+
+            """
+            lineedit_style = f"""
+                QLineEdit {{
+                    background-color: {lineedit_bg};
+                    color: {text_cor};
+                    border: 2px solid white;
+                    border-radius: 6px;
+                    padding: 3px;
+                }}
+            """
+        elif tema == "claro":
+            bg_cor = "white"
+            text_cor = "black"
+            lineedit_bg = "white"
+
+            button_style = """
+                QPushButton {
+                    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                                                stop:0 rgb(50,150,250),
+                                                stop:1 rgb(100,200,255));
+                    color: black;
+                    border-radius: 8px;
+                    font-size: 16px;
+                    border: 2px solid rgb(50,150,250);
+                    padding: 6px;
+                }
+                QPushButton:hover {
+                    background-color: #e5f3ff;
+                }
+                QPushButton:pressed {
+                    background-color: #cce7ff;
+                    border: 2px solid #3399ff;
+                }
+            """
+            combobox_style = """
+                QComboBox {
+                    background-color: white;
+                    border: 2px solid rgb(50,150,250);
+                    border-radius: 5px;
+                    color: black;
+                    padding: 5px;
+                }
+                QComboBox QAbstractItemView {
+                    background-color: white;
+                    color: black;
+                    border: 1px solid #ccc;
+                    selection-background-color: #e5e5e5;
+                    selection-color: black;
+                }
+                QComboBox QScrollBar:vertical {
+                    background: #f5f5f5;
+                    width: 12px;
+                    border: none;
+                }
+                QComboBox QScrollBar::handle:vertical {
+                    background: #cccccc;
+                    min-height: 20px;
+                    border-radius: 5px;
+                }
+                
+            """
+            lineedit_style = """
+                QLineEdit {
+                    background-color: white;
+                    color: black;
+                    border: 2px solid rgb(50,150,250);
+                    border-radius: 6px;
+                    padding: 3px;
+                }
+            """
+        else:  # clássico
+            bg_cor = "rgb(0,80,121)"
+            text_cor = "white"
+
+            button_style = """
+                QPushButton {
+                    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                                                stop:0 rgb(0,120,180),
+                                                stop:1 rgb(0,150,220));
+                    color: white;
+                    border-radius: 8px;
+                    font-size: 16px;
+                    border: 2px solid rgb(0,100,160);
+                    padding: 6px;
+                }
+                QPushButton:hover {
+                    background-color: #007acc;
+                }
+                QPushButton:pressed {
+                    background-color: #006bb3;
+                    border: 2px solid #005c99;
+                }
+            """
+            combobox_style = """
+                QComboBox {
+                    background-color: white;
+                    border: 3px solid rgb(50,150,250);
+                    border-radius: 5px;
+                    color: black;
+                    padding: 5px;
+                }
+                QComboBox QAbstractItemView {
+                    background-color: white;
+                    color: black;
+                    border: 1px solid #ccc;
+                    selection-background-color: #e5e5e5;
+                    selection-color: black;
+                }
+                QComboBox QScrollBar:vertical {
+                    background: #f5f5f5;
+                    width: 12px;
+                    border: none;
+                }
+                QComboBox QScrollBar::handle:vertical {
+                    background: #cccccc;
+                    min-height: 20px;
+                    border-radius: 5px;
+                }
+            """
+            scroll_style = """
+                QScrollBar:vertical {
+                border: none;
+                background-color: rgb(255, 255, 255); /* branco */
+                width: 30px;
+                margin: 0px 10px 0px 10px;
+            }
+                QScrollBar::handle:vertical {
+                background-color: rgb(180, 180,180);  /* cinza */
+                min-height: 30px;
+                border-radius: 5px;
+            }
+            """
+            lineedit_style = """
+                QLineEdit {
+                    background-color: white;
+                    color: black;
+                    border: 2px solid rgb(50,150,250);
+                    border-radius: 6px;
+                    padding: 3px;
+                }
+        """
+
         # Tabela do histórico
         self.tabela_historico = QTableWidget()
         self.tabela_historico.setColumnCount(4)
@@ -768,6 +1117,7 @@ class EstoqueProduto(QWidget):
         # Botão Atualizar
         botao_atualizar = QPushButton("Atualizar Histórico")
         botao_atualizar.clicked.connect(self.atualizar_historico)
+        
 
         # Botão Apagar
         botao_apagar = QPushButton("Apagar Histórico")
@@ -813,15 +1163,29 @@ class EstoqueProduto(QWidget):
         layout.addWidget(self.checkbox_selecionar)
         layout.addWidget(self.tabela_historico)
         
-
+        botoes = [
+            botao_atualizar,
+            botao_apagar,
+            botao_exportar_csv,
+            botao_exportar_excel,
+            botao_exportar_pdf,
+            botao_pausar_historico,
+            botao_filtrar_historico,
+            botao_ordenar_historico
+        ]
+        for btn in botoes:
+            btn.setCursor(Qt.PointingHandCursor)
+            btn.setStyleSheet(button_style)
 
         # Configurar o widget central e exibir a janela
         self.janela_historico.setCentralWidget(central_widget)
+        self.janela_historico.setStyleSheet(f"background-color: {bg_cor}; color:{text_cor}")
         self.janela_historico.show()
 
         # Preencher tabela pela primeira vez
         self.carregar_historico()
         self.tabela_historico.resizeColumnsToContents()
+        self.tabela_historico.setStyleSheet(table_view_style)
     
 
     def carregar_historico(self):
@@ -1034,16 +1398,17 @@ class EstoqueProduto(QWidget):
         self.tabela_historico.horizontalHeader().setSectionResizeMode(0, QHeaderView.Fixed)
 
         # Checkbox do cabeçalho
-        self.checkbox_header = QCheckBox(self.tabela_historico)
+        header_produtos = self.tabela_historico.horizontalHeader()
+        self.checkbox_header = QCheckBox(header_produtos.viewport())
         self.checkbox_header.setToolTip("Selecionar todos")
         self.checkbox_header.setChecked(False)
+        self.checkbox_header.setStyleSheet("QCheckBox{background: transparent;}")
         self.checkbox_header.stateChanged.connect(self.selecionar_todos)
         self.checkbox_header.setFixedSize(20, 20)
         self.checkbox_header.show()
 
-        header = self.tabela_historico.horizontalHeader()
-        self.atualizar_posicao_checkbox_header()
-        header.sectionResized.connect(self.atualizar_posicao_checkbox_header)
+        
+
 
         self.checkboxes.clear()
 
