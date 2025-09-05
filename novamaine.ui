@@ -1433,7 +1433,7 @@ QPushButton:hover {
                        <string notr="true">QLineEdit {
 	color: black;
     background-color: rgb(240, 240, 240); /* Cor de fundo cinza claro */
-    border: 2px solid rgb(50, 150,250); /* Borda azul */
+    border: 3px solid rgb(50, 150,250); /* Borda azul */
     border-radius: 12px; /* Cantos arredondados */
     padding: 3px; /* Espaçamento interno */
 }
@@ -2447,7 +2447,7 @@ QPushButton:hover {
                    <string notr="true">QLineEdit {
 	color: black;
     background-color: rgb(240, 240, 240); /* Cor de fundo cinza claro */
-    border: 2px solid rgb(50, 150,250); /* Borda azul */
+    border: 3px solid rgb(50, 150,250); /* Borda azul */
     border-radius: 12px; /* Cantos arredondados */
     padding: 3px; /* Espaçamento interno */
 }
@@ -6100,7 +6100,7 @@ QLineEdit::placeholderText {
               <enum>QTabWidget::Rounded</enum>
              </property>
              <property name="currentIndex">
-              <number>0</number>
+              <number>1</number>
              </property>
              <widget class="QWidget" name="tab_clientes">
               <attribute name="title">
@@ -7420,7 +7420,7 @@ QProgressBar::chunk {
                  <string notr="true">QLineEdit {
 	color: black;
     background-color: rgb(240, 240, 240); /* Cor de fundo cinza claro */
-    border: 2px solid rgb(50, 150,250); /* Borda azul */
+    border: 3px solid rgb(50, 150,250); /* Borda azul */
     border-radius: 12px; /* Cantos arredondados */
     padding: 3px; /* Espaçamento interno */
 }
@@ -7762,7 +7762,7 @@ QPushButton:hover {
                  <string notr="true">QLineEdit {
 	color: black;
     background-color: rgb(240, 240, 240); /* Cor de fundo cinza claro */
-    border: 2px solid rgb(50, 150,250); /* Borda azul */
+    border: 3px solid rgb(50, 150,250); /* Borda azul */
     border-radius: 12px; /* Cantos arredondados */
     padding: 3px; /* Espaçamento interno */
 }

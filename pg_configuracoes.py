@@ -386,9 +386,22 @@ class Pagina_Configuracoes(QWidget):
             QLineEdit#txt_senha::placeholder {
                 color: #bbbbbb;  /* placeholder cinza claro */
             }
+            QLineEdit#line_excel_usuarios,
+            QLineEdit#line_edit_massa_usuarios,
+            QLineEdit#line_edit_massa_produtos,
+            QLineEdit#line_excel,
+            QLineEdit#line_excel_usuarios{
+              color: #ffffff; /* texto branco */
+                background-color: #202124; /* fundo escuro */
+                border: 3px solid #ffffff; /* branco */
+                border-radius: 13px; /* cantos arredondados */
+                padding: 3px;
+                selection-background-color: #3296fa; /* fundo da seleção */
+                selection-color: #ffffff; /* texto da seleção */  
+            }
             QLineEdit{
                 color: #ffffff; /* texto branco */
-                background-color: #2a2b2e; /* fundo escuro */
+                background-color: #202124; /* fundo escuro */
                 border: 2px solid #ffffff; /* branco */
                 border-radius: 6px; /* cantos arredondados */
                 padding: 3px;
@@ -587,7 +600,7 @@ class Pagina_Configuracoes(QWidget):
                 color: white;                        /* texto branco */
                 border: 3px solid #ffffff;           /* borda branca  */
                 border-radius: 13px;                 /* bordas arredondadas */
-                background-color: #2b2b2b;           /* fundo escuro */
+                background-color: #202124;           /* fundo escuro */
                 text-align: center;                   /* centraliza o texto do progresso */
             }
 
