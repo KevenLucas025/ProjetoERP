@@ -1664,7 +1664,8 @@ class Clientes_Juridicos(QWidget):
         self.table_clientes_juridicos.horizontalHeader().setSectionResizeMode(0, QHeaderView.Fixed)
 
         # Checkbox no cabeçalho
-        self.checkbox_header_clientes = QCheckBox(self.table_clientes_juridicos)
+        header_clientes_juridicos = self.table_clientes_juridicos.horizontalHeader()
+        self.checkbox_header_clientes = QCheckBox(header_clientes_juridicos.viewport())
         self.checkbox_header_clientes.setToolTip("Selecionar todos")
         self.checkbox_header_clientes.setChecked(False)
         self.checkbox_header_clientes.stateChanged.connect(self.selecionar_todos_clientes)
@@ -1672,10 +1673,11 @@ class Clientes_Juridicos(QWidget):
         self.checkbox_header_clientes.setStyleSheet("background-color: transparent; border: none;")
         self.checkbox_header_clientes.show()
 
-        header = self.table_clientes_juridicos.horizontalHeader()
-        header.sectionResized.connect(self.atualizar_posicao_checkbox_header_clientes)
+   
+        header_clientes_juridicos.sectionResized.connect(self.atualizar_posicao_checkbox_header_clientes)
 
-        self.checkboxes_clientes = []
+
+        QTimer.singleShot(0, self.atualizar_posicao_checkbox_header_clientes)
 
         for linha in range(self.table_clientes_juridicos.rowCount()):
             checkbox = QCheckBox()
@@ -1690,7 +1692,10 @@ class Clientes_Juridicos(QWidget):
             self.table_clientes_juridicos.setCellWidget(linha, 0, container)
             self.checkboxes_clientes.append(checkbox)
 
-        QTimer.singleShot(0, self.atualizar_posicao_checkbox_header_clientes)
+        
+        header_clientes_juridicos.sectionResized.connect(self.atualizar_posicao_checkbox_header_clientes)
+        self.table_clientes_juridicos.horizontalScrollBar().valueChanged.connect(self.atualizar_posicao_checkbox_header_clientes)
+        header_clientes_juridicos.geometriesChanged.connect(self.atualizar_posicao_checkbox_header_clientes)
 
         self.coluna_checkboxes_clientes_adicionada = True
         
@@ -1767,7 +1772,7 @@ class Clientes_Juridicos(QWidget):
         if hasattr(self, "checkbox_header_clientes") and self.coluna_checkboxes_clientes_adicionada:
             header = self.table_clientes_juridicos.horizontalHeader()
             
-            x = header.sectionViewportPosition(0) + (header.sectionSize(0) - self.checkbox_header_clientes.width()) // 2 + 20
+            x = header.sectionViewportPosition(0) + (header.sectionSize(0) - self.checkbox_header_clientes.width()) // 2 + 4.3
             y = (header.height() - self.checkbox_header_clientes.height()) // 2
             self.checkbox_header_clientes.move(x, y)
             
@@ -2937,7 +2942,103 @@ class Clientes_Juridicos(QWidget):
                     padding: 3px;
                 }}
             """
+            checkbox_style = """
+                QMessageBox QCheckBox{
+                    background: transparent;
+                    color: white;
+                }
+            """
+            date_style = """
+                /* Estilo geral do QDateEdit */
+                QDateEdit {
+                    color: white; 
+                    background-color: #2b2b2b; 
+                    border: 2px solid #ffffff;
+                    border-radius: 5px;
+                    padding: 2px 5px;
+                }
 
+                /* Remove o fundo das setas */
+                QDateEdit::up-button, 
+                QDateEdit::down-button {
+                    background: transparent;
+                    border: none;
+                }
+
+                /* Cor de fundo do calendário popup */
+                QDateEdit QCalendarWidget {
+                    background-color: #2b2b2b;
+                    border: 1px solid #555555;
+                }
+                /* Cabeçalho dos dias da semana (dom, seg, ..., sáb) */
+                QDateEdit QCalendarWidget QHeaderView::section {
+                    background-color: #2b2b2b;
+                    color: black;  /* padrão: dias úteis */
+                    padding: 5px;
+                    font-weight: bold;
+                }
+
+                /* Dias normais */
+                QDateEdit QCalendarWidget QAbstractItemView:enabled {
+                    background-color: #2b2b2b;
+                    color: black;
+                    selection-background-color: rgb(0, 120, 215); /* Azul no dia selecionado */
+                    selection-color: black;
+                }
+                /* Botões de navegação (setas) do calendário */
+                QDateEdit QCalendarWidget QToolButton {
+                    background: transparent;   /* tira o fundo azul */
+                    color: white;              
+                    border: none;              /* sem borda */
+                    icon-size: 16px 16px;      /* ajusta o tamanho do ícone */
+                    padding: 2px;
+                }
+                QDateEdit QCalendarWidget QToolButton:hover {
+                    background: rgb(220, 220, 220); /* cinza claro no hover */
+                    border-radius: 4px;
+                }
+                /* Popup de meses/anos do calendário (QMenu) */
+                QDateEdit QCalendarWidget QMenu {
+                    background-color: white;
+                    border: 1px solid #ccc;
+                    color: black;
+                }
+                
+
+                QDateEdit QCalendarWidget QMenu::item {
+                    background: transparent;
+                    color: black;
+                    padding: 6px 16px;
+                }
+
+                QDateEdit QCalendarWidget QMenu::item:selected {
+                    background: rgb(0, 120, 215);
+                    color: white;
+                }
+                QDateEdit QCalendarWidget QToolButton::menu-indicator {
+                    image: none;   /* remove o ícone padrão */
+                    width: 0px;    /* remove o espaço reservado */
+                }
+                /* Finais de semana - domingos */
+                QDateEdit QCalendarWidget QTableView::item:nth-child(7n+1) {
+                    color: red;
+                }
+
+                /* Finais de semana - sábados */
+                QDateEdit QCalendarWidget QTableView::item:nth-child(7n) {
+                    color: red;
+                }
+
+                /* Domingo (primeira coluna do cabeçalho) */
+                QDateEdit QCalendarWidget QHeaderView::section:first-child {
+                    color: red;
+                }
+
+                /* Sábado (última coluna do cabeçalho) */
+                QDateEdit QCalendarWidget QHeaderView::section:last-child {
+                    color: red;
+                }
+            """
         elif tema == "claro":
             bg_cor = "white"
             text_cor = "black"
@@ -2997,6 +3098,77 @@ class Clientes_Juridicos(QWidget):
                     border-radius: 6px;
                     padding: 3px;
                 }
+            """
+            checkbox_style = """
+                QMessageBox QCheckBox{
+                    background: transparent;
+                    color: black;
+                }
+            """
+            date_style = """
+                /* Estilo geral do QDateEdit */
+                QDateEdit {
+                    color: black; 
+                    background-color: 2b2b2b; 
+                    border: 1px solid 3399ff;
+                    border-radius: 5px;
+                    padding: 2px 5px;
+                }
+
+                /* Remove o fundo das setas */
+                QDateEdit::up-button, 
+                QDateEdit::down-button {
+                    background: transparent;
+                    border: none;
+                }
+
+                /* Cor de fundo do calendário popup */
+                QDateEdit QCalendarWidget {
+                    background-color: 2b2b2b;
+                    border: 1px solid #555555;
+                }
+
+                /* Dias normais */
+                QDateEdit QCalendarWidget QAbstractItemView:enabled {
+                    background-color: #2b2b2b;
+                    color: black;
+                    selection-background-color: rgb(0, 120, 215); /* Azul no dia selecionado */
+                    selection-color: white;
+                }
+                /* Botões de navegação (setas) do calendário */
+                QDateEdit QCalendarWidget QToolButton {
+                    background: transparent;   /* tira o fundo azul */
+                    color: black;              /* deixa as setas pretas */
+                    border: none;              /* sem borda */
+                    icon-size: 16px 16px;      /* ajusta o tamanho do ícone */
+                    padding: 2px;
+                }
+                QDateEdit QCalendarWidget QToolButton:hover {
+                    background: rgb(220, 220, 220); /* cinza claro no hover */
+                    border-radius: 4px;
+                }
+                /* Popup de meses/anos do calendário (QMenu) */
+                QDateEdit QCalendarWidget QMenu {
+                    background-color: white;
+                    border: 1px solid #ccc;
+                    color: black;
+                }
+
+                QDateEdit QCalendarWidget QMenu::item {
+                    background: transparent;
+                    color: black;
+                    padding: 6px 16px;
+                }
+
+                QDateEdit QCalendarWidget QMenu::item:selected {
+                    background: rgb(0, 120, 215);
+                    color: white;
+                }
+                QDateEdit QCalendarWidget QToolButton::menu-indicator {
+                    image: none;   /* remove o ícone padrão */
+                    width: 0px;    /* remove o espaço reservado */
+                }
+
             """
 
         else:  # clássico
@@ -3070,6 +3242,78 @@ class Clientes_Juridicos(QWidget):
                     padding: 3px;
                 }
             """
+            checkbox_style = """
+                QMessageBox QCheckBox{
+                    background: transparent;
+                    color: white;
+                }
+            """
+            
+            date_style = """
+                /* Estilo geral do QDateEdit */
+                QDateEdit {
+                    color: black; 
+                    background-color: white; 
+                    border: 1px solid 3399ff;
+                    border-radius: 5px;
+                    padding: 2px 5px;
+                }
+
+                /* Remove o fundo das setas */
+                QDateEdit::up-button, 
+                QDateEdit::down-button {
+                    background: transparent;
+                    border: none;
+                }
+
+                /* Cor de fundo do calendário popup */
+                QDateEdit QCalendarWidget {
+                    background-color: 2b2b2b;
+                    border: 1px solid #555555;
+                }
+
+                /* Dias normais */
+                QDateEdit QCalendarWidget QAbstractItemView:enabled {
+                    background-color: #2b2b2b;
+                    color: black;
+                    selection-background-color: rgb(0, 120, 215); /* Azul no dia selecionado */
+                    selection-color: white;
+                }
+                /* Botões de navegação (setas) do calendário */
+                QDateEdit QCalendarWidget QToolButton {
+                    background: transparent;   /* tira o fundo azul */
+                    color: black;              /* deixa as setas pretas */
+                    border: none;              /* sem borda */
+                    icon-size: 16px 16px;      /* ajusta o tamanho do ícone */
+                    padding: 2px;
+                }
+                QDateEdit QCalendarWidget QToolButton:hover {
+                    background: rgb(220, 220, 220); /* cinza claro no hover */
+                    border-radius: 4px;
+                }
+                /* Popup de meses/anos do calendário (QMenu) */
+                QDateEdit QCalendarWidget QMenu {
+                    background-color: white;
+                    border: 1px solid #ccc;
+                    color: black;
+                }
+
+                QDateEdit QCalendarWidget QMenu::item {
+                    background: transparent;
+                    color: black;
+                    padding: 6px 16px;
+                }
+
+                QDateEdit QCalendarWidget QMenu::item:selected {
+                    background: rgb(0, 120, 215);
+                    color: white;
+                }
+                QDateEdit QCalendarWidget QToolButton::menu-indicator {
+                    image: none;   /* remove o ícone padrão */
+                    width: 0px;    /* remove o espaço reservado */
+                }
+
+            """
 
         central_widget = QWidget()
         layout_principal = QVBoxLayout(central_widget)
@@ -3089,12 +3333,12 @@ class Clientes_Juridicos(QWidget):
         self.date_de = QDateEdit()
         self.date_de.setDate(QDate.currentDate().addMonths(-1))
         self.date_de.setCalendarPopup(True)
-        self.date_de.setStyleSheet(lineedit_style)
+        self.date_de.setStyleSheet(date_style)
 
         self.date_ate = QDateEdit()
         self.date_ate.setDate(QDate.currentDate())
         self.date_ate.setCalendarPopup(True)
-        self.date_ate.setStyleSheet(lineedit_style)
+        self.date_ate.setStyleSheet(date_style)
 
         layout_filtros.addRow("Última Compra - De:", self.date_de)
         layout_filtros.addRow("Última Compra - Até:", self.date_ate)
@@ -3170,7 +3414,10 @@ class Clientes_Juridicos(QWidget):
         aviso.setText("Para uma melhor experiência recomendamos a geração do relatório em Excel.")
         aviso.setStandardButtons(QMessageBox.Ok)
         
+        
+        
         checkbox_nao_mostrar = QCheckBox("Não mostrar essa mensagem novamente")
+        checkbox_nao_mostrar.setStyleSheet(checkbox_style)
         aviso.setCheckBox(checkbox_nao_mostrar)
         aviso.exec()
 

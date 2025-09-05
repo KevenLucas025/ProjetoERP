@@ -189,7 +189,12 @@ class Pagina_Configuracoes(QWidget):
                 color: white;
             }
             
-
+            QTabWidget#tb_base QTabBar {
+                color: transparent; /* Esconde o texto */
+                height: 1px;         /* Opcional: aba bem pequena */
+                width: 1px;          /* Opcional: aba bem pequena */
+            }
+            
             QTabBar::tab {
                 background-color: #ffffff; /* fundo branco */
                 color: black;
@@ -207,6 +212,8 @@ class Pagina_Configuracoes(QWidget):
             QTabBar::tab:hover {
                 background-color: #f5f5f5;
             }
+            
+
             QPushButton#btn_mostrar_senha{
                 qproperty-icon: url("imagens/olho_branco.png");
                 qproperty-iconSize: 16px 16px;
@@ -224,6 +231,7 @@ class Pagina_Configuracoes(QWidget):
                 background: transparent;
                 border: none;
             }
+            
 
             /* Botões gerais */
             QPushButton {
@@ -232,7 +240,8 @@ class Pagina_Configuracoes(QWidget):
                     x1:0, y1:0, x2:0, y2:1,
                     stop:0 rgb(60, 60, 60),   /* topo */
                     stop:1 rgb(100, 100, 100) /* base */
-                );
+                );      
+                min-height: 24px;  /* Adicione esta linha */
             }
 
             QPushButton:hover {
@@ -463,8 +472,8 @@ class Pagina_Configuracoes(QWidget):
                     stop:1 rgb(100, 100, 100)
                 );
                 color: #ffffff;
-                min-width: 130px;
-                min-height: 21px;      
+                min-width: 120px;
+                min-height: 30px;      
             }
             QToolButton:hover{
                 background: qlineargradient(
@@ -558,7 +567,7 @@ class Pagina_Configuracoes(QWidget):
             QDateEdit {
                 color: white; 
                 background-color: #3b3b3b;  /* fundo escuro */
-                border: 1px solid #ffffff;
+                border: 2px solid #ffffff;
                 border-radius: 5px;
                 padding: 2px 5px;
             }
@@ -607,6 +616,13 @@ class Pagina_Configuracoes(QWidget):
             QProgressBar::chunk {
                 background-color: #4682b4;           /* azul do progresso preenchido */
                 border-radius: 12px;                  /* mantém arredondado */
+            }
+            QFrame#frame_page_verificar_usuarios,
+            QFrame#frame_pag_estoque{
+                border: 2px solid white;
+            }
+            QTabWidget#tb_base::pane{
+                border:none;
             }
 
             
@@ -855,7 +871,7 @@ class Pagina_Configuracoes(QWidget):
             QDateEdit {
                 color: black; 
                 background-color: white; 
-                border: 1px solid rgb(50, 150, 250);
+                border: 3px solid #ffffff;
                 border-radius: 5px;
                 padding: 2px 5px;
             }
@@ -1014,6 +1030,11 @@ class Pagina_Configuracoes(QWidget):
             QTabBar::tab:selected {
                 color: black;
             }
+            QTabBar#tb_base::tab {
+                color: transparent; /* Esconde o texto */
+                height: 1px;         /* Opcional: aba bem pequena */
+                width: 1px;          /* Opcional: aba bem pequena */
+            }
             QToolButton {
                 background-color: rgb(50, 150, 250);
                 color: white;
@@ -1074,6 +1095,7 @@ class Pagina_Configuracoes(QWidget):
                 border: 3px solid rgb(50,150,250);
                 border-radius: 13px;  /* Aumentei o valor para deixar a borda mais redonda */
                 background-color: #f0f0f0;  /* Cor cinza claro */
+                min-height: 10px;  /* <- Adicione isso */
             }
 
             QProgressBar::chunk {
@@ -1134,6 +1156,7 @@ class Pagina_Configuracoes(QWidget):
                 background-color: #0078d7;
                 color: white;
             }
+            
             
         """
         # Iterar sobre todos os widgets da aplicação e aplicar o estilo
@@ -1291,9 +1314,3 @@ class ProgressDialog(QDialog):
     def update_progress(self, value):
         self.progress_bar.setValue(value)
         QApplication.processEvents()
-
-
-
-    
-
-        

@@ -1461,7 +1461,7 @@ class Pagina_Usuarios(QWidget):
         self.checkbox_header_usuarios = QCheckBox(header_usuarios_hist.viewport())
         self.checkbox_header_usuarios.setToolTip("Selecionar todos")
         self.checkbox_header_usuarios.setChecked(False)
-        self.checkbox_header_usuarios.setStyleSheet("QCheckBox{background: transparent;}")
+        self.checkbox_header_usuarios.setStyleSheet("""QCheckBox{background: transparent;}""")
         self.checkbox_header_usuarios.stateChanged.connect(self.selecionar_todos_usuarios)
         self.checkbox_header_usuarios.setFixedSize(20, 20)
         self.checkbox_header_usuarios.show()

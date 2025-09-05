@@ -224,6 +224,7 @@ class Ui_MainWindow(object):
         sizePolicy.setHeightForWidth(self.paginas_sistemas.sizePolicy().hasHeightForWidth())
         self.paginas_sistemas.setSizePolicy(sizePolicy)
         self.paginas_sistemas.setStyleSheet(u"")
+        self.paginas_sistemas.setFrameShadow(QFrame.Plain)
         self.home_pag = QWidget()
         self.home_pag.setObjectName(u"home_pag")
         sizePolicy.setHeightForWidth(self.home_pag.sizePolicy().hasHeightForWidth())
@@ -289,7 +290,17 @@ class Ui_MainWindow(object):
         self.tb_base.setObjectName(u"tb_base")
         self.tb_base.setMinimumSize(QSize(0, 0))
         self.tb_base.setMaximumSize(QSize(16777215, 16777215))
-        self.tb_base.setStyleSheet(u"")
+        self.tb_base.setStyleSheet(u"QTabWidget::pane {\n"
+"    border: none;\n"
+"}\n"
+"\n"
+"\n"
+"QTabBar::tab {\n"
+"    width: 0;\n"
+"    height: 0;\n"
+"    border: none;\n"
+"}\n"
+"")
         self.tb_base.setUsesScrollButtons(False)
         self.tb_base.setMovable(False)
         self.tb_base.setTabBarAutoHide(False)
@@ -298,111 +309,18 @@ class Ui_MainWindow(object):
         sizePolicy.setHeightForWidth(self.tabela_base.sizePolicy().hasHeightForWidth())
         self.tabela_base.setSizePolicy(sizePolicy)
         self.tabela_base.setStyleSheet(u"")
-        self.gridLayout_7 = QGridLayout(self.tabela_base)
-        self.gridLayout_7.setObjectName(u"gridLayout_7")
-        self.table_saida = QTableWidget(self.tabela_base)
-        if (self.table_saida.columnCount() < 12):
-            self.table_saida.setColumnCount(12)
-        __qtablewidgetitem = QTableWidgetItem()
-        self.table_saida.setHorizontalHeaderItem(0, __qtablewidgetitem)
-        __qtablewidgetitem1 = QTableWidgetItem()
-        self.table_saida.setHorizontalHeaderItem(1, __qtablewidgetitem1)
-        __qtablewidgetitem2 = QTableWidgetItem()
-        self.table_saida.setHorizontalHeaderItem(2, __qtablewidgetitem2)
-        __qtablewidgetitem3 = QTableWidgetItem()
-        self.table_saida.setHorizontalHeaderItem(3, __qtablewidgetitem3)
-        __qtablewidgetitem4 = QTableWidgetItem()
-        self.table_saida.setHorizontalHeaderItem(4, __qtablewidgetitem4)
-        __qtablewidgetitem5 = QTableWidgetItem()
-        self.table_saida.setHorizontalHeaderItem(5, __qtablewidgetitem5)
-        __qtablewidgetitem6 = QTableWidgetItem()
-        self.table_saida.setHorizontalHeaderItem(6, __qtablewidgetitem6)
-        __qtablewidgetitem7 = QTableWidgetItem()
-        self.table_saida.setHorizontalHeaderItem(7, __qtablewidgetitem7)
-        __qtablewidgetitem8 = QTableWidgetItem()
-        self.table_saida.setHorizontalHeaderItem(8, __qtablewidgetitem8)
-        __qtablewidgetitem9 = QTableWidgetItem()
-        self.table_saida.setHorizontalHeaderItem(9, __qtablewidgetitem9)
-        __qtablewidgetitem10 = QTableWidgetItem()
-        self.table_saida.setHorizontalHeaderItem(10, __qtablewidgetitem10)
-        __qtablewidgetitem11 = QTableWidgetItem()
-        self.table_saida.setHorizontalHeaderItem(11, __qtablewidgetitem11)
-        self.table_saida.setObjectName(u"table_saida")
-        self.table_saida.setStyleSheet(u"/* Estiliza apenas o QTableView com objectName \"table_ativos\" */\n"
-"QTableView {\n"
-"    gridline-color: black;\n"
-"    border: 2px solid white;\n"
-"    color: black;\n"
-"    selection-color: white;\n"
-"}\n"
-"\n"
-"/* Estiliza a barra de rolagem horizontal */\n"
-"QTableView QScrollBar:horizontal {\n"
-"    border: none;\n"
-"    background-color: rgb(255, 255, 255);\n"
-"    height: 15px;\n"
-"    margin: 0px 10px 0px 10px;\n"
-"}\n"
-"\n"
-"/* Estiliza a barra de rolagem vertical */\n"
-"QTableView QScrollBar:vertical {\n"
-"    border: none;\n"
-"    background-color: rgb(255, 255, 255); /* branco */\n"
-"    width: 35px;\n"
-"    margin: 0px 10px 0px 10px;\n"
-"}\n"
-"\n"
-"/* Parte que voc\u00ea arrasta */\n"
-"QTableView QScrollBar::handle:vertical {\n"
-"    background-color: rgb(180, 180,150);  /* cinza */\n"
-"    min-height: 30px;\n"
-"	border-radius: 5px;\n"
-"}\n"
-"\n"
-"QTableView QScrollBar::handle:horizontal{\n"
-"	background-color: rgb(180,180,150);\n"
-"	min-height: 30px;\n"
-"	border-radius: 5px;\n"
-"}\n"
-"\n"
-"/* "
-                        "Remove os bot\u00f5es */\n"
-"QTableView QScrollBar::add-line:vertical,\n"
-"QTableView QScrollBar::sub-line:vertical {\n"
-"    height: 0px;\n"
-"    width: 0px;\n"
-"    border: none;\n"
-"    background: none;\n"
-"}\n"
-"\n"
-"QTableView QScrollBar::groove:horizontal{\n"
-"	background-color: rgb(100,240,240);\n"
-"	border-radius: 2px;\n"
-"	height: 15px;\n"
-"	margin: 0px 10px 0px 10px;\n"
-"}\n"
-"\n"
-"/* Estilo para item selecionado */\n"
-"QTableWidget::item:selected {\n"
-"    background-color: rgb(0, 120, 215);\n"
-"    color: white;\n"
-"}")
-        self.table_saida.setFrameShadow(QFrame.Sunken)
-        self.table_saida.setEditTriggers(QAbstractItemView.NoEditTriggers)
-        self.table_saida.setSelectionMode(QAbstractItemView.ExtendedSelection)
-        self.table_saida.setSelectionBehavior(QAbstractItemView.SelectRows)
-        self.table_saida.setCornerButtonEnabled(False)
-        self.table_saida.horizontalHeader().setCascadingSectionResizes(False)
-        self.table_saida.horizontalHeader().setDefaultSectionSize(112)
-        self.table_saida.verticalHeader().setCascadingSectionResizes(False)
-
-        self.gridLayout_7.addWidget(self.table_saida, 4, 0, 1, 8)
-
-        self.verticalLayout_2 = QVBoxLayout()
-        self.verticalLayout_2.setSpacing(6)
-        self.verticalLayout_2.setObjectName(u"verticalLayout_2")
-        self.verticalLayout_2.setContentsMargins(9, 2, 0, 0)
-        self.btn_novo_produto = QPushButton(self.tabela_base)
+        self.gridLayout_29 = QGridLayout(self.tabela_base)
+        self.gridLayout_29.setObjectName(u"gridLayout_29")
+        self.frame_14 = QFrame(self.tabela_base)
+        self.frame_14.setObjectName(u"frame_14")
+        sizePolicy.setHeightForWidth(self.frame_14.sizePolicy().hasHeightForWidth())
+        self.frame_14.setSizePolicy(sizePolicy)
+        self.frame_14.setMaximumSize(QSize(170, 16777215))
+        self.frame_14.setFrameShape(QFrame.StyledPanel)
+        self.frame_14.setFrameShadow(QFrame.Raised)
+        self.gridLayout_17 = QGridLayout(self.frame_14)
+        self.gridLayout_17.setObjectName(u"gridLayout_17")
+        self.btn_novo_produto = QPushButton(self.frame_14)
         self.btn_novo_produto.setObjectName(u"btn_novo_produto")
         sizePolicy.setHeightForWidth(self.btn_novo_produto.sizePolicy().hasHeightForWidth())
         self.btn_novo_produto.setSizePolicy(sizePolicy)
@@ -421,9 +339,9 @@ class Ui_MainWindow(object):
 "    color: black;\n"
 "}")
 
-        self.verticalLayout_2.addWidget(self.btn_novo_produto)
+        self.gridLayout_17.addWidget(self.btn_novo_produto, 0, 0, 1, 1)
 
-        self.btn_atualizar_saida = QPushButton(self.tabela_base)
+        self.btn_atualizar_saida = QPushButton(self.frame_14)
         self.btn_atualizar_saida.setObjectName(u"btn_atualizar_saida")
         sizePolicy.setHeightForWidth(self.btn_atualizar_saida.sizePolicy().hasHeightForWidth())
         self.btn_atualizar_saida.setSizePolicy(sizePolicy)
@@ -442,9 +360,9 @@ class Ui_MainWindow(object):
 "    color: black;\n"
 "}")
 
-        self.verticalLayout_2.addWidget(self.btn_atualizar_saida)
+        self.gridLayout_17.addWidget(self.btn_atualizar_saida, 1, 0, 1, 1)
 
-        self.btn_atualizar_estoque = QPushButton(self.tabela_base)
+        self.btn_atualizar_estoque = QPushButton(self.frame_14)
         self.btn_atualizar_estoque.setObjectName(u"btn_atualizar_estoque")
         sizePolicy.setHeightForWidth(self.btn_atualizar_estoque.sizePolicy().hasHeightForWidth())
         self.btn_atualizar_estoque.setSizePolicy(sizePolicy)
@@ -463,9 +381,9 @@ class Ui_MainWindow(object):
 "    color: black;\n"
 "}")
 
-        self.verticalLayout_2.addWidget(self.btn_atualizar_estoque)
+        self.gridLayout_17.addWidget(self.btn_atualizar_estoque, 2, 0, 1, 1)
 
-        self.btn_historico = QPushButton(self.tabela_base)
+        self.btn_historico = QPushButton(self.frame_14)
         self.btn_historico.setObjectName(u"btn_historico")
         sizePolicy.setHeightForWidth(self.btn_historico.sizePolicy().hasHeightForWidth())
         self.btn_historico.setSizePolicy(sizePolicy)
@@ -484,9 +402,9 @@ class Ui_MainWindow(object):
 "    color: black;\n"
 "}")
 
-        self.verticalLayout_2.addWidget(self.btn_historico)
+        self.gridLayout_17.addWidget(self.btn_historico, 3, 0, 1, 1)
 
-        self.btn_gerar_pdf = QPushButton(self.tabela_base)
+        self.btn_gerar_pdf = QPushButton(self.frame_14)
         self.btn_gerar_pdf.setObjectName(u"btn_gerar_pdf")
         sizePolicy.setHeightForWidth(self.btn_gerar_pdf.sizePolicy().hasHeightForWidth())
         self.btn_gerar_pdf.setSizePolicy(sizePolicy)
@@ -505,9 +423,9 @@ class Ui_MainWindow(object):
 "    color: black;\n"
 "}")
 
-        self.verticalLayout_2.addWidget(self.btn_gerar_pdf)
+        self.gridLayout_17.addWidget(self.btn_gerar_pdf, 4, 0, 1, 1)
 
-        self.btn_limpar_tabelas = QPushButton(self.tabela_base)
+        self.btn_limpar_tabelas = QPushButton(self.frame_14)
         self.btn_limpar_tabelas.setObjectName(u"btn_limpar_tabelas")
         sizePolicy.setHeightForWidth(self.btn_limpar_tabelas.sizePolicy().hasHeightForWidth())
         self.btn_limpar_tabelas.setSizePolicy(sizePolicy)
@@ -526,9 +444,9 @@ class Ui_MainWindow(object):
 "    color: black;\n"
 "}")
 
-        self.verticalLayout_2.addWidget(self.btn_limpar_tabelas)
+        self.gridLayout_17.addWidget(self.btn_limpar_tabelas, 5, 0, 1, 1)
 
-        self.btn_incluir_produto_sistema = QPushButton(self.tabela_base)
+        self.btn_incluir_produto_sistema = QPushButton(self.frame_14)
         self.btn_incluir_produto_sistema.setObjectName(u"btn_incluir_produto_sistema")
         sizePolicy.setHeightForWidth(self.btn_incluir_produto_sistema.sizePolicy().hasHeightForWidth())
         self.btn_incluir_produto_sistema.setSizePolicy(sizePolicy)
@@ -537,7 +455,7 @@ class Ui_MainWindow(object):
         self.btn_incluir_produto_sistema.setStyleSheet(u"QPushButton {\n"
 "    color: rgb(255, 255, 255);\n"
 "    border-radius: 8px;\n"
-"    font-size: 13px;\n"
+"    font-size: 12px;\n"
 "    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */\n"
 "    border: 4px solid transparent;\n"
 "}\n"
@@ -547,10 +465,10 @@ class Ui_MainWindow(object):
 "    color: black;\n"
 "}")
 
-        self.verticalLayout_2.addWidget(self.btn_incluir_produto_sistema)
+        self.gridLayout_17.addWidget(self.btn_incluir_produto_sistema, 6, 0, 1, 1)
 
 
-        self.gridLayout_7.addLayout(self.verticalLayout_2, 0, 8, 5, 1)
+        self.gridLayout_29.addWidget(self.frame_14, 0, 6, 5, 1)
 
         self.label_estoque = QLabel(self.tabela_base)
         self.label_estoque.setObjectName(u"label_estoque")
@@ -565,40 +483,40 @@ class Ui_MainWindow(object):
 "}\n"
 "")
 
-        self.gridLayout_7.addWidget(self.label_estoque, 1, 0, 1, 6)
+        self.gridLayout_29.addWidget(self.label_estoque, 1, 0, 1, 2)
 
         self.table_base = QTableWidget(self.tabela_base)
         if (self.table_base.columnCount() < 11):
             self.table_base.setColumnCount(11)
-        __qtablewidgetitem12 = QTableWidgetItem()
-        self.table_base.setHorizontalHeaderItem(0, __qtablewidgetitem12)
-        __qtablewidgetitem13 = QTableWidgetItem()
-        self.table_base.setHorizontalHeaderItem(1, __qtablewidgetitem13)
-        __qtablewidgetitem14 = QTableWidgetItem()
-        self.table_base.setHorizontalHeaderItem(2, __qtablewidgetitem14)
-        __qtablewidgetitem15 = QTableWidgetItem()
-        self.table_base.setHorizontalHeaderItem(3, __qtablewidgetitem15)
-        __qtablewidgetitem16 = QTableWidgetItem()
-        self.table_base.setHorizontalHeaderItem(4, __qtablewidgetitem16)
-        __qtablewidgetitem17 = QTableWidgetItem()
-        self.table_base.setHorizontalHeaderItem(5, __qtablewidgetitem17)
-        __qtablewidgetitem18 = QTableWidgetItem()
-        self.table_base.setHorizontalHeaderItem(6, __qtablewidgetitem18)
-        __qtablewidgetitem19 = QTableWidgetItem()
-        self.table_base.setHorizontalHeaderItem(7, __qtablewidgetitem19)
-        __qtablewidgetitem20 = QTableWidgetItem()
-        self.table_base.setHorizontalHeaderItem(8, __qtablewidgetitem20)
-        __qtablewidgetitem21 = QTableWidgetItem()
-        self.table_base.setHorizontalHeaderItem(9, __qtablewidgetitem21)
-        __qtablewidgetitem22 = QTableWidgetItem()
-        self.table_base.setHorizontalHeaderItem(10, __qtablewidgetitem22)
+        __qtablewidgetitem = QTableWidgetItem()
+        self.table_base.setHorizontalHeaderItem(0, __qtablewidgetitem)
+        __qtablewidgetitem1 = QTableWidgetItem()
+        self.table_base.setHorizontalHeaderItem(1, __qtablewidgetitem1)
+        __qtablewidgetitem2 = QTableWidgetItem()
+        self.table_base.setHorizontalHeaderItem(2, __qtablewidgetitem2)
+        __qtablewidgetitem3 = QTableWidgetItem()
+        self.table_base.setHorizontalHeaderItem(3, __qtablewidgetitem3)
+        __qtablewidgetitem4 = QTableWidgetItem()
+        self.table_base.setHorizontalHeaderItem(4, __qtablewidgetitem4)
+        __qtablewidgetitem5 = QTableWidgetItem()
+        self.table_base.setHorizontalHeaderItem(5, __qtablewidgetitem5)
+        __qtablewidgetitem6 = QTableWidgetItem()
+        self.table_base.setHorizontalHeaderItem(6, __qtablewidgetitem6)
+        __qtablewidgetitem7 = QTableWidgetItem()
+        self.table_base.setHorizontalHeaderItem(7, __qtablewidgetitem7)
+        __qtablewidgetitem8 = QTableWidgetItem()
+        self.table_base.setHorizontalHeaderItem(8, __qtablewidgetitem8)
+        __qtablewidgetitem9 = QTableWidgetItem()
+        self.table_base.setHorizontalHeaderItem(9, __qtablewidgetitem9)
+        __qtablewidgetitem10 = QTableWidgetItem()
+        self.table_base.setHorizontalHeaderItem(10, __qtablewidgetitem10)
         self.table_base.setObjectName(u"table_base")
-        self.table_base.setMinimumSize(QSize(0, 0))
+        self.table_base.setMinimumSize(QSize(1020, 0))
         self.table_base.setMaximumSize(QSize(16777215, 16777215))
         self.table_base.setStyleSheet(u"/* Estiliza apenas o QTableView com objectName \"table_ativos\" */\n"
 "QTableView {\n"
 "    gridline-color: black;\n"
-"    border: 2px solid white;\n"
+"	border: 1px solid white;\n"
 "    color: black;\n"
 "    selection-color: white;\n"
 "}\n"
@@ -632,8 +550,8 @@ class Ui_MainWindow(object):
 "	border-radius: 5px;\n"
 "}\n"
 "\n"
-"/* "
-                        "Remove os bot\u00f5es */\n"
+"/* Rem"
+                        "ove os bot\u00f5es */\n"
 "QTableView QScrollBar::add-line:vertical,\n"
 "QTableView QScrollBar::sub-line:vertical {\n"
 "    height: 0px;\n"
@@ -654,6 +572,7 @@ class Ui_MainWindow(object):
 "    background-color: rgb(0, 120, 215);\n"
 "    color: white;\n"
 "}")
+        self.table_base.setFrameShape(QFrame.NoFrame)
         self.table_base.setEditTriggers(QAbstractItemView.NoEditTriggers)
         self.table_base.setProperty(u"showDropIndicator", True)
         self.table_base.setDragDropOverwriteMode(True)
@@ -668,11 +587,11 @@ class Ui_MainWindow(object):
         self.table_base.horizontalHeader().setMinimumSectionSize(39)
         self.table_base.horizontalHeader().setDefaultSectionSize(112)
         self.table_base.horizontalHeader().setProperty(u"showSortIndicator", False)
-        self.table_base.verticalHeader().setVisible(False)
+        self.table_base.verticalHeader().setVisible(True)
         self.table_base.verticalHeader().setCascadingSectionResizes(False)
         self.table_base.verticalHeader().setHighlightSections(True)
 
-        self.gridLayout_7.addWidget(self.table_base, 2, 0, 1, 6)
+        self.gridLayout_29.addWidget(self.table_base, 2, 0, 1, 6)
 
         self.label_saida = QLabel(self.tabela_base)
         self.label_saida.setObjectName(u"label_saida")
@@ -686,57 +605,7 @@ class Ui_MainWindow(object):
 "	border: 3px solid white;\n"
 "}")
 
-        self.gridLayout_7.addWidget(self.label_saida, 3, 0, 1, 1)
-
-        self.horizontalSpacer = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
-
-        self.gridLayout_7.addItem(self.horizontalSpacer, 3, 2, 1, 1)
-
-        self.horizontalSpacer_2 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
-
-        self.gridLayout_7.addItem(self.horizontalSpacer_2, 3, 4, 1, 1)
-
-        self.btn_importar = QPushButton(self.tabela_base)
-        self.btn_importar.setObjectName(u"btn_importar")
-        sizePolicy.setHeightForWidth(self.btn_importar.sizePolicy().hasHeightForWidth())
-        self.btn_importar.setSizePolicy(sizePolicy)
-        self.btn_importar.setMaximumSize(QSize(148, 28))
-        self.btn_importar.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
-        self.btn_importar.setStyleSheet(u"QPushButton {\n"
-"    color: rgb(255, 255, 255);\n"
-"    border-radius: 3px;\n"
-"    font-size: 16px;\n"
-"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */\n"
-"    border: 3px solid transparent;\n"
-"}\n"
-"\n"
-"QPushButton:hover {\n"
-"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */\n"
-"    color: black;\n"
-"}")
-
-        self.gridLayout_7.addWidget(self.btn_importar, 3, 3, 1, 1)
-
-        self.btn_gerar_saida = QPushButton(self.tabela_base)
-        self.btn_gerar_saida.setObjectName(u"btn_gerar_saida")
-        sizePolicy.setHeightForWidth(self.btn_gerar_saida.sizePolicy().hasHeightForWidth())
-        self.btn_gerar_saida.setSizePolicy(sizePolicy)
-        self.btn_gerar_saida.setMaximumSize(QSize(148, 28))
-        self.btn_gerar_saida.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
-        self.btn_gerar_saida.setStyleSheet(u"QPushButton {\n"
-"    color: rgb(255, 255, 255);\n"
-"    border-radius: 3px;\n"
-"    font-size: 16px;\n"
-"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */\n"
-"    border: 3px solid transparent;\n"
-"}\n"
-"\n"
-"QPushButton:hover {\n"
-"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */\n"
-"    color: black;\n"
-"}")
-
-        self.gridLayout_7.addWidget(self.btn_gerar_saida, 3, 5, 1, 1)
+        self.gridLayout_29.addWidget(self.label_saida, 3, 0, 1, 1)
 
         self.btn_gerar_estorno = QPushButton(self.tabela_base)
         self.btn_gerar_estorno.setObjectName(u"btn_gerar_estorno")
@@ -757,7 +626,156 @@ class Ui_MainWindow(object):
 "    color: black;\n"
 "}")
 
-        self.gridLayout_7.addWidget(self.btn_gerar_estorno, 3, 1, 1, 1)
+        self.gridLayout_29.addWidget(self.btn_gerar_estorno, 3, 1, 1, 1)
+
+        self.horizontalSpacer = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+
+        self.gridLayout_29.addItem(self.horizontalSpacer, 3, 2, 1, 1)
+
+        self.btn_importar = QPushButton(self.tabela_base)
+        self.btn_importar.setObjectName(u"btn_importar")
+        sizePolicy.setHeightForWidth(self.btn_importar.sizePolicy().hasHeightForWidth())
+        self.btn_importar.setSizePolicy(sizePolicy)
+        self.btn_importar.setMaximumSize(QSize(148, 28))
+        self.btn_importar.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
+        self.btn_importar.setStyleSheet(u"QPushButton {\n"
+"    color: rgb(255, 255, 255);\n"
+"    border-radius: 3px;\n"
+"    font-size: 16px;\n"
+"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */\n"
+"    border: 3px solid transparent;\n"
+"}\n"
+"\n"
+"QPushButton:hover {\n"
+"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */\n"
+"    color: black;\n"
+"}")
+
+        self.gridLayout_29.addWidget(self.btn_importar, 3, 3, 1, 1)
+
+        self.horizontalSpacer_2 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+
+        self.gridLayout_29.addItem(self.horizontalSpacer_2, 3, 4, 1, 1)
+
+        self.btn_gerar_saida = QPushButton(self.tabela_base)
+        self.btn_gerar_saida.setObjectName(u"btn_gerar_saida")
+        sizePolicy.setHeightForWidth(self.btn_gerar_saida.sizePolicy().hasHeightForWidth())
+        self.btn_gerar_saida.setSizePolicy(sizePolicy)
+        self.btn_gerar_saida.setMaximumSize(QSize(148, 28))
+        self.btn_gerar_saida.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
+        self.btn_gerar_saida.setStyleSheet(u"QPushButton {\n"
+"    color: rgb(255, 255, 255);\n"
+"    border-radius: 3px;\n"
+"    font-size: 16px;\n"
+"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */\n"
+"    border: 3px solid transparent;\n"
+"}\n"
+"\n"
+"QPushButton:hover {\n"
+"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */\n"
+"    color: black;\n"
+"}")
+
+        self.gridLayout_29.addWidget(self.btn_gerar_saida, 3, 5, 1, 1)
+
+        self.table_saida = QTableWidget(self.tabela_base)
+        if (self.table_saida.columnCount() < 12):
+            self.table_saida.setColumnCount(12)
+        __qtablewidgetitem11 = QTableWidgetItem()
+        self.table_saida.setHorizontalHeaderItem(0, __qtablewidgetitem11)
+        __qtablewidgetitem12 = QTableWidgetItem()
+        self.table_saida.setHorizontalHeaderItem(1, __qtablewidgetitem12)
+        __qtablewidgetitem13 = QTableWidgetItem()
+        self.table_saida.setHorizontalHeaderItem(2, __qtablewidgetitem13)
+        __qtablewidgetitem14 = QTableWidgetItem()
+        self.table_saida.setHorizontalHeaderItem(3, __qtablewidgetitem14)
+        __qtablewidgetitem15 = QTableWidgetItem()
+        self.table_saida.setHorizontalHeaderItem(4, __qtablewidgetitem15)
+        __qtablewidgetitem16 = QTableWidgetItem()
+        self.table_saida.setHorizontalHeaderItem(5, __qtablewidgetitem16)
+        __qtablewidgetitem17 = QTableWidgetItem()
+        self.table_saida.setHorizontalHeaderItem(6, __qtablewidgetitem17)
+        __qtablewidgetitem18 = QTableWidgetItem()
+        self.table_saida.setHorizontalHeaderItem(7, __qtablewidgetitem18)
+        __qtablewidgetitem19 = QTableWidgetItem()
+        self.table_saida.setHorizontalHeaderItem(8, __qtablewidgetitem19)
+        __qtablewidgetitem20 = QTableWidgetItem()
+        self.table_saida.setHorizontalHeaderItem(9, __qtablewidgetitem20)
+        __qtablewidgetitem21 = QTableWidgetItem()
+        self.table_saida.setHorizontalHeaderItem(10, __qtablewidgetitem21)
+        __qtablewidgetitem22 = QTableWidgetItem()
+        self.table_saida.setHorizontalHeaderItem(11, __qtablewidgetitem22)
+        self.table_saida.setObjectName(u"table_saida")
+        self.table_saida.setMinimumSize(QSize(1020, 0))
+        self.table_saida.setStyleSheet(u"/* Estiliza apenas o QTableView com objectName \"table_ativos\" */\n"
+"QTableView {\n"
+"    gridline-color: black;\n"
+"	border: 1px solid white;\n"
+"    color: black;\n"
+"    selection-color: white;\n"
+"}\n"
+"\n"
+"/* Estiliza a barra de rolagem horizontal */\n"
+"QTableView QScrollBar:horizontal {\n"
+"    border: none;\n"
+"    background-color: rgb(255, 255, 255);\n"
+"    height: 15px;\n"
+"    margin: 0px 10px 0px 10px;\n"
+"}\n"
+"\n"
+"/* Estiliza a barra de rolagem vertical */\n"
+"QTableView QScrollBar:vertical {\n"
+"    border: none;\n"
+"    background-color: rgb(255, 255, 256); /* branco */\n"
+"    width: 35px;\n"
+"    margin: 0px 10px 0px 10px;\n"
+"}\n"
+"\n"
+"/* Parte que voc\u00ea arrasta */\n"
+"QTableView QScrollBar::handle:vertical {\n"
+"    background-color: rgb(180, 180,150);  /* cinza */\n"
+"    min-height: 30px;\n"
+"	border-radius: 5px;\n"
+"}\n"
+"\n"
+"QTableView QScrollBar::handle:horizontal{\n"
+"	background-color: rgb(180,180,150);\n"
+"	min-height: 30px;\n"
+"	border-radius: 5px;\n"
+"}\n"
+"\n"
+"/* Rem"
+                        "ove os bot\u00f5es */\n"
+"QTableView QScrollBar::add-line:vertical,\n"
+"QTableView QScrollBar::sub-line:vertical {\n"
+"    height: 0px;\n"
+"    width: 0px;\n"
+"    border: none;\n"
+"    background: none;\n"
+"}\n"
+"\n"
+"QTableView QScrollBar::groove:horizontal{\n"
+"	background-color: rgb(100,240,240);\n"
+"	border-radius: 2px;\n"
+"	height: 15px;\n"
+"	margin: 0px 10px 0px 10px;\n"
+"}\n"
+"\n"
+"/* Estilo para item selecionado */\n"
+"QTableWidget::item:selected {\n"
+"    background-color: rgb(0, 120, 215);\n"
+"    color: white;\n"
+"}")
+        self.table_saida.setFrameShadow(QFrame.Sunken)
+        self.table_saida.setEditTriggers(QAbstractItemView.NoEditTriggers)
+        self.table_saida.setSelectionMode(QAbstractItemView.ExtendedSelection)
+        self.table_saida.setSelectionBehavior(QAbstractItemView.SelectRows)
+        self.table_saida.setCornerButtonEnabled(False)
+        self.table_saida.horizontalHeader().setCascadingSectionResizes(False)
+        self.table_saida.horizontalHeader().setDefaultSectionSize(112)
+        self.table_saida.verticalHeader().setCascadingSectionResizes(False)
+
+        self.gridLayout_29.addWidget(self.table_saida, 4, 0, 1, 6)
 
         self.frame_4 = QFrame(self.tabela_base)
         self.frame_4.setObjectName(u"frame_4")
@@ -800,7 +818,7 @@ class Ui_MainWindow(object):
         self.line_excel.setStyleSheet(u"QLineEdit {\n"
 "	color: black;\n"
 "    background-color: rgb(240, 240, 240); /* Cor de fundo cinza claro */\n"
-"    border: 2px solid rgb(50, 150,250); /* Borda azul */\n"
+"    border: 3px solid rgb(50, 150,250); /* Borda azul */\n"
 "    border-radius: 12px; /* Cantos arredondados */\n"
 "    padding: 3px; /* Espa\u00e7amento interno */\n"
 "}\n"
@@ -842,7 +860,7 @@ class Ui_MainWindow(object):
         self.horizontalLayout_24.addLayout(self.verticalLayout)
 
 
-        self.gridLayout_7.addWidget(self.frame_4, 0, 0, 1, 8)
+        self.gridLayout_29.addWidget(self.frame_4, 0, 0, 1, 6)
 
         self.tb_base.addTab(self.tabela_base, "")
 
@@ -863,7 +881,9 @@ class Ui_MainWindow(object):
         sizePolicy.setHeightForWidth(self.frame_page_verificar_usuarios.sizePolicy().hasHeightForWidth())
         self.frame_page_verificar_usuarios.setSizePolicy(sizePolicy)
         self.frame_page_verificar_usuarios.setMaximumSize(QSize(16777215, 910))
-        self.frame_page_verificar_usuarios.setFrameShape(QFrame.NoFrame)
+        self.frame_page_verificar_usuarios.setStyleSheet(u"QFrame#frame_page_verificar_usuarios{\n"
+"		border: 2px solid white;\n"
+"}")
         self.frame_page_verificar_usuarios.setFrameShadow(QFrame.Raised)
         self.gridLayout_21 = QGridLayout(self.frame_page_verificar_usuarios)
         self.gridLayout_21.setObjectName(u"gridLayout_21")
@@ -922,7 +942,7 @@ class Ui_MainWindow(object):
         self.table_inativos.setStyleSheet(u"/* Estiliza apenas o QTableView com objectName \"table_ativos\" */\n"
 "QTableView {\n"
 "    gridline-color: black;\n"
-"    border: 2px solid white;\n"
+"    border: 1px solid white;\n"
 "    color: black;\n"
 "    selection-color: white;\n"
 "}\n"
@@ -1065,17 +1085,16 @@ class Ui_MainWindow(object):
         self.frame_5.setSizePolicy(sizePolicy)
         self.frame_5.setMinimumSize(QSize(180, 0))
         self.frame_5.setMaximumSize(QSize(180, 16777215))
-        self.frame_5.setFrameShape(QFrame.Box)
         self.frame_5.setFrameShadow(QFrame.Raised)
         self.gridLayout_9 = QGridLayout(self.frame_5)
         self.gridLayout_9.setObjectName(u"gridLayout_9")
-        self.btn_atualizar_ativos = QPushButton(self.frame_5)
-        self.btn_atualizar_ativos.setObjectName(u"btn_atualizar_ativos")
-        sizePolicy.setHeightForWidth(self.btn_atualizar_ativos.sizePolicy().hasHeightForWidth())
-        self.btn_atualizar_ativos.setSizePolicy(sizePolicy)
-        self.btn_atualizar_ativos.setMaximumSize(QSize(185, 30))
-        self.btn_atualizar_ativos.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
-        self.btn_atualizar_ativos.setStyleSheet(u"QPushButton {\n"
+        self.btn_historico_usuarios = QPushButton(self.frame_5)
+        self.btn_historico_usuarios.setObjectName(u"btn_historico_usuarios")
+        sizePolicy.setHeightForWidth(self.btn_historico_usuarios.sizePolicy().hasHeightForWidth())
+        self.btn_historico_usuarios.setSizePolicy(sizePolicy)
+        self.btn_historico_usuarios.setMaximumSize(QSize(185, 30))
+        self.btn_historico_usuarios.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
+        self.btn_historico_usuarios.setStyleSheet(u"QPushButton {\n"
 "    color: rgb(255, 255, 255);\n"
 "    border-radius: 8px;\n"
 "    font-size: 16px;\n"
@@ -1088,7 +1107,7 @@ class Ui_MainWindow(object):
 "    color: black;\n"
 "}")
 
-        self.gridLayout_9.addWidget(self.btn_atualizar_ativos, 1, 0, 1, 1)
+        self.gridLayout_9.addWidget(self.btn_historico_usuarios, 2, 0, 1, 1)
 
         self.btn_cadastrar_novo_usuario = QPushButton(self.frame_5)
         self.btn_cadastrar_novo_usuario.setObjectName(u"btn_cadastrar_novo_usuario")
@@ -1133,6 +1152,27 @@ class Ui_MainWindow(object):
 
         self.gridLayout_9.addWidget(self.btn_limpar_tabelas_usuarios, 4, 0, 1, 1)
 
+        self.btn_atualizar_ativos = QPushButton(self.frame_5)
+        self.btn_atualizar_ativos.setObjectName(u"btn_atualizar_ativos")
+        sizePolicy.setHeightForWidth(self.btn_atualizar_ativos.sizePolicy().hasHeightForWidth())
+        self.btn_atualizar_ativos.setSizePolicy(sizePolicy)
+        self.btn_atualizar_ativos.setMaximumSize(QSize(185, 30))
+        self.btn_atualizar_ativos.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
+        self.btn_atualizar_ativos.setStyleSheet(u"QPushButton {\n"
+"    color: rgb(255, 255, 255);\n"
+"    border-radius: 8px;\n"
+"    font-size: 16px;\n"
+"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */\n"
+"    border: 4px solid transparent;\n"
+"}\n"
+"\n"
+"QPushButton:hover {\n"
+"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */\n"
+"    color: black;\n"
+"}")
+
+        self.gridLayout_9.addWidget(self.btn_atualizar_ativos, 1, 0, 1, 1)
+
         self.btn_atualizar_inativos = QPushButton(self.frame_5)
         self.btn_atualizar_inativos.setObjectName(u"btn_atualizar_inativos")
         sizePolicy.setHeightForWidth(self.btn_atualizar_inativos.sizePolicy().hasHeightForWidth())
@@ -1153,27 +1193,6 @@ class Ui_MainWindow(object):
 "}")
 
         self.gridLayout_9.addWidget(self.btn_atualizar_inativos, 3, 0, 1, 1)
-
-        self.btn_historico_usuarios = QPushButton(self.frame_5)
-        self.btn_historico_usuarios.setObjectName(u"btn_historico_usuarios")
-        sizePolicy.setHeightForWidth(self.btn_historico_usuarios.sizePolicy().hasHeightForWidth())
-        self.btn_historico_usuarios.setSizePolicy(sizePolicy)
-        self.btn_historico_usuarios.setMaximumSize(QSize(185, 30))
-        self.btn_historico_usuarios.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
-        self.btn_historico_usuarios.setStyleSheet(u"QPushButton {\n"
-"    color: rgb(255, 255, 255);\n"
-"    border-radius: 8px;\n"
-"    font-size: 16px;\n"
-"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */\n"
-"    border: 4px solid transparent;\n"
-"}\n"
-"\n"
-"QPushButton:hover {\n"
-"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */\n"
-"    color: black;\n"
-"}")
-
-        self.gridLayout_9.addWidget(self.btn_historico_usuarios, 2, 0, 1, 1)
 
 
         self.gridLayout_21.addWidget(self.frame_5, 0, 6, 6, 1)
@@ -1233,7 +1252,7 @@ class Ui_MainWindow(object):
         self.table_ativos.setStyleSheet(u"/* Estiliza apenas o QTableView com objectName \"table_ativos\" */\n"
 "QTableView {\n"
 "    gridline-color: black;\n"
-"    border: 2px solid white;\n"
+"    border: 1px solid white;\n"
 "    color: black;\n"
 "    selection-color: white;\n"
 "}\n"
@@ -1326,8 +1345,7 @@ class Ui_MainWindow(object):
         sizePolicy.setHeightForWidth(self.frame_13.sizePolicy().hasHeightForWidth())
         self.frame_13.setSizePolicy(sizePolicy)
         self.frame_13.setMinimumSize(QSize(0, 0))
-        self.frame_13.setMaximumSize(QSize(16777215, 140))
-        self.frame_13.setFrameShape(QFrame.Box)
+        self.frame_13.setMaximumSize(QSize(16777215, 120))
         self.frame_13.setFrameShadow(QFrame.Raised)
         self.horizontalLayout_30 = QHBoxLayout(self.frame_13)
         self.horizontalLayout_30.setObjectName(u"horizontalLayout_30")
@@ -1337,7 +1355,7 @@ class Ui_MainWindow(object):
         self.btn_abrir_planilha_usuarios.setObjectName(u"btn_abrir_planilha_usuarios")
         sizePolicy.setHeightForWidth(self.btn_abrir_planilha_usuarios.sizePolicy().hasHeightForWidth())
         self.btn_abrir_planilha_usuarios.setSizePolicy(sizePolicy)
-        self.btn_abrir_planilha_usuarios.setMaximumSize(QSize(16777215, 30))
+        self.btn_abrir_planilha_usuarios.setMaximumSize(QSize(16777215, 16777215))
         self.btn_abrir_planilha_usuarios.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.btn_abrir_planilha_usuarios.setStyleSheet(u"QPushButton {\n"
 "    color: rgb(255, 255, 255);\n"
@@ -1356,10 +1374,12 @@ class Ui_MainWindow(object):
 
         self.line_excel_usuarios = QLineEdit(self.frame_13)
         self.line_excel_usuarios.setObjectName(u"line_excel_usuarios")
+        sizePolicy.setHeightForWidth(self.line_excel_usuarios.sizePolicy().hasHeightForWidth())
+        self.line_excel_usuarios.setSizePolicy(sizePolicy)
         self.line_excel_usuarios.setStyleSheet(u"QLineEdit {\n"
 "	color: black;\n"
 "    background-color: rgb(240, 240, 240); /* Cor de fundo cinza claro */\n"
-"    border: 2px solid rgb(50, 150,250); /* Borda azul */\n"
+"    border: 3px solid rgb(50, 150,250); /* Borda azul */\n"
 "    border-radius: 12px; /* Cantos arredondados */\n"
 "    padding: 3px; /* Espa\u00e7amento interno */\n"
 "}\n"
@@ -1376,11 +1396,8 @@ class Ui_MainWindow(object):
 
         self.progress_excel_usuarios = QProgressBar(self.frame_13)
         self.progress_excel_usuarios.setObjectName(u"progress_excel_usuarios")
-        sizePolicy1 = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
-        sizePolicy1.setHorizontalStretch(0)
-        sizePolicy1.setVerticalStretch(0)
-        sizePolicy1.setHeightForWidth(self.progress_excel_usuarios.sizePolicy().hasHeightForWidth())
-        self.progress_excel_usuarios.setSizePolicy(sizePolicy1)
+        sizePolicy.setHeightForWidth(self.progress_excel_usuarios.sizePolicy().hasHeightForWidth())
+        self.progress_excel_usuarios.setSizePolicy(sizePolicy)
         self.progress_excel_usuarios.setStyleSheet(u"QProgressBar {\n"
 "	color: black;\n"
 "    border: 3px solid rgb(50,150,250);\n"
@@ -2541,11 +2558,11 @@ class Ui_MainWindow(object):
 
         self.frame_erro_bairro = QFrame(self.frame_3)
         self.frame_erro_bairro.setObjectName(u"frame_erro_bairro")
-        sizePolicy2 = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Preferred)
-        sizePolicy2.setHorizontalStretch(0)
-        sizePolicy2.setVerticalStretch(0)
-        sizePolicy2.setHeightForWidth(self.frame_erro_bairro.sizePolicy().hasHeightForWidth())
-        self.frame_erro_bairro.setSizePolicy(sizePolicy2)
+        sizePolicy1 = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Preferred)
+        sizePolicy1.setHorizontalStretch(0)
+        sizePolicy1.setVerticalStretch(0)
+        sizePolicy1.setHeightForWidth(self.frame_erro_bairro.sizePolicy().hasHeightForWidth())
+        self.frame_erro_bairro.setSizePolicy(sizePolicy1)
         self.frame_erro_bairro.setMaximumSize(QSize(21, 21))
         self.frame_erro_bairro.setFrameShape(QFrame.StyledPanel)
         self.frame_erro_bairro.setFrameShadow(QFrame.Raised)
@@ -2636,8 +2653,8 @@ class Ui_MainWindow(object):
 
         self.frame_erro_complemento = QFrame(self.frame_3)
         self.frame_erro_complemento.setObjectName(u"frame_erro_complemento")
-        sizePolicy2.setHeightForWidth(self.frame_erro_complemento.sizePolicy().hasHeightForWidth())
-        self.frame_erro_complemento.setSizePolicy(sizePolicy2)
+        sizePolicy1.setHeightForWidth(self.frame_erro_complemento.sizePolicy().hasHeightForWidth())
+        self.frame_erro_complemento.setSizePolicy(sizePolicy1)
         self.frame_erro_complemento.setMaximumSize(QSize(21, 21))
         self.frame_erro_complemento.setFrameShape(QFrame.StyledPanel)
         self.frame_erro_complemento.setFrameShadow(QFrame.Raised)
@@ -2682,8 +2699,8 @@ class Ui_MainWindow(object):
 
         self.frame_erro_usuario = QFrame(self.frame_3)
         self.frame_erro_usuario.setObjectName(u"frame_erro_usuario")
-        sizePolicy2.setHeightForWidth(self.frame_erro_usuario.sizePolicy().hasHeightForWidth())
-        self.frame_erro_usuario.setSizePolicy(sizePolicy2)
+        sizePolicy1.setHeightForWidth(self.frame_erro_usuario.sizePolicy().hasHeightForWidth())
+        self.frame_erro_usuario.setSizePolicy(sizePolicy1)
         self.frame_erro_usuario.setMaximumSize(QSize(21, 21))
         self.frame_erro_usuario.setFrameShape(QFrame.StyledPanel)
         self.frame_erro_usuario.setFrameShadow(QFrame.Raised)
@@ -2723,8 +2740,8 @@ class Ui_MainWindow(object):
 
         self.frame_erro_rg = QFrame(self.frame_3)
         self.frame_erro_rg.setObjectName(u"frame_erro_rg")
-        sizePolicy2.setHeightForWidth(self.frame_erro_rg.sizePolicy().hasHeightForWidth())
-        self.frame_erro_rg.setSizePolicy(sizePolicy2)
+        sizePolicy1.setHeightForWidth(self.frame_erro_rg.sizePolicy().hasHeightForWidth())
+        self.frame_erro_rg.setSizePolicy(sizePolicy1)
         self.frame_erro_rg.setMaximumSize(QSize(21, 21))
         self.frame_erro_rg.setFrameShape(QFrame.StyledPanel)
         self.frame_erro_rg.setFrameShadow(QFrame.Raised)
@@ -2769,8 +2786,8 @@ class Ui_MainWindow(object):
 
         self.frame_erro_cpf = QFrame(self.frame_3)
         self.frame_erro_cpf.setObjectName(u"frame_erro_cpf")
-        sizePolicy2.setHeightForWidth(self.frame_erro_cpf.sizePolicy().hasHeightForWidth())
-        self.frame_erro_cpf.setSizePolicy(sizePolicy2)
+        sizePolicy1.setHeightForWidth(self.frame_erro_cpf.sizePolicy().hasHeightForWidth())
+        self.frame_erro_cpf.setSizePolicy(sizePolicy1)
         self.frame_erro_cpf.setMaximumSize(QSize(21, 21))
         self.frame_erro_cpf.setFrameShape(QFrame.StyledPanel)
         self.frame_erro_cpf.setFrameShadow(QFrame.Raised)
@@ -2815,8 +2832,8 @@ class Ui_MainWindow(object):
 
         self.frame_erro_nome = QFrame(self.frame_3)
         self.frame_erro_nome.setObjectName(u"frame_erro_nome")
-        sizePolicy2.setHeightForWidth(self.frame_erro_nome.sizePolicy().hasHeightForWidth())
-        self.frame_erro_nome.setSizePolicy(sizePolicy2)
+        sizePolicy1.setHeightForWidth(self.frame_erro_nome.sizePolicy().hasHeightForWidth())
+        self.frame_erro_nome.setSizePolicy(sizePolicy1)
         self.frame_erro_nome.setMaximumSize(QSize(21, 21))
         self.frame_erro_nome.setFrameShape(QFrame.StyledPanel)
         self.frame_erro_nome.setFrameShadow(QFrame.Raised)
@@ -2861,8 +2878,8 @@ class Ui_MainWindow(object):
 
         self.frame_data_nascimento = QFrame(self.frame_3)
         self.frame_data_nascimento.setObjectName(u"frame_data_nascimento")
-        sizePolicy2.setHeightForWidth(self.frame_data_nascimento.sizePolicy().hasHeightForWidth())
-        self.frame_data_nascimento.setSizePolicy(sizePolicy2)
+        sizePolicy1.setHeightForWidth(self.frame_data_nascimento.sizePolicy().hasHeightForWidth())
+        self.frame_data_nascimento.setSizePolicy(sizePolicy1)
         self.frame_data_nascimento.setMaximumSize(QSize(21, 21))
         self.frame_data_nascimento.setFrameShape(QFrame.StyledPanel)
         self.frame_data_nascimento.setFrameShadow(QFrame.Raised)
@@ -2939,8 +2956,8 @@ class Ui_MainWindow(object):
 
         self.frame_erro_perfil = QFrame(self.frame_3)
         self.frame_erro_perfil.setObjectName(u"frame_erro_perfil")
-        sizePolicy2.setHeightForWidth(self.frame_erro_perfil.sizePolicy().hasHeightForWidth())
-        self.frame_erro_perfil.setSizePolicy(sizePolicy2)
+        sizePolicy1.setHeightForWidth(self.frame_erro_perfil.sizePolicy().hasHeightForWidth())
+        self.frame_erro_perfil.setSizePolicy(sizePolicy1)
         self.frame_erro_perfil.setMaximumSize(QSize(21, 21))
         self.frame_erro_perfil.setFrameShape(QFrame.StyledPanel)
         self.frame_erro_perfil.setFrameShadow(QFrame.Raised)
@@ -2985,8 +3002,8 @@ class Ui_MainWindow(object):
 
         self.frame_erro_email = QFrame(self.frame_3)
         self.frame_erro_email.setObjectName(u"frame_erro_email")
-        sizePolicy2.setHeightForWidth(self.frame_erro_email.sizePolicy().hasHeightForWidth())
-        self.frame_erro_email.setSizePolicy(sizePolicy2)
+        sizePolicy1.setHeightForWidth(self.frame_erro_email.sizePolicy().hasHeightForWidth())
+        self.frame_erro_email.setSizePolicy(sizePolicy1)
         self.frame_erro_email.setMaximumSize(QSize(21, 21))
         self.frame_erro_email.setFrameShape(QFrame.StyledPanel)
         self.frame_erro_email.setFrameShadow(QFrame.Raised)
@@ -3031,8 +3048,8 @@ class Ui_MainWindow(object):
 
         self.frame_erro_endereco = QFrame(self.frame_3)
         self.frame_erro_endereco.setObjectName(u"frame_erro_endereco")
-        sizePolicy2.setHeightForWidth(self.frame_erro_endereco.sizePolicy().hasHeightForWidth())
-        self.frame_erro_endereco.setSizePolicy(sizePolicy2)
+        sizePolicy1.setHeightForWidth(self.frame_erro_endereco.sizePolicy().hasHeightForWidth())
+        self.frame_erro_endereco.setSizePolicy(sizePolicy1)
         self.frame_erro_endereco.setMaximumSize(QSize(21, 21))
         self.frame_erro_endereco.setFrameShape(QFrame.StyledPanel)
         self.frame_erro_endereco.setFrameShadow(QFrame.Raised)
@@ -3077,8 +3094,8 @@ class Ui_MainWindow(object):
 
         self.frame_erro_numero = QFrame(self.frame_3)
         self.frame_erro_numero.setObjectName(u"frame_erro_numero")
-        sizePolicy2.setHeightForWidth(self.frame_erro_numero.sizePolicy().hasHeightForWidth())
-        self.frame_erro_numero.setSizePolicy(sizePolicy2)
+        sizePolicy1.setHeightForWidth(self.frame_erro_numero.sizePolicy().hasHeightForWidth())
+        self.frame_erro_numero.setSizePolicy(sizePolicy1)
         self.frame_erro_numero.setMaximumSize(QSize(21, 21))
         self.frame_erro_numero.setFrameShape(QFrame.StyledPanel)
         self.frame_erro_numero.setFrameShadow(QFrame.Raised)
@@ -3123,8 +3140,8 @@ class Ui_MainWindow(object):
 
         self.frame_erro_cep = QFrame(self.frame_3)
         self.frame_erro_cep.setObjectName(u"frame_erro_cep")
-        sizePolicy2.setHeightForWidth(self.frame_erro_cep.sizePolicy().hasHeightForWidth())
-        self.frame_erro_cep.setSizePolicy(sizePolicy2)
+        sizePolicy1.setHeightForWidth(self.frame_erro_cep.sizePolicy().hasHeightForWidth())
+        self.frame_erro_cep.setSizePolicy(sizePolicy1)
         self.frame_erro_cep.setMaximumSize(QSize(21, 21))
         self.frame_erro_cep.setFrameShape(QFrame.StyledPanel)
         self.frame_erro_cep.setFrameShadow(QFrame.Raised)
@@ -3169,8 +3186,8 @@ class Ui_MainWindow(object):
 
         self.frame_erro_telefone = QFrame(self.frame_3)
         self.frame_erro_telefone.setObjectName(u"frame_erro_telefone")
-        sizePolicy2.setHeightForWidth(self.frame_erro_telefone.sizePolicy().hasHeightForWidth())
-        self.frame_erro_telefone.setSizePolicy(sizePolicy2)
+        sizePolicy1.setHeightForWidth(self.frame_erro_telefone.sizePolicy().hasHeightForWidth())
+        self.frame_erro_telefone.setSizePolicy(sizePolicy1)
         self.frame_erro_telefone.setMaximumSize(QSize(21, 21))
         self.frame_erro_telefone.setFrameShape(QFrame.StyledPanel)
         self.frame_erro_telefone.setFrameShadow(QFrame.Raised)
@@ -3215,8 +3232,8 @@ class Ui_MainWindow(object):
 
         self.frame_erro_cidade = QFrame(self.frame_3)
         self.frame_erro_cidade.setObjectName(u"frame_erro_cidade")
-        sizePolicy2.setHeightForWidth(self.frame_erro_cidade.sizePolicy().hasHeightForWidth())
-        self.frame_erro_cidade.setSizePolicy(sizePolicy2)
+        sizePolicy1.setHeightForWidth(self.frame_erro_cidade.sizePolicy().hasHeightForWidth())
+        self.frame_erro_cidade.setSizePolicy(sizePolicy1)
         self.frame_erro_cidade.setMaximumSize(QSize(21, 21))
         self.frame_erro_cidade.setFrameShape(QFrame.StyledPanel)
         self.frame_erro_cidade.setFrameShadow(QFrame.Raised)
@@ -3262,8 +3279,8 @@ class Ui_MainWindow(object):
 
         self.frame_senha = QFrame(self.frame_3)
         self.frame_senha.setObjectName(u"frame_senha")
-        sizePolicy2.setHeightForWidth(self.frame_senha.sizePolicy().hasHeightForWidth())
-        self.frame_senha.setSizePolicy(sizePolicy2)
+        sizePolicy1.setHeightForWidth(self.frame_senha.sizePolicy().hasHeightForWidth())
+        self.frame_senha.setSizePolicy(sizePolicy1)
         self.frame_senha.setMaximumSize(QSize(21, 21))
         self.frame_senha.setFrameShape(QFrame.StyledPanel)
         self.frame_senha.setFrameShadow(QFrame.Raised)
@@ -3363,8 +3380,8 @@ class Ui_MainWindow(object):
 
         self.frame_erro_estado = QFrame(self.frame_3)
         self.frame_erro_estado.setObjectName(u"frame_erro_estado")
-        sizePolicy2.setHeightForWidth(self.frame_erro_estado.sizePolicy().hasHeightForWidth())
-        self.frame_erro_estado.setSizePolicy(sizePolicy2)
+        sizePolicy1.setHeightForWidth(self.frame_erro_estado.sizePolicy().hasHeightForWidth())
+        self.frame_erro_estado.setSizePolicy(sizePolicy1)
         self.frame_erro_estado.setMaximumSize(QSize(21, 21))
         self.frame_erro_estado.setFrameShape(QFrame.StyledPanel)
         self.frame_erro_estado.setFrameShadow(QFrame.Raised)
@@ -3410,8 +3427,8 @@ class Ui_MainWindow(object):
 
         self.frame_confirmar_senha = QFrame(self.frame_3)
         self.frame_confirmar_senha.setObjectName(u"frame_confirmar_senha")
-        sizePolicy2.setHeightForWidth(self.frame_confirmar_senha.sizePolicy().hasHeightForWidth())
-        self.frame_confirmar_senha.setSizePolicy(sizePolicy2)
+        sizePolicy1.setHeightForWidth(self.frame_confirmar_senha.sizePolicy().hasHeightForWidth())
+        self.frame_confirmar_senha.setSizePolicy(sizePolicy1)
         self.frame_confirmar_senha.setMaximumSize(QSize(21, 21))
         self.frame_confirmar_senha.setFrameShape(QFrame.StyledPanel)
         self.frame_confirmar_senha.setFrameShadow(QFrame.Raised)
@@ -3677,6 +3694,7 @@ class Ui_MainWindow(object):
 "QTableView {\n"
 "    gridline-color: black;\n"
 "    color: white;\n"
+"	border: 1px solid white;\n"
 "    selection-color: white;\n"
 "\n"
 "}\n"
@@ -3710,9 +3728,9 @@ class Ui_MainWindow(object):
 "	border-radius: 5px;\n"
 "}\n"
 "\n"
-"/* Remove os bot\u00f5es */\n"
-"QTableView QScr"
-                        "ollBar::add-line:vertical,\n"
+"/* Remove os bot\u00f5"
+                        "es */\n"
+"QTableView QScrollBar::add-line:vertical,\n"
 "QTableView QScrollBar::sub-line:vertical {\n"
 "    height: 0px;\n"
 "    width: 0px;\n"
@@ -3738,7 +3756,7 @@ class Ui_MainWindow(object):
         self.table_clientes_juridicos.setGridStyle(Qt.SolidLine)
         self.table_clientes_juridicos.setCornerButtonEnabled(False)
         self.table_clientes_juridicos.horizontalHeader().setDefaultSectionSize(118)
-        self.table_clientes_juridicos.verticalHeader().setVisible(True)
+        self.table_clientes_juridicos.verticalHeader().setVisible(False)
 
         self.gridLayout_22.addWidget(self.table_clientes_juridicos, 1, 0, 1, 2)
 
@@ -3966,6 +3984,7 @@ class Ui_MainWindow(object):
 "QTableView {\n"
 "    gridline-color: black;\n"
 "    color: black;\n"
+"	border: 1px solid white;\n"
 "    selection-color: white;\n"
 "}\n"
 "\n"
@@ -3998,9 +4017,9 @@ class Ui_MainWindow(object):
 "	border-radius: 5px;\n"
 "}\n"
 "\n"
-"/* Remove os bot\u00f5es */\n"
-"QTab"
-                        "leView QScrollBar::add-line:vertical,\n"
+"/* Rem"
+                        "ove os bot\u00f5es */\n"
+"QTableView QScrollBar::add-line:vertical,\n"
 "QTableView QScrollBar::sub-line:vertical {\n"
 "    height: 0px;\n"
 "    width: 0px;\n"
@@ -4210,7 +4229,7 @@ class Ui_MainWindow(object):
         self.line_edit_massa_produtos.setStyleSheet(u"QLineEdit {\n"
 "	color: black;\n"
 "    background-color: rgb(240, 240, 240); /* Cor de fundo cinza claro */\n"
-"    border: 2px solid rgb(50, 150,250); /* Borda azul */\n"
+"    border: 3px solid rgb(50, 150,250); /* Borda azul */\n"
 "    border-radius: 12px; /* Cantos arredondados */\n"
 "    padding: 3px; /* Espa\u00e7amento interno */\n"
 "}\n"
@@ -4402,7 +4421,7 @@ class Ui_MainWindow(object):
         self.line_edit_massa_usuarios.setStyleSheet(u"QLineEdit {\n"
 "	color: black;\n"
 "    background-color: rgb(240, 240, 240); /* Cor de fundo cinza claro */\n"
-"    border: 2px solid rgb(50, 150,250); /* Borda azul */\n"
+"    border: 3px solid rgb(50, 150,250); /* Borda azul */\n"
 "    border-radius: 12px; /* Cantos arredondados */\n"
 "    padding: 3px; /* Espa\u00e7amento interno */\n"
 "}\n"
@@ -4612,30 +4631,6 @@ class Ui_MainWindow(object):
         self.btn_mais_opcoes.setText(QCoreApplication.translate("MainWindow", u"Mais op\u00e7\u00f5es", None))
         self.label_imagem_sistema.setText("")
         self.label_bem_vindo.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p align=\"center\"><span style=\" font-size:24pt; font-weight:600; font-style:italic;\">Bem vindo(a) ao</span></p><p align=\"center\"><br/></p><p align=\"center\"><span style=\" font-size:24pt; font-weight:600; font-style:italic;\">Sistema de Gerenciamento do </span></p><p align=\"center\"><span style=\" font-size:24pt; font-weight:600; font-style:italic;\">controle de Estoque</span></p></body></html>", None))
-        ___qtablewidgetitem = self.table_saida.horizontalHeaderItem(0)
-        ___qtablewidgetitem.setText(QCoreApplication.translate("MainWindow", u"Produto", None));
-        ___qtablewidgetitem1 = self.table_saida.horizontalHeaderItem(1)
-        ___qtablewidgetitem1.setText(QCoreApplication.translate("MainWindow", u"Quantidade", None));
-        ___qtablewidgetitem2 = self.table_saida.horizontalHeaderItem(2)
-        ___qtablewidgetitem2.setText(QCoreApplication.translate("MainWindow", u"Valor do Produto", None));
-        ___qtablewidgetitem3 = self.table_saida.horizontalHeaderItem(3)
-        ___qtablewidgetitem3.setText(QCoreApplication.translate("MainWindow", u"Desconto", None));
-        ___qtablewidgetitem4 = self.table_saida.horizontalHeaderItem(4)
-        ___qtablewidgetitem4.setText(QCoreApplication.translate("MainWindow", u"Valor Total", None));
-        ___qtablewidgetitem5 = self.table_saida.horizontalHeaderItem(5)
-        ___qtablewidgetitem5.setText(QCoreApplication.translate("MainWindow", u"Data da Sa\u00edda", None));
-        ___qtablewidgetitem6 = self.table_saida.horizontalHeaderItem(6)
-        ___qtablewidgetitem6.setText(QCoreApplication.translate("MainWindow", u"Data do Cadastro", None));
-        ___qtablewidgetitem7 = self.table_saida.horizontalHeaderItem(7)
-        ___qtablewidgetitem7.setText(QCoreApplication.translate("MainWindow", u"C\u00f3digo do Produto", None));
-        ___qtablewidgetitem8 = self.table_saida.horizontalHeaderItem(8)
-        ___qtablewidgetitem8.setText(QCoreApplication.translate("MainWindow", u"Cliente", None));
-        ___qtablewidgetitem9 = self.table_saida.horizontalHeaderItem(9)
-        ___qtablewidgetitem9.setText(QCoreApplication.translate("MainWindow", u"Descri\u00e7\u00e3o do Produto", None));
-        ___qtablewidgetitem10 = self.table_saida.horizontalHeaderItem(10)
-        ___qtablewidgetitem10.setText(QCoreApplication.translate("MainWindow", u"Usu\u00e1rio", None));
-        ___qtablewidgetitem11 = self.table_saida.horizontalHeaderItem(11)
-        ___qtablewidgetitem11.setText(QCoreApplication.translate("MainWindow", u"Status da Sa\u00edda", None));
         self.btn_novo_produto.setText(QCoreApplication.translate("MainWindow", u"Novo Produto", None))
         self.btn_atualizar_saida.setText(QCoreApplication.translate("MainWindow", u"Atualizar Sa\u00edda", None))
         self.btn_atualizar_estoque.setText(QCoreApplication.translate("MainWindow", u"Atualizar estoque", None))
@@ -4647,32 +4642,56 @@ class Ui_MainWindow(object):
         self.label_estoque.setWhatsThis(QCoreApplication.translate("MainWindow", u"<html><head/><body><p><span style=\" font-size:18pt; font-weight:600; font-style:italic;\">ESTOQUE</span></p></body></html>", None))
 #endif // QT_CONFIG(whatsthis)
         self.label_estoque.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p><span style=\" font-size:18pt; font-weight:600; font-style:italic;\">ESTOQUE</span></p></body></html>", None))
-        ___qtablewidgetitem12 = self.table_base.horizontalHeaderItem(0)
-        ___qtablewidgetitem12.setText(QCoreApplication.translate("MainWindow", u"Produto", None));
-        ___qtablewidgetitem13 = self.table_base.horizontalHeaderItem(1)
-        ___qtablewidgetitem13.setText(QCoreApplication.translate("MainWindow", u"Quantidade", None));
-        ___qtablewidgetitem14 = self.table_base.horizontalHeaderItem(2)
-        ___qtablewidgetitem14.setText(QCoreApplication.translate("MainWindow", u"Valor do Produto", None));
-        ___qtablewidgetitem15 = self.table_base.horizontalHeaderItem(3)
-        ___qtablewidgetitem15.setText(QCoreApplication.translate("MainWindow", u"Desconto", None));
-        ___qtablewidgetitem16 = self.table_base.horizontalHeaderItem(4)
-        ___qtablewidgetitem16.setText(QCoreApplication.translate("MainWindow", u"Valor Total", None));
-        ___qtablewidgetitem17 = self.table_base.horizontalHeaderItem(5)
-        ___qtablewidgetitem17.setText(QCoreApplication.translate("MainWindow", u"Data do Cadastro", None));
-        ___qtablewidgetitem18 = self.table_base.horizontalHeaderItem(6)
-        ___qtablewidgetitem18.setText(QCoreApplication.translate("MainWindow", u"C\u00f3digo do Item", None));
-        ___qtablewidgetitem19 = self.table_base.horizontalHeaderItem(7)
-        ___qtablewidgetitem19.setText(QCoreApplication.translate("MainWindow", u"Cliente", None));
-        ___qtablewidgetitem20 = self.table_base.horizontalHeaderItem(8)
-        ___qtablewidgetitem20.setText(QCoreApplication.translate("MainWindow", u"Descri\u00e7\u00e3o do Produto", None));
-        ___qtablewidgetitem21 = self.table_base.horizontalHeaderItem(9)
-        ___qtablewidgetitem21.setText(QCoreApplication.translate("MainWindow", u"Usu\u00e1rio", None));
-        ___qtablewidgetitem22 = self.table_base.horizontalHeaderItem(10)
-        ___qtablewidgetitem22.setText(QCoreApplication.translate("MainWindow", u"Status da Sa\u00edda", None));
+        ___qtablewidgetitem = self.table_base.horizontalHeaderItem(0)
+        ___qtablewidgetitem.setText(QCoreApplication.translate("MainWindow", u"Produto", None));
+        ___qtablewidgetitem1 = self.table_base.horizontalHeaderItem(1)
+        ___qtablewidgetitem1.setText(QCoreApplication.translate("MainWindow", u"Quantidade", None));
+        ___qtablewidgetitem2 = self.table_base.horizontalHeaderItem(2)
+        ___qtablewidgetitem2.setText(QCoreApplication.translate("MainWindow", u"Valor do Produto", None));
+        ___qtablewidgetitem3 = self.table_base.horizontalHeaderItem(3)
+        ___qtablewidgetitem3.setText(QCoreApplication.translate("MainWindow", u"Desconto", None));
+        ___qtablewidgetitem4 = self.table_base.horizontalHeaderItem(4)
+        ___qtablewidgetitem4.setText(QCoreApplication.translate("MainWindow", u"Valor Total", None));
+        ___qtablewidgetitem5 = self.table_base.horizontalHeaderItem(5)
+        ___qtablewidgetitem5.setText(QCoreApplication.translate("MainWindow", u"Data do Cadastro", None));
+        ___qtablewidgetitem6 = self.table_base.horizontalHeaderItem(6)
+        ___qtablewidgetitem6.setText(QCoreApplication.translate("MainWindow", u"C\u00f3digo do Item", None));
+        ___qtablewidgetitem7 = self.table_base.horizontalHeaderItem(7)
+        ___qtablewidgetitem7.setText(QCoreApplication.translate("MainWindow", u"Cliente", None));
+        ___qtablewidgetitem8 = self.table_base.horizontalHeaderItem(8)
+        ___qtablewidgetitem8.setText(QCoreApplication.translate("MainWindow", u"Descri\u00e7\u00e3o do Produto", None));
+        ___qtablewidgetitem9 = self.table_base.horizontalHeaderItem(9)
+        ___qtablewidgetitem9.setText(QCoreApplication.translate("MainWindow", u"Usu\u00e1rio", None));
+        ___qtablewidgetitem10 = self.table_base.horizontalHeaderItem(10)
+        ___qtablewidgetitem10.setText(QCoreApplication.translate("MainWindow", u"Status da Sa\u00edda", None));
         self.label_saida.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p><span style=\" font-size:16pt; font-weight:600; font-style:italic;\">SA\u00cdDA</span></p></body></html>", None))
+        self.btn_gerar_estorno.setText(QCoreApplication.translate("MainWindow", u"Gerar Estorno", None))
         self.btn_importar.setText(QCoreApplication.translate("MainWindow", u"Importar", None))
         self.btn_gerar_saida.setText(QCoreApplication.translate("MainWindow", u"Gerar S\u00e1ida", None))
-        self.btn_gerar_estorno.setText(QCoreApplication.translate("MainWindow", u"Gerar Estorno", None))
+        ___qtablewidgetitem11 = self.table_saida.horizontalHeaderItem(0)
+        ___qtablewidgetitem11.setText(QCoreApplication.translate("MainWindow", u"Produto", None));
+        ___qtablewidgetitem12 = self.table_saida.horizontalHeaderItem(1)
+        ___qtablewidgetitem12.setText(QCoreApplication.translate("MainWindow", u"Quantidade", None));
+        ___qtablewidgetitem13 = self.table_saida.horizontalHeaderItem(2)
+        ___qtablewidgetitem13.setText(QCoreApplication.translate("MainWindow", u"Valor do Produto", None));
+        ___qtablewidgetitem14 = self.table_saida.horizontalHeaderItem(3)
+        ___qtablewidgetitem14.setText(QCoreApplication.translate("MainWindow", u"Desconto", None));
+        ___qtablewidgetitem15 = self.table_saida.horizontalHeaderItem(4)
+        ___qtablewidgetitem15.setText(QCoreApplication.translate("MainWindow", u"Valor Total", None));
+        ___qtablewidgetitem16 = self.table_saida.horizontalHeaderItem(5)
+        ___qtablewidgetitem16.setText(QCoreApplication.translate("MainWindow", u"Data da Sa\u00edda", None));
+        ___qtablewidgetitem17 = self.table_saida.horizontalHeaderItem(6)
+        ___qtablewidgetitem17.setText(QCoreApplication.translate("MainWindow", u"Data do Cadastro", None));
+        ___qtablewidgetitem18 = self.table_saida.horizontalHeaderItem(7)
+        ___qtablewidgetitem18.setText(QCoreApplication.translate("MainWindow", u"C\u00f3digo do Produto", None));
+        ___qtablewidgetitem19 = self.table_saida.horizontalHeaderItem(8)
+        ___qtablewidgetitem19.setText(QCoreApplication.translate("MainWindow", u"Cliente", None));
+        ___qtablewidgetitem20 = self.table_saida.horizontalHeaderItem(9)
+        ___qtablewidgetitem20.setText(QCoreApplication.translate("MainWindow", u"Descri\u00e7\u00e3o do Produto", None));
+        ___qtablewidgetitem21 = self.table_saida.horizontalHeaderItem(10)
+        ___qtablewidgetitem21.setText(QCoreApplication.translate("MainWindow", u"Usu\u00e1rio", None));
+        ___qtablewidgetitem22 = self.table_saida.horizontalHeaderItem(11)
+        ___qtablewidgetitem22.setText(QCoreApplication.translate("MainWindow", u"Status da Sa\u00edda", None));
         self.btn_abrir_planilha.setText(QCoreApplication.translate("MainWindow", u"Abrir Planilha", None))
         self.line_excel.setPlaceholderText(QCoreApplication.translate("MainWindow", u"Arquivo em excel aparecer\u00e1 aqui", None))
         self.tb_base.setTabText(self.tb_base.indexOf(self.tabela_base), QCoreApplication.translate("MainWindow", u"Base", None))
@@ -4730,11 +4749,11 @@ class Ui_MainWindow(object):
 #endif // QT_CONFIG(whatsthis)
         self.label_ativos.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p><span style=\" font-size:18pt; font-weight:600; font-style:italic;\">ATIVOS</span></p></body></html>", None))
         self.btn_importar_usuarios.setText(QCoreApplication.translate("MainWindow", u"Importar", None))
-        self.btn_atualizar_ativos.setText(QCoreApplication.translate("MainWindow", u"Atualizar Ativos", None))
+        self.btn_historico_usuarios.setText(QCoreApplication.translate("MainWindow", u"Hist\u00f3rico", None))
         self.btn_cadastrar_novo_usuario.setText(QCoreApplication.translate("MainWindow", u"Nova Usu\u00e1rio", None))
         self.btn_limpar_tabelas_usuarios.setText(QCoreApplication.translate("MainWindow", u"Limpar Tabelas", None))
+        self.btn_atualizar_ativos.setText(QCoreApplication.translate("MainWindow", u"Atualizar Ativos", None))
         self.btn_atualizar_inativos.setText(QCoreApplication.translate("MainWindow", u"Atualizar Inativos", None))
-        self.btn_historico_usuarios.setText(QCoreApplication.translate("MainWindow", u"Hist\u00f3rico", None))
         ___qtablewidgetitem47 = self.table_ativos.horizontalHeaderItem(0)
         ___qtablewidgetitem47.setText(QCoreApplication.translate("MainWindow", u"Nome", None));
         ___qtablewidgetitem48 = self.table_ativos.horizontalHeaderItem(1)

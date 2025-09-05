@@ -98,9 +98,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.db.create_table_historico_fisico()
         self.db.create_table_historico_juridico()
 
-        
-        # Carregar tema do sistema ou da sua configuração
-        config = self.carregar_config()  # sua função de config
+        # Oculta a TabBar do Estoque Produtos
+        self.tb_base.tabBar().hide()
+
+        # Carregar tema do sistema ou  configuração
+        config = self.carregar_config()  # função de config do JSON
         tema_atual = config.get("tema", "claro")
 
         if app is not None:
@@ -2972,68 +2974,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 QMessageBox QDialogButtonBox QPushButton:pressed {
                     background-color: #888888;
                 }
-                /* Estilo geral do QDateEdit */
-                QDateEdit {
-                    color: black; 
-                    background-color: 2b2b2b; 
-                    border: 1px solid 3399ff;
-                    border-radius: 5px;
-                    padding: 2px 5px;
-                }
-
-                /* Remove o fundo das setas */
-                QDateEdit::up-button, 
-                QDateEdit::down-button {
-                    background: transparent;
-                    border: none;
-                }
-
-                /* Cor de fundo do calendário popup */
-                QDateEdit QCalendarWidget {
-                    background-color: 2b2b2b;
-                    border: 1px solid #555555;
-                }
-
-                /* Dias normais */
-                QDateEdit QCalendarWidget QAbstractItemView:enabled {
-                    background-color: #2b2b2b;
-                    color: black;
-                    selection-background-color: rgb(0, 120, 215); /* Azul no dia selecionado */
-                    selection-color: white;
-                }
-                /* Botões de navegação (setas) do calendário */
-                QDateEdit QCalendarWidget QToolButton {
-                    background: transparent;   /* tira o fundo azul */
-                    color: black;              /* deixa as setas pretas */
-                    border: none;              /* sem borda */
-                    icon-size: 16px 16px;      /* ajusta o tamanho do ícone */
-                    padding: 2px;
-                }
-                QDateEdit QCalendarWidget QToolButton:hover {
-                    background: rgb(220, 220, 220); /* cinza claro no hover */
-                    border-radius: 4px;
-                }
-                /* Popup de meses/anos do calendário (QMenu) */
-                QDateEdit QCalendarWidget QMenu {
-                    background-color: white;
-                    border: 1px solid #ccc;
-                    color: black;
-                }
-
-                QDateEdit QCalendarWidget QMenu::item {
-                    background: transparent;
-                    color: black;
-                    padding: 6px 16px;
-                }
-
-                QDateEdit QCalendarWidget QMenu::item:selected {
-                    background: rgb(0, 120, 215);
-                    color: white;
-                }
-                QDateEdit QCalendarWidget QToolButton::menu-indicator {
-                    image: none;   /* remove o ícone padrão */
-                    width: 0px;    /* remove o espaço reservado */
-                }
+                
             """)
         elif tema == "claro":
             app.setStyleSheet("""
