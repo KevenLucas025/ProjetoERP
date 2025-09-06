@@ -114,7 +114,19 @@ class Pagina_Configuracoes(QWidget):
             background-color: #202124;
             color: #ffffff;
         }
-        /* QTableView com seleção diferenciada */
+        /* Estiliza apenas o QTableView
+            QTableView#table_ativos,
+            QTableView#table_inativos {    
+                gridline-color: white;
+                border: 1px solid white;
+                color: black;
+                selection-color: white;
+            }
+            QTableView#table_ativos::viewport,
+            QTableView#table_inativos::viewport {
+                border: 1px solid white;
+            }
+            /* QTableView com seleção diferenciada */
             QTableView {
                 background-color: #ffffff;
                 color: black;
@@ -620,9 +632,6 @@ class Pagina_Configuracoes(QWidget):
             QFrame#frame_page_verificar_usuarios,
             QFrame#frame_pag_estoque{
                 border: 2px solid white;
-            }
-            QTabWidget#tb_base::pane{
-                border:none;
             }
 
             

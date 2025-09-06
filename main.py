@@ -97,11 +97,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.db.create_table_clientes_fisicos()
         self.db.create_table_historico_fisico()
         self.db.create_table_historico_juridico()
-        
-
-        # Oculta a TabBar do Estoque Produtos
-        self.tb_base.tabBar().hide()
-
+    
         # Carregar tema do sistema ou  configuração
         config = self.carregar_config()  # função de config do JSON
         tema_atual = config.get("tema", "claro")
@@ -146,7 +142,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.table_saida.setShowGrid(True)
         self.table_ativos.setShowGrid(True)
         self.table_inativos.setShowGrid(True)
-        self.table_base.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        #self.table_base.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
 
 
         # funções que precisam do banco de dados
