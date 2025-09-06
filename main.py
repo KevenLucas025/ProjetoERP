@@ -6,7 +6,7 @@ from PySide6 import QtCore
 from PySide6.QtWidgets import (QMainWindow, QMessageBox, QPushButton,
                                QLabel, QFileDialog, QVBoxLayout,
                                QMenu,QTableWidgetItem,QCheckBox,QApplication,QToolButton,QHeaderView,QCompleter,
-                               QComboBox,QInputDialog,QProgressDialog,QDialog)
+                               QComboBox,QInputDialog,QProgressDialog,QDialog,QSizePolicy)
 from PySide6.QtGui import (QDoubleValidator, QIcon, QColor, QPixmap,QBrush,
                            QAction,QMovie,QImage,QShortcut,QKeySequence)
 from PySide6 import QtWidgets
@@ -97,6 +97,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.db.create_table_clientes_fisicos()
         self.db.create_table_historico_fisico()
         self.db.create_table_historico_juridico()
+        
 
         # Oculta a TabBar do Estoque Produtos
         self.tb_base.tabBar().hide()
@@ -145,7 +146,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.table_saida.setShowGrid(True)
         self.table_ativos.setShowGrid(True)
         self.table_inativos.setShowGrid(True)
-        
+        self.table_base.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+
 
         # funções que precisam do banco de dados
         self.erros_frames_produtos()
@@ -181,6 +183,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.label_imagem_sistema.setMovie(self.movie)
         # Iniciar a animação
         self.movie.start()
+
+     
+
 
         # Configuração do produto
         self.produto_original = {}
