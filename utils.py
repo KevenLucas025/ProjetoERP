@@ -1,6 +1,8 @@
 from PySide6.QtWidgets import QLineEdit, QPushButton,QVBoxLayout,QLabel,QFrame
 from PySide6.QtGui import QIcon, QPixmap, QTransform
 from PySide6.QtCore import Qt, QPropertyAnimation, QEasingCurve
+import json
+import os
 
 
 class MostrarSenha:
@@ -57,7 +59,8 @@ class MostrarSenha:
             self.line_edit.setEchoMode(QLineEdit.Normal)
             self._show_password = True
 
-
+    
+    
 
 def configurar_frame_valores(frame: QFrame, titulo: str, valor_monetario: bool = True) -> QLabel:
     layout = QVBoxLayout(frame)
@@ -75,3 +78,38 @@ def configurar_frame_valores(frame: QFrame, titulo: str, valor_monetario: bool =
     layout.addWidget(label_valor)
 
     return label_valor  # você salva essa referência depois para atualizar o texto
+
+
+
+class Temas:
+    def __init__(self):
+        self.config = self.carregar_config_arquivo()
+
+    def carregar_config_padrao(self):
+        return {
+            "tema": "classico",
+            "usuario": "",
+            "senha": "",
+            "mantem_conectado": False,
+            "nao_mostrar_mensagem_boas_vindas": False,
+            "nao_mostrar_aviso_irreversivel": False,
+            "nao_mostrar_mensagem_arquivo_excel": False,
+            "nao_mostrar_mensagem_arquivo_excel_fisicos": False,
+            "historico_autocompletes": {}
+        }
+
+    def carregar_config_arquivo(self, caminho="config.json"):
+        if not os.path.exists(caminho):
+            print(f"Arquivo {caminho} não encontrado. Usando configuração padrão.")
+            return self.carregar_config_padrao()
+
+        try:
+            with open(caminho, "r", encoding="utf-8") as f:
+                conteudo = f.read().strip()
+                if not conteudo:
+                    print(f"Arquivo {caminho} vazio. Usando configuração padrão.")
+                    return self.carregar_config_padrao()
+                return json.loads(conteudo)
+        except json.JSONDecodeError as e:
+            print(f"Erro ao decodificar {caminho}: {e}. Usando configuração padrão.")
+            return self.carregar_config_padrao()

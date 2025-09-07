@@ -9,6 +9,7 @@ from database import DataBase
 import sqlite3
 import pandas as pd
 from configuracoes import Configuracoes_Login
+from utils import Temas
 from datetime import datetime
 from dialogos import ComboDialog
 import csv
@@ -31,6 +32,7 @@ class Clientes_Juridicos(QWidget):
         super().__init__()
         self.line_clientes = line_clientes
         self.db = DataBase("banco_de_dados.db")
+        self.temas = Temas()
         self.config = Configuracoes_Login(self)
         self.coluna_checkboxes_clientes_adicionada = False
         self.checkboxes_clientes = []
@@ -359,7 +361,7 @@ class Clientes_Juridicos(QWidget):
         layout.setContentsMargins(30, 30, 30, 30)
 
          # Carregar tema
-        config = self.carregar_config()
+        config = self.temas.carregar_config_arquivo()
         tema = config.get("tema", "claro")
 
         # Definições de tema
@@ -784,10 +786,6 @@ class Clientes_Juridicos(QWidget):
             dados_cliente[nome_coluna] = item.text() if item else ""
 
         self.exibir_edicao_clientes(dados_cliente)
-        
-    def carregar_config(self):
-        with open("config.json", "r", encoding="utf-8") as f:
-            return json.load(f)
 
     
     def exibir_janela_cadastro_cliente(self):
@@ -808,7 +806,7 @@ class Clientes_Juridicos(QWidget):
         self.janela_cadastro.move(window_geometry.topLeft())
 
         # Carregar tema
-        config = self.carregar_config()
+        config = self.temas.carregar_config_arquivo()
         tema = config.get("tema", "claro")
 
         # Definições de tema
@@ -1809,7 +1807,7 @@ class Clientes_Juridicos(QWidget):
         layout = QVBoxLayout(central_widget)
 
         # Carregar tema
-        config = self.carregar_config()
+        config = self.temas.carregar_config_arquivo()
         tema = config.get("tema", "claro")
 
         # Definições de tema
@@ -2038,6 +2036,86 @@ class Clientes_Juridicos(QWidget):
                 }
                 
             """
+            scroll_style = """
+                QScrollBar:vertical {
+                    background: #f5f5f5;
+                    width: 12px;
+                    border: none;
+                }
+
+                QScrollBar::handle:vertical {
+                    background: #cccccc;
+                    min-height: 20px;
+                    border-radius: 5px;
+                }
+
+                QScrollBar::add-line:vertical,
+                QScrollBar::sub-line:vertical,
+                QScrollBar::add-page:vertical,
+                QScrollBar::sub-page:vertical {
+                    background: none;
+                    height: 0px;
+                }
+            """
+            table_view_style = """
+                QTableView {
+                    background-color: white;
+                    color: black;
+                    gridline-color: #ccc;
+                    selection-background-color: #e5f3ff;
+                    selection-color: black;
+                }
+
+                QHeaderView::section {
+                    background-color: #f0f0f0;
+                    color: black;
+                    border: 1px solid #ccc;
+                    padding: 1px;
+                }
+
+                QTabWidget::pane {
+                    border: 1px solid #ccc;
+                    background-color: white;
+                }
+
+                QTableView QScrollBar:horizontal,
+                QTableView QScrollBar:vertical {
+                    border: none;
+                    background-color: #f5f5f5;
+                    border-radius: 5px;
+                }
+
+                QTableView QScrollBar::handle:vertical,
+                QTableView QScrollBar::handle:horizontal {
+                    background-color: #cccccc;
+                    min-height: 22px;
+                    border-radius: 5px;
+                }
+
+                QTableView QScrollBar::groove:horizontal {
+                    background-color: transparent;
+                    border-radius: 5px;
+                    height: 15px;
+                    margin: 0px 10px 0px 10px;
+                }
+
+                QTableView QScrollBar::groove:vertical {
+                    background-color: transparent;
+                    border-radius: 5px;
+                    width: 25px;
+                    margin: 10px 0px 10px 10px;
+                }
+
+                QTableWidget::item:selected {
+                    background-color: #cce7ff;
+                    color: black;
+                }
+
+                QTableCornerButton::section {
+                    background-color: #f0f0f0;
+                    border: 1px solid #ccc;
+                }
+            """
             lineedit_style = """
                 QLineEdit {
                     background-color: white;
@@ -2109,6 +2187,59 @@ class Clientes_Juridicos(QWidget):
                 min-height: 30px;
                 border-radius: 5px;
             }
+            """
+            table_view_style = """
+                QTableView {
+                    background-color: #004d73;
+                    color: white;
+                    gridline-color: black;
+                    border: 1px solid white;
+                    selection-background-color: #007acc;
+                    selection-color: white;
+                }
+
+                QHeaderView::section {
+                    background-color: #007acc;
+                    color: white;
+                    border: 1px solid #005c99;
+                    padding: 2px;
+                }
+
+                QTabWidget::pane {
+                    border: 1px solid #004466;
+                    background-color: #003355;
+                }
+
+                QTableView QScrollBar:horizontal,
+                QTableView QScrollBar:vertical {
+                    border: none;
+                    background-color: rgb(255, 255, 255);
+                    border-radius: 5px;
+                }
+
+                QTableView QScrollBar::handle:vertical,
+                QTableView QScrollBar::handle:horizontal {
+                    background-color: rgb(180,180,150);
+                    min-height: 30px;
+                    border-radius: 5px;
+                }
+
+                QTableView QScrollBar::groove:horizontal {
+                    background-color: rgb(100,240,240);
+                    border-radius: 2px;
+                    height: 15px;
+                    margin: 0px 10px 0px 10px;
+                }
+
+                QTableWidget::item:selected {
+                    background-color: rgb(0, 120, 215);
+                    color: white;
+                }
+
+                QTableCornerButton::section {
+                    background-color: #007acc;
+                    border: 1px solid #005c99;
+                }
             """
             lineedit_style = """
                 QLineEdit {
@@ -2846,7 +2977,7 @@ class Clientes_Juridicos(QWidget):
         scroll.setWidgetResizable(True)
 
         # Carregar tema
-        config = self.carregar_config()
+        config = self.temas.carregar_config_arquivo()
         tema = config.get("tema", "claro")
 
         # Definições de tema

@@ -1,6 +1,7 @@
 # dialogos.py
 from PySide6.QtWidgets import QDialog, QVBoxLayout, QLabel, QComboBox, QDialogButtonBox
 import json
+from utils import Temas
 
 # -----------------------------
 # Classe base de dialog estilizado
@@ -8,10 +9,11 @@ import json
 class DialogoEstilizado(QDialog):
     def __init__(self, tema=None, parent=None):
         super().__init__(parent)
+        self.temas = Temas()
 
         # Carrega tema do config se não for passado
         if tema is None:
-            config = self.carregar_config()
+            config = self.temas.carregar_config_arquivo()
             tema = config.get("tema", "claro")
         self.tema = tema
 
@@ -97,7 +99,9 @@ class DialogoEstilizado(QDialog):
                 background: none;
             }
             """
-        else:  # claro
+
+        elif self.tema == "claro":
+        # claro
             bg_cor = "white"
             text_cor = "black"
             button_style = """
@@ -136,6 +140,64 @@ class DialogoEstilizado(QDialog):
                     color: black;
                 }
             """
+        else: #classico
+            bg_cor = "rgb(0,80,121)"
+            text_cor = "white"
+            lineedit_bg = "white"
+
+            button_style = """
+                QPushButton {
+                    color: rgb(255, 255, 255);
+                    border-radius: 8px;
+                    font-size: 16px;
+                    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */
+                    border: 4px solid transparent;
+            }
+
+            QPushButton:hover {
+                background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */
+                color: black;
+            }
+            """
+            combo_style = """
+                QComboBox {
+                    background-color: white;
+                    border: 3px solid rgb(50,150,250);
+                    border-radius: 5px;
+                    color: black;
+                    padding: 5px;
+                }
+                QComboBox QAbstractItemView {
+                    background-color: white;
+                    color: black;
+                    border: 1px solid #ccc;
+                    selection-background-color: #e5e5e5;
+                    selection-color: black;
+                }
+                QComboBox QScrollBar:vertical {
+                    background: #f5f5f5;
+                    width: 12px;
+                    border: none;
+                }
+                QComboBox QScrollBar::handle:vertical {
+                    background: #cccccc;
+                    min-height: 20px;
+                    border-radius: 5px;
+                }
+            """
+            scroll_style = """
+                QScrollBar:vertical {
+                    border: none;
+                    background-color: rgb(255, 255, 255); /* branco */
+                    width: 30px;
+                    margin: 0px 10px 0px 10px;
+                }
+                QScrollBar::handle:vertical {
+                    background-color: rgb(180, 180,180);  /* cinza */
+                    min-height: 30px;
+                    border-radius: 5px;
+                }
+            """
 
         # Aplica o estilo apenas ao dialog e widgets internos
         self.setStyleSheet(f"""
@@ -153,12 +215,6 @@ class DialogoEstilizado(QDialog):
             }}
         """)
 
-    def carregar_config(self):
-        try:
-            with open("config.json", "r", encoding="utf-8") as f:
-                return json.load(f)
-        except FileNotFoundError:
-            return {"tema": "claro"}  # fallback padrão
 
 # -----------------------------
 # Dialog específico: Escolher planilha

@@ -11,6 +11,7 @@ import csv
 from datetime import datetime
 from configuracoes import Configuracoes_Login
 from dialogos import ComboDialog
+from utils import Temas
 from reportlab.lib.pagesizes import letter,landscape
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle
 from reportlab.lib import colors
@@ -28,6 +29,7 @@ class Pagina_Usuarios(QWidget):
         super().__init__(parent)
 
         self.db = DataBase("banco_de_dados.db")
+        self.temas = Temas()
 
         self.config = Configuracoes_Login(self)
 
@@ -421,11 +423,6 @@ class Pagina_Usuarios(QWidget):
         {scroll_style}
         """
         return estilo_completo
-
-
-    def carregar_config(self):
-            with open("config.json", "r", encoding="utf-8") as f:
-                return json.load(f)
     
 
     # Função auxiliar para criar um QTableWidgetItem com texto centralizado
@@ -833,7 +830,7 @@ class Pagina_Usuarios(QWidget):
         layout = QVBoxLayout(central_widget)
 
         # Carregar tema
-        config = self.carregar_config()
+        config = self.temas.carregar_config_arquivo()
         tema = config.get("tema", "claro")
 
         # Definições de tema
@@ -1916,7 +1913,7 @@ class Pagina_Usuarios(QWidget):
         self.janela_escolha.resize(255, 150)
 
         # Carregar tema
-        config = self.carregar_config()
+        config = self.temas.carregar_config_arquivo()
         tema = config.get("tema", "claro")
 
         # Definições de tema

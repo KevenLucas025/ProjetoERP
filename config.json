@@ -3,40 +3,9 @@
     "senha": "123",
     "mantem_conectado": false,
     "nao_mostrar_mensagem_boas_vindas": true,
-    "nao_mostrar_aviso_irreversivel": true,
+    "nao_mostrar_aviso_irreversivel": false,
     "nao_mostrar_mensagem_arquivo_excel": true,
-    "nao_mostrar_mensagem_arquivo_excel_fisicos": true,
-    "historico_autocompletes": {
-        "line_clientes": [
-            "Keved",
-            "Keven",
-            "22.222.222/2222-22"
-        ],
-        "txt_produto": [
-            "Games",
-            "@#",
-            "Jogos"
-        ],
-        "txt_quantidade": [
-            "12"
-        ],
-        "txt_valor_produto_3": [
-            "12"
-        ],
-        "txt_codigo_item": [
-            "jfhdh",
-            "dsds"
-        ],
-        "txt_cliente_3": [
-            "Keven Lucas da Silva Jesus"
-        ],
-        "txt_descricao_produto_3": [
-            "Jogos",
-            "sdsd"
-        ],
-        "txt_senha_cadastro": [
-            "fdfdfd"
-        ]
-    },
-    "tema": "escuro"
+    "nao_mostrar_mensagem_arquivo_excel_fisicos": false,
+    "historico_autocompletes": {},
+    "tema": "classico"
 }

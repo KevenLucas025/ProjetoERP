@@ -48,10 +48,14 @@ class Pagina_Configuracoes(QWidget):
         self.frame_valor_do_desconto = frame_valor_do_desconto
         self.frame_valor_desconto = frame_valor_desconto
         self.frame_quantidade = frame_quantidade
+
+        
+
   
        
         self.estilo_original_classico = Ui_MainWindow()
         self.config = Configuracoes_Login(main_window=main_window)
+        
 
         
         if self.config.tema == "escuro":
@@ -90,6 +94,9 @@ class Pagina_Configuracoes(QWidget):
         layout_principal.addStretch()
 
     def aplicar_modo_escuro(self):
+        if self.config.tema == "escuro":
+            QMessageBox.information(self, "Tema", "Você já está no modo Escuro.")
+            return
         progress_dialog = ProgressDialog("Escuro", self)
         progress_dialog.show()
 
@@ -110,21 +117,23 @@ class Pagina_Configuracoes(QWidget):
 
         # Estilo geral dos botões (modo escuro)
         style_sheet = """
-        QMainWindow, QStackedWidget, QWidget {
-            background-color: #202124;
-            color: #ffffff;
-        }
-        /* Estiliza apenas o QTableView
+            QMainWindow, QStackedWidget, QWidget {
+                background-color: #202124;
+                color: #ffffff;
+            }
+            /* Estiliza apenas o QTableView das tables abaixo */
             QTableView#table_ativos,
-            QTableView#table_inativos {    
+            QTableView#table_inativos,
+            QTableView#table_base,
+            QTableView#table_saida,
+            QTableView#table_massa_usuarios,
+            QTableView#table_massa_produtos,
+            QTableView#table_clientes_juridicos,
+            QTableView#table_clientes_fisicos {    
                 gridline-color: white;
                 border: 1px solid white;
                 color: black;
                 selection-color: white;
-            }
-            QTableView#table_ativos::viewport,
-            QTableView#table_inativos::viewport {
-                border: 1px solid white;
             }
             /* QTableView com seleção diferenciada */
             QTableView {
@@ -200,12 +209,10 @@ class Pagina_Configuracoes(QWidget):
                 background-color: #555555;  /* cinza de seleção */
                 color: white;
             }
-            
-            QTabWidget#tb_base QTabBar {
-                color: transparent; /* Esconde o texto */
-                height: 1px;         /* Opcional: aba bem pequena */
-                width: 1px;          /* Opcional: aba bem pequena */
+            QTabWidget#tab_clientes_todos::pane {
+                border: none;
             }
+
             
             QTabBar::tab {
                 background-color: #ffffff; /* fundo branco */
@@ -301,32 +308,6 @@ class Pagina_Configuracoes(QWidget):
             QPushButton#btn_cadastrar_produto:pressed,
             QPushButton#btn_cadastrar_usuarios:pressed,
             QPushButton#btn_clientes:pressed{
-                background: qlineargradient(
-                    x1:0, y1:0, x2:0, y2:1,
-                    stop:0 rgb(50, 50, 50),
-                    stop:1 rgb(80, 80, 80)
-                );
-            }
-
-            /* Botão específico btn_opcoes_navegacao */
-            QPushButton#btn_opcoes_navegacao {
-                background: qlineargradient(
-                    x1:0, y1:0, x2:0, y2:1,
-                    stop:0 rgb(60, 60, 60),
-                    stop:1 rgb(100, 100, 100)
-                );
-                color: #ffffff;
-            }
-
-            QPushButton#btn_opcoes_navegacao:hover {
-                background: qlineargradient(
-                    x1:0, y1:0, x2:0, y2:1,
-                    stop:0 rgb(90, 90, 90),
-                    stop:1 rgb(130, 130, 130)
-                );
-            }
-
-            QPushButton#btn_opcoes_navegacao:pressed {
                 background: qlineargradient(
                     x1:0, y1:0, x2:0, y2:1,
                     stop:0 rgb(50, 50, 50),
@@ -630,7 +611,10 @@ class Pagina_Configuracoes(QWidget):
                 border-radius: 12px;                  /* mantém arredondado */
             }
             QFrame#frame_page_verificar_usuarios,
-            QFrame#frame_pag_estoque{
+            QFrame#frame_pag_estoque,
+            QFrame#frame_pg_clientes,
+            QFrame#frame_10,
+            QFrame#frame_8{
                 border: 2px solid white;
             }
 
@@ -665,6 +649,9 @@ class Pagina_Configuracoes(QWidget):
 
 
     def aplicar_modo_claro(self):
+        if self.config.tema == "claro":
+            QMessageBox.information(self, "Tema", "Você já está no modo Claro.")
+            return
         progress_dialog = ProgressDialog("Claro", self)
         progress_dialog.show()
 
@@ -703,6 +690,9 @@ class Pagina_Configuracoes(QWidget):
         self.config.salvar(self.config.usuario, self.config.senha, self.config.mantem_conectado)
 
     def aplicar_modo_classico(self):
+        if self.config.tema == "classico":
+            QMessageBox.information(self, "Tema", "Você já está no modo Clássico.")
+            return
         progress_dialog = ProgressDialog("Clássico", self)
         progress_dialog.show()
 
@@ -742,12 +732,6 @@ class Pagina_Configuracoes(QWidget):
                 height: 1px;
                 background: gray;
                 margin: 5px 10px;
-            }
-
-
-            QPushButton#btn_opcoes_navegacao{
-                background: transparent;
-                qproperty-icon: url("imagens/54206.png");
             }
 
             QPushButton#botao_lupa,

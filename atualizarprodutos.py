@@ -13,7 +13,7 @@ class AtualizarProduto(QDialog):
         layout = QVBoxLayout()
 
         # Carregar config
-        config = self.main_window.carregar_config()
+        config = self.main_window.carregar_config_arquivo()
         tema = config.get("tema", "claro")
 
          # Definir estilo do botão baseado no tema

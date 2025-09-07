@@ -25,6 +25,7 @@ from pg_configuracoes import Pagina_Configuracoes
 from estoqueprodutos import EstoqueProduto
 from historicousuario import Pagina_Usuarios
 from utils import MostrarSenha,configurar_frame_valores
+from utils import Temas
 from clientes_juridicos import Clientes_Juridicos
 from clientes_fisicos import Clientes_Fisicos
 from dialogos import EscolherPlanilhaDialog
@@ -61,6 +62,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.historico_usuario_pausado = False
         self.imagem_removida_usuario = False
         self.usuario_tem_imagem_salva = False
+        self.temas = Temas()
+
+        self.table_base.verticalHeader().setFixedWidth(20)  # você pode ajustar o valor
     
         
         # Atalho F5 global
@@ -99,7 +103,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.db.create_table_historico_juridico()
     
         # Carregar tema do sistema ou  configuração
-        config = self.carregar_config()  # função de config do JSON
+        config = self.temas.carregar_config_arquivo()  # função de config do JSON
         tema_atual = config.get("tema", "claro")
 
         if app is not None:
@@ -240,11 +244,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.btn_retroceder.setGeometry(5, 5, 30, 30) 
         self.btn_retroceder.setToolTip("Retroceder") # Adiciona uma dica de ferramenta
 
-        self.btn_opcoes_navegacao = QPushButton(self)
-        self.btn_opcoes_navegacao.setIconSize(QSize(30,30))
-        self.btn_opcoes_navegacao.setGeometry(60,35,35,35)
-        self.btn_opcoes_navegacao.setCursor(Qt.PointingHandCursor)
-        self.btn_opcoes_navegacao.setObjectName("btn_opcoes_navegacao")
 
         # Criar o menu dentro do botão btn_opcoes
         self.menu_opcoes = QMenu(self.btn_mais_opcoes)
@@ -425,7 +424,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.btn_editar.clicked.connect(self.mostrar_tabela_produtos)
         self.btn_atualizar_produto.clicked.connect(self.atualizar_produto)
         self.btn_carregar_imagem.clicked.connect(self.carregar_imagem_produto)
-        self.btn_opcoes_navegacao.clicked.connect(self.abrir_menu_opcoes)
         
         
 
@@ -443,51 +441,35 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                                                          self.frame_valor_do_desconto,self.frame_valor_com_desconto1,self.frame_quantidade)
 
 
-    def carregar_config(self):
-            with open("config.json", "r", encoding="utf-8") as f:
-                return json.load(f)
-            
-    def abrir_menu_opcoes(self):
-        # Verifica se já armazenamos a posição original da página
-        if not hasattr(self, "posicao_original_paginas"):
-            self.posicao_original_paginas = self.paginas_sistemas.pos().x()
+    def carregar_config_padrao(self):
+        return {
+            "tema": "classico",
+            "usuario": "",
+            "senha": "",
+            "mantem_conectado": False,
+            "nao_mostrar_mensagem_boas_vindas": False,
+            "nao_mostrar_aviso_irreversivel": False,
+            "nao_mostrar_mensagem_arquivo_excel": False,
+            "nao_mostrar_mensagem_arquivo_excel_fisicos": False,
+            "historico_autocompletes": {}
+        }
+    
+    def carregar_config_arquivo(self,caminho="config.json"):
+        if not os.path.exists(caminho):
+            print(f"Arquivo {caminho} não encontrado. Usando configuração padrão.")
+            return self.carregar_config_padrao()
 
-        largura_atual = self.frame_botoes_navegacoes.width()  # Obtém a largura atual
-        nova_largura = 200 if largura_atual == 9 else 9  # Expande ou recolhe o menu
-
-        # Posição do botão
-        posicao_botao_x = self.btn_opcoes_navegacao.x()
+        try:
+            with open(caminho, "r", encoding="utf-8") as f:
+                conteudo = f.read().strip()
+                if not conteudo:
+                    print(f"Arquivo {caminho} vazio. Usando configuração padrão.")
+                    return self.carregar_config_padrao()
+                return json.loads(conteudo)
+        except json.JSONDecodeError as e:
+            print(f"Erro ao decodificar {caminho}: {e}. Usando configuração padrão.")
+            return self.carregar_config_padrao()
         
-        # Definir deslocamento das páginas
-        deslocamento_x = 60  # Ajuste conforme necessário
-
-        # Determinar nova posição das páginas
-        if nova_largura == 9:  # Se o menu for recolhido, mover para a esquerda
-            nova_posicao_paginas_x = self.posicao_original_paginas - deslocamento_x
-        else:  # Se o menu for expandido, voltar para a posição original
-            nova_posicao_paginas_x = self.posicao_original_paginas
-
-        # Duração da animação
-        duracao_animacao = 400  
-
-        # Animação do frame de navegação (expande/recolhe)
-        self.animacao_frame = QPropertyAnimation(self.frame_botoes_navegacoes, b"maximumWidth")
-        self.animacao_frame.setDuration(duracao_animacao)
-        self.animacao_frame.setStartValue(largura_atual)
-        self.animacao_frame.setEndValue(nova_largura)
-        self.animacao_frame.setEasingCurve(QEasingCurve.InOutQuart)
-
-        # Animação das páginas
-        self.animacao_paginas = QPropertyAnimation(self.paginas_sistemas, b"pos")
-        self.animacao_paginas.setDuration(duracao_animacao)
-        self.animacao_paginas.setStartValue(self.paginas_sistemas.pos())
-        self.animacao_paginas.setEndValue(QPoint(nova_posicao_paginas_x, self.paginas_sistemas.y()))
-        self.animacao_paginas.setEasingCurve(QEasingCurve.InOutQuart)
-
-        # Inicia as animações
-        self.animacao_frame.start()
-        self.animacao_paginas.start()
-
     def boas_vindas(self):
         if self.config.nao_mostrar_mensagem_boas_vindas:
             return
@@ -2950,7 +2932,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                     background-color: #202124;
                     color: white;
                     font-size: 12px;
-                }
+                }           
 
                 QMessageBox {
                     background-color: #2b2b2b;   /* fundo escuro */

@@ -12,6 +12,7 @@ import pandas as pd
 import openpyxl
 import os
 from datetime import datetime
+from utils import Temas
 import json
 
 
@@ -24,6 +25,7 @@ class TabelaProdutos(QMainWindow):
         self.codigo_item_original = None
         self.filtragem_aplicada = False  # Inicializa a variável
         self.db = DataBase()  # Inicializando o atributo db
+        self.temas = Temas()
         
         self.setWindowTitle("Tabela de Produtos")
         self.setMinimumWidth(800)
@@ -47,7 +49,7 @@ class TabelaProdutos(QMainWindow):
 
         cursor = None
 
-        config = self.carregar_config()
+        config = self.temas.carregar_config_arquivo()
         tema = config.get("tema", "claro")
         
 
@@ -389,6 +391,115 @@ class TabelaProdutos(QMainWindow):
                 }
                 
             """
+            scroll_style = """
+                /* Scrollbar vertical */
+                QScrollBar:vertical {
+                    background: #f0f0f0;  /* trilho claro */
+                    width: 12px;
+                    margin: 0px;
+                    border-radius: 6px;
+                }
+
+                QScrollBar::handle:vertical {
+                    background: #b0b0b0;  /* cor do handle */
+                    border-radius: 6px;
+                    min-height: 20px;
+                }
+
+                QScrollBar::handle:vertical:hover {
+                    background: #a0a0a0;  /* hover no handle */
+                }
+
+                QScrollBar::add-line:vertical,
+                QScrollBar::sub-line:vertical {
+                    background: none;
+                    height: 0px;
+                }
+
+                QScrollBar::add-page:vertical,
+                QScrollBar::sub-page:vertical {
+                    background: none;
+                }
+                """
+            table_view_style = """
+                /* QTableView com seleção diferenciada */
+                QTableView {
+                    background-color: white;
+                    color: black;
+                    gridline-color: #cccccc;
+                    selection-background-color: #d0e7ff;  /* azul claro */
+                    selection-color: black;
+                }
+
+                /* Cabeçalhos da tabela */
+                QHeaderView::section {
+                    background-color: #eaeaea;
+                    color: black;
+                    border: 1px solid #cccccc;
+                    padding: 2px;
+                }
+
+                /* QTabWidget */
+                QTabWidget::pane {
+                    border: 1px solid #cccccc;
+                    background-color: white;
+                }
+
+                /* Scrollbars horizontais e verticais */
+                QTableView QScrollBar:horizontal,
+                QTableView QScrollBar:vertical {
+                    background-color: #f0f0f0;
+                    border: none;
+                    height: 12px;
+                    width: 12px;
+                    margin: 0px;
+                    border-radius: 5px;
+                }
+
+                /* Handle */
+                QTableView QScrollBar::handle:vertical,
+                QTableView QScrollBar::handle:horizontal {
+                    background-color: #b0b0b0;
+                    border-radius: 5px;
+                    min-height: 22px;
+                    min-width: 22px;
+                }
+
+                /* Groove */
+                QTableView QScrollBar::groove:vertical {
+                    background-color: transparent;
+                    border-radius: 5px;
+                    width: 25px;
+                    margin: 10px 0px 10px 10px;
+                }
+
+                QTableView QScrollBar::groove:horizontal {
+                    background-color: transparent;
+                    border-radius: 5px;
+                    height: 15px;
+                    margin: 0px 10px 0px 10px;
+                }
+
+                /* Estilo para item selecionado */
+                QTableWidget::item:selected {
+                    background-color: #cce5ff;  /* azul leve */
+                    color: black;
+                }
+
+                /* Botão de canto da tabela */
+                QTableCornerButton::section {
+                    background-color: #eaeaea;
+                    border: 1px solid #cccccc;
+                    padding: 2px;
+                }
+
+                /* Forçar cor do texto do QCheckBox */
+                QCheckBox {
+                    color: black;
+                }
+                """
+
+
             lineedit_style = """
                 QLineEdit {
                     background-color: white;
@@ -401,6 +512,7 @@ class TabelaProdutos(QMainWindow):
         else:  # clássico
             bg_cor = "rgb(0,80,121)"
             text_cor = "white"
+            lineedit_bg = "white"
 
             button_style = """
                 QPushButton {
@@ -421,6 +533,7 @@ class TabelaProdutos(QMainWindow):
                     border: 2px solid #005c99;
                 }
             """
+
             combobox_style = """
                 QComboBox {
                     background-color: white;
@@ -447,19 +560,78 @@ class TabelaProdutos(QMainWindow):
                     border-radius: 5px;
                 }
             """
+
+            # 🔹 Scroll geral (scroll_style)
             scroll_style = """
                 QScrollBar:vertical {
-                border: none;
-                background-color: rgb(255, 255, 255); /* branco */
-                width: 30px;
-                margin: 0px 10px 0px 10px;
-            }
+                    border: none;
+                    background-color: rgb(255, 255, 255); /* branco */
+                    width: 30px;
+                    margin: 0px 10px 0px 10px;
+                }
                 QScrollBar::handle:vertical {
-                background-color: rgb(180, 180,180);  /* cinza */
-                min-height: 30px;
-                border-radius: 5px;
-            }
+                    background-color: rgb(180, 180,180);  /* cinza */
+                    min-height: 30px;
+                    border-radius: 5px;
+                }
             """
+
+            # 🔹 Estilo específico para QTableView (table_view_style)
+            table_view_style = """
+                QTableView {
+                    gridline-color: black;
+                    color: white;
+                    border: 1px solid white;
+                    selection-color: white;
+                }
+
+                QTableView QScrollBar:horizontal {
+                    border: none;
+                    background-color: rgb(255, 255, 255);
+                    height: 15px;
+                    margin: 0px 10px 0px 10px;
+                }
+
+                QTableView QScrollBar:vertical {
+                    border: none;
+                    background-color: rgb(255, 255, 255); /* branco */
+                    width: 35px;
+                    margin: 0px 10px 0px 10px;
+                }
+
+                QTableView QScrollBar::handle:vertical {
+                    background-color: rgb(180, 180,150);  /* cinza */
+                    min-height: 30px;
+                    border-radius: 5px;
+                }
+
+                QTableView QScrollBar::handle:horizontal{
+                    background-color: rgb(180,180,150);
+                    min-height: 30px;
+                    border-radius: 5px;
+                }
+
+                QTableView QScrollBar::add-line:vertical,
+                QTableView QScrollBar::sub-line:vertical {
+                    height: 0px;
+                    width: 0px;
+                    border: none;
+                    background: none;
+                }
+
+                QTableView QScrollBar::groove:horizontal {
+                    background-color: rgb(100,240,240);
+                    border-radius: 2px;
+                    height: 15px;
+                    margin: 0px 10px 0px 10px;
+                }
+
+                QTableWidget::item:selected {
+                    background-color: rgb(0, 120, 215);
+                    color: white;
+                }
+            """
+
             lineedit_style = """
                 QLineEdit {
                     background-color: white;
@@ -468,7 +640,8 @@ class TabelaProdutos(QMainWindow):
                     border-radius: 6px;
                     padding: 3px;
                 }
-        """
+            """
+
         estilo_completo = f"""
         QMainWindow {{
             background-color: {bg_cor};
@@ -481,10 +654,6 @@ class TabelaProdutos(QMainWindow):
         """
         return estilo_completo
 
-
-    def carregar_config(self):
-            with open("config.json", "r", encoding="utf-8") as f:
-                return json.load(f)
 #*******************************************************************************************************
     def preencher_tabela_produtos(self):
         # Limpar a tabela antes de preencher

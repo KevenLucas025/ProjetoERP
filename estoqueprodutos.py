@@ -8,6 +8,7 @@ import pandas as pd
 from datetime import datetime
 from database import DataBase
 from dialogos import ComboDialog
+from utils import Temas
 import csv
 from reportlab.lib import colors
 from reportlab.lib.pagesizes import letter,landscape,A4
@@ -26,6 +27,7 @@ class EstoqueProduto(QWidget):
         super().__init__(parent)
 
         self.db = DataBase("banco_de_dados.db")
+        self.temas = Temas()
         self.alteracoes_salvas = False
         self.config = Configuracoes_Login(self)
 
@@ -72,11 +74,7 @@ class EstoqueProduto(QWidget):
         self.main_window.table_base.viewport().installEventFilter(self)
         self.main_window.table_saida.viewport().installEventFilter(self)
         
-        
 
-    def carregar_config(self):
-            with open("config.json", "r", encoding="utf-8") as f:
-                return json.load(f)
             
     # Função auxiliar para criar um QTableWidgetItem com texto centralizado
     def criar_item(self, text):
@@ -775,7 +773,7 @@ class EstoqueProduto(QWidget):
         layout = QVBoxLayout(central_widget)
 
         # Carregar tema
-        config = self.carregar_config()
+        config = self.temas.carregar_config_arquivo()
         tema = config.get("tema", "claro")
 
         # Definições de tema
@@ -1046,6 +1044,7 @@ class EstoqueProduto(QWidget):
         else:  # clássico
             bg_cor = "rgb(0,80,121)"
             text_cor = "white"
+            lineedit_bg = "white"
 
             button_style = """
                 QPushButton {
@@ -1104,6 +1103,68 @@ class EstoqueProduto(QWidget):
                 min-height: 30px;
                 border-radius: 5px;
             }
+            """
+            table_view_style = """
+                /* Estiliza apenas o QTableView com objectName  */
+                QTableView {
+                    gridline-color: black;
+                    color: white;
+                    border: 1px solid white;
+                    selection-color: white;
+
+                }
+
+                /* Estiliza a barra de rolagem horizontal */
+                QTableView QScrollBar:horizontal {
+                    border: none;
+                    background-color: rgb(255, 255, 255);
+                    height: 15px;
+                    margin: 0px 10px 0px 10px;
+                }
+
+                /* Estiliza a barra de rolagem vertical */
+                QTableView QScrollBar:vertical {
+                    border: none;
+                    background-color: rgb(255, 255, 255); /* branco */
+                    width: 35px;
+                    margin: 0px 10px 0px 10px;
+                }
+
+                /* Parte que você arrasta */
+                QTableView QScrollBar::handle:vertical {
+                    background-color: rgb(180, 180,150);  /* cinza */
+                    min-height: 30px;
+                    border-radius: 5px;
+                }
+
+                QTableView QScrollBar::handle:horizontal{
+                    background-color: rgb(180,180,150);
+                    min-height: 30px;
+                    border-radius: 5px;
+                }
+
+                /* Remove os botões */
+                QTableView QScrollBar::add-line:vertical,
+                QTableView QScrollBar::sub-line:vertical {
+                    height: 0px;
+                    width: 0px;
+                    border: none;
+                    background: none;
+                }
+
+                QTableView QScrollBar::groove:horizontal{
+                    background-color: rgb(100,240,240);
+                    border-radius: 2px;
+                    height: 15px;
+                    margin: 0px 10px 0px 10px;
+                }
+
+                /* Estilo para item selecionado */
+                QTableWidget::item:selected {
+                    background-color: rgb(0, 120, 215);
+                    color: white;
+                }
+
             """
             lineedit_style = """
                 QLineEdit {
@@ -1604,7 +1665,7 @@ class EstoqueProduto(QWidget):
         campo_data.textChanged.connect(lambda: self.formatar_data(campo_data))
 
         # Carregar tema
-        config = self.carregar_config()
+        config = self.temas.carregar_config_arquivo()
         tema = config.get("tema", "claro")
 
         # Definições de tema
@@ -1946,7 +2007,7 @@ class EstoqueProduto(QWidget):
         self.janela_escolha.resize(255, 150)
 
         # Carregar tema
-        config = self.carregar_config()
+        config = self.temas.carregar_config_arquivo()
         tema = config.get("tema", "claro")
 
         # Definições de tema
