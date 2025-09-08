@@ -5996,6 +5996,9 @@ QLineEdit::placeholderText {
               <number>0</number>
              </property>
              <widget class="QWidget" name="tab_clientes">
+              <property name="styleSheet">
+               <string notr="true"/>
+              </property>
               <attribute name="title">
                <string>Base de Clientes Juridícos</string>
               </attribute>
