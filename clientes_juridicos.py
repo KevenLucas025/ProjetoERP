@@ -967,20 +967,20 @@ class Clientes_Juridicos(QWidget):
         else:  # clássico
             bg_cor = "rgb(0,80,121)"
             text_cor = "white"
+            lineedit_bg = "white"
 
             button_style = """
                 QPushButton {
-                    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                                                stop:0 rgb(0,120,180),
-                                                stop:1 rgb(0,150,220));
-                    color: white;
+                    color: rgb(255, 255, 255);
                     border-radius: 8px;
                     font-size: 16px;
-                    border: 2px solid rgb(0,100,160);
-                    padding: 6px;
+                    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */
+                    border: 4px solid transparent;
                 }
+
                 QPushButton:hover {
-                    background-color: #007acc;
+                    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */
+                    color: black;
                 }
                 QPushButton:pressed {
                     background-color: #006bb3;
@@ -1002,21 +1002,25 @@ class Clientes_Juridicos(QWidget):
                     selection-background-color: #e5e5e5;
                     selection-color: black;
                 }
+                QComboBox QAbstractScrollArea {
+                    background-color: white;
+                }
+
                 QComboBox QScrollBar:vertical {
-                    background: #f5f5f5;
-                    width: 12px;
-                    border: none;
+                    background-color: rgb(255, 255, 255); /* branco */
+                    width: 30px;
+
                 }
                 QComboBox QScrollBar::handle:vertical {
-                    background: #cccccc;
-                    min-height: 20px;
+                    background-color: rgb(180, 180,180);  /* cinza */
+                    min-height: 30px;
                     border-radius: 5px;
                 }
             """
             scroll_style = """
-                QScrollBar:vertical {
+            QScrollBar:vertical {
                 border: none;
-                background-color: rgb(255, 255, 256); /* branco */
+                background-color: rgb(255, 255, 255); /* branco */
                 width: 30px;
                 margin: 0px 10px 0px 10px;
             }
@@ -1025,7 +1029,20 @@ class Clientes_Juridicos(QWidget):
                 min-height: 30px;
                 border-radius: 5px;
             }
+            QScrollBar::add-line:vertical,
+            QScrollBar::sub-line:vertical {
+                background: none;
+                border: none;
+                height: 0px;
+                width: 0px;
+            }
+
+            QScrollBar::add-page:vertical,
+            QScrollBar::sub-page:vertical {
+                background: none;
+            }
             """
+            
             lineedit_style = """
                 QLineEdit {
                     background-color: white;

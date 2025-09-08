@@ -2271,7 +2271,7 @@ class Clientes_Fisicos(QWidget):
     def selecionar_individual_fisicos(self):
         if self.tabela_historico_clientes_fisicos.rowCount() == 0:
             QMessageBox.warning(self, "Aviso", "Nenhum histórico para selecionar.")
-            self.checkbox_selecionar_individual.setChecked(False)
+            self.checkbox_selecionar_fisicos.setChecked(False)
             return
 
         if self.coluna_checkboxes_clientes_fisicos_adicionada:
