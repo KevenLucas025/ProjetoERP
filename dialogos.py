@@ -1,5 +1,5 @@
 # dialogos.py
-from PySide6.QtWidgets import QDialog, QVBoxLayout, QLabel, QComboBox, QDialogButtonBox
+from PySide6.QtWidgets import QDialog, QVBoxLayout, QLabel, QComboBox, QDialogButtonBox,QLineEdit
 import json
 from utils import Temas
 
@@ -99,6 +99,15 @@ class DialogoEstilizado(QDialog):
                 background: none;
             }
             """
+            lineedit_style = f"""
+                QLineEdit {{
+                    background-color: {lineedit_bg};
+                    color: {text_cor};
+                    border: 2px solid white;
+                    border-radius: 6px;
+                    padding: 3px;
+                }}
+            """
 
         elif self.tema == "claro":
         # claro
@@ -140,9 +149,18 @@ class DialogoEstilizado(QDialog):
                     color: black;
                 }
             """
+            lineedit_style = """
+                QLineEdit {
+                    background-color: white;
+                    color: black;
+                    border: 2px solid rgb(50,150,250);
+                    border-radius: 6px;
+                    padding: 3px;
+                }
+            """
         else: #classico
-            bg_cor = "rgb(0,80,121)"
-            text_cor = "white"
+            bg_cor = """qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #ffffff, stop: 0.2 #f5f5f5, stop: 1 #c0c0c0)"""
+            text_cor = "black"
             lineedit_bg = "white"
 
             button_style = """
@@ -198,6 +216,15 @@ class DialogoEstilizado(QDialog):
                     border-radius: 5px;
                 }
             """
+            lineedit_style = """
+                QLineEdit {
+                    background-color: white;
+                    color: black;
+                    border: 2px solid rgb(50,150,250);
+                    border-radius: 6px;
+                    padding: 3px;
+                }
+            """
 
         # Aplica o estilo apenas ao dialog e widgets internos
         self.setStyleSheet(f"""
@@ -209,9 +236,11 @@ class DialogoEstilizado(QDialog):
             {button_style}
             {combo_style}
             {scroll_style}
+            {lineedit_style}
             QLabel {{
                 color: {text_cor};
                 font-size: 12px;
+                background: transparent;
             }}
         """)
 
@@ -269,3 +298,28 @@ class ComboDialog(DialogoEstilizado):
 
     def escolha(self):
         return self.combo.currentText()
+    
+
+class DialogoSenha(DialogoEstilizado):
+    def __init__(self, parent=None):
+        super().__init__(parent=parent)
+        self.setWindowTitle("Confirmação de Segurança")
+
+        layout = QVBoxLayout(self)
+        layout.setSpacing(15)
+        layout.setContentsMargins(20, 20, 20, 20)
+
+        # Label
+        label = QLabel("Digite a senha do sistema:")
+        layout.addWidget(label)
+
+        # Campo de senha
+        self.input_senha = QLineEdit()
+        self.input_senha.setEchoMode(QLineEdit.Password)
+        layout.addWidget(self.input_senha)
+
+        # Botões da classe base
+        layout.addWidget(self.botoes)
+
+    def get_senha(self):
+        return self.input_senha.text()

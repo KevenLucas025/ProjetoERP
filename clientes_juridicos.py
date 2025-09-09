@@ -11,7 +11,7 @@ import pandas as pd
 from configuracoes import Configuracoes_Login
 from utils import Temas
 from datetime import datetime
-from dialogos import ComboDialog
+from dialogos import ComboDialog,DialogoSenha
 import csv
 from reportlab.lib import colors
 from reportlab.lib.pagesizes import letter
@@ -528,40 +528,71 @@ class Clientes_Juridicos(QWidget):
         else:  # clássico
             bg_cor = "rgb(0,80,121)"
             text_cor = "white"
+            lineedit_bg = "white"
             button_style = """
-                QPushButton {
-                    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                                                stop:0 rgb(0,120,180),
-                                                stop:1 rgb(0,150,220));
-                    color: white;
-                    border-radius: 8px;
-                    font-size: 16px;
-                    border: 2px solid rgb(0,100,160);
-                    padding: 6px;
-                }
-                QPushButton:hover {
-                    background-color: #007acc;
-                }
-                QPushButton:pressed {
-                    background-color: #006bb3;
-                    border: 2px solid #005c99;
-                }
+            QPushButton {
+                color: rgb(255, 255, 255);
+                border-radius: 8px;
+                font-size: 16px;
+                background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */
+                border: 4px solid transparent;
+            }
+
+            QPushButton:hover {
+                background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */
+                color: black;
+            }
+            QPushButton:pressed {
+                background-color: #006bb3;
+                border: 2px solid #005c99;
+            }
             """
             combobox_style = """
-                QComboBox {
-                    background-color: white;
-                    border: 3px solid rgb(50,150,250);
-                    border-radius: 5px;
-                    color: black;
-                    padding: 5px;
-                }
-                QComboBox QAbstractItemView {
-                    background-color: white;
-                    color: black;
-                    border: 1px solid #ccc;
-                    selection-background-color: #e5e5e5;
-                    selection-color: black;
-                }
+            QComboBox {
+                background-color: white;
+                border: 3px solid rgb(50,150,250);
+                border-radius: 5px;
+                color: black;
+                padding: 5px;
+            }
+
+            QComboBox QAbstractItemView {
+                background-color: white;
+                color: black;
+                border: 3px solid white;
+                selection-background-color: rgb(120,120,120);
+                selection-color: black;
+            }
+
+            /* Scrollbar vertical */
+            QComboBox QScrollBar:vertical {
+                background-color: rgb(240,240,240);  /* Trilha visível */
+                width: 10px;
+                margin: 1px;
+                border: 1px solid white;
+                border-radius: 5px;
+            }
+
+            /* Alça (handle) da scrollbar */
+            QComboBox QScrollBar::handle:vertical {
+                background: rgb(120,120,120);  /* Cor da barra frontal,sobe e desce*/
+                min-height: 30px;
+                border-radius: 5px;
+            }
+
+            /* Trilha atrás do handle — essa parte faz toda a diferença */
+            QComboBox QScrollBar::add-page:vertical,
+            QComboBox QScrollBar::sub-page:vertical {
+                background: transparent;  /* barra atrás do scroll */
+            }
+
+            /* Esconde setas */
+            QComboBox QScrollBar::add-line:vertical,
+            QComboBox QScrollBar::sub-line:vertical {
+                height: 0px;
+                background: none;
+                border: none;
+            }
             """
             scroll_style = """
                 QScrollBar:vertical {
@@ -1036,29 +1067,16 @@ class Clientes_Juridicos(QWidget):
             """
 
             scroll_style = """
-            QScrollBar:vertical {
-                border: none;
-                background-color: rgb(255, 255, 255); /* branco */
-                width: 30px;
-                margin: 0px 10px 0px 10px;
-            }
-             QScrollBar::handle:vertical {
-                background-color: rgb(180, 180,180);  /* cinza */
-                min-height: 30px;
-                border-radius: 5px;
-            }
-            QScrollBar::add-line:vertical,
-            QScrollBar::sub-line:vertical {
-                background: none;
-                border: none;
-                height: 0px;
-                width: 0px;
-            }
-
-            QScrollBar::add-page:vertical,
-            QScrollBar::sub-page:vertical {
-                background: none;
-            }
+                QScrollBar:vertical {
+                    background: #ffffff;
+                    width: 12px;
+                    border-radius: 6px;
+                }
+                QScrollBar::handle:vertical {
+                    background: #b4b4b4;
+                    min-height: 20px;
+                    border-radius: 5px;
+                }
             """
             
             lineedit_style = """
@@ -1294,6 +1312,56 @@ class Clientes_Juridicos(QWidget):
     def atualizar_dados_clientes(self):
         if not self.informacoes_obrigatorias_edicao_clientes():
             return
+        
+        # Carregar tema
+        config = self.temas.carregar_config_arquivo()
+        tema = config.get("tema", "claro")
+
+        # Definições de tema
+        if tema == "escuro":
+            bg_cor = "#202124"
+            text_cor = "white"
+            lineedit_bg = "#303030"
+
+            lineedit_style = f"""
+                QLineEdit {{
+                    background-color: {lineedit_bg};
+                    color: {text_cor};
+                    border: 2px solid white;
+                    border-radius: 6px;
+                    padding: 3px;
+                }}
+            """
+        elif tema == "claro":
+            bg_cor = "white"
+            text_cor = "black"
+            lineedit_bg = "white"
+
+            lineedit_style = """
+                QLineEdit {
+                    background-color: white;
+                    color: black;
+                    border: 2px solid rgb(50,150,250);
+                    border-radius: 6px;
+                    padding: 3px;
+                }
+            """
+
+        else: # clássico
+            bg_cor = "rgb(0,80,121)"
+            text_cor = "white"
+            lineedit_bg = "white"
+
+            lineedit_style = """
+                QLineEdit {
+                    background-color: white;
+                    color: black;
+                    border: 2px solid rgb(50,150,250);
+                    border-radius: 6px;
+                    padding: 3px;
+                }
+            """
+
 
         # --- VALIDAÇÃO DOS CAMPOS OBRIGATÓRIOS ---
         for campo, mensagem in self.campos_obrigatorios_clientes.items():
@@ -1342,46 +1410,23 @@ class Clientes_Juridicos(QWidget):
 
             tentativas = 0
             while tentativas < 3:
-                msg = QMessageBox(self)
-                msg.setWindowTitle("Confirmação de Segurança")
-                msg.setText("Digite a senha do sistema:")
-                msg.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
-                msg.button(QMessageBox.Ok).setText("OK")
-                msg.button(QMessageBox.Cancel).setText("Cancelar")
-                
-                # Para capturar senha, adiciona QLineEdit no layout
-                input_senha = QLineEdit(msg)
-                input_senha.setEchoMode(QLineEdit.Password)
-                msg.layout().addWidget(input_senha, 1, 1)
-                
-                ret = msg.exec()
-                
-                if ret == QMessageBox.Cancel:
+                dialogo = DialogoSenha(self)
+                if dialogo.exec() == QDialog.Accepted:
+                    senha_digitada = dialogo.get_senha().strip()
+                    if senha_digitada == senha_correta.strip():
+                        break  # Senha correta
+                    else:
+                        tentativas += 1
+                        if tentativas < 3:
+                            QMessageBox.critical(self, "Acesso Negado",
+                                                f"Senha incorreta. Tentativas restantes: {3 - tentativas}")
+                        else:
+                            QMessageBox.critical(self, "Acesso Negado",
+                                                "Você excedeu o número máximo de tentativas.\nO sistema será encerrado e á atualização não será feita.")
+                            QApplication.quit()
+                            return
+                else:
                     return  # Cancelou
-                
-                senha = input_senha.text()
-                if senha.strip() == senha_correta.strip():
-                    break
-                
-                tentativas += 1
-                if tentativas < 3:
-                    QMessageBox.critical(self, "Acesso Negado",
-                                        f"Senha incorreta. Tentativas restantes: {3 - tentativas}")
-                else:
-                    QMessageBox.critical(self, "Acesso Negado",
-                                        "Você excedeu o número máximo de tentativas.\nO sistema será encerrado.")
-                    QApplication.quit()
-                    return
-
-                tentativas += 1
-                if tentativas < 3:
-                    QMessageBox.critical(self, "Acesso Negado",
-                                        f"Senha incorreta. Tentativas restantes: {3 - tentativas}")
-                else:
-                    QMessageBox.critical(self, "Acesso Negado",
-                                        "Você excedeu o número máximo de tentativas.\nO sistema será encerrado.")
-                    QApplication.quit()
-                    return
 
         try:
             cursor = self.db.connection.cursor()
@@ -2167,21 +2212,16 @@ class Clientes_Juridicos(QWidget):
 
             button_style = """
                 QPushButton {
-                    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                                                stop:0 rgb(0,120,180),
-                                                stop:1 rgb(0,150,220));
-                    color: white;
+                    color: rgb(255, 255, 255);
                     border-radius: 8px;
                     font-size: 16px;
-                    border: 2px solid rgb(0,100,160);
-                    padding: 6px;
+                    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */
+                    border: 4px solid transparent;
                 }
+
                 QPushButton:hover {
-                    background-color: #007acc;
-                }
-                QPushButton:pressed {
-                    background-color: #006bb3;
-                    border: 2px solid #005c99;
+                    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */
+                    color: black;
                 }
             """
             combobox_style = """
@@ -2225,7 +2265,7 @@ class Clientes_Juridicos(QWidget):
             """
             table_view_style = """
                 QTableView {
-                    background-color: #004d73;
+                    background-color: rgb(0,80,121);
                     color: white;
                     gridline-color: black;
                     border: 1px solid white;
@@ -2234,10 +2274,10 @@ class Clientes_Juridicos(QWidget):
                 }
 
                 QHeaderView::section {
-                    background-color: #007acc;
-                    color: white;
-                    border: 1px solid #005c99;
-                    padding: 2px;
+                    background-color: white;
+                    color: black;
+                    border: 1px solid #eeeeee;  /* Borda branco-acinzentada */
+                    padding: 1px;
                 }
 
                 QTabWidget::pane {
@@ -2245,22 +2285,35 @@ class Clientes_Juridicos(QWidget):
                     background-color: #003355;
                 }
 
-                QTableView QScrollBar:horizontal,
-                QTableView QScrollBar:vertical {
+                /* Scrollbars da QTableView - vertical e horizontal */
+                QTableView QScrollBar:vertical,
+                QTableView QScrollBar:horizontal {
                     border: none;
-                    background-color: rgb(255, 255, 255);
+                    background-color: rgb(255, 255, 255); /* fundo do track */
                     border-radius: 5px;
+                    width: 10px; /* largura da barra vertical */
+                    margin: 0px;
                 }
 
+                /* Handle dos scrolls (a parte que você arrasta) */
                 QTableView QScrollBar::handle:vertical,
                 QTableView QScrollBar::handle:horizontal {
-                    background-color: rgb(180,180,150);
-                    min-height: 30px;
+                    background-color: rgb(180, 180, 150);  /* cor do handle */
+                    min-height: 10px;
+                    min-width: 10px;
                     border-radius: 5px;
                 }
+                /* Groove vertical */
+                QTableView QScrollBar::groove:vertical {
+                    background-color: rgb(100, 240, 240);  /* faixa visível no vertical */
+                    border-radius: 2px;
+                    width: 10px;
+                    margin: 0px 10px 0px 10px;
+                }
 
+                /* Groove horizontal (faixa por onde o handle desliza) */
                 QTableView QScrollBar::groove:horizontal {
-                    background-color: rgb(100,240,240);
+                    background-color: rgb(100, 240, 240);  /* faixa visível no horizontal */
                     border-radius: 2px;
                     height: 15px;
                     margin: 0px 10px 0px 10px;
@@ -2272,8 +2325,7 @@ class Clientes_Juridicos(QWidget):
                 }
 
                 QTableCornerButton::section {
-                    background-color: #007acc;
-                    border: 1px solid #005c99;
+                    background-color: white;
                 }
             """
             lineedit_style = """
@@ -2349,7 +2401,21 @@ class Clientes_Juridicos(QWidget):
         layout.addWidget(botao_filtrar_historico)
         layout.addWidget(self.checkbox_selecionar)
         layout.addWidget(self.tabela_historico_clientes)
-        
+
+        botoes = [
+            botao_ordenar_historico,
+            botao_filtrar_historico,
+            botao_pausar_historico,
+            botao_exportar_pdf,
+            botao_exportar_excel,
+            botao_exportar_csv,
+            botao_apagar,
+            botao_atualizar
+
+        ]
+
+        for btn in botoes:
+            btn.setCursor(Qt.PointingHandCursor)
 
         # Configurar o widget central e exibir a janela
         self.janela_historico_clientes.setCentralWidget(central_widget)
@@ -3342,23 +3408,22 @@ class Clientes_Juridicos(QWidget):
             text_cor = "white"
 
             button_style = """
-                QPushButton {
-                    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                                                stop:0 rgb(0,120,180),
-                                                stop:1 rgb(0,150,220));
-                    color: white;
-                    border-radius: 8px;
-                    font-size: 16px;
-                    border: 2px solid rgb(0,100,160);
-                    padding: 6px;
-                }
-                QPushButton:hover {
-                    background-color: #007acc;
-                }
-                QPushButton:pressed {
-                    background-color: #006bb3;
-                    border: 2px solid #005c99;
-                }
+            QPushButton {
+                color: rgb(255, 255, 255);
+                border-radius: 8px;
+                font-size: 16px;
+                background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */
+                border: 4px solid transparent;
+            }
+
+            QPushButton:hover {
+                background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */
+                color: black;
+            }
+            QPushButton:pressed {
+                background-color: #006bb3;
+                border: 2px solid #005c99;
+            }
             """
             combobox_style = """
                 QComboBox {
@@ -3388,16 +3453,15 @@ class Clientes_Juridicos(QWidget):
             """
             scroll_style = """
                 QScrollBar:vertical {
-                border: none;
-                background-color: rgb(255, 255, 256); /* branco */
-                width: 30px;
-                margin: 0px 10px 0px 10px;
-            }
-             QScrollBar::handle:vertical {
-                background-color: rgb(180, 180,180);  /* cinza */
-                min-height: 30px;
-                border-radius: 5px;
-            }
+                    background: #ffffff;
+                    width: 12px;
+                    border-radius: 6px;
+                }
+                QScrollBar::handle:vertical {
+                    background: #b4b4b4;
+                    min-height: 20px;
+                    border-radius: 5px;
+                }
             """
             lineedit_style = """
                 QLineEdit {
@@ -3411,7 +3475,7 @@ class Clientes_Juridicos(QWidget):
             checkbox_style = """
                 QMessageBox QCheckBox{
                     background: transparent;
-                    color: white;
+                    color: black;
                 }
             """
             
@@ -3420,8 +3484,8 @@ class Clientes_Juridicos(QWidget):
                 QDateEdit {
                     color: black; 
                     background-color: white; 
-                    border: 1px solid 3399ff;
-                    border-radius: 5px;
+                    border: 2px solid #3399ff;
+                    border-radius: 6px;
                     padding: 2px 5px;
                 }
 
@@ -3434,27 +3498,18 @@ class Clientes_Juridicos(QWidget):
 
                 /* Cor de fundo do calendário popup */
                 QDateEdit QCalendarWidget {
-                    background-color: 2b2b2b;
+                    background-color: white;
                     border: 1px solid #555555;
                 }
-
                 /* Dias normais */
                 QDateEdit QCalendarWidget QAbstractItemView:enabled {
-                    background-color: #2b2b2b;
+                    background-color: white;
                     color: black;
                     selection-background-color: rgb(0, 120, 215); /* Azul no dia selecionado */
-                    selection-color: white;
-                }
-                /* Botões de navegação (setas) do calendário */
-                QDateEdit QCalendarWidget QToolButton {
-                    background: transparent;   /* tira o fundo azul */
-                    color: black;              /* deixa as setas pretas */
-                    border: none;              /* sem borda */
-                    icon-size: 16px 16px;      /* ajusta o tamanho do ícone */
-                    padding: 2px;
+                    selection-color: black;
                 }
                 QDateEdit QCalendarWidget QToolButton:hover {
-                    background: rgb(220, 220, 220); /* cinza claro no hover */
+                    background: rgb(120, 120, 120); /* cinza claro no hover */
                     border-radius: 4px;
                 }
                 /* Popup de meses/anos do calendário (QMenu) */
@@ -3463,13 +3518,11 @@ class Clientes_Juridicos(QWidget):
                     border: 1px solid #ccc;
                     color: black;
                 }
-
                 QDateEdit QCalendarWidget QMenu::item {
                     background: transparent;
                     color: black;
                     padding: 6px 16px;
                 }
-
                 QDateEdit QCalendarWidget QMenu::item:selected {
                     background: rgb(0, 120, 215);
                     color: white;
@@ -3552,6 +3605,15 @@ class Clientes_Juridicos(QWidget):
         btn_gerar.setStyleSheet(button_style)
         btn_gerar_excel.setStyleSheet(button_style)
         btn_cancelar.setStyleSheet(button_style)
+
+        botoes = [
+            btn_cancelar,
+            btn_gerar,
+            btn_gerar_excel
+        ]
+        for btn in botoes:
+            btn.setCursor(Qt.PointingHandCursor)
+
 
         layout_botoes.addStretch()
         layout_botoes.addWidget(btn_gerar)
