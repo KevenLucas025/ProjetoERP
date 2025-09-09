@@ -970,53 +970,71 @@ class Clientes_Juridicos(QWidget):
             lineedit_bg = "white"
 
             button_style = """
-                QPushButton {
-                    color: rgb(255, 255, 255);
-                    border-radius: 8px;
-                    font-size: 16px;
-                    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */
-                    border: 4px solid transparent;
-                }
+            QPushButton {
+                color: rgb(255, 255, 255);
+                border-radius: 8px;
+                font-size: 16px;
+                background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */
+                border: 4px solid transparent;
+            }
 
-                QPushButton:hover {
-                    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */
-                    color: black;
-                }
-                QPushButton:pressed {
-                    background-color: #006bb3;
-                    border: 2px solid #005c99;
-                }
+            QPushButton:hover {
+                background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */
+                color: black;
+            }
+            QPushButton:pressed {
+                background-color: #006bb3;
+                border: 2px solid #005c99;
+            }
             """
             combobox_style = """
-                QComboBox {
-                    background-color: white;
-                    border: 3px solid rgb(50,150,250);
-                    border-radius: 5px;
-                    color: black;
-                    padding: 5px;
-                }
-                QComboBox QAbstractItemView {
-                    background-color: white;
-                    color: black;
-                    border: 1px solid #ccc;
-                    selection-background-color: #e5e5e5;
-                    selection-color: black;
-                }
-                QComboBox QAbstractScrollArea {
-                    background-color: white;
-                }
+            QComboBox {
+                background-color: white;
+                border: 3px solid rgb(50,150,250);
+                border-radius: 5px;
+                color: black;
+                padding: 5px;
+            }
 
-                QComboBox QScrollBar:vertical {
-                    background-color: rgb(255, 255, 255); /* branco */
-                    width: 30px;
+            QComboBox QAbstractItemView {
+                background-color: white;
+                color: black;
+                border: 3px solid white;
+                selection-background-color: rgb(120,120,120);
+                selection-color: black;
+            }
 
-                }
-                QComboBox QScrollBar::handle:vertical {
-                    background-color: rgb(180, 180,180);  /* cinza */
-                    min-height: 30px;
-                    border-radius: 5px;
-                }
+            /* Scrollbar vertical */
+            QComboBox QScrollBar:vertical {
+                background-color: rgb(240,240,240);  /* Trilha visível */
+                width: 10px;
+                margin: 1px;
+                border: 1px solid white;
+                border-radius: 5px;
+            }
+
+            /* Alça (handle) da scrollbar */
+            QComboBox QScrollBar::handle:vertical {
+                background: rgb(120,120,120);  /* Cor da barra frontal,sobe e desce*/
+                min-height: 30px;
+                border-radius: 5px;
+            }
+
+            /* Trilha atrás do handle — essa parte faz toda a diferença */
+            QComboBox QScrollBar::add-page:vertical,
+            QComboBox QScrollBar::sub-page:vertical {
+                background: transparent;  /* barra atrás do scroll */
+            }
+
+            /* Esconde setas */
+            QComboBox QScrollBar::add-line:vertical,
+            QComboBox QScrollBar::sub-line:vertical {
+                height: 0px;
+                background: none;
+                border: none;
+            }
             """
+
             scroll_style = """
             QScrollBar:vertical {
                 border: none;
