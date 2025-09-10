@@ -3,24 +3,22 @@ from PySide6.QtWidgets import (QLineEdit, QToolButton,QTableWidgetItem,
                                QPushButton,QScrollArea,QComboBox,QGridLayout,QHeaderView,QHBoxLayout,
                                QGraphicsOpacityEffect,QTableWidget,QInputDialog,QDialog,
                                QRadioButton,QGroupBox,QFileDialog,QFormLayout,QDateEdit,QMenu,QApplication)
-from PySide6.QtGui import QPixmap, QIcon,QColor,QBrush,QGuiApplication
+from PySide6.QtGui import QColor,QBrush,QGuiApplication
 from PySide6.QtCore import Qt,QTimer,QPropertyAnimation,QEvent,QDate,QPoint
 from database import DataBase
 import sqlite3
 import pandas as pd
 from configuracoes import Configuracoes_Login
-from dialogos import ComboDialog
+from dialogos import ComboDialog,DialogoSenha
 from datetime import datetime
-from PySide6.QtGui import QKeySequence, QShortcut
+from utils import Temas
 import csv
 from reportlab.lib import colors
 from reportlab.lib.pagesizes import letter
-from reportlab.lib.pagesizes import letter,landscape,A4
+from reportlab.lib.pagesizes import letter,landscape
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle
-from reportlab.lib.styles import getSampleStyleSheet
 from openpyxl import load_workbook
 from openpyxl.utils import get_column_letter
-from openpyxl.styles import Alignment
 from fpdf import FPDF
 import json
 
@@ -32,6 +30,7 @@ class Clientes_Fisicos(QWidget):
         super().__init__()
         self.line_clientes_fisicos = line_clientes_fisicos
         self.db = DataBase("banco_de_dados.db")
+        self.temas = Temas()
         self.config = Configuracoes_Login(self)
         self.coluna_checkboxes_clientes_fisicos_adicionada = False
         self.checkboxes_clientes_fisicos = []
@@ -531,64 +530,84 @@ class Clientes_Fisicos(QWidget):
         else:  # clássico
             bg_cor = "rgb(0,80,121)"
             text_cor = "white"
+            lineedit_bg = "white"
 
             button_style = """
-                QPushButton {
-                    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                                                stop:0 rgb(0,120,180),
-                                                stop:1 rgb(0,150,220));
-                    color: white;
-                    border-radius: 8px;
-                    font-size: 16px;
-                    border: 2px solid rgb(0,100,160);
-                    padding: 6px;
-                }
-                QPushButton:hover {
-                    background-color: #007acc;
-                }
-                QPushButton:pressed {
-                    background-color: #006bb3;
-                    border: 2px solid #005c99;
-                }
+            QPushButton {
+                color: rgb(255, 255, 255);
+                border-radius: 8px;
+                font-size: 16px;
+                background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */
+                border: 4px solid transparent;
+            }
+
+            QPushButton:hover {
+                background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */
+                color: black;
+            }
+            QPushButton:pressed {
+                background-color: #006bb3;
+                border: 2px solid #005c99;
+            }
             """
             combobox_style = """
-                QComboBox {
-                    background-color: white;
-                    border: 3px solid rgb(50,150,250);
-                    border-radius: 5px;
-                    color: black;
-                    padding: 5px;
-                }
-                QComboBox QAbstractItemView {
-                    background-color: white;
-                    color: black;
-                    border: 1px solid #ccc;
-                    selection-background-color: #e5e5e5;
-                    selection-color: black;
-                }
-                QComboBox QScrollBar:vertical {
-                    background: #f5f5f5;
-                    width: 12px;
-                    border: none;
-                }
-                QComboBox QScrollBar::handle:vertical {
-                    background: #cccccc;
-                    min-height: 20px;
-                    border-radius: 5px;
-                }
-            """
-            scroll_style = """
-                QScrollBar:vertical {
-                border: none;
-                background-color: rgb(255, 255, 256); /* branco */
-                width: 30px;
-                margin: 0px 10px 0px 10px;
+            QComboBox {
+                background-color: white;
+                border: 3px solid rgb(50,150,250);
+                border-radius: 5px;
+                color: black;
+                padding: 5px;
             }
-             QScrollBar::handle:vertical {
-                background-color: rgb(180, 180,180);  /* cinza */
+
+            QComboBox QAbstractItemView {
+                background-color: white;
+                color: black;
+                border: 3px solid white;
+                selection-background-color: rgb(120,120,120);
+                selection-color: black;
+            }
+
+            /* Scrollbar vertical */
+            QComboBox QScrollBar:vertical {
+                background-color: rgb(240,240,240);  /* Trilha visível */
+                width: 10px;
+                margin: 1px;
+                border: 1px solid white;
+                border-radius: 5px;
+            }
+
+            /* Alça (handle) da scrollbar */
+            QComboBox QScrollBar::handle:vertical {
+                background: rgb(120,120,120);  /* Cor da barra frontal,sobe e desce*/
                 min-height: 30px;
                 border-radius: 5px;
             }
+
+            /* Trilha atrás do handle — essa parte faz toda a diferença */
+            QComboBox QScrollBar::add-page:vertical,
+            QComboBox QScrollBar::sub-page:vertical {
+                background: transparent;  /* barra atrás do scroll */
+            }
+
+            /* Esconde setas */
+            QComboBox QScrollBar::add-line:vertical,
+            QComboBox QScrollBar::sub-line:vertical {
+                height: 0px;
+                background: none;
+                border: none;
+            }
+            """
+            scroll_style = """
+                QScrollBar:vertical {
+                    background: #ffffff;
+                    width: 12px;
+                    border-radius: 6px;
+                }
+                QScrollBar::handle:vertical {
+                    background: #b4b4b4;
+                    min-height: 20px;
+                    border-radius: 5px;
+                }
             """
             lineedit_style = """
                 QLineEdit {
@@ -626,7 +645,7 @@ class Clientes_Fisicos(QWidget):
 
         add_linha("Nome do Cliente")
         add_linha("RG")
-        self.campos_cliente_fisico["RG"].setPlaceHolderText("Opcional")
+        self.campos_cliente_fisico["RG"].setPlaceholderText("Opcional")
         rg_widget = self.campos_cliente_fisico["RG"]
         rg_widget.textChanged.connect(lambda text, w=rg_widget: self.main_window.formatar_rg(text,w))
         add_linha("CPF")
@@ -901,23 +920,22 @@ class Clientes_Fisicos(QWidget):
             text_cor = "white"
 
             button_style = """
-                QPushButton {
-                    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                                                stop:0 rgb(0,120,180),
-                                                stop:1 rgb(0,150,220));
-                    color: white;
-                    border-radius: 8px;
-                    font-size: 16px;
-                    border: 2px solid rgb(0,100,160);
-                    padding: 6px;
-                }
-                QPushButton:hover {
-                    background-color: #007acc;
-                }
-                QPushButton:pressed {
-                    background-color: #006bb3;
-                    border: 2px solid #005c99;
-                }
+            QPushButton {
+                color: rgb(255, 255, 255);
+                border-radius: 8px;
+                font-size: 16px;
+                background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */
+                border: 4px solid transparent;
+            }
+
+            QPushButton:hover {
+                background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */
+                color: black;
+            }
+            QPushButton:pressed {
+                background-color: #006bb3;
+                border: 2px solid #005c99;
+            }
             """
             combobox_style = """
                 QComboBox {
@@ -927,36 +945,56 @@ class Clientes_Fisicos(QWidget):
                     color: black;
                     padding: 5px;
                 }
+
                 QComboBox QAbstractItemView {
                     background-color: white;
                     color: black;
-                    border: 1px solid #ccc;
-                    selection-background-color: #e5e5e5;
+                    border: 3px solid white;
+                    selection-background-color: rgb(120,120,120);
                     selection-color: black;
                 }
+
+                /* Scrollbar vertical */
                 QComboBox QScrollBar:vertical {
-                    background: #f5f5f5;
-                    width: 12px;
+                    background-color: rgb(240,240,240);  /* Trilha visível */
+                    width: 10px;
+                    margin: 1px;
+                    border: 1px solid white;
+                    border-radius: 5px;
+                }
+
+                /* Alça (handle) da scrollbar */
+                QComboBox QScrollBar::handle:vertical {
+                    background: rgb(120,120,120);  /* Cor da barra frontal,sobe e desce*/
+                    min-height: 30px;
+                    border-radius: 5px;
+                }
+
+                /* Trilha atrás do handle — essa parte faz toda a diferença */
+                QComboBox QScrollBar::add-page:vertical,
+                QComboBox QScrollBar::sub-page:vertical {
+                    background: transparent;  /* barra atrás do scroll */
+                }
+
+                /* Esconde setas */
+                QComboBox QScrollBar::add-line:vertical,
+                QComboBox QScrollBar::sub-line:vertical {
+                    height: 0px;
+                    background: none;
                     border: none;
                 }
-                QComboBox QScrollBar::handle:vertical {
-                    background: #cccccc;
+                """
+            scroll_style = """
+                QScrollBar:vertical {
+                    background: #ffffff;
+                    width: 12px;
+                    border-radius: 6px;
+                }
+                QScrollBar::handle:vertical {
+                    background: #b4b4b4;
                     min-height: 20px;
                     border-radius: 5px;
                 }
-            """
-            scroll_style = """
-                QScrollBar:vertical {
-                border: none;
-                background-color: rgb(255, 255, 255); /* branco */
-                width: 30px;
-                margin: 0px 10px 0px 10px;
-            }
-             QScrollBar::handle:vertical {
-                background-color: rgb(180, 180,180);  /* cinza */
-                min-height: 30px;
-                border-radius: 5px;
-            }
             """
             lineedit_style = """
                 QLineEdit {
@@ -1385,27 +1423,26 @@ class Clientes_Fisicos(QWidget):
             except Exception as e:
                 QMessageBox.critical(self, "Erro", f"Não foi possível carregar a senha do sistema\n {e}")
                 return
+            
             tentativas = 0
             while tentativas < 3:
-                senha, ok = QInputDialog.getText(
-                    self, "Confirmação de Segurança",
-                    "Digite a senha do sistema:", QLineEdit.Password
-                )
-                if not ok:  # Cancelou
-                    return
-                
-                if senha.strip() == senha_correta.strip():
-                    break
-
-                tentativas += 1
-                if tentativas < 3:
-                    QMessageBox.critical(self, "Acesso Negado",
-                                        f"Senha incorreta. Tentativas restantes: {3 - tentativas}")
+                dialogo = DialogoSenha(self)
+                if dialogo.exec() == QDialog.Accepted:
+                    senha_digitada = dialogo.get_senha().strip()
+                    if senha_digitada == senha_correta.strip():
+                        break  # Senha correta
+                    else:
+                        tentativas += 1
+                        if tentativas < 3:
+                            QMessageBox.critical(self, "Acesso Negado",
+                                                f"Senha incorreta. Tentativas restantes: {3 - tentativas}")
+                        else:
+                            QMessageBox.critical(self, "Acesso Negado",
+                                                "Você excedeu o número máximo de tentativas.\nO sistema será encerrado e á atualização não será feita.")
+                            QApplication.quit()
+                            return
                 else:
-                    QMessageBox.critical(self, "Acesso Negado",
-                                        "Você excedeu o número máximo de tentativas.\nO sistema será encerrado.")
-                    QApplication.quit()
-                    return
+                    return  # Cancelou
 
         try:
             cursor = self.db.connection.cursor()
@@ -2350,7 +2387,7 @@ class Clientes_Fisicos(QWidget):
             self.checkbox_header_clientes_fisicos.move(x, y)
             
     def ordenar_historico_clientes_fisicos(self):
-        if hasattr(self, "checkbox_header_clientes_fisicos"):
+        if getattr(self, "checkbox_selecionar_fisicos",None) and self.checkbox_selecionar_fisicos.isChecked():
             QMessageBox.warning(
                 self,
                 "Aviso",
@@ -2418,7 +2455,7 @@ class Clientes_Fisicos(QWidget):
         return None
 
     def filtrar_historico_clientes_fisicos(self):
-        if hasattr(self,"checkbox_header_clientes_fisicos"):
+        if getattr(self,"checkbox"):
             QMessageBox.warning(
                 self,
                 "Aviso",
@@ -2433,7 +2470,7 @@ class Clientes_Fisicos(QWidget):
 
         # Campo para inserir a data
         campo_data = QLineEdit()
-        campo_data.setPlaceholderText("Digite a data no formato DD/MM/AAAA")
+        campo_data.setPlaceholderText("formato DD/MM/AAAA")
         
         # Conectar ao método de formatação, passando o texto
         campo_data.textChanged.connect(lambda: self.formatar_data(campo_data))
@@ -2726,12 +2763,13 @@ class Clientes_Fisicos(QWidget):
         self.janela_historico_clientes_fisicos = QMainWindow()
         self.janela_historico_clientes_fisicos.setWindowTitle("Relatório de Clientes Físicos")
         self.janela_historico_clientes_fisicos.resize(800, 600)
+        self.janela_historico_clientes_fisicos.setObjectName("janela_historico_clientes_fisicos")
 
         scroll = QScrollArea()
         scroll.setWidgetResizable(True)
 
         # Carregar tema
-        config = self.carregar_config()
+        config = self.temas.carregar_config_arquivo()
         tema = config.get("tema", "claro")
 
         # Definições de tema

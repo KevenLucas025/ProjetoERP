@@ -2597,16 +2597,9 @@ class Clientes_Juridicos(QWidget):
             self.checkbox_selecionar_individual.setChecked(False)
             return
 
+        # ---- Se a coluna já existe, remove ----
         if self.coluna_checkboxes_clientes_adicionada:
-            self.tabela_historico_clientes.removeColumn(0)
-            self.tabela_historico_clientes.verticalHeader().setVisible(True)
-            self.coluna_checkboxes_clientes_adicionada = False
-
-            if hasattr(self, "checkbox_header_juridicos"):
-                self.checkbox_header_juridicos.deleteLater()
-                del self.checkbox_header_juridicos
-
-            self.checkboxes_clientes.clear()
+            self.remover_coluna_checkboxes_historico()
             return
 
         self.tabela_historico_clientes.insertColumn(0)
@@ -2616,14 +2609,16 @@ class Clientes_Juridicos(QWidget):
         self.tabela_historico_clientes.horizontalHeader().setSectionResizeMode(0, QHeaderView.Fixed)
 
         # Checkbox do cabeçalho
-        self.checkbox_header_juridicos = QCheckBox(self.tabela_historico_clientes)
+        header = self.tabela_historico_clientes.horizontalHeader()
+        self.checkbox_header_juridicos = QCheckBox(header.viewport())
         self.checkbox_header_juridicos.setToolTip("Selecionar todos")
+        self.checkbox_header_juridicos.setStyleSheet("""QCheckBox{background:transparent;}""")
         self.checkbox_header_juridicos.setChecked(False)
         self.checkbox_header_juridicos.stateChanged.connect(self.selecionar_todos_clientes_juridicos)
         self.checkbox_header_juridicos.setFixedSize(20, 20)
         self.checkbox_header_juridicos.show()
 
-        header = self.tabela_historico_clientes.horizontalHeader()
+        
         self.atualizar_posicao_checkbox_header_juridicos()
         header.sectionResized.connect(self.atualizar_posicao_checkbox_header_juridicos)
 
@@ -2645,6 +2640,9 @@ class Clientes_Juridicos(QWidget):
             self.checkboxes_clientes.append(checkbox)
 
         self.tabela_historico_clientes.verticalHeader().setVisible(False)
+        header.sectionResized.connect(self.atualizar_posicao_checkbox_header_juridicos)
+        self.tabela_historico_clientes.horizontalScrollBar().valueChanged.connect(self.atualizar_posicao_checkbox_header_juridicos)
+        header.geometriesChanged.connect(self.atualizar_posicao_checkbox_header_juridicos)
         self.coluna_checkboxes_clientes_adicionada = True
 
     def atualizar_selecao_todos(self):
@@ -2662,18 +2660,68 @@ class Clientes_Juridicos(QWidget):
 
         self.checkbox_header_juridicos.blockSignals(False)
 
+    def remover_coluna_checkboxes_historico(self):
+        """Remove a coluna de checkboxes de forma segura"""
+        if self.checkbox_header_juridicos is not None:
+            try:
+                # Desconecta sinais
+                self.checkbox_header_juridicos.stateChanged.disconnect()
+            except (RuntimeError, TypeError):
+                pass
+
+            try:
+                # Remove do parent e agenda deleção
+                self.checkbox_header_juridicos.setParent(None)
+                self.checkbox_header_juridicos.deleteLater()
+            except RuntimeError:
+                pass
+
+            self.checkbox_header_juridicos = None
+
+        # Remove a coluna de fato
+        try:
+            self.tabela_historico_clientes.removeColumn(0)
+        except Exception:
+            pass
+
+        self.tabela_historico_clientes.verticalHeader().setVisible(True)
+        self.coluna_checkboxes_clientes_adicionada = False
+        self.checkboxes_clientes.clear()
+
+    def closeEvent(self, event):
+        if getattr(self, "coluna_checkboxes_clientes_adicionada", False):
+            self.remover_coluna_checkboxes_historico()
+        # Desmarcar o checkbox principal se existir
+        if hasattr(self, "checkbox_selecionar") and isinstance(self.checkbox_selecionar, QCheckBox):
+            self.checkbox_selecionar.setChecked(False)
+        super().closeEvent(event)
+
         
     def atualizar_posicao_checkbox_header_juridicos(self):
-        if hasattr(self, "checkbox_header_juridicos") and self.coluna_checkboxes_clientes_adicionada:
-            header = self.tabela_historico_clientes.horizontalHeader()
+        if (
+            getattr(self,"checkbox_header_juridicos",None) is not None
+            and self.coluna_checkboxes_clientes_adicionada
+        ):
+            try:
+                header = self.tabela_historico_clientes.horizontalHeader()
 
-            x = header.sectionViewportPosition(0) + (header.sectionSize(0) - self.checkbox_header_juridicos.width()) // 2 + 4
-            y = (header.height() - self.checkbox_header_juridicos.height()) // 2
+                # largura da seção da coluna 0
+                section_width = header.sectionSize(0)
+                section_pos = header.sectionViewportPosition(0)
 
-            self.checkbox_header_juridicos.move(x, y)
+                # centralizar horizontalmente
+                x = section_pos + (section_width - self.checkbox_header_juridicos.width()) // 2 + 4
+
+                # centralizar verticalmente
+                y = (header.height() - self.checkbox_header_juridicos.height()) // 2
+
+                self.checkbox_header_juridicos.move(x,y)
+            except RuntimeError:
+                # Objeto já foi deletado do Qt
+                self.checkbox_header_juridicos
             
     def ordenar_historico_clientes_juridicos(self):
-        if hasattr(self, "checkbox_header_juridicos"):
+        if getattr(self, "checkbox_header_juridicos",None) and self.checkbox_header_juridicos.isChecked():
             QMessageBox.warning(
                 self,
                 "Aviso",
@@ -2742,14 +2790,14 @@ class Clientes_Juridicos(QWidget):
         return None
     
     def filtrar_historico_clientes_juridicos(self):
-        if hasattr(self,"checkbox_header_juridicos"):
+        if getattr(self, "checkbox_selecionar", None) and self.checkbox_selecionar.isChecked():
             QMessageBox.warning(
                 self,
                 "Aviso",
                 "Desmarque o checkbox antes de filtrar o histórico."
             )
             return
-        
+
         # Criar a janela de filtro
         janela_filtro = QDialog(self)
         janela_filtro.setWindowTitle("Filtrar Histórico")
@@ -2758,13 +2806,114 @@ class Clientes_Juridicos(QWidget):
         # Campo para inserir a data
         campo_data = QLineEdit()
         campo_data.setPlaceholderText("formato DD/MM/AAAA")
-        
-        # Conectar ao método de formatação, passando o texto
         campo_data.textChanged.connect(lambda: self.formatar_data_clientes_juridicos(campo_data))
 
+        # Carregar tema
+        config = self.temas.carregar_config_arquivo()
+        tema = config.get("tema", "claro")
 
-        # Campo para selecionar se quer o mais recente ou mais antigo (filtro por hora)
+        # Definições de tema
+        if tema == "escuro":
+            groupbox_style = """
+                QGroupBox {
+                    background-color: #2b2b2b;
+                    border: 1px solid #555555;
+                    border-radius: 5px;
+                    margin-top: 10px;
+                    padding: 10px;
+                    color: white;
+                }
+
+                QGroupBox::title {
+                    subcontrol-origin: margin;
+                    left: 10px;
+                    padding: 0 3px 0 3px;
+                }
+
+                QRadioButton {
+                    color: white;
+                    background: transparent;
+                }
+
+                QGroupBox QLineEdit {
+                    color: black;
+                    background-color: rgb(240, 240, 240);
+                    border: 3px solid rgb(50, 150,250);
+                    border-radius: 12px;
+                    padding: 3px;
+                }
+            """
+        elif tema == "claro":
+            groupbox_style = """
+                QGroupBox {
+                    background-color: #f0f0f0;
+                    border: 1px solid #cccccc;
+                    border-radius: 5px;
+                    margin-top: 10px;
+                    padding: 10px;
+                    color: black;
+                }
+
+                QGroupBox::title {
+                    subcontrol-origin: margin;
+                    left: 10px;
+                    padding: 0 3px 0 3px;
+                }
+
+                QRadioButton {
+                    color: black;
+                    background: transparent;
+                }
+
+                QGroupBox QLineEdit {
+                    color: black;
+                    background-color: rgb(240, 240, 240);
+                    border: 3px solid rgb(50, 150,250);
+                    border-radius: 12px;
+                    padding: 3px;
+                }
+            """
+        else:  # clássico
+            groupbox_style = """
+                QGroupBox {
+                    background-color: #00557a;
+                    border: 1px solid #003f5c;
+                    border-radius: 5px;
+                    margin-top: 10px;
+                    padding: 10px;
+                    color: white;
+                }
+
+                QGroupBox::title {
+                    subcontrol-origin: margin;
+                    left: 10px;
+                    padding: 0 3px 0 3px;
+                }
+
+                QRadioButton {
+                    color: white;
+                    background: transparent;
+                }
+
+                QGroupBox QLineEdit {
+                    color: black;
+                    background-color: rgb(240, 240, 240);
+                    border: 3px solid rgb(50, 150,250);
+                    border-radius: 12px;
+                    padding: 3px;
+                }
+            """
+
+        # Grupo para o campo de data (agora estilizado corretamente)
+        grupo_data = QGroupBox("Filtros Disponíveis")
+        grupo_data.setStyleSheet(groupbox_style)
+        layout_data = QVBoxLayout(grupo_data)
+        layout_data.addWidget(campo_data)
+        grupo_data.setLayout(layout_data)
+
+        # Grupo de radio buttons (filtrar por hora)
         grupo_hora = QGroupBox("Filtrar por Hora")
+        grupo_hora.setStyleSheet(groupbox_style)
         layout_hora = QVBoxLayout(grupo_hora)
 
         radio_mais_novo = QRadioButton("Mais Recente")
@@ -2784,15 +2933,15 @@ class Clientes_Juridicos(QWidget):
             )
         )
 
-        # Adicionar widgets ao layout
-        layout.addWidget(QLabel("Filtros Disponíveis"))
-        layout.addWidget(campo_data)
+        # Adicionar widgets ao layout principal
+        layout.addWidget(grupo_data)
         layout.addWidget(grupo_hora)
         layout.addWidget(botao_filtrar)
 
-        # Exibir a janela de filtro
+        # Exibir a janela
         janela_filtro.setLayout(layout)
         janela_filtro.exec()
+
 
     def formatar_data_clientes_juridicos(self, campo_data):
         # Obter o texto do campo de data

@@ -159,8 +159,8 @@ class DialogoEstilizado(QDialog):
                 }
             """
         else: #classico
-            bg_cor = """qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #ffffff, stop: 0.2 #f5f5f5, stop: 1 #c0c0c0)"""
-            text_cor = "black"
+            bg_cor = "rgb(0,80,121)"
+            text_cor = "white"
             lineedit_bg = "white"
 
             button_style = """

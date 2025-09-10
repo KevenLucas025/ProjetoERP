@@ -3116,6 +3116,8 @@ QLineEdit::placeholderText {
                       <string notr="true">QDateEdit {
     color: black; /* Cor do texto */
     background-color: white; /* Cor de fundo */
+	 border: 2px solid rgb(50, 150,250); /* Borda azul */
+	border-radius: 6px; /* Cantos arredondados */
 }
 </string>
                      </property>
@@ -6377,7 +6379,7 @@ QTableWidget::item:selected {
                   <number>118</number>
                  </attribute>
                  <attribute name="verticalHeaderVisible">
-                  <bool>true</bool>
+                  <bool>false</bool>
                  </attribute>
                  <column>
                   <property name="text">

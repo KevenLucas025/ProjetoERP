@@ -1640,7 +1640,6 @@ class EstoqueProduto(QWidget):
         return None
 
 
-
     def filtrar_historico(self):
         if getattr(self,"checkbox_selecionar",None) and self.checkbox_selecionar.isChecked():
             QMessageBox.warning(
@@ -1649,8 +1648,6 @@ class EstoqueProduto(QWidget):
                 "Desmarque o checkbox antes de filtrar o histórico."
             )
             return
-        
-
         
         # Criar a janela de filtro
         janela_filtro = QDialog(self)
