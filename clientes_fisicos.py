@@ -1632,17 +1632,79 @@ class Clientes_Fisicos(QWidget):
         self.table_clientes_fisicos.horizontalHeader().setMinimumSectionSize(30)
         self.table_clientes_fisicos.horizontalHeader().setSectionResizeMode(0, QHeaderView.Fixed)
 
+        # Carregar tema
+        config = self.temas.carregar_config_arquivo()
+        tema = config.get("tema", "claro")
+
+
+        if tema == "escuro":
+            checkbox_style = """
+            QCheckBox {
+                background-color: transparent;
+                border: none;
+            }
+            QCheckBox::indicator {
+                background-color: white;
+            }
+            QToolTip {
+                background-color: #2e2e2e;
+                color: white;
+                border: 1px solid #555555;
+            }
+            """
+        elif tema == "claro":
+            checkbox_style = """
+            QCheckBox {
+                background-color: transparent;
+                border: none;
+            }
+            QCheckBox::indicator {
+                background-color: white;
+            }
+            QToolTip {
+                background-color: white;
+                color: black;
+                border: 1px solid gray;
+            }
+            """
+        else: # classico
+            checkbox_style = """
+            QCheckBox {
+                background-color: transparent;
+                border: none;
+            }
+            QCheckBox::indicator {
+                background-color: transparent;
+                border: 1px solid gray;
+                border-radius: 2px;
+                width: 11px;
+                height: 11px;
+            }
+            QCheckBox::indicator:checked {
+                background-color: #0078d7;  /* azul para tema claro */
+                border: 1px solid #0078d7;
+                image: url(imagens/visto_branco.png);
+            }
+
+            QToolTip {
+                background-color: white;
+                color: black;
+                border: 1px solid gray;
+            }
+            """
+            
+
         # Checkbox no cabeçalho
-        self.checkbox_header_clientes_fisicos_table = QCheckBox(self.table_clientes_fisicos)
+        header = self.table_clientes_fisicos.horizontalHeader()
+        self.checkbox_header_clientes_fisicos_table = QCheckBox(header.viewport())
         self.checkbox_header_clientes_fisicos_table.setToolTip("Selecionar todos")
         self.checkbox_header_clientes_fisicos_table.setChecked(False)
         self.checkbox_header_clientes_fisicos_table.stateChanged.connect(self.selecionar_todos_clientes_fisicos)
         self.checkbox_header_clientes_fisicos_table.setFixedSize(20, 20)
-        self.checkbox_header_clientes_fisicos_table.setStyleSheet("background-color: transparent; border: none;")
+        self.checkbox_header_clientes_fisicos_table.setStyleSheet(checkbox_style)
         self.checkbox_header_clientes_fisicos_table.show()
 
-        header = self.table_clientes_fisicos.horizontalHeader()
-        header.sectionResized.connect(self.atualizar_posicao_checkbox_header_clientes_fisicos_table)
+        QTimer.singleShot(0, self.atualizar_posicao_checkbox_header_clientes_fisicos_table)
 
         self.checkboxes_clientes_fisicos = []
 
@@ -1659,8 +1721,10 @@ class Clientes_Fisicos(QWidget):
             self.table_clientes_fisicos.setCellWidget(linha, 0, container)
             self.checkboxes_clientes_fisicos.append(checkbox)
 
-        QTimer.singleShot(0, self.atualizar_posicao_checkbox_header_clientes_fisicos_table)
-
+        
+        header.sectionResized.connect(self.atualizar_posicao_checkbox_header_clientes_fisicos_table)
+        self.table_clientes_fisicos.horizontalScrollBar().valueChanged.connect(self.atualizar_posicao_checkbox_header_clientes_fisicos_table)
+        header.geometriesChanged.connect(self.atualizar_posicao_checkbox_header_clientes_fisicos_table)
         self.coluna_checkboxes_clientes_fisicos_adicionada = True
         
         # Animação de entrada (fade in)
@@ -1670,7 +1734,7 @@ class Clientes_Fisicos(QWidget):
         if hasattr(self, "checkbox_header_clientes_fisicos_table") and self.coluna_checkboxes_clientes_fisicos_adicionada:
             header = self.table_clientes_fisicos.horizontalHeader()
             
-            x = header.sectionViewportPosition(0) + (header.sectionSize(0) - self.checkbox_header_clientes_fisicos_table.width()) // 2 + 20
+            x = header.sectionViewportPosition(0) + (header.sectionSize(0) - self.checkbox_header_clientes_fisicos_table.width()) // 2 + 4.3
             y = (header.height() - self.checkbox_header_clientes_fisicos_table.height()) // 2
             self.checkbox_header_clientes_fisicos_table.move(x, y)
 
@@ -2865,6 +2929,103 @@ class Clientes_Fisicos(QWidget):
                     padding: 3px;
                 }}
             """
+            checkbox_style = """
+                QMessageBox QCheckBox{
+                    background: transparent;
+                    color: black;
+                }
+            """
+            date_style = """
+                /* Estilo geral do QDateEdit */
+                QDateEdit {
+                    color: white; 
+                    background-color: #2b2b2b; 
+                    border: 2px solid #ffffff;
+                    border-radius: 5px;
+                    padding: 2px 5px;
+                }
+
+                /* Remove o fundo das setas */
+                QDateEdit::up-button, 
+                QDateEdit::down-button {
+                    background: transparent;
+                    border: none;
+                }
+
+                /* Cor de fundo do calendário popup */
+                QDateEdit QCalendarWidget {
+                    background-color: #2b2b2b;
+                    border: 1px solid #555555;
+                }
+                /* Cabeçalho dos dias da semana (dom, seg, ..., sáb) */
+                QDateEdit QCalendarWidget QHeaderView::section {
+                    background-color: #2b2b2b;
+                    color: black;  /* padrão: dias úteis */
+                    padding: 5px;
+                    font-weight: bold;
+                }
+
+                /* Dias normais */
+                QDateEdit QCalendarWidget QAbstractItemView:enabled {
+                    background-color: #2b2b2b;
+                    color: black;
+                    selection-background-color: rgb(0, 120, 215); /* Azul no dia selecionado */
+                    selection-color: black;
+                }
+                /* Botões de navegação (setas) do calendário */
+                QDateEdit QCalendarWidget QToolButton {
+                    background: transparent;   /* tira o fundo azul */
+                    color: white;              
+                    border: none;              /* sem borda */
+                    icon-size: 16px 16px;      /* ajusta o tamanho do ícone */
+                    padding: 2px;
+                }
+                QDateEdit QCalendarWidget QToolButton:hover {
+                    background: rgb(220, 220, 220); /* cinza claro no hover */
+                    border-radius: 4px;
+                }
+                /* Popup de meses/anos do calendário (QMenu) */
+                QDateEdit QCalendarWidget QMenu {
+                    background-color: white;
+                    border: 1px solid #ccc;
+                    color: black;
+                }
+                
+
+                QDateEdit QCalendarWidget QMenu::item {
+                    background: transparent;
+                    color: black;
+                    padding: 6px 16px;
+                }
+
+                QDateEdit QCalendarWidget QMenu::item:selected {
+                    background: rgb(0, 120, 215);
+                    color: white;
+                }
+                QDateEdit QCalendarWidget QToolButton::menu-indicator {
+                    image: none;   /* remove o ícone padrão */
+                    width: 0px;    /* remove o espaço reservado */
+                }
+                /* Finais de semana - domingos */
+                QDateEdit QCalendarWidget QTableView::item:nth-child(7n+1) {
+                    color: red;
+                }
+
+                /* Finais de semana - sábados */
+                QDateEdit QCalendarWidget QTableView::item:nth-child(7n) {
+                    color: red;
+                }
+
+                /* Domingo (primeira coluna do cabeçalho) */
+                QDateEdit QCalendarWidget QHeaderView::section:first-child {
+                    color: red;
+                }
+
+                /* Sábado (última coluna do cabeçalho) */
+                QDateEdit QCalendarWidget QHeaderView::section:last-child {
+                    color: red;
+                }
+            """
 
         elif tema == "claro":
             bg_cor = "white"
@@ -2926,77 +3087,207 @@ class Clientes_Fisicos(QWidget):
                     padding: 3px;
                 }
             """
+            checkbox_style = """
+                QMessageBox QCheckBox{
+                    background: transparent;
+                    color: black;
+                }
+            """
+            date_style = """
+                /* Estilo geral do QDateEdit */
+                QDateEdit {
+                    color: black; 
+                    background-color: 2b2b2b; 
+                    border: 1px solid 3399ff;
+                    border-radius: 5px;
+                    padding: 2px 5px;
+                }
+
+                /* Remove o fundo das setas */
+                QDateEdit::up-button, 
+                QDateEdit::down-button {
+                    background: transparent;
+                    border: none;
+                }
+
+                /* Cor de fundo do calendário popup */
+                QDateEdit QCalendarWidget {
+                    background-color: 2b2b2b;
+                    border: 1px solid #555555;
+                }
+
+                /* Dias normais */
+                QDateEdit QCalendarWidget QAbstractItemView:enabled {
+                    background-color: #2b2b2b;
+                    color: black;
+                    selection-background-color: rgb(0, 120, 215); /* Azul no dia selecionado */
+                    selection-color: white;
+                }
+                /* Botões de navegação (setas) do calendário */
+                QDateEdit QCalendarWidget QToolButton {
+                    background: transparent;   /* tira o fundo azul */
+                    color: black;              /* deixa as setas pretas */
+                    border: none;              /* sem borda */
+                    icon-size: 16px 16px;      /* ajusta o tamanho do ícone */
+                    padding: 2px;
+                }
+                QDateEdit QCalendarWidget QToolButton:hover {
+                    background: rgb(220, 220, 220); /* cinza claro no hover */
+                    border-radius: 4px;
+                }
+                /* Popup de meses/anos do calendário (QMenu) */
+                QDateEdit QCalendarWidget QMenu {
+                    background-color: white;
+                    border: 1px solid #ccc;
+                    color: black;
+                }
+
+                QDateEdit QCalendarWidget QMenu::item {
+                    background: transparent;
+                    color: black;
+                    padding: 6px 16px;
+                }
+
+                QDateEdit QCalendarWidget QMenu::item:selected {
+                    background: rgb(0, 120, 215);
+                    color: white;
+                }
+                QDateEdit QCalendarWidget QToolButton::menu-indicator {
+                    image: none;   /* remove o ícone padrão */
+                    width: 0px;    /* remove o espaço reservado */
+                }
+
+            """
 
         else:  # clássico
             bg_cor = "rgb(0,80,121)"
             text_cor = "white"
 
+
             button_style = """
-                QPushButton {
-                    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                                                stop:0 rgb(0,120,180),
-                                                stop:1 rgb(0,150,220));
-                    color: white;
-                    border-radius: 8px;
-                    font-size: 16px;
-                    border: 2px solid rgb(0,100,160);
-                    padding: 6px;
-                }
-                QPushButton:hover {
-                    background-color: #007acc;
-                }
-                QPushButton:pressed {
-                    background-color: #006bb3;
-                    border: 2px solid #005c99;
-                }
+            QPushButton {
+                color: rgb(255, 255, 255);
+                border-radius: 8px;
+                font-size: 16px;
+                background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */
+                border: 4px solid transparent;
+            }
+
+            QPushButton:hover {
+                background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */
+                color: black;
+            }
+            QPushButton:pressed {
+                background-color: #006bb3;
+                border: 2px solid #005c99;
+            }
             """
             combobox_style = """
-                QComboBox {
-                    background-color: white;
-                    border: 3px solid rgb(50,150,250);
-                    border-radius: 5px;
-                    color: black;
-                    padding: 5px;
-                }
-                QComboBox QAbstractItemView {
-                    background-color: white;
-                    color: black;
-                    border: 1px solid #ccc;
-                    selection-background-color: #e5e5e5;
-                    selection-color: black;
-                }
-                QComboBox QScrollBar:vertical {
-                    background: #f5f5f5;
-                    width: 12px;
-                    border: none;
-                }
-                QComboBox QScrollBar::handle:vertical {
-                    background: #cccccc;
-                    min-height: 20px;
-                    border-radius: 5px;
-                }
+            QComboBox {
+                background-color: white;
+                border: 3px solid rgb(50,150,250);
+                border-radius: 5px;
+                color: black;
+                padding: 5px;
+            }
+            QComboBox QAbstractItemView {
+                background-color: white;
+                color: black;
+                border: 1px solid #ccc;
+                selection-background-color: #e5e5e5;
+                selection-color: black;
+            }
+            QComboBox QScrollBar:vertical {
+                background: #f5f5f5;
+                width: 12px;
+                border: none;
+            }
+            QComboBox QScrollBar::handle:vertical {
+                background: #cccccc;
+                min-height: 20px;
+                border-radius: 5px;
+            }
             """
             scroll_style = """
-                QScrollBar:vertical {
-                border: none;
-                background-color: rgb(255, 255, 255); /* branco */
-                width: 30px;
-                margin: 0px 10px 0px 10px;
+            QScrollBar:vertical {
+                background: #ffffff;
+                width: 12px;
+                border-radius: 6px;
             }
-             QScrollBar::handle:vertical {
-                background-color: rgb(180, 180,180);  /* cinza */
-                min-height: 30px;
+            QScrollBar::handle:vertical {
+                background: #b4b4b4;
+                min-height: 20px;
                 border-radius: 5px;
             }
             """
             lineedit_style = """
-                QLineEdit {
-                    background-color: white;
-                    color: black;
-                    border: 2px solid rgb(50,150,250);
-                    border-radius: 6px;
-                    padding: 3px;
-                }
+            QLineEdit {
+                background-color: white;
+                color: black;
+                border: 2px solid rgb(50,150,250);
+                border-radius: 6px;
+                padding: 3px;
+            }
+            """
+            checkbox_style = """
+            QMessageBox QCheckBox{
+                background: transparent;
+                color: black;
+            }
+            """
+            date_style = """
+            /* Estilo geral do QDateEdit */
+            QDateEdit {
+                color: black; 
+                background-color: white; 
+                border: 2px solid #3399ff;
+                border-radius: 6px;
+                padding: 2px 5px;
+            }
+
+            /* Remove o fundo das setas */
+            QDateEdit::up-button, 
+            QDateEdit::down-button {
+                background: transparent;
+                border: none;
+            }
+
+            /* Cor de fundo do calendário popup */
+            QDateEdit QCalendarWidget {
+                background-color: white;
+                border: 1px solid #555555;
+            }
+            /* Dias normais */
+            QDateEdit QCalendarWidget QAbstractItemView:enabled {
+                background-color: white;
+                color: black;
+                selection-background-color: rgb(0, 120, 215); /* Azul no dia selecionado */
+                selection-color: black;
+            }
+            QDateEdit QCalendarWidget QToolButton:hover {
+                background: rgb(120, 120, 120); /* cinza claro no hover */
+                border-radius: 4px;
+            }
+            /* Popup de meses/anos do calendário (QMenu) */
+            QDateEdit QCalendarWidget QMenu {
+                background-color: white;
+                border: 1px solid #ccc;
+                color: black;
+            }
+            QDateEdit QCalendarWidget QMenu::item {
+                background: transparent;
+                color: black;
+                padding: 6px 16px;
+            }
+            QDateEdit QCalendarWidget QMenu::item:selected {
+                background: rgb(0, 120, 215);
+                color: white;
+            }
+            QDateEdit QCalendarWidget QToolButton::menu-indicator {
+                image: none;   /* remove o ícone padrão */
+                width: 0px;    /* remove o espaço reservado */
+            }
+
             """
 
         central_widget = QWidget()
@@ -3017,11 +3308,13 @@ class Clientes_Fisicos(QWidget):
         self.date_de = QDateEdit()
         self.date_de.setDate(QDate.currentDate().addMonths(-1))
         self.date_de.setCalendarPopup(True)
+        self.date_de.setStyleSheet(date_style)
         
 
         self.date_ate = QDateEdit()
         self.date_ate.setDate(QDate.currentDate())
         self.date_ate.setCalendarPopup(True)
+        self.date_ate.setStyleSheet(date_style)
 
         layout_filtros.addRow("Última Compra - De:", self.date_de)
         layout_filtros.addRow("Última Compra - Até:", self.date_ate)
@@ -3070,6 +3363,14 @@ class Clientes_Fisicos(QWidget):
         btn_gerar_excel.setStyleSheet(button_style)
         btn_cancelar.setStyleSheet(button_style)
 
+        botoes = [
+            btn_cancelar,
+            btn_gerar,
+            btn_gerar_excel
+        ]
+        for btn in botoes:
+            btn.setCursor(Qt.PointingHandCursor)
+
         layout_botoes.addStretch()
         layout_botoes.addWidget(btn_gerar)
         layout_botoes.addWidget(btn_gerar_excel)
@@ -3098,6 +3399,7 @@ class Clientes_Fisicos(QWidget):
         aviso.setStandardButtons(QMessageBox.Ok)
         
         checkbox_nao_mostrar = QCheckBox("Não mostrar essa mensagem novamente")
+        checkbox_nao_mostrar.setStyleSheet(checkbox_style)
         aviso.setCheckBox(checkbox_nao_mostrar)
         aviso.exec()
 

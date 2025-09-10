@@ -1741,6 +1741,76 @@ class Clientes_Juridicos(QWidget):
         self.table_clientes_juridicos.horizontalHeader().setMinimumSectionSize(30)
         self.table_clientes_juridicos.horizontalHeader().setSectionResizeMode(0, QHeaderView.Fixed)
 
+        # Carregar tema
+        config = self.temas.carregar_config_arquivo()
+        tema = config.get("tema", "claro")
+
+
+        if tema == "escuro":
+            checkbox_style = """
+            QCheckBox {
+                background-color: transparent;
+                border: none;
+            }
+            QCheckBox::indicator {
+                background-color: white;
+            }
+            QToolTip {
+                background-color: #2e2e2e;
+                color: white;
+                border: 1px solid #555555;
+            }
+            """
+        elif tema == "claro":
+            checkbox_style = """
+            QCheckBox {
+                background-color: transparent;
+                border: none;
+            }
+            QCheckBox::indicator {
+                background-color: transparent;
+                border: 1px solid gray;
+                width: 11px;
+                height: 11px;
+            }
+
+            QCheckBox::indicator:checked {
+                background-color: #0078d7;  /* azul para tema claro */
+                border: 1px solid #0078d7;
+                image: url(imagens/visto_branco.png);
+            }
+            QToolTip {
+                background-color: white;
+                color: black;
+                border: 1px solid gray;
+            }
+            """
+        else: # classico
+            checkbox_style = """
+            QCheckBox {
+                background-color: transparent;
+                border: none;
+            }
+            QCheckBox::indicator {
+                background-color: transparent;
+                border: 1px solid gray;
+                border-radius: 2px;
+                width: 11px;
+                height: 11px;
+            }
+            QCheckBox::indicator:checked {
+                background-color: #0078d7;  /* azul para tema claro */
+                border: 1px solid #0078d7;
+                image: url(imagens/visto_branco.png);
+            }
+
+            QToolTip {
+                background-color: white;
+                color: black;
+                border: 1px solid gray;
+            }
+            """
+
         # Checkbox no cabeçalho
         header_clientes_juridicos = self.table_clientes_juridicos.horizontalHeader()
         self.checkbox_header_clientes = QCheckBox(header_clientes_juridicos.viewport())
@@ -1748,12 +1818,8 @@ class Clientes_Juridicos(QWidget):
         self.checkbox_header_clientes.setChecked(False)
         self.checkbox_header_clientes.stateChanged.connect(self.selecionar_todos_clientes)
         self.checkbox_header_clientes.setFixedSize(20, 20)
-        self.checkbox_header_clientes.setStyleSheet("background-color: transparent; border: none;")
+        self.checkbox_header_clientes.setStyleSheet(checkbox_style)
         self.checkbox_header_clientes.show()
-
-   
-        header_clientes_juridicos.sectionResized.connect(self.atualizar_posicao_checkbox_header_clientes)
-
 
         QTimer.singleShot(0, self.atualizar_posicao_checkbox_header_clientes)
 
