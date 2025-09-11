@@ -37,7 +37,8 @@ class AtualizarUsuario(QDialog):
                     border: 2px solid #888888;
                 }
             """
-        else:  # claro
+        
+        elif tema == "claro":  # claro
             button_style = """
                 QPushButton {
                     border-radius: 8px;
@@ -57,6 +58,21 @@ class AtualizarUsuario(QDialog):
                     border: 2px solid #888888;
                 }
             """
+        else: # clássico
+            button_style = """
+            QPushButton {
+                color: rgb(255, 255, 255);
+                border-radius: 8px;
+                font-size: 16px;
+                background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */
+                border: 4px solid transparent;
+            }
+
+            QPushButton:hover {
+                background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */
+                color: black;
+            }
+        """
 
         
         

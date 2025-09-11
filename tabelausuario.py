@@ -49,15 +49,15 @@ class TabelaUsuario(QMainWindow):
         self.limpar_campos_de_texto()
 
         config = self.temas.carregar_config_arquivo()
-        tema = config.get("tema", "claro")
+        self.tema = config.get("tema", "claro")
 
         # Criar tabela
         self.table_widget = QTableWidget(self)
         self.table_widget.setObjectName("tabelaUsuarios")
-        self.setStyleSheet(self.aplicar_tema(tema))
+        self.setStyleSheet(self.aplicar_tema(self.tema))
         self.table_widget.setColumnCount(24)
         self.table_widget.setFocusPolicy(Qt.StrongFocus)
-        self.table_widget.setHorizontalScrollMode(QAbstractItemView.ScrollPerPixel)
+        self.table_widget.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
         self.table_widget.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
 
 
@@ -527,24 +527,18 @@ class TabelaUsuario(QMainWindow):
 
             button_style = """
                 QPushButton {
-                    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                                                stop:0 rgb(0,120,180),
-                                                stop:1 rgb(0,150,220));
-                    color: white;
+                    color: rgb(255, 255, 255);
                     border-radius: 8px;
-                    font-size: 16px;
-                    border: 2px solid rgb(0,100,160);
-                    padding: 6px;
+                    font-size: 12px;
+                    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */
+                    border: 4px solid transparent;
                 }
+
                 QPushButton:hover {
-                    background-color: #007acc;
-                }
-                QPushButton:pressed {
-                    background-color: #006bb3;
-                    border: 2px solid #005c99;
+                    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */
+                    color: black;
                 }
             """
-
             combobox_style = """
                 QComboBox {
                     background-color: white;
@@ -572,7 +566,7 @@ class TabelaUsuario(QMainWindow):
                 }
             """
 
-            # 🔹 Scroll geral (scroll_style)
+            #  Scroll geral (scroll_style)
             scroll_style = """
                 QScrollBar:vertical {
                     border: none;
@@ -587,59 +581,82 @@ class TabelaUsuario(QMainWindow):
                 }
             """
 
-            # 🔹 Estilo específico para QTableView (table_view_style)
+            #  Estilo específico para QTableView (table_view_style)
             table_view_style = """
                 QTableView {
-                    gridline-color: black;
+                    background-color: rgb(0,80,121);
                     color: white;
+                    gridline-color: black;
                     border: 1px solid white;
+                    selection-background-color: #007acc;
                     selection-color: white;
                 }
 
+                QHeaderView::section {
+                    background-color: white;
+                    color: black;
+                    border: 1px solid #eeeeee;  /* Borda branco-acinzentada */
+                    padding: 1px;
+                }
+
+                QTabWidget::pane {
+                    border: 1px solid #004466;
+                    background-color: #003355;
+                }
+
+                /* Scrollbars da QTableView - vertical */
+                QTableView QScrollBar:vertical{
+                    border: none;
+                    background-color: rgb(255, 255, 255); /* fundo do track */
+                    border-radius: 5px;
+                    width: 10px; /* largura da barra vertical */
+                    margin: 0px;
+                
+                }
+                /* Scrollbars da QTableView - horizontal */
                 QTableView QScrollBar:horizontal {
-                    border: none;
+                    height: 11px;
                     background-color: rgb(255, 255, 255);
-                    height: 15px;
-                    margin: 0px 10px 0px 10px;
+                    margin: 0px;
                 }
 
-                QTableView QScrollBar:vertical {
-                    border: none;
-                    background-color: rgb(255, 255, 255); /* branco */
-                    width: 35px;
-                    margin: 0px 10px 0px 10px;
-                }
-
+                /* Handle dos scrolls (a parte que você arrasta) */
                 QTableView QScrollBar::handle:vertical {
-                    background-color: rgb(180, 180,150);  /* cinza */
-                    min-height: 30px;
+                    background-color: rgb(180, 180, 150);  /* cor do handle */
+                    min-height: 10px;
+                    min-width: 10px;
+                    border-radius: 5px;
+                
+                }
+                /* Handle dos scrolls (a parte que você arrasta) */
+                QTableView QScrollBar::handle:horizontal {
+                    background-color: rgb(180, 180, 150);
+                    min-width: 20px;
                     border-radius: 5px;
                 }
 
-                QTableView QScrollBar::handle:horizontal{
-                    background-color: rgb(180,180,150);
-                    min-height: 30px;
-                    border-radius: 5px;
-                }
-
-                QTableView QScrollBar::add-line:vertical,
-                QTableView QScrollBar::sub-line:vertical {
-                    height: 0px;
-                    width: 0px;
-                    border: none;
-                    background: none;
-                }
-
-                QTableView QScrollBar::groove:horizontal {
-                    background-color: rgb(100,240,240);
+                /* Groove vertical */
+                QTableView QScrollBar::groove:vertical {
+                    background-color: rgb(100, 240, 240);  /* faixa visível no vertical */
                     border-radius: 2px;
-                    height: 15px;
+                    width: 10px;
                     margin: 0px 10px 0px 10px;
+                }
+
+                /* Groove horizontal (faixa por onde o handle desliza) */
+                QTableView QScrollBar::groove:horizontal {
+                    background-color: rgb(220, 220, 220);
+                    border-radius: 5px;
+                    height: 10px;
                 }
 
                 QTableWidget::item:selected {
                     background-color: rgb(0, 120, 215);
                     color: white;
+                }
+
+                QTableCornerButton::section {
+                    background-color: white;
                 }
             """
 
@@ -1349,9 +1366,9 @@ class TabelaUsuario(QMainWindow):
         try:
             # Limpar a tabela antes de atualizar
             self.table_widget.setRowCount(0)
-            self.table_widget.setColumnCount(23)  # Definir o número de colunas
+            self.table_widget.setColumnCount(24)  # Definir o número de colunas
             self.table_widget.setHorizontalHeaderLabels([
-                 "Nome", "Usuário", "Senha", "Confirmar Senha", "CEP", "Endereço",
+                "ID", "Nome", "Usuário", "Senha", "Confirmar Senha", "CEP", "Endereço",
                 "Número", "Cidade", "Bairro", "Estado", "Complemento", "Telefone", "Email",
                 "Data de Nascimento", "RG", "CPF", "CNPJ",
                 "Última Troca de Senha", "Data da Senha Cadastrada",
@@ -1362,13 +1379,16 @@ class TabelaUsuario(QMainWindow):
             cursor = conexao.cursor()
             
             cursor.execute("""
-                SELECT Nome, Usuário, Senha, "Confirmar Senha", CEP, Endereço,Número,Cidade,
+                SELECT ID,Nome, Usuário, Senha, "Confirmar Senha", CEP, Endereço,Número,Cidade,
                 Bairro, Estado, Complemento, Telefone, Email, "Data de Nascimento", RG, CPF,
                 CNPJ, "Última Troca de Senha", "Data da Senha Cadastrada",
                 "Data da Inclusão do Usuário", Segredo, "Usuário Logado", Acesso
                 FROM users
             """)
             usuarios = cursor.fetchall()
+
+            if not usuarios:
+                QMessageBox.information(self, "Aviso", "Nenhum usuário encontrado no banco de dados.")
 
 
             # Preencher a tabela com os dados atualizados
@@ -1383,8 +1403,11 @@ class TabelaUsuario(QMainWindow):
             self.table_widget.resizeColumnsToContents()
             self.table_widget.resizeRowsToContents()
 
+            QMessageBox.information(self,"Sucesso","Dados carregados com sucesso! ")
+
         except Exception as e:
-            print(f"Erro ao atualizar a tabela de usuários: {e}")
+            print(f"[Erro ao atualizar tabela]: {e}")
+            QMessageBox.warning(self,"Aviso",f"Erro ao atualizar a tabela de usuários: {e}")
 
     def gerar_arquivo_excel_usuarios(self):
         # Obter o número de linhas e colunas na tabela
@@ -1455,6 +1478,13 @@ class TabelaUsuario(QMainWindow):
     def formatar_texto(self, text):
         item = QTableWidgetItem(text)
         item.setTextAlignment(Qt.AlignCenter)
-        item.setForeground(QBrush(QColor("black")))
-        return item            
+
+        # Define a cor com base no tema atual
+        if self.tema == "claro":
+            cor = QColor("black")
+        else:  # Para "escuro" e "clássico"
+            cor = QColor("white")
+
+        item.setForeground(QBrush(cor))
+        return item         
     

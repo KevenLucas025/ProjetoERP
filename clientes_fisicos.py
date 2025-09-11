@@ -536,7 +536,7 @@ class Clientes_Fisicos(QWidget):
             QPushButton {
                 color: rgb(255, 255, 255);
                 border-radius: 8px;
-                font-size: 16px;
+                font-size: 12px;
                 background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */
                 border: 4px solid transparent;
             }
@@ -923,7 +923,7 @@ class Clientes_Fisicos(QWidget):
             QPushButton {
                 color: rgb(255, 255, 255);
                 border-radius: 8px;
-                font-size: 16px;
+                font-size: 12px;
                 background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */
                 border: 4px solid transparent;
             }
@@ -2085,7 +2085,7 @@ class Clientes_Fisicos(QWidget):
                 QPushButton {
                     color: rgb(255, 255, 255);
                     border-radius: 8px;
-                    font-size: 16px;
+                    font-size: 12px;
                     background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */
                     border: 4px solid transparent;
                 }
@@ -3384,7 +3384,7 @@ class Clientes_Fisicos(QWidget):
             QPushButton {
                 color: rgb(255, 255, 255);
                 border-radius: 8px;
-                font-size: 16px;
+                font-size: 12px;
                 background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */
                 border: 4px solid transparent;
             }

@@ -2974,6 +2974,38 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                     color: white;
                     font-size: 12px;
                 }
+                QMessageBox {
+                    background: qlineargradient(
+                        x1: 0, y1: 0,
+                        x2: 0, y2: 1,
+                        stop: 0 #ffffff,       /* branco puro no topo */
+                        stop: 0.2 #f5f5f5,     /* branco acinzentado na faixa */
+                        stop: 1 #c0c0c0       /* branco acinzentado no resto */
+                    );
+                    color: black;
+                }
+                QMessageBox QLabel{
+                    background: transparent;
+                    color: black
+                }
+                QMessageBox QPushButton {
+                    background-color: #ffffff;
+                    color: black;
+                    border: 1px solid #0078d7;
+                    padding: 2px 10px;
+                    border-radius: 6px;
+                    min-width: 40px;
+                    min-height: 10px; 
+                    font-size: 12px; 
+                }
+                
+                QMessageBox QPushButton:hover {
+                    background-color: #e6f0fa;
+                }
+
+                QMessageBox QPushButton:pressed {
+                    background-color: #c7d7f9;
+                }
             """)
 
 # Função principal

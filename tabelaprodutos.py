@@ -516,21 +516,16 @@ class TabelaProdutos(QMainWindow):
 
             button_style = """
                 QPushButton {
-                    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                                                stop:0 rgb(0,120,180),
-                                                stop:1 rgb(0,150,220));
-                    color: white;
+                    color: rgb(255, 255, 255);
                     border-radius: 8px;
-                    font-size: 16px;
-                    border: 2px solid rgb(0,100,160);
-                    padding: 6px;
+                    font-size: 12px;
+                    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */
+                    border: 4px solid transparent;
                 }
+
                 QPushButton:hover {
-                    background-color: #007acc;
-                }
-                QPushButton:pressed {
-                    background-color: #006bb3;
-                    border: 2px solid #005c99;
+                    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */
+                    color: black;
                 }
             """
 

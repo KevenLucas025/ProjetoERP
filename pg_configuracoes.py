@@ -769,10 +769,16 @@ class Pagina_Configuracoes(QWidget):
 
             QPushButton#botao_lupa_juridicos,
             QPushButton#botao_lupa_fisicos {
-                qproperty-icon: url("imagens/botão_lupa.png");
+                qproperty-icon: url("imagens/botao_lupa.png");
                 qproperty-iconSize: 16px 16px;
                 background: transparent;
                 border: none;
+            }
+            QPushButton#btn_mostrar_senha{
+                qproperty-icon: url("imagens/olho_preto.png");
+                qproperty-iconSize: 16px 16px;
+                background: transparent;
+                border: none;  
             }
 
             QPushButton{
@@ -955,9 +961,7 @@ class Pagina_Configuracoes(QWidget):
                 image: none;   /* remove o ícone padrão */
                 width: 0px;    /* remove o espaço reservado */
             }
-
-
-            
+                
             QComboBox { 
                 background-color: white; 
                 border:  2px solid rgb(50,150,250); 

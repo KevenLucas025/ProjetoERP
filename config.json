@@ -6,6 +6,13 @@
     "nao_mostrar_aviso_irreversivel": false,
     "nao_mostrar_mensagem_arquivo_excel": true,
     "nao_mostrar_mensagem_arquivo_excel_fisicos": true,
-    "historico_autocompletes": {},
+    "historico_autocompletes": {
+        "txt_nome": [
+            "dsfdsfs"
+        ],
+        "txt_usuario_cadastro": [
+            "sdfsd"
+        ]
+    },
     "tema": "classico"
 }
