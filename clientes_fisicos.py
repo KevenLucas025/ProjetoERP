@@ -2083,21 +2083,16 @@ class Clientes_Fisicos(QWidget):
 
             button_style = """
                 QPushButton {
-                    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                                                stop:0 rgb(0,120,180),
-                                                stop:1 rgb(0,150,220));
-                    color: white;
+                    color: rgb(255, 255, 255);
                     border-radius: 8px;
                     font-size: 16px;
-                    border: 2px solid rgb(0,100,160);
-                    padding: 6px;
+                    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */
+                    border: 4px solid transparent;
                 }
+
                 QPushButton:hover {
-                    background-color: #007acc;
-                }
-                QPushButton:pressed {
-                    background-color: #006bb3;
-                    border: 2px solid #005c99;
+                    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */
+                    color: black;
                 }
             """
             combobox_style = """
@@ -2129,7 +2124,7 @@ class Clientes_Fisicos(QWidget):
             scroll_style = """
                 QScrollBar:vertical {
                 border: none;
-                background-color: rgb(255, 255, 255); /* branco */
+                background-color: rgb(255, 255, 256); /* branco */
                 width: 30px;
                 margin: 0px 10px 0px 10px;
             }
@@ -2146,6 +2141,69 @@ class Clientes_Fisicos(QWidget):
                     border: 2px solid rgb(50,150,250);
                     border-radius: 6px;
                     padding: 3px;
+                }
+            """
+            table_view_style = """
+                QTableView {
+                    background-color: rgb(0,80,121);
+                    color: white;
+                    gridline-color: black;
+                    border: 1px solid white;
+                    selection-background-color: #007acc;
+                    selection-color: white;
+                }
+                QHeaderView::section {
+                    background-color: white;
+                    color: black;
+                    border: 1px solid #eeeeee;  /* Borda branco-acinzentada */
+                    padding: 1px;
+                }
+                QTabWidget::pane {
+                    border: 1px solid #004466;
+                    background-color: #003355;
+                }
+
+                /* Scrollbars da QTableView - vertical e horizontal */
+                QTableView QScrollBar:vertical,
+                QTableView QScrollBar:horizontal {
+                    border: none;
+                    background-color: rgb(255, 255, 255); /* fundo do track */
+                    border-radius: 5px;
+                    width: 10px; /* largura da barra vertical */
+                    margin: 0px;
+                }
+
+                /* Handle dos scrolls (a parte que você arrasta) */
+                QTableView QScrollBar::handle:vertical,
+                QTableView QScrollBar::handle:horizontal {
+                    background-color: rgb(180, 180, 150);  /* cor do handle */
+                    min-height: 10px;
+                    min-width: 10px;
+                    border-radius: 5px;
+                }
+                /* Groove vertical */
+                QTableView QScrollBar::groove:vertical {
+                    background-color: rgb(100, 240, 240);  /* faixa visível no vertical */
+                    border-radius: 2px;
+                    width: 10px;
+                    margin: 0px 10px 0px 10px;
+                }
+
+                /* Groove horizontal (faixa por onde o handle desliza) */
+                QTableView QScrollBar::groove:horizontal {
+                    background-color: rgb(100, 240, 240);  /* faixa visível no horizontal */
+                    border-radius: 2px;
+                    height: 15px;
+                    margin: 0px 10px 0px 10px;
+                }
+
+                QTableWidget::item:selected {
+                    background-color: rgb(0, 120, 215);
+                    color: white;
+                }
+
+                QTableCornerButton::section {
+                    background-color: white;
                 }
             """
 
@@ -2213,6 +2271,21 @@ class Clientes_Fisicos(QWidget):
         layout.addWidget(botao_filtrar_historico)
         layout.addWidget(self.checkbox_selecionar_fisicos)
         layout.addWidget(self.tabela_historico_clientes_fisicos)
+
+        botoes = [
+            botao_ordenar_historico,
+            botao_filtrar_historico,
+            botao_pausar_historico,
+            botao_exportar_pdf,
+            botao_exportar_excel,
+            botao_exportar_csv,
+            botao_apagar,
+            botao_atualizar
+
+        ]
+
+        for btn in botoes:
+            btn.setCursor(Qt.PointingHandCursor)
         
 
 
@@ -2375,16 +2448,9 @@ class Clientes_Fisicos(QWidget):
             self.checkbox_selecionar_fisicos.setChecked(False)
             return
 
+        # ---- Se a coluna já existe, remove ----
         if self.coluna_checkboxes_clientes_fisicos_adicionada:
-            self.tabela_historico_clientes_fisicos.removeColumn(0)
-            self.tabela_historico_clientes_fisicos.verticalHeader().setVisible(True)
-            self.coluna_checkboxes_clientes_fisicos_adicionada = False
-
-            if hasattr(self, "checkbox_header_clientes_fisicos"):
-                self.checkbox_header_clientes_fisicos.deleteLater()
-                del self.checkbox_header_clientes_fisicos
-
-            self.checkboxes_clientes_fisicos.clear()
+            self.remover_coluna_checkboxes_historico_fisicos()
             return
 
         self.tabela_historico_clientes_fisicos.insertColumn(0)
@@ -2394,16 +2460,18 @@ class Clientes_Fisicos(QWidget):
         self.tabela_historico_clientes_fisicos.horizontalHeader().setSectionResizeMode(0, QHeaderView.Fixed)
 
         # Checkbox do cabeçalho
-        self.checkbox_header_clientes_fisicos = QCheckBox(self.tabela_historico_clientes_fisicos)
+        header_fisicos = self.tabela_historico_clientes_fisicos.horizontalHeader()
+        self.checkbox_header_clientes_fisicos = QCheckBox(header_fisicos.viewport())
         self.checkbox_header_clientes_fisicos.setToolTip("Selecionar todos")
+        self.checkbox_header_clientes_fisicos.setStyleSheet("""QCheckBox{background:transparent;}""")
         self.checkbox_header_clientes_fisicos.setChecked(False)
         self.checkbox_header_clientes_fisicos.stateChanged.connect(self.selecionar_todos_clientes_fisicos)
         self.checkbox_header_clientes_fisicos.setFixedSize(20, 20)
         self.checkbox_header_clientes_fisicos.show()
 
-        header = self.tabela_historico_clientes_fisicos.horizontalHeader()
+        
         self.atualizar_posicao_checkbox_header_clientes_fisicos()
-        header.sectionResized.connect(self.atualizar_posicao_checkbox_header_clientes_fisicos)
+        header_fisicos.sectionResized.connect(self.atualizar_posicao_checkbox_header_clientes_fisicos)
 
         self.checkboxes_clientes_fisicos.clear()
 
@@ -2423,6 +2491,9 @@ class Clientes_Fisicos(QWidget):
             self.checkboxes_clientes_fisicos.append(checkbox)
 
         self.tabela_historico_clientes_fisicos.verticalHeader().setVisible(False)
+        header_fisicos.sectionResized.connect(self.atualizar_posicao_checkbox_header_clientes_fisicos)
+        self.tabela_historico_clientes_fisicos.horizontalScrollBar().valueChanged.connect(self.atualizar_posicao_checkbox_header_clientes_fisicos)
+        header_fisicos.geometriesChanged.connect(self.atualizar_posicao_checkbox_header_clientes_fisicos)
         self.coluna_checkboxes_clientes_fisicos_adicionada = True
 
     def atualizar_selecao_todos(self):
@@ -2440,16 +2511,57 @@ class Clientes_Fisicos(QWidget):
 
         self.checkbox_header_clientes_fisicos.blockSignals(False)
 
+    def remover_coluna_checkboxes_historico_fisicos(self):
+        """Remove a coluna de checkboxes de forma segura"""
+        if self.checkbox_header_clientes_fisicos is not None:
+            try:
+                # Desconecta sinais
+                self.checkbox_header_clientes_fisicos.stateChanged.disconnect()
+            except (RuntimeError, TypeError):
+                pass
+
+            try:
+                # Remove do parent e agenda deleção
+                self.checkbox_header_clientes_fisicos.setParent(None)
+                self.checkbox_header_clientes_fisicos.deleteLater()
+            except RuntimeError:
+                pass
+
+            self.checkbox_header_clientes_fisicos = None
+
+        # Remove a coluna de fato
+        try:
+            self.tabela_historico_clientes_fisicos.removeColumn(0)
+        except Exception:
+            pass
+
+        self.tabela_historico_clientes_fisicos.verticalHeader().setVisible(True)
+        self.coluna_checkboxes_clientes_fisicos_adicionada = False
+        self.checkboxes_clientes_fisicos.clear()
+
         
     def atualizar_posicao_checkbox_header_clientes_fisicos(self):
-        if hasattr(self, "checkbox_header_clientes_fisicos") and self.coluna_checkboxes_clientes_fisicos_adicionada:
-            header = self.tabela_historico_clientes_fisicos.horizontalHeader()
+        if (
+            getattr(self,"checkbox_header_clientes_fisicos",None) is not None
+            and self.coluna_checkboxes_clientes_fisicos_adicionada
+        ):
+            try:
+                header = self.tabela_historico_clientes_fisicos.horizontalHeader()
 
-            x = header.sectionViewportPosition(0) + (header.sectionSize(0) - self.checkbox_header_clientes_fisicos.width()) // 2 + 4
-            y = (header.height() - self.checkbox_header_clientes_fisicos.height()) // 2
+                # largura da seção da coluna 0
+                section_width = header.sectionSize(0)
+                section_pos = header.sectionViewportPosition(0)
 
-            self.checkbox_header_clientes_fisicos.move(x, y)
-            
+                # centralizar horizontalmente
+                x = section_pos + (section_width - self.checkbox_header_clientes_fisicos.width()) // 2 + 4
+
+                # centralizar verticalmente
+                y = (header.height() - self.checkbox_header_clientes_fisicos.height()) // 2
+
+                self.checkbox_header_clientes_fisicos.move(x,y)
+            except RuntimeError:
+                # Objeto já foi deletado do Qt
+                self.checkbox_header_clientes_fisicos
     def ordenar_historico_clientes_fisicos(self):
         if getattr(self, "checkbox_selecionar_fisicos",None) and self.checkbox_selecionar_fisicos.isChecked():
             QMessageBox.warning(
@@ -2519,7 +2631,7 @@ class Clientes_Fisicos(QWidget):
         return None
 
     def filtrar_historico_clientes_fisicos(self):
-        if getattr(self,"checkbox"):
+        if getattr(self,"checkbox_selecionar_fisicos",None) and self.checkbox_selecionar_fisicos.isChecked():
             QMessageBox.warning(
                 self,
                 "Aviso",
@@ -2539,9 +2651,113 @@ class Clientes_Fisicos(QWidget):
         # Conectar ao método de formatação, passando o texto
         campo_data.textChanged.connect(lambda: self.formatar_data(campo_data))
 
+        # Carregar tema
+        config = self.temas.carregar_config_arquivo()
+        tema = config.get("tema", "claro")
+
+        # Definições de tema
+        if tema == "escuro":
+            groupbox_style = """
+                QGroupBox {
+                    background-color: #2b2b2b;
+                    border: 1px solid #555555;
+                    border-radius: 5px;
+                    margin-top: 10px;
+                    padding: 10px;
+                    color: white;
+                }
+
+                QGroupBox::title {
+                    subcontrol-origin: margin;
+                    left: 10px;
+                    padding: 0 3px 0 3px;
+                }
+
+                QRadioButton {
+                    color: white;
+                    background: transparent;
+                }
+
+                QGroupBox QLineEdit {
+                    color: black;
+                    background-color: rgb(240, 240, 240);
+                    border: 3px solid rgb(50, 150,250);
+                    border-radius: 12px;
+                    padding: 3px;
+                }
+            """
+        elif tema == "claro":
+            groupbox_style = """
+                QGroupBox {
+                    background-color: #f0f0f0;
+                    border: 1px solid #cccccc;
+                    border-radius: 5px;
+                    margin-top: 10px;
+                    padding: 10px;
+                    color: black;
+                }
+
+                QGroupBox::title {
+                    subcontrol-origin: margin;
+                    left: 10px;
+                    padding: 0 3px 0 3px;
+                }
+
+                QRadioButton {
+                    color: black;
+                    background: transparent;
+                }
+
+                QGroupBox QLineEdit {
+                    color: black;
+                    background-color: rgb(240, 240, 240);
+                    border: 3px solid rgb(50, 150,250);
+                    border-radius: 12px;
+                    padding: 3px;
+                }
+            """
+        else:  # clássico
+            groupbox_style = """
+                QGroupBox {
+                    background-color: #00557a;
+                    border: 1px solid #003f5c;
+                    border-radius: 5px;
+                    margin-top: 10px;
+                    padding: 10px;
+                    color: white;
+                }
+
+                QGroupBox::title {
+                    subcontrol-origin: margin;
+                    left: 10px;
+                    padding: 0 3px 0 3px;
+                }
+
+                QRadioButton {
+                    color: white;
+                    background: transparent;
+                }
+
+                QGroupBox QLineEdit {
+                    color: black;
+                    background-color: rgb(240, 240, 240);
+                    border: 3px solid rgb(50, 150,250);
+                    border-radius: 12px;
+                    padding: 3px;
+                }
+            """
+
 
         # Campo para selecionar se quer o mais recente ou mais antigo (filtro por hora)
+        grupo_data = QGroupBox("Filtros Disponíveis")
+        layout_data = QVBoxLayout(grupo_data)
+        layout_data.addWidget(campo_data)
+        grupo_data.setLayout(layout_data)
+        grupo_data.setStyleSheet(groupbox_style)
+
+        # Grupo de radio buttons (filtrar por hora)
         grupo_hora = QGroupBox("Filtrar por Hora")
+        grupo_hora.setStyleSheet(groupbox_style)
         layout_hora = QVBoxLayout(grupo_hora)
 
         radio_mais_novo = QRadioButton("Mais Recente")
@@ -2563,7 +2779,7 @@ class Clientes_Fisicos(QWidget):
 
         # Adicionar widgets ao layout
         layout.addWidget(QLabel("Filtros Disponíveis"))
-        layout.addWidget(campo_data)
+        layout.addWidget(grupo_data)
         layout.addWidget(grupo_hora)
         layout.addWidget(botao_filtrar)
 

@@ -670,10 +670,11 @@ class Pagina_Configuracoes(QWidget):
             progress_dialog.accept()  # Oculta o diálogo de progresso
 
         style_sheet = """
-            QMainWindow {
+            QMainWindow, QStackedWidget, QWidget, QFrame,QTableWidget {
                 background-color: #ffffff;
                 color: #000000;
             }
+            
 
             QToolButton {
                 background-color: #f0f0f0;
