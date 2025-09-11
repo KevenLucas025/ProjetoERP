@@ -1374,6 +1374,7 @@ class TabelaUsuario(QMainWindow):
                 "Última Troca de Senha", "Data da Senha Cadastrada",
                 "Data da Inclusão do Usuário", "Segredo", "Usuário Logado", "Acesso"
             ])
+            
 
             conexao = self.db.connecta()
             cursor = conexao.cursor()
@@ -1388,7 +1389,7 @@ class TabelaUsuario(QMainWindow):
             usuarios = cursor.fetchall()
 
             if not usuarios:
-                QMessageBox.information(self, "Aviso", "Nenhum usuário encontrado no banco de dados.")
+                QMessageBox.information(None, "Aviso", "Nenhum usuário encontrado no banco de dados.")
 
 
             # Preencher a tabela com os dados atualizados
@@ -1403,11 +1404,11 @@ class TabelaUsuario(QMainWindow):
             self.table_widget.resizeColumnsToContents()
             self.table_widget.resizeRowsToContents()
 
-            QMessageBox.information(self,"Sucesso","Dados carregados com sucesso! ")
+            QMessageBox.information(None,"Sucesso","Dados carregados com sucesso! ")
 
         except Exception as e:
             print(f"[Erro ao atualizar tabela]: {e}")
-            QMessageBox.warning(self,"Aviso",f"Erro ao atualizar a tabela de usuários: {e}")
+            QMessageBox.warning(None,"Aviso",f"Erro ao atualizar a tabela de usuários: {e}")
 
     def gerar_arquivo_excel_usuarios(self):
         # Obter o número de linhas e colunas na tabela
