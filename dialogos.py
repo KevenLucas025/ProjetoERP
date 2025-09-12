@@ -2,6 +2,7 @@
 from PySide6.QtWidgets import QDialog, QVBoxLayout, QLabel, QComboBox, QDialogButtonBox,QLineEdit
 import json
 from utils import Temas
+from PySide6.QtCore import Qt
 
 # -----------------------------
 # Classe base de dialog estilizado
@@ -159,23 +160,27 @@ class DialogoEstilizado(QDialog):
                 }
             """
         else: #classico
-            bg_cor = "rgb(0,80,121)"
-            text_cor = "white"
-            lineedit_bg = "white"
+            bg_cor = "white"
+            text_cor = "black"
+            lineedit_bg = "black"
 
             button_style = """
                 QPushButton {
-                    color: rgb(255, 255, 255);
-                    border-radius: 8px;
-                    font-size: 16px;
-                    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */
-                    border: 4px solid transparent;
-            }
-
-            QPushButton:hover {
-                background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */
-                color: black;
-            }
+                    background-color: #ffffff;
+                    color: black;
+                    border: 1px solid #0078d7;
+                    padding: 2px 10px;
+                    border-radius: 6px;
+                    min-width: 40px;
+                    min-height: 10px; 
+                    font-size: 12px; 
+                }
+                QPushButton:hover {
+                    background-color: #e6f0fa;
+                }
+                PushButton:pressed {
+                    background-color: #c7d7f9;
+                }
             """
             combo_style = """
                 QComboBox {
@@ -203,6 +208,19 @@ class DialogoEstilizado(QDialog):
                     border-radius: 5px;
                 }
             """
+            dialog_style = """
+                QDialog {
+                    background: qlineargradient(
+                        x1: 0, y1: 0,
+                        x2: 0, y2: 1,
+                        stop: 0 #ffffff,
+                        stop: 0.2 #f5f5f5,
+                        stop: 1 #c0c0c0
+                    );
+                    color: black;
+                    font-size: 12px;
+                }
+            """
             scroll_style = """
                 QScrollBar:vertical {
                     border: none;
@@ -228,15 +246,11 @@ class DialogoEstilizado(QDialog):
 
         # Aplica o estilo apenas ao dialog e widgets internos
         self.setStyleSheet(f"""
-            QDialog {{
-                background-color: {bg_cor};
-                color: {text_cor};
-                font-size: 12px;
-            }}
             {button_style}
             {combo_style}
             {scroll_style}
             {lineedit_style}
+            {dialog_style}
             QLabel {{
                 color: {text_cor};
                 font-size: 12px;
@@ -323,3 +337,137 @@ class DialogoSenha(DialogoEstilizado):
 
     def get_senha(self):
         return self.input_senha.text()
+    
+
+class ConfirmacaoDialog(DialogoEstilizado):
+    def __init__(self, titulo, mensagem, parent=None):
+        super().__init__(parent=parent)
+        self.setWindowTitle(titulo)
+
+        layout = QVBoxLayout(self)
+        layout.setSpacing(15)
+        layout.setContentsMargins(20, 20, 20, 20)
+
+        # Label da mensagem
+        label = QLabel(mensagem)
+        label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        layout.addWidget(label)
+
+        # Botões personalizados: Sim / Não
+        self.botoes.button(QDialogButtonBox.Ok).setText("Sim")
+        self.botoes.button(QDialogButtonBox.Cancel).setText("Não")
+
+        layout.addWidget(self.botoes)
+
+# -----------------------------
+# Dialog específico: Filtro de Usuários
+# -----------------------------
+class FiltroUsuarioDialog(DialogoEstilizado):
+    def __init__(self, parent=None):
+        super().__init__(parent=parent)
+        self.setWindowTitle("Filtrar Usuário")
+
+        self.layout = QVBoxLayout(self)
+        self.layout.setSpacing(15)
+        self.layout.setContentsMargins(20, 20, 20, 20)
+
+        # Label e ComboBox com as opções
+        self.layout.addWidget(QLabel("Escolha o tipo de filtro:"))
+        self.combo = QComboBox()
+        self.filtros = [
+            "Filtrar por Nome", "Filtrar Por Usuário", "Filtrar Por Acesso",
+            "Filtrar Por Telefone", "Filtrar Por Email", "Filtrar Por RG",
+            "Filtrar Por CPF", "Filtrar Por CNPJ"
+        ]
+        self.combo.addItems(self.filtros)
+        self.layout.addWidget(self.combo)
+
+        # Label + QLineEdit
+        self.label_criterio = QLabel("Nome do Usuário:")
+        self.txt_entrada = QLineEdit()
+        self.layout.addWidget(self.label_criterio)
+        self.layout.addWidget(self.txt_entrada)
+
+        # Botões da classe base
+        self.botoes.button(QDialogButtonBox.Ok).setText("Filtrar")
+        self.layout.addWidget(self.botoes)
+
+        # Conecta eventos
+        self.combo.currentIndexChanged.connect(self.atualizar_label)
+        self.txt_entrada.textEdited.connect(self.formatar_texto)
+
+    def atualizar_label(self):
+        texto = self.combo.currentText()
+        mapeamento = {
+            "Filtrar por Nome": "Nome do Usuário:",
+            "Filtrar Por Usuário": "Usuário:",
+            "Filtrar Por Acesso": "Acesso do Usuário:",
+            "Filtrar Por Telefone": "Telefone do Usuário:",
+            "Filtrar Por Email": "Email do Usuário:",
+            "Filtrar Por RG": "RG do Usuário:",
+            "Filtrar Por CPF": "CPF do Usuário:",
+            "Filtrar Por CNPJ": "CNPJ do Usuário:"
+        }
+        self.label_criterio.setText(mapeamento.get(texto, "Digite o valor: "))
+
+    def formatar_texto(self, text):
+        criterio = self.combo.currentText()
+        numero = ''.join(filter(str.isdigit, text))
+        formatado = text
+        cursor_pos = self.txt_entrada.cursorPosition()
+
+        if criterio == "Filtrar Por CPF":
+            numero = numero[:11]
+            if len(numero) <= 3:
+                formatado = numero
+            elif len(numero) <= 6:
+                formatado = "{}.{}".format(numero[:3], numero[3:])
+            elif len(numero) <= 9:
+                formatado = "{}.{}.{}".format(numero[:3], numero[3:6], numero[6:])
+            else:
+                formatado = "{}.{}.{}-{}".format(numero[:3], numero[3:6], numero[6:9], numero[9:])
+
+        elif criterio == "Filtrar Por CNPJ":
+            numero = numero[:14]
+            if len(numero) <= 2:
+                formatado = numero
+            elif len(numero) <= 5:
+                formatado = "{}.{}".format(numero[:2], numero[2:])
+            elif len(numero) <= 8:
+                formatado = "{}.{}.{}".format(numero[:2], numero[2:5], numero[5:])
+            elif len(numero) <= 12:
+                formatado = "{}.{}.{}/{}".format(numero[:2], numero[2:5], numero[5:8], numero[8:])
+            else:
+                formatado = "{}.{}.{}/{}-{}".format(numero[:2], numero[2:5], numero[5:8], numero[8:12], numero[12:14])
+
+        elif criterio == "Filtrar Por RG":
+            numero = numero[:9]
+            if len(numero) <= 2:
+                formatado = numero
+            elif len(numero) <= 5:
+                formatado = "{}.{}".format(numero[:2], numero[2:])
+            elif len(numero) <= 8:
+                formatado = "{}.{}.{}".format(numero[:2], numero[2:5], numero[5:])
+            else:
+                formatado = "{}.{}.{}-{}".format(numero[:2], numero[2:5], numero[5:8], numero[8:])
+
+        elif criterio == "Filtrar Por Telefone":
+            numero = numero[:11]
+            if len(numero) <= 2:
+                formatado = "({})".format(numero)
+            elif len(numero) <= 6:
+                formatado = "({}) {}".format(numero[:2], numero[2:])
+            elif len(numero) <= 10:
+                formatado = "({}) {}-{}".format(numero[:2], numero[2:6], numero[6:])
+            else:
+                formatado = "({}) {}-{}".format(numero[:2], numero[2:7], numero[7:])
+
+        if self.txt_entrada.text() != formatado:
+            self.txt_entrada.blockSignals(True)
+            self.txt_entrada.setText(formatado)
+            self.txt_entrada.setCursorPosition(min(cursor_pos + 1, len(formatado)))
+            self.txt_entrada.blockSignals(False)
+
+    def get_valores(self):
+        return self.combo.currentText(), self.txt_entrada.text()
+

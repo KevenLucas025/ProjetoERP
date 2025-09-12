@@ -12,6 +12,7 @@ import re
 import os
 from configuracoes import Configuracoes_Login
 from utils import Temas
+from dialogos import FiltroUsuarioDialog
 import pandas as pd
 from openpyxl import load_workbook
 from openpyxl.utils import get_column_letter
@@ -1012,161 +1013,42 @@ class TabelaUsuario(QMainWindow):
                 cursor.close()
 #*******************************************************************************************************
     def filtrar_usuario(self):
-        if hasattr(self, "checkbox_header_users"):
+        if getattr(self, "checkbox_header_users", None) and self.checkbox_header_users.isChecked():
             QMessageBox.warning(
-                self,
+                None,
                 "Aviso",
                 "Desmarque o checkbox antes de filtrar os usuários."
             )
             return
-        msg_box = QMessageBox()
-        msg_box.setWindowTitle("Filtrar Usuários")
-        msg_box.setText("Deseja filtrar os usuários?")
-        
-        btn_sim = QPushButton("Sim")
-        btn_nao = QPushButton("Não")
-        
-        msg_box.addButton(btn_sim, QMessageBox.YesRole)
-        msg_box.addButton(btn_nao, QMessageBox.NoRole)
-        msg_box.setDefaultButton(btn_sim)
-        
-        resposta = msg_box.exec()
 
-        if msg_box.clickedButton() == btn_sim:
-            dialog = QDialog(self)
-            dialog.setWindowTitle("Escolha o Filtro")
-            layout = QVBoxLayout()
+        dialog = FiltroUsuarioDialog(self)
+        if dialog.exec():
+            criterio, valor = dialog.get_valores()
 
-            combo = QComboBox()
-            filtros = [
-                "Filtrar por Nome", "Filtrar Por Usuário", "Filtrar Por Acesso",
-                "Filtrar Por Telefone", "Filtrar Por Email", "Filtrar Por RG",
-                "Filtrar Por CPF", "Filtrar Por CNPJ"
-            ]
-            combo.addItems(filtros)
-            layout.addWidget(combo)
+            mapeamento_campo = {
+                "Filtrar por Nome": "Nome",
+                "Filtrar Por Usuário": "Usuário",
+                "Filtrar Por Acesso": "Acesso",
+                "Filtrar Por Telefone": "Telefone",
+                "Filtrar Por Email": "Email",
+                "Filtrar Por RG": "RG",
+                "Filtrar Por CPF": "CPF",
+                "Filtrar Por CNPJ": "CNPJ"
+            }
 
-            # Criação da label e line edit genéricos
-            lbl_criterio = QLabel("Nome do Usuário:")
-            txt_entrada = QLineEdit()
-            layout.addWidget(lbl_criterio)
-            layout.addWidget(txt_entrada)
+            campo_bd = mapeamento_campo.get(criterio)
+            if campo_bd:
+                usuarios = self.obter_usuarios_por_filtro(campo_bd, valor)
 
-            # Atualização da label dinamicamente
-            def atualizar_label():
-                texto = combo.currentText()
-                mapeamento = {
-                    "Filtrar por Nome": "Nome do Usuário:",
-                    "Filtrar Por Usuário": "Usuário:",
-                    "Filtrar Por Acesso": "Acesso do Usuário:",
-                    "Filtrar Por Telefone": "Telefone do Usuário:",
-                    "Filtrar Por Email": "Email do Usuário:",
-                    "Filtrar Por RG": "RG do Usuário:",
-                    "Filtrar Por CPF": "CPF do Usuário:",
-                    "Filtrar Por CNPJ": "CNPJ do Usuário:"
-                }
-                lbl_criterio.setText(mapeamento.get(texto, "Digite o valor: "))
+                if not usuarios:
+                    QMessageBox.warning(
+                        dialog,
+                        "Nenhum resultado encontrado",
+                        f"Nenhum usuário com {campo_bd} '{valor}' foi encontrado no sistema."
+                    )
+                else:
+                    self.atualizar_tabela_usuario_filtrada(usuarios)
 
-            combo.currentIndexChanged.connect(atualizar_label)
-
-            # Botão de filtrar
-            btn_filtrar = QPushButton("Filtrar")
-            layout.addWidget(btn_filtrar)
-
-            def formatar_texto(text):
-                cursor_pos = txt_entrada.cursorPosition()
-                criterio = combo.currentText()
-                formatado = text  # valor padrão
-                numero = ''.join(filter(str.isdigit, text))  # agora sempre existe
-
-                if criterio == "Filtrar Por CPF":
-                    numero = numero[:11]
-                    if len(numero) <= 3:
-                        formatado = numero
-                    elif len(numero) <= 6:
-                        formatado = "{}.{}".format(numero[:3], numero[3:])
-                    elif len(numero) <= 9:
-                        formatado = "{}.{}.{}".format(numero[:3], numero[3:6], numero[6:])
-                    else:
-                        formatado = "{}.{}.{}-{}".format(numero[:3], numero[3:6], numero[6:9], numero[9:])
-
-                elif criterio == "Filtrar Por CNPJ":
-                    numero = numero[:14]
-                    if len(numero) <= 2:
-                        formatado = numero
-                    elif len(numero) <= 5:
-                        formatado = "{}.{}".format(numero[:2], numero[2:])
-                    elif len(numero) <= 8:
-                        formatado = "{}.{}.{}".format(numero[:2], numero[2:5], numero[5:])
-                    elif len(numero) <= 12:
-                        formatado = "{}.{}.{}/{}".format(numero[:2], numero[2:5], numero[5:8], numero[8:])
-                    else:
-                        formatado = "{}.{}.{}/{}-{}".format(numero[:2], numero[2:5], numero[5:8], numero[8:12], numero[12:14])
-
-                elif criterio == "Filtrar Por RG":
-                    numero = numero[:9]
-                    if len(numero) <= 2:
-                        formatado = numero
-                    elif len(numero) <= 5:
-                        formatado = "{}.{}".format(numero[:2], numero[2:])
-                    elif len(numero) <= 8:
-                        formatado = "{}.{}.{}".format(numero[:2], numero[2:5], numero[5:])
-                    else:
-                        formatado = "{}.{}.{}-{}".format(numero[:2], numero[2:5], numero[5:8], numero[8:])
-
-                elif criterio == "Filtrar Por Telefone":
-                    numero = numero[:11]
-                    if len(numero) <= 2:
-                        formatado = "({})".format(numero)
-                    elif len(numero) <= 6:
-                        formatado = "({}) {}".format(numero[:2], numero[2:])
-                    elif len(numero) <= 10:
-                        formatado = "({}) {}-{}".format(numero[:2], numero[2:6], numero[6:])
-                    else:
-                        formatado = "({}) {}-{}".format(numero[:2], numero[2:7], numero[7:])
-
-                # Evita loop de evento
-                if txt_entrada.text() != formatado:
-                    txt_entrada.blockSignals(True)
-                    txt_entrada.setText(formatado)
-                    nova_pos = min(cursor_pos + 1, len(formatado))
-                    txt_entrada.setCursorPosition(nova_pos)
-                    txt_entrada.blockSignals(False)
-
-            txt_entrada.textEdited.connect(formatar_texto)
-
-            def aplicar_filtro():
-                criterio = combo.currentText()
-                valor = txt_entrada.text()
-
-                mapeamento_campo = {
-                    "Filtrar por Nome": "Nome",
-                    "Filtrar Por Usuário": "Usuário",
-                    "Filtrar Por Acesso": "Acesso",
-                    "Filtrar Por Telefone": "Telefone",
-                    "Filtrar Por Email": "Email",
-                    "Filtrar Por RG": "RG",
-                    "Filtrar Por CPF": "CPF",
-                    "Filtrar Por CNPJ": "CNPJ"
-                }
-
-                campo_bd = mapeamento_campo.get(criterio)
-                if campo_bd:
-                    usuarios = self.obter_usuarios_por_filtro(campo_bd, valor)
-                    dialog.close()
-
-                    if not usuarios:
-                        QMessageBox.warning(
-                            dialog,
-                            "Nenhum resultado encontrado",
-                            f"Nenhum usuário com {campo_bd} '{valor}' foi encontrado no sistema"
-                        )
-                    else:
-                        self.atualizar_tabela_usuario_filtrada(usuarios)
-
-            btn_filtrar.clicked.connect(aplicar_filtro)
-            dialog.setLayout(layout)
-            dialog.exec()
 
     def ao_clicar_em_selecionar(self, estado):
         if estado == Qt.Checked:

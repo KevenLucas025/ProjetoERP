@@ -11,7 +11,7 @@ import pandas as pd
 from configuracoes import Configuracoes_Login
 from utils import Temas
 from datetime import datetime
-from dialogos import ComboDialog,DialogoSenha
+from dialogos import ComboDialog,DialogoSenha,ConfirmacaoDialog
 import csv
 from reportlab.lib import colors
 from reportlab.lib.pagesizes import letter
@@ -2858,7 +2858,7 @@ class Clientes_Juridicos(QWidget):
     def filtrar_historico_clientes_juridicos(self):
         if getattr(self, "checkbox_selecionar", None) and self.checkbox_selecionar.isChecked():
             QMessageBox.warning(
-                self,
+                None,
                 "Aviso",
                 "Desmarque o checkbox antes de filtrar o histórico."
             )
@@ -2880,6 +2880,12 @@ class Clientes_Juridicos(QWidget):
 
         # Definições de tema
         if tema == "escuro":
+            dialog_style = """
+                QDialog {
+                    background-color: #2b2b2b;
+                    color: white;
+                }
+            """
             groupbox_style = """
                 QGroupBox {
                     background-color: #2b2b2b;
@@ -2910,6 +2916,12 @@ class Clientes_Juridicos(QWidget):
                 }
             """
         elif tema == "claro":
+            dialog_style = """
+                QDialog {
+                    background-color: #f0f0f0;
+                    color: black;
+                }
+            """
             groupbox_style = """
                 QGroupBox {
                     background-color: #f0f0f0;
@@ -2940,14 +2952,32 @@ class Clientes_Juridicos(QWidget):
                 }
             """
         else:  # clássico
+            dialog_style = """
+                QDialog {
+                    background: qlineargradient(
+                        x1: 0, y1: 0,
+                        x2: 0, y2: 1,
+                        stop: 0 #ffffff,
+                        stop: 0.2 #f5f5f5,
+                        stop: 1 #c0c0c0
+                    );
+                    color: black;
+                }
+            """
             groupbox_style = """
                 QGroupBox {
-                    background-color: #00557a;
+                    background-color: qlineargradient(
+                        x1: 0, y1: 0,
+                        x2: 0, y2: 1,
+                        stop: 0 #ffffff,
+                        stop: 0.2 #f5f5f5,
+                        stop: 1 #c0c0c0
+                    );
                     border: 1px solid #003f5c;
                     border-radius: 5px;
                     margin-top: 10px;
                     padding: 10px;
-                    color: white;
+                    color: black;
                 }
 
                 QGroupBox::title {
@@ -2957,7 +2987,7 @@ class Clientes_Juridicos(QWidget):
                 }
 
                 QRadioButton {
-                    color: white;
+                    color: black;
                     background: transparent;
                 }
 
@@ -3005,6 +3035,8 @@ class Clientes_Juridicos(QWidget):
         layout.addWidget(botao_filtrar)
 
         # Exibir a janela
+        # Aplique no QDialog
+        janela_filtro.setStyleSheet(dialog_style)
         janela_filtro.setLayout(layout)
         janela_filtro.exec()
 
@@ -3239,48 +3271,24 @@ class Clientes_Juridicos(QWidget):
             QMessageBox.critical(self, "Erro", f"Erro ao salvar arquivo PDF: {str(e)}")
 
     def pausar_historico_juridicos(self):
-        # Criação da nova janela de histórico como QMainWindow
-        self.janela_escolha = QMainWindow(self)
-        self.janela_escolha.setWindowTitle("Pausar Histórico")
-        self.janela_escolha.resize(255, 150)
+        dialog = ConfirmacaoDialog("Pausar Histórico", "Deseja pausar o histórico?")
 
-
-        # Botão "Sim"
-        botao_sim = QPushButton("Sim")
-        botao_sim.clicked.connect(self.historico_ativo_juridicos)
-
-        # Botão "Não"
-        botao_nao = QPushButton("Não")
-        botao_nao.clicked.connect(self.historico_inativo_juridicos)
-
-
-        # Criação do layout e tabela para exibir o histórico
-        central_widget = QWidget()
-        layout = QVBoxLayout(central_widget)
-
-        # Texto centralizado
-        label = QLabel("Deseja pausar o histórico?")
-        label.setAlignment(Qt.AlignmentFlag.AlignCenter)  # Alinha o texto ao centro
-
-        layout.addWidget(label)  # Adiciona o texto centralizado
-        layout.addWidget(botao_sim)
-        layout.addWidget(botao_nao)
-
-        self.janela_escolha.setCentralWidget(central_widget)
-        self.janela_escolha.show()
-
+        if dialog.exec() == QDialog.Accepted:
+            self.historico_ativo_juridicos()
+        else:
+            self.historico_inativo_juridicos()
 
     def historico_ativo_juridicos(self):
         # Atualiza o estado do histórico para ativo
         self.main_window.historico_pausado_clientes_juridicos = True  # Atualiza a variável no MainWindow
         QMessageBox.information(self, "Histórico", "O registro do histórico foi pausado.")
-        self.janela_escolha.close()
+
 
     def historico_inativo_juridicos(self):
         # Atualiza o estado do histórico para inativo (continua registrando)
         self.main_window.historico_pausado_clientes_juridicos = False  # Atualiza a variável no MainWindow
         QMessageBox.information(self, "Histórico", "O registro do histórico continua ativo.")
-        self.janela_escolha.close()
+        
         
 
     def abrir_janela_relatorio_clientes_juridicos(self):

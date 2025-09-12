@@ -2633,7 +2633,7 @@ class Clientes_Fisicos(QWidget):
     def filtrar_historico_clientes_fisicos(self):
         if getattr(self,"checkbox_selecionar_fisicos",None) and self.checkbox_selecionar_fisicos.isChecked():
             QMessageBox.warning(
-                self,
+                None,
                 "Aviso",
                 "Desmarque o checkbox antes de filtrar o histórico."
             )
@@ -2657,6 +2657,12 @@ class Clientes_Fisicos(QWidget):
 
         # Definições de tema
         if tema == "escuro":
+            dialog_style = """
+                QDialog {
+                    background-color: #2b2b2b;
+                    color: white;
+                }
+            """
             groupbox_style = """
                 QGroupBox {
                     background-color: #2b2b2b;
@@ -2687,6 +2693,12 @@ class Clientes_Fisicos(QWidget):
                 }
             """
         elif tema == "claro":
+            dialog_style = """
+                QDialog {
+                    background-color: #f0f0f0;
+                    color: black;
+                }
+            """
             groupbox_style = """
                 QGroupBox {
                     background-color: #f0f0f0;
@@ -2717,24 +2729,43 @@ class Clientes_Fisicos(QWidget):
                 }
             """
         else:  # clássico
+            dialog_style = """
+                QDialog {
+                    background: qlineargradient(
+                        x1: 0, y1: 0,
+                        x2: 0, y2: 1,
+                        stop: 0 #ffffff,
+                        stop: 0.2 #f5f5f5,
+                        stop: 1 #c0c0c0
+                    );
+                    color: black;
+                }
+            """
             groupbox_style = """
                 QGroupBox {
-                    background-color: #00557a;
+                    background-color: qlineargradient(
+                        x1: 0, y1: 0,
+                        x2: 0, y2: 1,
+                        stop: 0 #ffffff,
+                        stop: 0.2 #f5f5f5,
+                        stop: 1 #c0c0c0
+                    );
                     border: 1px solid #003f5c;
                     border-radius: 5px;
                     margin-top: 10px;
                     padding: 10px;
-                    color: white;
+                    color: black;
                 }
 
                 QGroupBox::title {
                     subcontrol-origin: margin;
                     left: 10px;
                     padding: 0 3px 0 3px;
+                    
                 }
 
                 QRadioButton {
-                    color: white;
+                    color: black;
                     background: transparent;
                 }
 
@@ -2745,15 +2776,17 @@ class Clientes_Fisicos(QWidget):
                     border-radius: 12px;
                     padding: 3px;
                 }
+
             """
 
 
         # Campo para selecionar se quer o mais recente ou mais antigo (filtro por hora)
         grupo_data = QGroupBox("Filtros Disponíveis")
+        grupo_data.setStyleSheet(groupbox_style)
         layout_data = QVBoxLayout(grupo_data)
         layout_data.addWidget(campo_data)
         grupo_data.setLayout(layout_data)
-        grupo_data.setStyleSheet(groupbox_style)
+        
 
         # Grupo de radio buttons (filtrar por hora)
         grupo_hora = QGroupBox("Filtrar por Hora")
@@ -2777,13 +2810,12 @@ class Clientes_Fisicos(QWidget):
             )
         )
 
-        # Adicionar widgets ao layout
-        layout.addWidget(QLabel("Filtros Disponíveis"))
         layout.addWidget(grupo_data)
         layout.addWidget(grupo_hora)
         layout.addWidget(botao_filtrar)
 
         # Exibir a janela de filtro
+        janela_filtro.setStyleSheet(dialog_style)
         janela_filtro.setLayout(layout)
         janela_filtro.exec()
 
