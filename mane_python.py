@@ -1776,6 +1776,8 @@ class Ui_MainWindow(object):
         self.dateEdit_3.setStyleSheet(u"QDateEdit {\n"
 "    color: black; /* Cor do texto */\n"
 "    background-color: white; /* Cor de fundo */\n"
+"	 border: 2px solid rgb(50, 150,250); /* Borda azul */\n"
+"	border-radius: 6px; /* Cantos arredondados */\n"
 "}\n"
 "")
         self.dateEdit_3.setReadOnly(False)
@@ -3412,6 +3414,7 @@ class Ui_MainWindow(object):
         self.tab_clientes_todos.setTabShape(QTabWidget.Rounded)
         self.tab_clientes = QWidget()
         self.tab_clientes.setObjectName(u"tab_clientes")
+        self.tab_clientes.setStyleSheet(u"")
         self.gridLayout_22 = QGridLayout(self.tab_clientes)
         self.gridLayout_22.setObjectName(u"gridLayout_22")
         self.line_clientes = QLineEdit(self.tab_clientes)
@@ -4571,12 +4574,33 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"MainWindow", None))
+#if QT_CONFIG(tooltip)
+        self.btn_verificar_usuarios.setToolTip(QCoreApplication.translate("MainWindow", u"Verifica os usu\u00e1rios", None))
+#endif // QT_CONFIG(tooltip)
         self.btn_verificar_usuarios.setText(QCoreApplication.translate("MainWindow", u"Verificar Usu\u00e1rios", None))
+#if QT_CONFIG(tooltip)
+        self.btn_clientes.setToolTip(QCoreApplication.translate("MainWindow", u"Base dos clientes", None))
+#endif // QT_CONFIG(tooltip)
         self.btn_clientes.setText(QCoreApplication.translate("MainWindow", u"Clientes", None))
+#if QT_CONFIG(tooltip)
+        self.btn_home.setToolTip(QCoreApplication.translate("MainWindow", u"P\u00e1gina inicial", None))
+#endif // QT_CONFIG(tooltip)
         self.btn_home.setText(QCoreApplication.translate("MainWindow", u"Home", None))
+#if QT_CONFIG(tooltip)
+        self.btn_verificar_estoque.setToolTip(QCoreApplication.translate("MainWindow", u"Verifica o estoque", None))
+#endif // QT_CONFIG(tooltip)
         self.btn_verificar_estoque.setText(QCoreApplication.translate("MainWindow", u"Verificar Estoque", None))
+#if QT_CONFIG(tooltip)
+        self.btn_cadastrar_produto.setToolTip(QCoreApplication.translate("MainWindow", u"Cadastro dos Produtos", None))
+#endif // QT_CONFIG(tooltip)
         self.btn_cadastrar_produto.setText(QCoreApplication.translate("MainWindow", u"Cadastrar Produto", None))
+#if QT_CONFIG(tooltip)
+        self.btn_cadastrar_usuarios.setToolTip(QCoreApplication.translate("MainWindow", u"Cadastro dos Usu\u00e1rios", None))
+#endif // QT_CONFIG(tooltip)
         self.btn_cadastrar_usuarios.setText(QCoreApplication.translate("MainWindow", u"Cadastrar Usu\u00e1rio", None))
+#if QT_CONFIG(tooltip)
+        self.btn_mais_opcoes.setToolTip(QCoreApplication.translate("MainWindow", u"Op\u00e7\u00f5es adicionais", None))
+#endif // QT_CONFIG(tooltip)
         self.btn_mais_opcoes.setText(QCoreApplication.translate("MainWindow", u"Mais op\u00e7\u00f5es", None))
         self.label_imagem_sistema.setText("")
         self.label_bem_vindo.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p align=\"center\"><span style=\" font-size:24pt; font-weight:600; font-style:italic;\">Bem vindo(a) ao</span></p><p align=\"center\"><br/></p><p align=\"center\"><span style=\" font-size:24pt; font-weight:600; font-style:italic;\">Sistema de Gerenciamento do </span></p><p align=\"center\"><span style=\" font-size:24pt; font-weight:600; font-style:italic;\">controle de Estoque</span></p></body></html>", None))

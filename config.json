@@ -12,6 +12,9 @@
         ],
         "txt_usuario_cadastro": [
             "sdfsd"
+        ],
+        "txt_senha_cadastro": [
+            "python .\\main.py"
         ]
     },
     "tema": "escuro"

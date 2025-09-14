@@ -95,6 +95,9 @@
          <property name="cursor">
           <cursorShape>PointingHandCursor</cursorShape>
          </property>
+         <property name="toolTip">
+          <string>Verifica os usuários</string>
+         </property>
          <property name="styleSheet">
           <string notr="true">QPushButton {
     color: rgb(255, 255, 255);
@@ -131,6 +134,9 @@ QPushButton:hover {
          <property name="cursor">
           <cursorShape>PointingHandCursor</cursorShape>
          </property>
+         <property name="toolTip">
+          <string>Base dos clientes</string>
+         </property>
          <property name="styleSheet">
           <string notr="true">QPushButton {
     color: rgb(255, 255, 255);
@@ -166,6 +172,9 @@ QPushButton:hover {
          </property>
          <property name="cursor">
           <cursorShape>PointingHandCursor</cursorShape>
+         </property>
+         <property name="toolTip">
+          <string>Página inicial</string>
          </property>
          <property name="autoFillBackground">
           <bool>false</bool>
@@ -206,6 +215,9 @@ QPushButton:hover {
          <property name="cursor">
           <cursorShape>PointingHandCursor</cursorShape>
          </property>
+         <property name="toolTip">
+          <string>Verifica o estoque</string>
+         </property>
          <property name="autoFillBackground">
           <bool>false</bool>
          </property>
@@ -245,6 +257,9 @@ QPushButton:hover {
          <property name="cursor">
           <cursorShape>PointingHandCursor</cursorShape>
          </property>
+         <property name="toolTip">
+          <string>Cadastro dos Produtos</string>
+         </property>
          <property name="styleSheet">
           <string notr="true">QPushButton {
     color: rgb(255, 255, 255);
@@ -280,6 +295,9 @@ QPushButton:hover {
          </property>
          <property name="cursor">
           <cursorShape>PointingHandCursor</cursorShape>
+         </property>
+         <property name="toolTip">
+          <string>Cadastro dos Usuários</string>
          </property>
          <property name="styleSheet">
           <string notr="true">QPushButton {
@@ -338,6 +356,9 @@ QPushButton:hover {
       </property>
       <property name="cursor">
        <cursorShape>PointingHandCursor</cursorShape>
+      </property>
+      <property name="toolTip">
+       <string>Opções adicionais</string>
       </property>
       <property name="styleSheet">
        <string notr="true">QToolButton {
@@ -6379,7 +6400,7 @@ QTableWidget::item:selected {
                   <number>118</number>
                  </attribute>
                  <attribute name="verticalHeaderVisible">
-                  <bool>false</bool>
+                  <bool>true</bool>
                  </attribute>
                  <column>
                   <property name="text">

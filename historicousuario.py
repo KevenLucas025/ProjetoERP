@@ -1013,7 +1013,10 @@ class Pagina_Usuarios(QWidget):
             for row, checkbox in enumerate(self.checkboxes):
                 if checkbox and checkbox.isChecked():
                     linhas_para_remover.append(row)
-                    coluna_data_hora = 1 if self.coluna_checkboxes_usuarios_adicionada else 2
+                    # Capturar a Data/Hora da célula correspondente (coluna 0)
+                    coluna_data_hora = self.obter_indice_coluna("data/hora")
+                    if coluna_data_hora == -1: 
+                        QMessageBox.warning(None, "Erro", "A coluna 'Data e Hora' não foi encontrada!")
                     item_data_widget = self.tabela_historico_usuarios.item(row, coluna_data_hora)  # Coluna de Data/Hora
                     if item_data_widget:
                         item_data_text = item_data_widget.text().strip()
@@ -1422,9 +1425,9 @@ class Pagina_Usuarios(QWidget):
                 }
 
                 QGroupBox QLineEdit {
-                    color: black;
-                    background-color: rgb(240, 240, 240);
-                    border: 3px solid rgb(50, 150,250);
+                    color: white;
+                    background-color: #2b2b2b;
+                    border: 3px solid rgb(255, 255,255);
                     border-radius: 12px;
                     padding: 3px;
                 }

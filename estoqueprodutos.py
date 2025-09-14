@@ -1327,7 +1327,10 @@ class EstoqueProduto(QWidget):
             for row, checkbox in enumerate(self.checkboxes):
                 if checkbox and checkbox.isChecked():
                     linhas_para_remover.append(row)
-                    coluna_data_hora = 1 if not self.coluna_checkboxes_adicionada else 2
+                    coluna_data_hora = self.obter_indice_coluna_produtos("data/hora")
+                    if coluna_data_hora == -1:
+                        QMessageBox.warning(None, "Erro", "A coluna 'Data e Hora' não foi encontrada!")
+                        return
                     item_data_widget = self.tabela_historico.item(row, coluna_data_hora)  # Coluna de Data/Hora
                     if item_data_widget:
                         item_data_text = item_data_widget.text().strip()
@@ -1358,7 +1361,7 @@ class EstoqueProduto(QWidget):
                 cursor = cn.cursor()
                 try:
                     for data_hora in ids_para_remover:
-                        cursor.execute("DELETE FROM historico WHERE 'Data e Hora' = ?", (data_hora,))
+                        cursor.execute('DELETE FROM historico WHERE "Data e Hora" = ?', (data_hora,))
                     cn.commit()
                 except Exception as e:
                     QMessageBox.critical(None, "Erro", f"Erro ao excluir do banco de dados: {e}")
@@ -1379,7 +1382,10 @@ class EstoqueProduto(QWidget):
                 return
 
             # Capturar a Data/Hora da célula correspondente (coluna 0)
-            coluna_data_hora = 0 if not self.coluna_checkboxes_adicionada else 1
+            coluna_data_hora = self.obter_indice_coluna_produtos("data/hora")
+            if coluna_data_hora == -1: 
+                QMessageBox.warning(None, "Erro", "A coluna 'Data e Hora' não foi encontrada!")
+
             item_data_widget = self.tabela_historico.item(linha_selecionada, coluna_data_hora)  # Coluna de Data/Hora
             if not item_data_widget:
                 QMessageBox.warning(None, "Erro", "Não foi possível identificar a Data/Hora do item a ser apagado!")
@@ -1392,7 +1398,7 @@ class EstoqueProduto(QWidget):
                 cursor = cn.cursor()
                 try:
                     # Buscar o ID com base na Data/Hora, removendo espaços ou caracteres extras
-                    cursor.execute('SELECT id FROM historico WHERE "Data e Hora" = ?', (item_data_text,))
+                    cursor.execute('SELECT "Data e Hora" FROM historico WHERE "Data e Hora" = ?', (item_data_text,))
                     resultado = cursor.fetchone()
 
                     if item_data_text:
@@ -1415,7 +1421,7 @@ class EstoqueProduto(QWidget):
             with sqlite3.connect('banco_de_dados.db') as cn:
                 cursor = cn.cursor()
                 try:
-                    cursor.execute("DELETE FROM historico WHERE 'Data e Hora' = ?", (item_id,))
+                    cursor.execute('DELETE FROM historico WHERE "Data e Hora" = ?', (item_id,))
                     print(f"Item removido do banco de dados: ID {item_id}")
                     cn.commit()
                 except Exception as e:
@@ -1426,12 +1432,13 @@ class EstoqueProduto(QWidget):
             self.tabela_historico.removeRow(linha_selecionada)
 
             QMessageBox.information(None, "Sucesso", "Item removido com sucesso!")
-    
-    # Função para desmarcar todos os checkboxes
-    def desmarcar_checkboxes(self):
-        for checkbox in self.checkboxes:
-            if checkbox:
-                checkbox.setChecked(False)
+
+    def obter_indice_coluna_produtos(self, nome_coluna):
+        for col in range(self.tabela_historico.columnCount()):
+            item = self.tabela_historico.horizontalHeaderItem(col)
+            if item and item.text().strip().lower() == nome_coluna.strip().lower():
+                return col
+        return -1
     
     def selecionar_todos(self):
         if not self.coluna_checkboxes_adicionada:
@@ -1710,9 +1717,9 @@ class EstoqueProduto(QWidget):
                 }
 
                 QGroupBox QLineEdit {
-                    color: black;
-                    background-color: rgb(240, 240, 240);
-                    border: 3px solid rgb(50, 150,250);
+                    color: white;
+                    background-color: #2b2b2b;
+                    border: 3px solid rgb(255, 255,255);
                     border-radius: 12px;
                     padding: 3px;
                 }
@@ -1746,9 +1753,9 @@ class EstoqueProduto(QWidget):
                 }
 
                 QGroupBox QLineEdit {
-                    color: black;
-                    background-color: rgb(240, 240, 240);
-                    border: 3px solid rgb(50, 150,250);
+                    color: white;
+                    background-color: #2b2b2b;
+                    border: 3px solid rgb(255, 255,255);
                     border-radius: 12px;
                     padding: 3px;
                 }
@@ -1872,7 +1879,6 @@ class EstoqueProduto(QWidget):
 
 
     def aplicar_filtro(self, data, filtrar_novo, filtrar_velho):
-        self.remover_coluna_selecao() # Remove os checkboxes se estiverem ativos
         with sqlite3.connect('banco_de_dados.db') as cn:
             cursor = cn.cursor()
 
