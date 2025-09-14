@@ -1644,7 +1644,16 @@ class Clientes_Fisicos(QWidget):
                 border: none;
             }
             QCheckBox::indicator {
-                background-color: white;
+                background-color: transparent;
+                border: 1px solid gray;
+                border-radius: 2px;
+                width: 11px;
+                height: 11px;
+            }
+            QCheckBox::indicator:checked {
+                background-color: #0078d7;  /* azul para tema claro */
+                border: 1px solid #0078d7;
+                image: url(imagens/visto_branco.png);
             }
             QToolTip {
                 background-color: #2e2e2e;
@@ -1936,8 +1945,8 @@ class Clientes_Fisicos(QWidget):
             }
             /* Coluna dos cabeçalhos */
             QHeaderView::section {
-                background-color: #202124;
-                color: white;
+                background-color: #ffffff;
+                color: black;
                 border: 1px solid #aaaaaa;
                 padding: 1px;
             }
@@ -2001,7 +2010,7 @@ class Clientes_Fisicos(QWidget):
                 color: white;
             }
             QTableCornerButton::section {
-                background-color: #202124;  /* mesma cor da tabela */
+                background-color: #ffffff;  /* mesma cor da tabela */
                 border: none;
             }
 

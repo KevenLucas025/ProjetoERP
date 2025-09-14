@@ -749,7 +749,7 @@ class TabelaUsuario(QMainWindow):
         # Verificar se uma linha está selecionada
         if self.table_widget.currentRow() >= 0:
             # Exibir uma mensagem de confirmação
-            msg_box = QMessageBox(self)
+            msg_box = QMessageBox()
             msg_box.setWindowTitle("Confirmar")
             msg_box.setText("Você tem certeza que deseja apagar este usuário?")
 
@@ -765,7 +765,7 @@ class TabelaUsuario(QMainWindow):
             # Exibir a caixa de mensagem
             msg_box.exec()
         else:
-            QMessageBox.warning(self, "Aviso", "Nenhum usuário selecionado para apagar.")
+            QMessageBox.warning(None, "Aviso", "Nenhum usuário selecionado para apagar.")
 #*******************************************************************************************************
     def apagar_usuario_confirmado(self):
         # Obter o índice da linha selecionada
@@ -844,10 +844,10 @@ class TabelaUsuario(QMainWindow):
             selecionados = [cb for cb in self.checkboxes if cb.isChecked()]
 
             if len(selecionados) == 0:
-                QMessageBox.warning(self, "Aviso", "Nenhum usuário selecionado para editar.")
+                QMessageBox.warning(None, "Aviso", "Nenhum usuário selecionado para editar.")
                 return
             elif len(selecionados) > 1:
-                QMessageBox.warning(self, "Aviso", "Você só pode editar um usuário por vez.")
+                QMessageBox.warning(None, "Aviso", "Você só pode editar um usuário por vez.")
                 return
             
             # Encontrar o índice da linha do checkbox marcado
@@ -862,14 +862,14 @@ class TabelaUsuario(QMainWindow):
         else:        
             row_index = self.table_widget.currentRow()
             if row_index < 0:
-                QMessageBox.warning(self, "Aviso", "Selecione um usuário na tabela.")
+                QMessageBox.warning(None, "Aviso", "Selecione um usuário na tabela.")
                 return
             id_item = self.table_widget.item(row_index, 0) # ID na coluna 0 quando não tem checkbox
 
         # Validar ID
         if not id_item or not id_item.text().isdigit():
             print("id_item está vazio!")
-            QMessageBox.warning(self, "Aviso", "ID de usuário inválido ou não encontrado.")
+            QMessageBox.warning(None, "Aviso", "ID de usuário inválido ou não encontrado.")
             return
 
         
@@ -1176,7 +1176,7 @@ class TabelaUsuario(QMainWindow):
     def ordenar_usuario(self):
         if hasattr(self, "checkbox_header_users"):
             QMessageBox.warning(
-                self,
+                None,
                 "Aviso",
                 "Desmarque o checkbox antes de ordenar o histórico."
             )
@@ -1190,11 +1190,11 @@ class TabelaUsuario(QMainWindow):
             selecionados = [i for i, cb in enumerate(self.checkboxes) if cb.isChecked()]
 
             if not selecionados:
-                QMessageBox.warning(self, "Aviso", "Selecione um usuário para visualizar a imagem.")
+                QMessageBox.warning(None, "Aviso", "Selecione um usuário para visualizar a imagem.")
                 return
 
             if len(selecionados) > 1:
-                QMessageBox.warning(self, "Aviso", "Só é possível visualizar a imagem de um usuário por vez.")
+                QMessageBox.warning(None, "Aviso", "Só é possível visualizar a imagem de um usuário por vez.")
                 return
 
             row_index = selecionados[0]
@@ -1202,7 +1202,7 @@ class TabelaUsuario(QMainWindow):
             # Se a seleção for pela linha da tabela
             row_index = self.table_widget.currentRow()
             if row_index < 0:
-                QMessageBox.warning(self, "Aviso", "Selecione um usuário para visualizar a imagem.")
+                QMessageBox.warning(None, "Aviso", "Selecione um usuário para visualizar a imagem.")
                 return
 
         # Pega o ID da coluna correta (0 se não tiver coluna de checkbox, 1 se tiver)
@@ -1210,13 +1210,13 @@ class TabelaUsuario(QMainWindow):
         item = self.table_widget.item(row_index, coluna_id)
         
         if item is None:
-            QMessageBox.warning(self, "Erro", "Não foi possível identificar o ID do usuário.")
+            QMessageBox.warning(None, "Erro", "Não foi possível identificar o ID do usuário.")
             return
 
         try:
             id_usuario = int(item.text())
         except ValueError:
-            QMessageBox.warning(self, "Erro", "ID de usuário inválido.")
+            QMessageBox.warning(None, "Erro", "ID de usuário inválido.")
             return
 
         imagem_data = self.recuperar_imagem_do_banco_usuarios(id_usuario)
@@ -1230,7 +1230,7 @@ class TabelaUsuario(QMainWindow):
 
                 if pixmap.isNull():
                     print("Aviso: pixmap é nulo")
-                    QMessageBox.warning(self, "Aviso", "Não foi possível carregar a imagem.")
+                    QMessageBox.warning(None, "Aviso", "Não foi possível carregar a imagem.")
                     return
 
                 # Tentar abrir o arquivo com um visualizador de imagens padrão
@@ -1239,7 +1239,7 @@ class TabelaUsuario(QMainWindow):
             except Exception as e:
                 print(f"Erro ao processar imagem: {str(e)}")
         else:
-            QMessageBox.warning(self, "Aviso", "Imagem não encontrada.")
+            QMessageBox.warning(None, "Aviso", "Imagem não encontrada.")
 
     def limpar_campos_de_texto(self):
         self.main_window.txt_usuario_cadastro.clear()

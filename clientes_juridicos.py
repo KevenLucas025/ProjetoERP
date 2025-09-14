@@ -1753,7 +1753,16 @@ class Clientes_Juridicos(QWidget):
                 border: none;
             }
             QCheckBox::indicator {
-                background-color: white;
+                background-color: transparent;
+                border: 1px solid gray;
+                border-radius: 2px;
+                width: 11px;
+                height: 11px;
+            }
+            QCheckBox::indicator:checked {
+                background-color: #0078d7;  /* azul para tema claro */
+                border: 1px solid #0078d7;
+                image: url(imagens/visto_branco.png);
             }
             QToolTip {
                 background-color: #2e2e2e;
@@ -2051,8 +2060,8 @@ class Clientes_Juridicos(QWidget):
             }
             /* Coluna dos cabeçalhos */
             QHeaderView::section {
-                background-color: #202124;
-                color: white;
+                background-color: #ffffff;
+                color: black;
                 border: 1px solid #aaaaaa;
                 padding: 1px;
             }
@@ -2116,7 +2125,7 @@ class Clientes_Juridicos(QWidget):
                 color: white;
             }
             QTableCornerButton::section {
-                background-color: #202124;  /* mesma cor da tabela */
+                background-color: #ffffff;  /* mesma cor da tabela */
                 border: none;
             }
 
@@ -2789,7 +2798,7 @@ class Clientes_Juridicos(QWidget):
     def ordenar_historico_clientes_juridicos(self):
         if getattr(self, "checkbox_header_juridicos",None) and self.checkbox_header_juridicos.isChecked():
             QMessageBox.warning(
-                self,
+                None,
                 "Aviso",
                 "Desmarque o checkbox antes de ordenar o histórico."
             )
@@ -3281,13 +3290,13 @@ class Clientes_Juridicos(QWidget):
     def historico_ativo_juridicos(self):
         # Atualiza o estado do histórico para ativo
         self.main_window.historico_pausado_clientes_juridicos = True  # Atualiza a variável no MainWindow
-        QMessageBox.information(self, "Histórico", "O registro do histórico foi pausado.")
+        QMessageBox.information(None, "Histórico", "O registro do histórico foi pausado.")
 
 
     def historico_inativo_juridicos(self):
         # Atualiza o estado do histórico para inativo (continua registrando)
         self.main_window.historico_pausado_clientes_juridicos = False  # Atualiza a variável no MainWindow
-        QMessageBox.information(self, "Histórico", "O registro do histórico continua ativo.")
+        QMessageBox.information(None, "Histórico", "O registro do histórico continua ativo.")
         
         
 
@@ -3317,7 +3326,7 @@ class Clientes_Juridicos(QWidget):
                                                 stop:1 rgb(100,100,100));
                     color: white;
                     border-radius: 8px;
-                    font-size: 16px;
+                    font-size: 12px;
                     border: 2px solid #666666;
                     padding: 6px;
                 }

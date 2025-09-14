@@ -8,6 +8,7 @@ from login import Login
 import sys
 from configuracoes import Configuracoes_Login
 from mane_python import Ui_MainWindow
+import subprocess
 
 class Pagina_Configuracoes(QWidget):
     def __init__(self,
@@ -93,28 +94,7 @@ class Pagina_Configuracoes(QWidget):
         layout_principal.addWidget(self.progress_bar)
         layout_principal.addStretch()
 
-    def aplicar_modo_escuro(self):
-        if self.config.tema == "escuro":
-            QMessageBox.information(self, "Tema", "Você já está no modo Escuro.")
-            return
-        progress_dialog = ProgressDialog("Escuro", self)
-        progress_dialog.show()
-
-        def update_progress(value):
-            progress_dialog.update_progress(value)
-
-        update_progress(10)
-        QTimer.singleShot(1000, lambda: update_progress(50))
-        QTimer.singleShot(2000, lambda: update_progress(80))
-        QTimer.singleShot(3000, lambda: update_progress(100))
-
-        QTimer.singleShot(3000, lambda: self.finalizar_aplicacao_modo_escuro(progress_dialog))
-
-    def finalizar_aplicacao_modo_escuro(self, progress_dialog):
-        if progress_dialog is not None:
-            progress_dialog.accept()  # Oculta o diálogo de progresso
-
-
+    def aplicar_tema_escuro(self):
         # Estilo geral dos botões (modo escuro)
         style_sheet = """
             QMainWindow, QStackedWidget, QWidget {
@@ -620,8 +600,6 @@ class Pagina_Configuracoes(QWidget):
 
             
         """
-        
-         # Iterar sobre todos os widgets da aplicação e aplicar o estilo
         app = QApplication.instance()
         for widget in app.allWidgets():
             widget.setStyleSheet(style_sheet)
@@ -632,9 +610,52 @@ class Pagina_Configuracoes(QWidget):
 
         self.btn_retroceder.setGeometry(40, 5, 30, 30)  # Define a geometria do botão 'btn_retroceder'
 
-        # Salvar no JSON que o tema agora é escuro
-        self.config.tema = "escuro"
-        self.config.salvar(self.config.usuario, self.config.senha, self.config.mantem_conectado)
+
+    def aplicar_modo_escuro(self):
+        if self.config.tema == "escuro":
+            QMessageBox.information(self, "Tema", "Você já está no modo Escuro.")
+            return
+
+        progress_dialog = ProgressDialog("Escuro", self)
+        progress_dialog.show()
+
+        def update_progress(value):
+            progress_dialog.update_progress(value)
+
+        update_progress(10)
+        QTimer.singleShot(1000, lambda: update_progress(50))
+        QTimer.singleShot(2000, lambda: update_progress(80))
+        QTimer.singleShot(3000, lambda: update_progress(100))
+
+        QTimer.singleShot(3000, lambda: self.finalizar_aplicacao_modo_escuro(progress_dialog))
+
+
+    def finalizar_aplicacao_modo_escuro(self, progress_dialog):
+        if self.config.tema == "escuro":
+            # Já está no modo escuro, não precisa pedir reinício
+            return
+        if progress_dialog is not None:
+            progress_dialog.accept()
+
+        resposta = QMessageBox.question(
+            None,
+            "Reinício Necessário",
+            "Para aplicar completamente o tema Escuro, é necessário reiniciar a aplicação.\nDeseja reiniciar agora?",
+            QMessageBox.Yes | QMessageBox.No,
+            QMessageBox.No 
+        )
+
+        if resposta == QMessageBox.Yes:
+            self.config.tema = "escuro"
+            self.config.salvar(self.config.usuario, self.config.senha, self.config.mantem_conectado)
+            self.reiniciar_sistema()
+        else:
+            QMessageBox.information(
+                None,
+                "Tema não aplicado",
+                "O tema Escuro será aplicado apenas após a reinicialização."
+            )
+
         
 
     # --- Modo escuro na inicialização (sem progress) ---
@@ -690,6 +711,32 @@ class Pagina_Configuracoes(QWidget):
         self.config.tema = "claro"
         self.config.salvar(self.config.usuario, self.config.senha, self.config.mantem_conectado)
 
+    def finalizar_aplicacao_modo_classico(self, progress_dialog):
+        if self.config.tema == "classico":
+            # Já está no modo classico, não precisa pedir reinício
+            return
+        if progress_dialog is not None:
+            progress_dialog.accept()
+
+        resposta = QMessageBox.question(
+            None,
+            "Reinício Necessário",
+            "Para aplicar completamente o tema Clássico, é necessário reiniciar a aplicação.\nDeseja reiniciar agora?",
+            QMessageBox.Yes | QMessageBox.No,
+            QMessageBox.No 
+        )
+
+        if resposta == QMessageBox.Yes:
+            self.config.tema = "classico"
+            self.config.salvar(self.config.usuario, self.config.senha, self.config.mantem_conectado)
+            self.reiniciar_sistema()
+        else:
+            QMessageBox.information(
+                None,
+                "Tema não aplicado",
+                "O tema Clássico será aplicado apenas após a reinicialização."
+            )
+
     def aplicar_modo_classico(self):
         if self.config.tema == "classico":
             QMessageBox.information(self, "Tema", "Você já está no modo Clássico.")
@@ -707,7 +754,7 @@ class Pagina_Configuracoes(QWidget):
 
         QTimer.singleShot(3000, lambda: self.finalizar_aplicacao_modo_classico(progress_dialog))
 
-    def finalizar_aplicacao_modo_classico(self,progress_dialog):
+    def aplicar_tema_classico(self):
         style_sheet = """
             QMainWindow, QStackedWidget, QWidget, QFrame,QTableWidget {
                 background-color: #005079;
@@ -775,7 +822,7 @@ class Pagina_Configuracoes(QWidget):
                 border: none;
             }
             QPushButton#btn_mostrar_senha{
-                qproperty-icon: url("imagens/olho_preto.png");
+                qproperty-icon: url("imagens/olho_preto.png ");
                 qproperty-iconSize: 16px 16px;
                 background: transparent;
                 border: none;  
@@ -1010,28 +1057,29 @@ class Pagina_Configuracoes(QWidget):
             QTableView QScrollBar:horizontal {
                 border: none;
                 background-color: rgb(255, 255, 255);
-                height: 15px;
+                height: 10px;
                 margin: 0px 10px 0px 10px;
+            }
+            QTableView QScrollBar::handle:horizontal{
+                background-color: rgb(180,180,150);
+                min-width: 10px;
+                border-radius: 5px;
             }
             /* Estiliza a barra de rolagem vertical */
             QTableView QScrollBar:vertical {
                 border: none;
                 background-color: rgb(255, 255, 255); /* branco */
-                width: 35px;
+                width: 30px;
                 margin: 0px 10px 0px 10px;
             }
             /* Parte que você arrasta */
             QTableView QScrollBar::handle:vertical {
                 background-color: rgb(180, 180,150);  /* cinza */
-                min-height: 30px;
+                min-height: 26px;
                 border-radius: 5px;
             }
 
-            QTableView QScrollBar::handle:horizontal{
-                background-color: rgb(180,180,150);
-                min-height: 30px;
-                border-radius: 5px;
-            }
+            
 
             /* Remove os botões */
             QTableView QScrollBar::add-line:vertical,
@@ -1309,7 +1357,14 @@ class Pagina_Configuracoes(QWidget):
         # Mostrar janela
         self.janela_config.show()
     
-    
+    def reiniciar_sistema(self):
+        python = sys.executable
+        script = os.path.abspath(sys.argv[0])
+        # Fecha o app atual
+        QApplication.quit()
+        # Reinicia com subprocess (mais robusto para caminhos com espaço)
+        subprocess.Popen([python, script] + sys.argv[1:])
+        sys.exit()
 
 
 class ProgressDialog(QDialog):
@@ -1344,3 +1399,7 @@ class ProgressDialog(QDialog):
     def update_progress(self, value):
         self.progress_bar.setValue(value)
         QApplication.processEvents()
+
+
+
+    

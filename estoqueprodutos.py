@@ -7,7 +7,7 @@ import sqlite3
 import pandas as pd
 from datetime import datetime
 from database import DataBase
-from dialogos import ComboDialog
+from dialogos import ComboDialog,ConfirmacaoDialog
 from utils import Temas
 import csv
 from reportlab.lib import colors
@@ -363,7 +363,7 @@ class EstoqueProduto(QWidget):
         row_count = self.main_window.table_saida.rowCount()
 
         if row_count == 0:
-            msg_box = QMessageBox(self)
+            msg_box = QMessageBox()
             msg_box.setIcon(QMessageBox.Warning)
             msg_box.setWindowTitle("ERRO")
             msg_box.setText("Não há nenhum dado disponível na tabela para gerar estorno!")
@@ -398,7 +398,7 @@ class EstoqueProduto(QWidget):
 
             #  Verifica se a quantidade é válida
             if int(quantidade) <= 0:
-                msg_box = QMessageBox(self)
+                msg_box = QMessageBox()
                 msg_box.setIcon(QMessageBox.Warning)
                 msg_box.setWindowTitle("Estorno inválido")
                 msg_box.setText(None,f"O produto '{produto}' tem quantidade 0 e não pode ser estornado.")
@@ -509,7 +509,7 @@ class EstoqueProduto(QWidget):
         self.main_window.table_saida.setRowCount(0)
 
         # Mensagem de sucesso
-        msg_box = QMessageBox(self)
+        msg_box = QMessageBox()
         msg_box.setIcon(QMessageBox.Information)
         msg_box.setWindowTitle("Sucesso")
         msg_box.setText("Estorno realizado com sucesso.")
@@ -732,14 +732,14 @@ class EstoqueProduto(QWidget):
             c.save()
 
             # Mensagem de sucesso
-            msg = QMessageBox(self)
+            msg = QMessageBox()
             msg.setIcon(QMessageBox.Information)
             msg.setWindowTitle("PDF Gerado")
             msg.setText("O PDF foi gerado com sucesso!")
             msg.exec()
 
         except Exception as e:
-            msg = QMessageBox(self)
+            msg = QMessageBox()
             msg.setIcon(QMessageBox.Critical)
             msg.setWindowTitle("Erro")
             msg.setText(f"Erro ao gerar PDF: {str(e)}")
@@ -1048,21 +1048,16 @@ class EstoqueProduto(QWidget):
 
             button_style = """
                 QPushButton {
-                    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                                                stop:0 rgb(0,120,180),
-                                                stop:1 rgb(0,150,220));
-                    color: white;
+                    color: rgb(255, 255, 255);
                     border-radius: 8px;
-                    font-size: 16px;
-                    border: 2px solid rgb(0,100,160);
-                    padding: 6px;
+                    font-size: 12px;
+                    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */
+                    border: 4px solid transparent;
                 }
+
                 QPushButton:hover {
-                    background-color: #007acc;
-                }
-                QPushButton:pressed {
-                    background-color: #006bb3;
-                    border: 2px solid #005c99;
+                    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */
+                    color: black;
                 }
             """
             combobox_style = """
@@ -1092,79 +1087,99 @@ class EstoqueProduto(QWidget):
                 }
             """
             scroll_style = """
-                QScrollBar:vertical {
-                border: none;
-                background-color: rgb(255, 255, 255); /* branco */
-                width: 30px;
-                margin: 0px 10px 0px 10px;
+            /* Scrollbar vertical */
+            QScrollBar:vertical {
+                background: #ffffff;   /* fundo do track */
+                width: 12px;
+                margin: 0px;
+                border-radius: 6px;
             }
-                QScrollBar::handle:vertical {
-                background-color: rgb(180, 180,180);  /* cinza */
-                min-height: 30px;
-                border-radius: 5px;
+
+            QScrollBar::handle:vertical {
+                background: #555555;   /* cor do handle */
+                border-radius: 6px;
+                min-height: 20px;
+            }
+
+            QScrollBar::handle:vertical:hover {
+                background: #777777;   /* hover no handle */
+            }
+
+            QScrollBar::add-line:vertical,
+            QScrollBar::sub-line:vertical {
+                background: none;
+                height: 0px;
+            }
+
+            QScrollBar::add-page:vertical,
+            QScrollBar::sub-page:vertical {
+                background: none;
             }
             """
             table_view_style = """
-                /* Estiliza apenas o QTableView com objectName  */
                 QTableView {
-                    gridline-color: black;
+                    background-color: rgb(0,80,121);
                     color: white;
+                    gridline-color: black;
                     border: 1px solid white;
+                    selection-background-color: #007acc;
                     selection-color: white;
-
                 }
 
-                /* Estiliza a barra de rolagem horizontal */
+                QHeaderView::section {
+                    background-color: white;
+                    color: black;
+                    border: 1px solid #eeeeee;  /* Borda branco-acinzentada */
+                    padding: 1px;
+                }
+
+                QTabWidget::pane {
+                    border: 1px solid #004466;
+                    background-color: #003355;
+                }
+
+                /* Scrollbars da QTableView - vertical e horizontal */
+                QTableView QScrollBar:vertical,
                 QTableView QScrollBar:horizontal {
                     border: none;
-                    background-color: rgb(255, 255, 255);
-                    height: 15px;
+                    background-color: rgb(255, 255, 255); /* fundo do track */
+                    border-radius: 5px;
+                    width: 10px; /* largura da barra vertical */
+                    margin: 0px;
+                }
+
+                /* Handle dos scrolls (a parte que você arrasta) */
+                QTableView QScrollBar::handle:vertical,
+                QTableView QScrollBar::handle:horizontal {
+                    background-color: rgb(180, 180, 150);  /* cor do handle */
+                    min-height: 10px;
+                    min-width: 10px;
+                    border-radius: 5px;
+                }
+                /* Groove vertical */
+                QTableView QScrollBar::groove:vertical {
+                    background-color: rgb(100, 240, 240);  /* faixa visível no vertical */
+                    border-radius: 2px;
+                    width: 10px;
                     margin: 0px 10px 0px 10px;
                 }
 
-                /* Estiliza a barra de rolagem vertical */
-                QTableView QScrollBar:vertical {
-                    border: none;
-                    background-color: rgb(255, 255, 255); /* branco */
-                    width: 35px;
-                    margin: 0px 10px 0px 10px;
-                }
-
-                /* Parte que você arrasta */
-                QTableView QScrollBar::handle:vertical {
-                    background-color: rgb(180, 180,150);  /* cinza */
-                    min-height: 30px;
-                    border-radius: 5px;
-                }
-
-                QTableView QScrollBar::handle:horizontal{
-                    background-color: rgb(180,180,150);
-                    min-height: 30px;
-                    border-radius: 5px;
-                }
-
-                /* Remove os botões */
-                QTableView QScrollBar::add-line:vertical,
-                QTableView QScrollBar::sub-line:vertical {
-                    height: 0px;
-                    width: 0px;
-                    border: none;
-                    background: none;
-                }
-
-                QTableView QScrollBar::groove:horizontal{
-                    background-color: rgb(100,240,240);
+                /* Groove horizontal (faixa por onde o handle desliza) */
+                QTableView QScrollBar::groove:horizontal {
+                    background-color: rgb(100, 240, 240);  /* faixa visível no horizontal */
                     border-radius: 2px;
                     height: 15px;
                     margin: 0px 10px 0px 10px;
                 }
 
-                /* Estilo para item selecionado */
                 QTableWidget::item:selected {
                     background-color: rgb(0, 120, 215);
                     color: white;
                 }
 
+                QTableCornerButton::section {
+                    background-color: white;
+                }
             """
             lineedit_style = """
                 QLineEdit {
@@ -1204,7 +1219,7 @@ class EstoqueProduto(QWidget):
         botao_exportar_pdf.clicked.connect(self.exportar_pdf)
 
         botao_pausar_historico = QPushButton("Pausar Histórico")
-        botao_pausar_historico.clicked.connect(self.pausar_historico)
+        botao_pausar_historico.clicked.connect(self.pausar_historico_produtos)
 
 
         botao_filtrar_historico = QPushButton("Filtrar Histórico")
@@ -1281,14 +1296,14 @@ class EstoqueProduto(QWidget):
 
 
     def atualizar_historico(self):
-        QMessageBox.information(self.janela_historico, "Sucesso", "Dados carregados com sucesso!")
+        QMessageBox.information(None, "Sucesso", "Dados carregados com sucesso!")
         self.carregar_historico()
 
     def confirmar_historico_apagado(self, mensagem):
         """
         Exibe uma caixa de diálogo para confirmar a exclusão.
         """
-        msgbox = QMessageBox(self)
+        msgbox = QMessageBox()
         msgbox.setWindowTitle("Confirmação")
         msgbox.setText(mensagem)
 
@@ -1325,7 +1340,7 @@ class EstoqueProduto(QWidget):
                         print(f"Erro ao capturar Data/Hora na linha {row}")
 
             if not ids_para_remover:
-                QMessageBox.warning(self, "Erro", "Nenhum item válido foi selecionado para apagar!")
+                QMessageBox.warning(None, "Erro", "Nenhum item válido foi selecionado para apagar!")
                 return
 
             # Confirmar exclusão
@@ -1346,28 +1361,28 @@ class EstoqueProduto(QWidget):
                         cursor.execute("DELETE FROM historico WHERE 'Data e Hora' = ?", (data_hora,))
                     cn.commit()
                 except Exception as e:
-                    QMessageBox.critical(self, "Erro", f"Erro ao excluir do banco de dados: {e}")
+                    QMessageBox.critical(None, "Erro", f"Erro ao excluir do banco de dados: {e}")
                     return
 
             # Remover as linhas na interface
             for row in sorted(linhas_para_remover, reverse=True):
                 self.tabela_historico.removeRow(row)
 
-            QMessageBox.information(self, "Sucesso", "Itens removidos com sucesso!")
+            QMessageBox.information(None, "Sucesso", "Itens removidos com sucesso!")
 
         # Caso sem checkboxes (seleção manual)
         else:
             linha_selecionada = self.tabela_historico.currentRow()
 
             if linha_selecionada < 0:
-                QMessageBox.warning(self, "Erro", "Nenhum item foi selecionado para apagar!")
+                QMessageBox.warning(None, "Erro", "Nenhum item foi selecionado para apagar!")
                 return
 
             # Capturar a Data/Hora da célula correspondente (coluna 0)
             coluna_data_hora = 0 if not self.coluna_checkboxes_adicionada else 1
             item_data_widget = self.tabela_historico.item(linha_selecionada, coluna_data_hora)  # Coluna de Data/Hora
             if not item_data_widget:
-                QMessageBox.warning(self, "Erro", "Não foi possível identificar a Data/Hora do item a ser apagado!")
+                QMessageBox.warning(None, "Erro", "Não foi possível identificar a Data/Hora do item a ser apagado!")
                 return
 
             item_data_text = item_data_widget.text().strip()
@@ -1383,11 +1398,11 @@ class EstoqueProduto(QWidget):
                     if item_data_text:
                         item_id = resultado[0]  # Pegamos o ID encontrado
                     else:
-                        QMessageBox.warning(self, "Erro", f"Não foi encontrado um item para a Data/Hora: {item_data_text}")
+                        QMessageBox.warning(None, "Erro", f"Não foi encontrado um item para a Data/Hora: {item_data_text}")
                         return
 
                 except Exception as e:
-                    QMessageBox.critical(self, "Erro", f"Erro ao buscar ID: {e}")
+                    QMessageBox.critical(None, "Erro", f"Erro ao buscar ID: {e}")
                     return
 
             # Confirmar exclusão
@@ -1404,13 +1419,13 @@ class EstoqueProduto(QWidget):
                     print(f"Item removido do banco de dados: ID {item_id}")
                     cn.commit()
                 except Exception as e:
-                    QMessageBox.critical(self, "Erro", f"Erro ao excluir do banco de dados: {e}")
+                    QMessageBox.critical(None, "Erro", f"Erro ao excluir do banco de dados: {e}")
                     return
 
             # Remover a linha da interface
             self.tabela_historico.removeRow(linha_selecionada)
 
-            QMessageBox.information(self, "Sucesso", "Item removido com sucesso!")
+            QMessageBox.information(None, "Sucesso", "Item removido com sucesso!")
     
     # Função para desmarcar todos os checkboxes
     def desmarcar_checkboxes(self):
@@ -1420,7 +1435,7 @@ class EstoqueProduto(QWidget):
     
     def selecionar_todos(self):
         if not self.coluna_checkboxes_adicionada:
-            QMessageBox.warning(self, "Aviso", "Ative a opção 'Selecionar Individualmente' antes.")
+            QMessageBox.warning(None, "Aviso", "Ative a opção 'Selecionar Individualmente' antes.")
             if hasattr(self, "checkbox_header"):
                 self.checkbox_header.setChecked(False)
             return
@@ -1442,7 +1457,7 @@ class EstoqueProduto(QWidget):
      # Função para adicionar checkboxes selecionar_individual na tabela de histórico
     def selecionar_individual(self):
         if self.tabela_historico.rowCount() == 0:
-            QMessageBox.warning(self, "Aviso", "Nenhum histórico para selecionar.")
+            QMessageBox.warning(None, "Aviso", "Nenhum histórico para selecionar.")
             self.checkbox_selecionar_individual.setChecked(False)
             return
 
@@ -1573,7 +1588,7 @@ class EstoqueProduto(QWidget):
     def ordenar_historico(self):
         if getattr(self, "checkbox_selecionar",None) and self.checkbox_selecionar.isChecked():
             QMessageBox.warning(
-                self,
+                None,
                 "Aviso",
                 "Desmarque o checkbox antes de ordenar o histórico."
             )
@@ -1598,7 +1613,7 @@ class EstoqueProduto(QWidget):
         
         # Verificar se a coluna escolhida é válida
         if coluna not in colunas_para_indices:
-            QMessageBox.warning(self, "Erro", "Coluna inválida para ordenação!")
+            QMessageBox.warning(None, "Erro", "Coluna inválida para ordenação!")
             return
         
         # Obter o índice da coluna escolhida
@@ -1643,7 +1658,7 @@ class EstoqueProduto(QWidget):
     def filtrar_historico(self):
         if getattr(self,"checkbox_selecionar",None) and self.checkbox_selecionar.isChecked():
             QMessageBox.warning(
-                self,
+                None,
                 "Aviso",
                 "Desmarque o checkbox antes de filtrar o histórico."
             )
@@ -1661,12 +1676,18 @@ class EstoqueProduto(QWidget):
         # Conectar ao método de formatação, passando o texto
         campo_data.textChanged.connect(lambda: self.formatar_data(campo_data))
 
-        # Carregar tema
+       # Carregar tema
         config = self.temas.carregar_config_arquivo()
         tema = config.get("tema", "claro")
 
         # Definições de tema
         if tema == "escuro":
+            dialog_style = """
+                QDialog {
+                    background-color: #2b2b2b;
+                    color: white;
+                }
+            """
             groupbox_style = """
                 QGroupBox {
                     background-color: #2b2b2b;
@@ -1687,9 +1708,22 @@ class EstoqueProduto(QWidget):
                     color: white;
                     background: transparent;
                 }
-            """
 
+                QGroupBox QLineEdit {
+                    color: black;
+                    background-color: rgb(240, 240, 240);
+                    border: 3px solid rgb(50, 150,250);
+                    border-radius: 12px;
+                    padding: 3px;
+                }
+            """
         elif tema == "claro":
+            dialog_style = """
+                QDialog {
+                    background-color: #f0f0f0;
+                    color: black;
+                }
+            """
             groupbox_style = """
                 QGroupBox {
                     background-color: #f0f0f0;
@@ -1710,33 +1744,73 @@ class EstoqueProduto(QWidget):
                     color: black;
                     background: transparent;
                 }
+
+                QGroupBox QLineEdit {
+                    color: black;
+                    background-color: rgb(240, 240, 240);
+                    border: 3px solid rgb(50, 150,250);
+                    border-radius: 12px;
+                    padding: 3px;
+                }
+            """
+        else:  # clássico
+            dialog_style = """
+                QDialog {
+                    background: qlineargradient(
+                        x1: 0, y1: 0,
+                        x2: 0, y2: 1,
+                        stop: 0 #ffffff,
+                        stop: 0.2 #f5f5f5,
+                        stop: 1 #c0c0c0
+                    );
+                    color: black;
+                }
+            """
+            groupbox_style = """
+                QGroupBox {
+                    background-color: qlineargradient(
+                        x1: 0, y1: 0,
+                        x2: 0, y2: 1,
+                        stop: 0 #ffffff,
+                        stop: 0.2 #f5f5f5,
+                        stop: 1 #c0c0c0
+                    );
+                    border: 1px solid #003f5c;
+                    border-radius: 5px;
+                    margin-top: 10px;
+                    padding: 10px;
+                    color: black;
+                }
+
+                QGroupBox::title {
+                    subcontrol-origin: margin;
+                    left: 10px;
+                    padding: 0 3px 0 3px;
+                }
+
+                QRadioButton {
+                    color: black;
+                    background: transparent;
+                }
+
+                QGroupBox QLineEdit {
+                    color: black;
+                    background-color: rgb(240, 240, 240);
+                    border: 3px solid rgb(50, 150,250);
+                    border-radius: 12px;
+                    padding: 3px;
+                }
             """
 
-        else:  # clássico
-            groupbox_style = """
-            QGroupBox {
-                background-color: #00557a;
-                border: 1px solid #003f5c;
-                border-radius: 5px;
-                margin-top: 10px;
-                padding: 10px;
-                color: white;
-            }
 
-            QGroupBox::title {
-                subcontrol-origin: margin;
-                left: 10px;
-                padding: 0 3px 0 3px;
-            }
+        # Grupo para o campo de data (agora estilizado corretamente)
+        grupo_data = QGroupBox("Filtros Disponíveis")
+        grupo_data.setStyleSheet(groupbox_style)
+        layout_data = QVBoxLayout(grupo_data)
+        layout_data.addWidget(campo_data)
+        grupo_data.setLayout(layout_data)
 
-            QRadioButton {
-                color: white;
-                background: transparent;
-            }
-        """
-
-
-        # Campo para selecionar se quer o mais recente ou mais antigo (filtro por hora)
+        # Grupo de radio buttons (filtrar por hora)
         grupo_hora = QGroupBox("Filtrar por Hora")
         grupo_hora.setStyleSheet(groupbox_style)
         layout_hora = QVBoxLayout(grupo_hora)
@@ -1758,13 +1832,12 @@ class EstoqueProduto(QWidget):
             )
         )
 
-        # Adicionar widgets ao layout
-        layout.addWidget(QLabel("Filtros Disponíveis"))
-        layout.addWidget(campo_data)
+        layout.addWidget(grupo_data)
         layout.addWidget(grupo_hora)
         layout.addWidget(botao_filtrar)
 
         # Exibir a janela de filtro
+        janela_filtro.setStyleSheet(dialog_style)
         janela_filtro.setLayout(layout)
         janela_filtro.exec()
 
@@ -1776,7 +1849,7 @@ class EstoqueProduto(QWidget):
         # Verificar se há caracteres alfabéticos (letras)
         if any(char.isalpha() for char in texto_data):
             # Mostrar mensagem de erro caso haja letras
-            QMessageBox.warning(self, "Erro", "Somente números são permitidos.")
+            QMessageBox.warning(None, "Erro", "Somente números são permitidos.")
             campo_data.clear()
             return  # Não aplica a formatação se houver letras
 
@@ -1814,7 +1887,7 @@ class EstoqueProduto(QWidget):
                     query += " WHERE SUBSTR([Data e Hora], 1, 10) = ?"
                     params.append(data_formatada)
                 except ValueError:
-                    QMessageBox.warning(self, "Erro", "Data inválida. Use o formato DD/MM/AAAA.")
+                    QMessageBox.warning(None, "Erro", "Data inválida. Use o formato DD/MM/AAAA.")
                     return
 
             # Ordenar por hora, se aplicável
@@ -1837,7 +1910,7 @@ class EstoqueProduto(QWidget):
             self.tabela_historico.setItem(i, 2, QTableWidgetItem(row[2]))  # Ação
             self.tabela_historico.setItem(i, 3, QTableWidgetItem(row[3]))  # Descrição
 
-        QMessageBox.information(self, "Filtro Aplicado", f"{len(registros)} registro(s) encontrado(s)!")
+        QMessageBox.information(None, "Filtro Aplicado", f"{len(registros)} registro(s) encontrado(s)!")
 
     def exportar_csv(self):
         num_linhas = self.tabela_historico.rowCount()
@@ -1845,11 +1918,11 @@ class EstoqueProduto(QWidget):
 
         # Verificar se a tabela está vazia
         if self.tabela_historico.rowCount() == 0:
-            QMessageBox.warning(self, "Aviso", "Nenhum histórico encontrado para gerar arquivo CSV.")
+            QMessageBox.warning(None, "Aviso", "Nenhum histórico encontrado para gerar arquivo CSV.")
             return  # Se a tabela estiver vazia, encerra a função sem prosseguir
 
         nome_arquivo, _ = QFileDialog.getSaveFileName(
-            self,
+            None,
             "Salvar Arquivo CSV",
             "historico.csv",
             "Arquivos CSV (*.csv)"
@@ -1877,10 +1950,10 @@ class EstoqueProduto(QWidget):
                     ]
                     escritor.writerow(dados_linhas)
 
-                    QMessageBox.information(self, "Sucesso", f"Arquivo CSV salvo com sucesso em:\n{nome_arquivo}")
+                    QMessageBox.information(None, "Sucesso", f"Arquivo CSV salvo com sucesso em:\n{nome_arquivo}")
 
         except Exception as e:
-            QMessageBox.critical(self, "Erro", f"Falha ao salvar o arquivo CSV:\n{str(e)}")
+            QMessageBox.critical(None, "Erro", f"Falha ao salvar o arquivo CSV:\n{str(e)}")
 
 
     def exportar_excel(self):
@@ -1929,9 +2002,9 @@ class EstoqueProduto(QWidget):
 
             # Exportar para Excel
             df.to_excel(nome_arquivo, index=False,engine="openpyxl")
-            QMessageBox.information(self, "Sucesso",f"Arquivo Excel gerado com sucesso em: \n{nome_arquivo}")
+            QMessageBox.information(None, "Sucesso",f"Arquivo Excel gerado com sucesso em: \n{nome_arquivo}")
         except Exception as e:
-            QMessageBox.critical(self, "Erro",f"Erro ao salvar arquivo Excel: {str(e)}")
+            QMessageBox.critical(None, "Erro",f"Erro ao salvar arquivo Excel: {str(e)}")
 
 
 
@@ -1941,7 +2014,7 @@ class EstoqueProduto(QWidget):
 
         # Verificar se a tabela está vazia
         if self.tabela_historico.rowCount() == 0:
-            QMessageBox.warning(self, "Aviso", "Nenhum histórico encontrado para gerar arquivo PDF.")
+            QMessageBox.warning(None, "Aviso", "Nenhum histórico encontrado para gerar arquivo PDF.")
             return  # Se a tabela estiver vazia, encerra a função sem prosseguir
 
         nome_arquivo, _ = QFileDialog.getSaveFileName(
@@ -1992,402 +2065,36 @@ class EstoqueProduto(QWidget):
 
             # Gerar o PDF
             pdf.build([tabela])
-            QMessageBox.information(self, "Sucesso", f"Arquivo PDF gerado com sucesso em: \n{nome_arquivo}")
+            QMessageBox.information(None, "Sucesso", f"Arquivo PDF gerado com sucesso em: \n{nome_arquivo}")
 
         except Exception as e:
-            QMessageBox.critical(self, "Erro", f"Erro ao salvar arquivo PDF: {str(e)}")
+            QMessageBox.critical(None, "Erro", f"Erro ao salvar arquivo PDF: {str(e)}")
 
-    def pausar_historico(self):
-        # Criação da nova janela de histórico como QMainWindow
-        self.janela_escolha = QMainWindow()
-        self.janela_escolha.setWindowTitle("Pausar Histórico")
-        self.janela_escolha.resize(255, 150)
+    def pausar_historico_produtos(self):
+        dialog = ConfirmacaoDialog("Pausar Histórico", "Deseja pausar o histórico?")
 
-        # Carregar tema
-        config = self.temas.carregar_config_arquivo()
-        tema = config.get("tema", "claro")
-
-        # Definições de tema
-        if tema == "escuro":
-            bg_cor = "#202124"
-            text_cor = "white"
-            lineedit_bg = "#303030"
-
-            button_style = """
-                QPushButton {
-                    border-radius: 8px;
-                    background: qlineargradient(
-                        x1:0, y1:0, x2:0, y2:1,
-                        stop:0 rgb(60, 60, 60),   /* topo */
-                        stop:1 rgb(100, 100, 100) /* base */
-                    );
-                    font-size: 12px;
-                    padding: 3px;
-                }
-                QPushButton:hover {
-                    background-color: #444444;
-                }
-                QPushButton:pressed {
-                    background-color: #555555;
-                    border: 2px solid #888888;
-                }
-            """
-            combobox_style = """
-                QComboBox {
-                    color: #f0f0f0;
-                    border: 2px solid #ffffff;
-                    border-radius: 6px;
-                    padding: 4px 10px;
-                    background-color: #2b2b2b;
-                }
-                QComboBox QAbstractItemView::item:hover {
-                    background-color: #444444;
-                    color: #f0f0f0;
-                }
-                QComboBox QAbstractItemView::item:selected {
-                    background-color: #696969;
-                    color: #f0f0f0;
-                }
-                QComboBox QAbstractItemView::item {
-                    height: 24px;
-                }
-                QComboBox QScrollBar:vertical {
-                    background: #ffffff;
-                    width: 12px;
-                    border-radius: 6px;
-                }
-                QComboBox QScrollBar::handle:vertical {
-                    background: #555555;
-                    border-radius: 6px;
-                }
-                
-            """
-            
-            scroll_style = """
-            /* Scrollbar vertical */
-            QScrollBar:vertical {
-                background: #ffffff;   /* fundo do track */
-                width: 12px;
-                margin: 0px;
-                border-radius: 6px;
-            }
-
-            QScrollBar::handle:vertical {
-                background: #555555;   /* cor do handle */
-                border-radius: 6px;
-                min-height: 20px;
-            }
-
-            QScrollBar::handle:vertical:hover {
-                background: #777777;   /* hover no handle */
-            }
-
-            QScrollBar::add-line:vertical,
-            QScrollBar::sub-line:vertical {
-                background: none;
-                height: 0px;
-            }
-
-            QScrollBar::add-page:vertical,
-            QScrollBar::sub-page:vertical {
-                background: none;
-            }
-            """
-            table_view_style = """
-            /* QTableView com seleção diferenciada */
-            QTableView {
-                background-color: #202124;
-                color: white;
-                gridline-color: #555555;
-                selection-background-color: #7a7a7a;
-                selection-color: white;
-            }
-            /* Coluna dos cabeçalhos */
-            QHeaderView::section {
-                background-color: #ffffff;
-                color: black;
-                border: 1px solid #aaaaaa;
-                padding: 1px;
-            }
-
-            /* QTabWidget headers brancos */
-            QTabWidget::pane {
-                border: 1px solid #444444;
-                background-color: #202124;
-            }
-            /* Estiliza a barra de rolagem horizontal */
-            QTableView QScrollBar:horizontal {
-                border: none;
-                background-color: #ffffff;
-                height: 12px;
-                margin: 0px;
-                border-radius: 5px;
-            }
-
-            /* Estiliza a barra de rolagem vertical */
-            QTableView QScrollBar:vertical {
-                border: none;
-                background-color: #ffffff;  
-                width: 12px;
-                margin: 0px;
-                border-radius: 5px;
-            }
-
-            /* QTabWidget headers brancos */
-            QTabWidget::pane {
-                border: 1px solid #444444;
-                background-color: #202124;
-            }
-            /* Estiliza a barra de rolagem horizontal */
-            QTableView QScrollBar:horizontal {
-                border: none;
-                background-color: none;
-                height: 12px;
-                margin: 0px;
-                border-radius: 5px;
-            }
-
-            /* Estiliza a barra de rolagem vertical */
-            QTableView QScrollBar:vertical {
-                border: none;
-                background-color: none; 
-                width: 12px;
-                margin: 0px;
-                border-radius: 5px;
-            }
-            
-
-            /* Parte que você arrasta */
-            QTableView QScrollBar::handle:vertical {
-                background-color: #777777;  /* cinza médio */
-                min-height: 22px;
-                border-radius: 5px;
-            }
-
-            QTableView QScrollBar::handle:horizontal {
-                background-color: #777777;
-                min-width: 22px;
-                border-radius: 5px;
-            }
-
-            /* Groove horizontal */
-            QTableView QScrollBar::groove:horizontal {
-                background-color: transparent;
-                border-radius: 5px;
-                height: 15px;
-                margin: 0px 10px 0px 10px;
-            }
-
-            /* Groove vertical */
-            QTableView QScrollBar::groove:vertical {
-                background-color: transparent;
-                border-radius: 5px;
-                width: 25px;
-                margin: 10px 0px 10px 10px;
-            }
-
-            /* Estilo para item selecionado */
-            QTableWidget::item:selected {
-                background-color: #555555;  /* cinza de seleção */
-                color: white;
-            }
-            /* CornerButton (canto superior esquerdo) */
-            QTableCornerButton::section {
-                background-color: #ffffff;
-                border: 1px solid #aaaaaa;
-                padding: 2px;
-            }
-            /* Forçar cor do texto do QCheckBox */
-            QCheckBox {
-                color: white;
-            }
-
-            """
-            lineedit_style = f"""
-                QLineEdit {{
-                    background-color: {lineedit_bg};
-                    color: {text_cor};
-                    border: 2px solid white;
-                    border-radius: 6px;
-                    padding: 3px;
-                }}
-            """
-        elif tema == "claro":
-            bg_cor = "white"
-            text_cor = "black"
-            lineedit_bg = "white"
-
-            button_style = """
-                QPushButton {
-                    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                                                stop:0 rgb(50,150,250),
-                                                stop:1 rgb(100,200,255));
-                    color: black;
-                    border-radius: 8px;
-                    font-size: 16px;
-                    border: 2px solid rgb(50,150,250);
-                    padding: 6px;
-                }
-                QPushButton:hover {
-                    background-color: #e5f3ff;
-                }
-                QPushButton:pressed {
-                    background-color: #cce7ff;
-                    border: 2px solid #3399ff;
-                }
-            """
-            combobox_style = """
-                QComboBox {
-                    background-color: white;
-                    border: 2px solid rgb(50,150,250);
-                    border-radius: 5px;
-                    color: black;
-                    padding: 5px;
-                }
-                QComboBox QAbstractItemView {
-                    background-color: white;
-                    color: black;
-                    border: 1px solid #ccc;
-                    selection-background-color: #e5e5e5;
-                    selection-color: black;
-                }
-                QComboBox QScrollBar:vertical {
-                    background: #f5f5f5;
-                    width: 12px;
-                    border: none;
-                }
-                QComboBox QScrollBar::handle:vertical {
-                    background: #cccccc;
-                    min-height: 20px;
-                    border-radius: 5px;
-                }
-                
-            """
-            lineedit_style = """
-                QLineEdit {
-                    background-color: white;
-                    color: black;
-                    border: 2px solid rgb(50,150,250);
-                    border-radius: 6px;
-                    padding: 3px;
-                }
-            """
-        else:  # clássico
-            bg_cor = "rgb(0,80,121)"
-            text_cor = "white"
-
-            button_style = """
-                QPushButton {
-                    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                                                stop:0 rgb(0,120,180),
-                                                stop:1 rgb(0,150,220));
-                    color: white;
-                    border-radius: 8px;
-                    font-size: 16px;
-                    border: 2px solid rgb(0,100,160);
-                    padding: 6px;
-                }
-                QPushButton:hover {
-                    background-color: #007acc;
-                }
-                QPushButton:pressed {
-                    background-color: #006bb3;
-                    border: 2px solid #005c99;
-                }
-            """
-            combobox_style = """
-                QComboBox {
-                    background-color: white;
-                    border: 3px solid rgb(50,150,250);
-                    border-radius: 5px;
-                    color: black;
-                    padding: 5px;
-                }
-                QComboBox QAbstractItemView {
-                    background-color: white;
-                    color: black;
-                    border: 1px solid #ccc;
-                    selection-background-color: #e5e5e5;
-                    selection-color: black;
-                }
-                QComboBox QScrollBar:vertical {
-                    background: #f5f5f5;
-                    width: 12px;
-                    border: none;
-                }
-                QComboBox QScrollBar::handle:vertical {
-                    background: #cccccc;
-                    min-height: 20px;
-                    border-radius: 5px;
-                }
-            """
-            scroll_style = """
-                QScrollBar:vertical {
-                border: none;
-                background-color: rgb(255, 255, 255); /* branco */
-                width: 30px;
-                margin: 0px 10px 0px 10px;
-            }
-                QScrollBar::handle:vertical {
-                background-color: rgb(180, 180,180);  /* cinza */
-                min-height: 30px;
-                border-radius: 5px;
-            }
-            """
-            lineedit_style = """
-                QLineEdit {
-                    background-color: white;
-                    color: black;
-                    border: 2px solid rgb(50,150,250);
-                    border-radius: 6px;
-                    padding: 3px;
-                }
-        """
-
-
-        # Botão "Sim"
-        botao_sim = QPushButton("Sim")
-        botao_sim.clicked.connect(self.historico_ativo)
-        botao_sim.setStyleSheet(button_style)
-
-        # Botão "Não"
-        botao_nao = QPushButton("Não")
-        botao_nao.clicked.connect(self.historico_inativo)
-        botao_nao.setStyleSheet(button_style)
-
-
-        # Criação do layout e tabela para exibir o histórico
-        central_widget = QWidget()
-        layout = QVBoxLayout(central_widget)
-
-        # Texto centralizado
-        label = QLabel("Deseja pausar o histórico?")
-        label.setAlignment(Qt.AlignmentFlag.AlignCenter)  # Alinha o texto ao centro
-
-        layout.addWidget(label)  # Adiciona o texto centralizado
-        layout.addWidget(botao_sim)
-        layout.addWidget(botao_nao)
-
-        self.janela_escolha.setCentralWidget(central_widget)
-        self.janela_escolha.show()
+        if dialog.exec() == QDialog.Accepted:
+            self.historico_ativo()
+        else:
+            self.historico_inativo()
 
 
     def historico_ativo(self):
         # Atualiza o estado do histórico para ativo
         self.main_window.historico_pausado = True  # Atualiza a variável no MainWindow
-        QMessageBox.information(self, "Histórico", "O registro do histórico foi pausado.")
-        self.janela_escolha.close()
+        QMessageBox.information(None, "Histórico", "O registro do histórico foi pausado.")
+        
 
     def historico_inativo(self):
         # Atualiza o estado do histórico para inativo (continua registrando)
         self.main_window.historico_pausado = False  # Atualiza a variável no MainWindow
-        QMessageBox.information(self, "Histórico", "O registro do histórico continua ativo.")
-        self.janela_escolha.close()
+        QMessageBox.information(None, "Histórico", "O registro do histórico continua ativo.")
+        
 
 
     def abrir_planilha(self):
         # Abrir o diálogo para selecionar o arquivo Excel
-        nome_arquivo, _ = QFileDialog.getOpenFileName(self, "Abrir Arquivo Excel", "", "Arquivos Excel (*.xlsx)")
+        nome_arquivo, _ = QFileDialog.getOpenFileName(None, "Abrir Arquivo Excel", "", "Arquivos Excel (*.xlsx)")
 
         if not nome_arquivo:
             return  # Se o usuário cancelar a seleção do arquivo
@@ -2422,7 +2129,7 @@ class EstoqueProduto(QWidget):
                                     "Código do Item", "Cliente", "Descrição do Produto", "Usuário","Status da Saída"]
 
                 if df.shape[1] != len(colunas_table_base):
-                    QMessageBox.warning(self, "Erro", "O número de colunas no arquivo Excel não corresponde ao número esperado.")
+                    QMessageBox.warning(None, "Erro", "O número de colunas no arquivo Excel não corresponde ao número esperado.")
                     self.line_excel.clear()
                     # Zerando a barra de progresso
                     self.progress_excel.setValue(0)
@@ -2430,7 +2137,7 @@ class EstoqueProduto(QWidget):
                     return
 
                 if df.shape[0] == 0:
-                    QMessageBox.warning(self, "Erro", "O arquivo Excel está vazio.")
+                    QMessageBox.warning(None, "Erro", "O arquivo Excel está vazio.")
                     self.line_excel.clear()
                     # Zerando a barra de progresso
                     self.progress_excel.setValue(0)
@@ -2462,10 +2169,10 @@ class EstoqueProduto(QWidget):
                         item = self.criar_item(str(value))
                         self.table_base.setItem(row_position, column, item)
 
-                QMessageBox.information(self, "Sucesso", "Arquivo Excel importado com sucesso!")
+                QMessageBox.information(None, "Sucesso", "Arquivo Excel importado com sucesso!")
 
             except Exception as e:
-                QMessageBox.critical(self, "Erro", f"Erro ao importar o arquivo Excel: {e}")
+                QMessageBox.critical(None, "Erro", f"Erro ao importar o arquivo Excel: {e}")
 
             # Quando o arquivo for carregado, atualizar o texto da line_excel com o caminho do arquivo
             self.line_excel.setText(self.nome_arquivo_excel)
@@ -2477,11 +2184,11 @@ class EstoqueProduto(QWidget):
     def importar_produto(self):
         # Verificar se a tabela está vazia
         if self.table_base.rowCount() == 0 and self.table_saida.rowCount() == 0:
-            QMessageBox.warning(self, "Aviso", "Nenhum dado encontrado para gerar arquivo Excel.")
+            QMessageBox.warning(None, "Aviso", "Nenhum dado encontrado para gerar arquivo Excel.")
             return  # Se a tabela estiver vazia, encerra a função sem prosseguir
         
         nome_arquivo, _ = QFileDialog.getSaveFileName(
-            self,
+            None,
             "Salvar Arquivo Excel",
             "relatório.xlsx",
             "Arquivos Excel (*.xlsx)"
@@ -2518,10 +2225,10 @@ class EstoqueProduto(QWidget):
                     df_estoque = tabela_para_dataframe(self.table_saida)
                     df_estoque.to_excel(writer, sheet_name="Saída", index=False)
         
-            QMessageBox.information(self, "Sucesso", f"Arquivo Excel gerado com sucesso em:\n{nome_arquivo}")
+            QMessageBox.information(None, "Sucesso", f"Arquivo Excel gerado com sucesso em:\n{nome_arquivo}")
         
         except Exception as e:
-            QMessageBox.critical(self, "Erro", f"Erro ao salvar arquivo Excel: {str(e)}")
+            QMessageBox.critical(None, "Erro", f"Erro ao salvar arquivo Excel: {str(e)}")
 
 
     
@@ -2533,7 +2240,7 @@ class EstoqueProduto(QWidget):
             return
 
         if not selected_rows:
-            QMessageBox.critical(self, "Aviso", "Nenhum produto selecionado para gerar saída!")
+            QMessageBox.critical(None, "Aviso", "Nenhum produto selecionado para gerar saída!")
             return False
 
         try:
@@ -2567,7 +2274,7 @@ class EstoqueProduto(QWidget):
 
             conn.commit()
             conn.close()
-            QMessageBox.information(self, "Sucesso", "Produto(s) incluído(s) com sucesso no sistema.")
+            QMessageBox.information(None, "Sucesso", "Produto(s) incluído(s) com sucesso no sistema.")
 
             # Registrar histórico
             descricao = f"Produto '{produto}' foi incluído no sistema."
@@ -2575,7 +2282,7 @@ class EstoqueProduto(QWidget):
 
 
         except Exception as e:
-            QMessageBox.critical(self, "Erro", f"Erro ao incluir o produto no sistema:\n{e}")
+            QMessageBox.critical(None, "Erro", f"Erro ao incluir o produto no sistema:\n{e}")
 
 
 
@@ -2630,14 +2337,14 @@ class EstoqueProduto(QWidget):
                 coluna_table_massa_produtos = ["Produto", "Quantidade", "Valor do Produto", "Desconto", "Data da Compra",
                                             "Código do Item", "Cliente", "Descrição do Produto"]
                 if df.shape[1] != len(coluna_table_massa_produtos):
-                    QMessageBox.warning(self, "Erro", "O número de colunas no arquivo Excel não corresponde ao número esperado.")
+                    QMessageBox.warning(None, "Erro", "O número de colunas no arquivo Excel não corresponde ao número esperado.")
                     self.line_edit_massa_produtos.clear()
                     # Zerando a barra de progresso
                     self.progress_massa_produtos.setValue(0)
                     self.progresso_massa = 0
                     return
                 if df.shape[0] == 0:
-                    QMessageBox.warning(self, "Erro", "O arquivo Excel está vazio.")
+                    QMessageBox.warning(None, "Erro", "O arquivo Excel está vazio.")
                     self.line_edit_massa_produtos.clear()
                     # Zerando a barra de progresso
                     self.progress_massa_produtos.setValue(0)
@@ -2667,9 +2374,9 @@ class EstoqueProduto(QWidget):
                     for column, value in enumerate(row):
                         item = self.formatar_texto_produtos_em_massa(str(value))
                         self.table_massa_produtos.setItem(row_position, column, item)
-                QMessageBox.information(self, "Sucesso", "Arquivo Excel importado com sucesso!")
+                QMessageBox.information(None, "Sucesso", "Arquivo Excel importado com sucesso!")
             except Exception as e:
-                QMessageBox.critical(self, "Erro", f"Erro ao importar o arquivo Excel: {e}")
+                QMessageBox.critical(None, "Erro", f"Erro ao importar o arquivo Excel: {e}")
             # Quando o arquivo for carregado, atualizar o texto da line_excel com o caminho do arquivo
             self.line_edit_massa_produtos.setText(self.nome_arquivo_excel_massa)
 
@@ -2689,7 +2396,7 @@ class EstoqueProduto(QWidget):
         try:
             total_linhas = self.table_massa_produtos.rowCount()
             if total_linhas == 0:
-                QMessageBox.warning(self, "Aviso", "Nenhum produto encontrado para cadastrar.")
+                QMessageBox.warning(None, "Aviso", "Nenhum produto encontrado para cadastrar.")
                 return
             for linha in range(total_linhas):
                 produto = self.table_massa_produtos.item(linha, 0).text()
@@ -2735,14 +2442,14 @@ class EstoqueProduto(QWidget):
                 descricao = f"Produto {produto} foi cadastrado com quantidade {quantidade} e valor {valor_produto}!"
                 self.main_window.registrar_historico("Cadastro em Massa", descricao)
 
-            QMessageBox.information(self, "Sucesso", "Produtos cadastrados com sucesso!")
+            QMessageBox.information(None, "Sucesso", "Produtos cadastrados com sucesso!")
             self.line_edit_massa_produtos.clear()
 
             # Limpar a tabela após a inserção
             self.table_massa_produtos.setRowCount(0)
 
         except Exception as e:
-            QMessageBox.critical(self, "Erro", f"Erro ao cadastrar produtos em massa:\n{e}")
+            QMessageBox.critical(None, "Erro", f"Erro ao cadastrar produtos em massa:\n{e}")
 
     
     

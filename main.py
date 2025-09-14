@@ -64,6 +64,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.usuario_tem_imagem_salva = False
         self.temas = Temas()
 
+
         self.table_base.verticalHeader().setFixedWidth(20)  # você pode ajustar o valor
     
         
@@ -108,6 +109,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         if app is not None:
             self.aplicar_tema_global(app, tema_atual)
+
+        
 
         # Mapeia os campos com identificadores únicos
         self.campos_com_autocomplete = {
@@ -440,6 +443,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                                                          self.label_cadastramento,self.label_cadastramento_produtos,self.frame_valor_total_produtos,
                                                          self.frame_valor_do_desconto,self.frame_valor_com_desconto1,self.frame_quantidade)
 
+        if tema_atual == "escuro":
+            self.pagina_configuracoes.aplicar_tema_escuro()
+        elif tema_atual == "claro":
+            self.pagina_configuracoes.aplicar_tema_claro()
+        else:
+            self.pagina_configuracoes.aplicar_tema_classico()
 
     def carregar_config_padrao(self):
         return {
@@ -947,7 +956,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                     self.label_imagem_usuario.setPixmap(pixmap)
 
                 else:
-                    QMessageBox.warning(self, "Aviso", "Não foi possível carregar a imagem.")
+                    QMessageBox.warning(None, "Aviso", "Não foi possível carregar a imagem.")
 #*********************************************************************************************************************
     def avancar_pagina(self):
         # Armazenar a página atual no histórico de páginas
@@ -2097,9 +2106,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 # Salvar a imagem carregada para o atributo nova_imagem
                 self.nova_imagem = fileName
             else:
-                QMessageBox.warning(self, "Aviso", "Não foi possível carregar a imagem.")
+                QMessageBox.warning(None, "Aviso", "Não foi possível carregar a imagem.")
         else:
-            QMessageBox.warning(self, "Aviso", "Nenhuma imagem foi selecionada.")
+            QMessageBox.warning(None, "Aviso", "Nenhuma imagem foi selecionada.")
 #*********************************************************************************************************************
     def limpar_imagem_produto(self):
         for widget in self.frame_imagem_produto_3.children():
@@ -2577,11 +2586,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                     pixmap = pixmap.scaled(200, 200, Qt.KeepAspectRatio)
                     self.label_imagem_produto.setPixmap(pixmap)
                 else:
-                    QMessageBox.warning(self, "Aviso", "Não foi possível carregar a imagem.")
+                    QMessageBox.warning(None, "Aviso", "Não foi possível carregar a imagem.")
             else:
-                QMessageBox.warning(self, "Aviso", "Não foi possível encontrar o caminho da imagem.")
+                QMessageBox.warning(None, "Aviso", "Não foi possível encontrar o caminho da imagem.")
         else:
-            QMessageBox.warning(self, "Aviso", "Nenhuma imagem definida para o produto.")
+            QMessageBox.warning(None, "Aviso", "Nenhuma imagem definida para o produto.")
 #**************************************************************************************************************            
     def limpar_campos_após_atualizar_usuario(self):
         self.txt_nome.clear()
@@ -3017,8 +3026,6 @@ if __name__ == '__main__':
     # Usa estilo nativo do Windows explicitamente
     app.setStyle("WindowsVista")
     app.setWindowIcon(QIcon("imagens/ícone_sistema_provisório.png"))
-    
-
     
     login_window.show()
     sys.exit(app.exec())

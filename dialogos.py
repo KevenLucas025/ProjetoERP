@@ -33,6 +33,7 @@ class DialogoEstilizado(QDialog):
         if self.tema == "escuro":
             bg_cor = "#202124"
             text_cor = "white"
+            lineedit_bg = "#2b2b2b"  
             button_style = """
                 QPushButton {
                     border-radius: 8px;
@@ -100,6 +101,13 @@ class DialogoEstilizado(QDialog):
                 background: none;
             }
             """
+            dialog_style = """
+            QDialog {
+                background-color: #2b2b2b;
+                color: white;
+                font-size: 12px;
+            }
+        """
             lineedit_style = f"""
                 QLineEdit {{
                     background-color: {lineedit_bg};
@@ -114,6 +122,7 @@ class DialogoEstilizado(QDialog):
         # claro
             bg_cor = "white"
             text_cor = "black"
+            lineedit_bg = "black"
             button_style = """
                 QPushButton {
                     background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
@@ -148,6 +157,13 @@ class DialogoEstilizado(QDialog):
                 QComboBox QAbstractItemView::item:selected {
                     background-color: #a0d1ff;
                     color: black;
+                }
+            """
+            dialog_style = """
+                QDialog {
+                    background-color: white;
+                    color: black;
+                    font-size: 12px;
                 }
             """
             lineedit_style = """
@@ -470,4 +486,53 @@ class FiltroUsuarioDialog(DialogoEstilizado):
 
     def get_valores(self):
         return self.combo.currentText(), self.txt_entrada.text()
+    
 
+
+class FiltroProdutoDialog(DialogoEstilizado):
+    def __init__(self, parent=None):
+        super().__init__(parent=parent)
+        self.setWindowTitle("Filtrar Produtos")
+
+        self.layout = QVBoxLayout(self)
+        self.layout.setSpacing(15)
+        self.layout.setContentsMargins(20, 20, 20, 20)
+
+        # Label e ComboBox com as opções
+        self.layout.addWidget(QLabel("Escolha o tipo de filtro:"))
+        self.combo = QComboBox()
+        self.filtros = [
+            "Filtrar por Produto", "Filtrar Por Data do Cadastro", "Filtrar Por Usuário",
+            "Filtrar Por Cliente", "Filtrar Por Código do Produto",
+        ]
+        self.combo.addItems(self.filtros)
+        self.layout.addWidget(self.combo)
+
+        # Label + QLineEdit
+        self.label_criterio = QLabel("Nome do Produto:")
+        self.txt_entrada = QLineEdit()
+        self.layout.addWidget(self.label_criterio)
+        self.layout.addWidget(self.txt_entrada)
+
+        # Botões da classe base
+        self.botoes.button(QDialogButtonBox.Ok).setText("Filtrar")
+        self.layout.addWidget(self.botoes)
+
+        # Conecta eventos
+        self.combo.currentIndexChanged.connect(self.atualizar_label_produto)
+
+    def atualizar_label_produto(self):
+        texto = self.combo.currentText()
+        mapeamento = {
+            "Filtrar por Produto": "Nome do Produto:",
+            "Filtrar Por Data do Cadastro": "Data do Cadastro",
+            "Filtrar Por Usuário": "Usuário",
+            "Filtrar Por Cliente": "Cliente",
+		    "Filtrar Por Código do Produto": "Código do Produto"
+        }
+        self.label_criterio.setText(mapeamento.get(texto, "Digite o valor: "))
+
+    def get_valores(self):
+        criterio = self.combo.currentText()
+        valor = self.txt_entrada.text().strip()
+        return criterio, valor
