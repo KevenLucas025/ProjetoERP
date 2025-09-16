@@ -2694,9 +2694,9 @@ class Clientes_Fisicos(QWidget):
                 }
 
                 QGroupBox QLineEdit {
-                    color: black;
-                    background-color: rgb(240, 240, 240);
-                    border: 3px solid rgb(50, 150,250);
+                    color: white;
+                    background-color: #2b2b2b;
+                    border: 3px solid rgb(255, 255,255);
                     border-radius: 12px;
                     padding: 3px;
                 }

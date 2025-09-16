@@ -238,8 +238,16 @@ class Ui_MainWindow(object):
         self.frame.setSizePolicy(sizePolicy)
         self.frame.setFrameShape(QFrame.StyledPanel)
         self.frame.setFrameShadow(QFrame.Raised)
-        self.gridLayout_4 = QGridLayout(self.frame)
-        self.gridLayout_4.setObjectName(u"gridLayout_4")
+        self.gridLayout_7 = QGridLayout(self.frame)
+        self.gridLayout_7.setObjectName(u"gridLayout_7")
+        self.verticalSpacer_2 = QSpacerItem(20, 98, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
+
+        self.gridLayout_7.addItem(self.verticalSpacer_2, 0, 2, 1, 1)
+
+        self.horizontalSpacer_6 = QSpacerItem(470, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+
+        self.gridLayout_7.addItem(self.horizontalSpacer_6, 1, 0, 1, 2)
+
         self.label_imagem_sistema = QLabel(self.frame)
         self.label_imagem_sistema.setObjectName(u"label_imagem_sistema")
         sizePolicy.setHeightForWidth(self.label_imagem_sistema.sizePolicy().hasHeightForWidth())
@@ -254,16 +262,45 @@ class Ui_MainWindow(object):
         self.label_imagem_sistema.setWordWrap(False)
         self.label_imagem_sistema.setOpenExternalLinks(False)
 
-        self.gridLayout_4.addWidget(self.label_imagem_sistema, 0, 0, 1, 1)
+        self.gridLayout_7.addWidget(self.label_imagem_sistema, 1, 2, 1, 1)
 
-        self.label_bem_vindo = QLabel(self.frame)
+        self.horizontalSpacer_9 = QSpacerItem(490, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+
+        self.gridLayout_7.addItem(self.horizontalSpacer_9, 1, 3, 1, 2)
+
+        self.verticalSpacer_4 = QSpacerItem(20, 94, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
+
+        self.gridLayout_7.addItem(self.verticalSpacer_4, 2, 2, 1, 1)
+
+        self.frame_15 = QFrame(self.frame)
+        self.frame_15.setObjectName(u"frame_15")
+        self.frame_15.setFrameShape(QFrame.StyledPanel)
+        self.frame_15.setFrameShadow(QFrame.Raised)
+        self.gridLayout_4 = QGridLayout(self.frame_15)
+        self.gridLayout_4.setObjectName(u"gridLayout_4")
+        self.label_bem_vindo = QLabel(self.frame_15)
         self.label_bem_vindo.setObjectName(u"label_bem_vindo")
         sizePolicy.setHeightForWidth(self.label_bem_vindo.sizePolicy().hasHeightForWidth())
         self.label_bem_vindo.setSizePolicy(sizePolicy)
         self.label_bem_vindo.setMaximumSize(QSize(502, 234))
         self.label_bem_vindo.setAlignment(Qt.AlignCenter)
 
-        self.gridLayout_4.addWidget(self.label_bem_vindo, 2, 0, 1, 1)
+        self.gridLayout_4.addWidget(self.label_bem_vindo, 0, 0, 1, 1)
+
+
+        self.gridLayout_7.addWidget(self.frame_15, 3, 1, 2, 3)
+
+        self.horizontalSpacer_14 = QSpacerItem(317, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+
+        self.gridLayout_7.addItem(self.horizontalSpacer_14, 3, 4, 1, 1)
+
+        self.horizontalSpacer_13 = QSpacerItem(341, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+
+        self.gridLayout_7.addItem(self.horizontalSpacer_13, 4, 0, 1, 1)
+
+        self.verticalSpacer_3 = QSpacerItem(20, 148, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
+
+        self.gridLayout_7.addItem(self.verticalSpacer_3, 5, 2, 1, 1)
 
 
         self.gridLayout_3.addWidget(self.frame, 1, 0, 1, 1)
