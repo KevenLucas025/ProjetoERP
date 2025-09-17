@@ -462,8 +462,8 @@ class Pagina_Configuracoes(QWidget):
                     stop:1 rgb(80, 80, 80)
                 );
             }
-            /* Item em hover/selecionado */
-            QToolButton#btn_mais_opcoes QMenu::item:selected {
+    
+            QMenu::item:selected {
                 background-color: #696969;
                 color: white;
             }
@@ -827,7 +827,9 @@ class Pagina_Configuracoes(QWidget):
                 background: transparent;
                 border: none;  
             }
-
+            QPushButton#btn_incluir_produto_sistema{
+                font-size: 12px;
+            }
             QPushButton{
                 color: rgb(255, 255, 255);
                 border-radius: 8px;
@@ -950,7 +952,7 @@ class Pagina_Configuracoes(QWidget):
             QDateEdit {
                 color: black; 
                 background-color: white; 
-                border: 3px solid #ffffff;
+                border: 3px solid rgb(50,150,250);
                 border-radius: 5px;
                 padding: 2px 5px;
             }
@@ -1079,8 +1081,6 @@ class Pagina_Configuracoes(QWidget):
                 border-radius: 5px;
             }
 
-            
-
             /* Remove os botões */
             QTableView QScrollBar::add-line:vertical,
             QTableView QScrollBar::sub-line:vertical {
@@ -1151,6 +1151,7 @@ class Pagina_Configuracoes(QWidget):
             QFrame#frame_valor_com_desconto1,
             QFrame#frame_quantidade{
                 background-color: rgb(100, 200, 100); 
+                border-radius: 10px;
             }
             QLabel#label_titulo,
             QLabel#label_valor{
@@ -1173,7 +1174,7 @@ class Pagina_Configuracoes(QWidget):
                 border: 3px solid rgb(50,150,250);
                 border-radius: 13px;  /* Aumentei o valor para deixar a borda mais redonda */
                 background-color: #f0f0f0;  /* Cor cinza claro */
-                min-height: 10px;  /* <- Adicione isso */
+                min-height: 10px;  
             }
 
             QProgressBar::chunk {
@@ -1234,6 +1235,12 @@ class Pagina_Configuracoes(QWidget):
                 background-color: #0078d7;
                 color: white;
             }
+            QFrame#frame_page_verificar_usuarios,
+            QFrame#frame_pag_estoque,
+            QFrame#frame_10,
+            QFrame#frame_8{
+                border: 2px solid white;
+            }  
             
             
         """
@@ -1266,7 +1273,7 @@ class Pagina_Configuracoes(QWidget):
         btn_tema.setPopupMode(QToolButton.InstantPopup)
         btn_tema.setToolButtonStyle(Qt.ToolButtonTextOnly)
         btn_tema.setCursor(Qt.PointingHandCursor)
-        btn_tema.setObjectName("btn_classe_tema")  # identifica para o modo clássico
+        btn_tema.setObjectName("btn_classe_tema") 
         btn_tema.setFixedHeight(38)
         menu_tema = QMenu(self.janela_config)
         menu_tema.addAction("Modo escuro", self.aplicar_modo_escuro)

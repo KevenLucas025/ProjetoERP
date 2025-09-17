@@ -2983,6 +2983,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                     color: white;
                     font-size: 12px;
                 }
+                           
+                                
                 QMessageBox {
                     background: qlineargradient(
                         x1: 0, y1: 0,
