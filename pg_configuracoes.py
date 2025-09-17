@@ -668,6 +668,226 @@ class Pagina_Configuracoes(QWidget):
     def aplicar_modo_classico_sem_progress(self):
         self.finalizar_aplicacao_modo_classico(progress_dialog=None)
 
+    def aplicar_tema_claro(self):
+        style_sheet = """
+            QMainWindow, QStackedWidget, QWidget {
+                background-color: #ffffff;
+                color: #000000;
+            }
+            /* QTableView com seleção diferenciada */
+            QTableView {
+                background-color: #ffffff;
+                color: black;
+                gridline-color: #cccccc;
+                selection-background-color: #0078d7; /* azul Windows */
+                selection-color: #ffffff;
+                border: 1px solid #dddddd;
+            }
+
+            /* Cabeçalhos da tabela */
+            QHeaderView::section {
+                background-color: #f5f5f5;
+                color: #000000;
+                border: 1px solid #cccccc;
+                padding: 4px;
+            }
+
+            /* Estilo para item selecionado */
+            QTableWidget::item:selected {
+                background-color: #0078d7; /* Azul moderno */
+                color: #ffffff;
+            }
+
+            /* QTabWidget - modo claro */
+            QTabWidget::pane {
+                border: 1px solid #cccccc;
+                background-color: #ffffff;
+            }
+
+            QTabWidget#tab_clientes_todos::pane {
+                border: none;
+            }
+
+            /* Scrollbar horizontal */
+            QTableView QScrollBar:horizontal {
+                border: none;
+                background-color: #f0f0f0;
+                height: 12px;
+                margin: 0px;
+                border-radius: 5px;
+            }
+
+            /* Scrollbar vertical */
+            QTableView QScrollBar:vertical {
+                border: none;
+                background-color: #f0f0f0;
+                width: 12px;
+                margin: 0px;
+                border-radius: 5px;
+            }
+
+            /* Parte que você arrasta - Handle */
+            QTableView QScrollBar::handle:vertical {
+                background-color: #b0b0b0;  /* cinza claro */
+                min-height: 22px;
+                border-radius: 5px;
+            }
+
+            QTableView QScrollBar::handle:horizontal {
+                background-color: #b0b0b0;
+                min-width: 22px;
+                border-radius: 5px;
+            }
+
+            /* Groove horizontal */
+            QTableView QScrollBar::groove:horizontal {
+                background-color: #e0e0e0;
+                border-radius: 5px;
+                height: 15px;
+                margin: 0px 10px 0px 10px;
+            }
+
+            /* Groove vertical */
+            QTableView QScrollBar::groove:vertical {
+                background-color: #e0e0e0;
+                border-radius: 5px;
+                width: 15px;
+                margin: 10px 0px 10px 0px;
+            }
+
+            QMessageBox {
+                background: qlineargradient(
+                    x1: 0, y1: 0,
+                    x2: 0, y2: 1,
+                    stop: 0 #ffffff,       /* branco puro no topo */
+                    stop: 0.2 #f5f5f5,     /* branco acinzentado na faixa */
+                    stop: 1 #c0c0c0       /* branco acinzentado no resto */
+                );
+                color: black;
+            }
+            QMessageBox QLabel{
+                background: transparent;
+                color: black
+            }
+            QMessageBox QPushButton {
+                background-color: #ffffff;
+                color: black;
+                border: 1px solid #0078d7;
+                padding: 2px 10px;
+                border-radius: 6px;
+                min-width: 40px;
+                min-height: 10px; 
+                font-size: 12px; 
+            }
+            
+            QMessageBox QPushButton:hover {
+                background-color: #e6f0fa;
+            }
+
+            QMessageBox QPushButton:pressed {
+                background-color: #c7d7f9;
+            }
+            /* Botões gerais - Modo Claro */
+            QPushButton {
+                border-radius: 8px;
+                background: qlineargradient(
+                    x1:0, y1:0, x2:0, y2:1,
+                    stop:0 rgb(220, 220, 220),  /* topo */
+                    stop:1 rgb(245, 245, 245)   /* base */
+                );
+                font-size: 14px;
+                color: #000000; /* texto escuro */
+            }
+
+            QPushButton:hover {
+                background-color: #e0e0e0;
+            }
+
+            QPushButton:pressed {
+                background-color: #d0d0d0;
+                border: 2px solid #aaaaaa;
+            }
+            QPushButton#btn_login {
+                font-size: 16px;
+                border: 3px solid transparent;
+            }
+
+            QMenu {
+                background-color: white;
+                color: black;
+                border: 1px solid gray;
+            }
+
+            QMenu::item {
+                background-color: white;
+                color: black;
+            }
+
+            QMenu::item:selected {
+                background-color: #0078d7; /* Azul para item selecionado */
+                color: white;
+            }
+
+            QMenu::separator {
+                height: 1px;
+                background: gray;
+                margin: 5px 10px;
+            }
+            QPushButton#botao_lupa_juridicos,
+            QPushButton#botao_lupa_fisicos {
+                qproperty-icon: url("imagens/botao_lupa.png");
+                qproperty-iconSize: 16px 16px;
+                background: transparent;
+                border: none;
+            }
+            QPushButton#btn_mostrar_senha{
+                qproperty-icon: url("imagens/olho_preto.png");
+                qproperty-iconSize: 16px 16px;
+                background: transparent;
+                border: none;  
+            }
+            QLineEdit#txt_usuario,
+            QLineEdit#txt_senha{
+                border: 2px solid #0078d4;  /* Cor da borda */
+                border-radius: 5px;          /* Bordas arredondadas */
+                padding: 5px;                /* Espaçamento interno */
+                color: black
+        
+            }
+            QLineEdit {
+                color: #000000; /* texto preto */
+                background-color: #ffffff; /* fundo branco */
+                border: 2px solid #0078d4; /* azul moderno, como nos botões */
+                border-radius: 6px;
+                padding: 3px;
+                selection-background-color: #cce4f7; /* azul claro na seleção */
+                selection-color: #000000; /* texto preto na seleção */
+            }
+
+            QLineEdit::placeholderText {
+                color: #888888; /* placeholder em cinza médio */
+            }
+            QLineEdit:focus {
+                border: 2px solid #005a9e; /* Azul mais escuro ao focar */
+                background-color: #f0f8ff; /* Leve destaque no fundo */
+            }
+
+        
+            QToolButton {
+                background-color: #f0f0f0;
+                color: #000000;
+            }
+        """
+
+        # Iterar sobre todos os widgets da aplicação e aplicar o estilo
+        app = QApplication.instance()
+        for widget in app.allWidgets():
+            widget.setStyleSheet(style_sheet)
+        
+        # Salvar no JSON que o tema agora é claro
+        self.config.tema = "claro"
+        self.config.salvar(self.config.usuario, self.config.senha, self.config.mantem_conectado)
+
 
     def aplicar_modo_claro(self):
         if self.config.tema == "claro":
@@ -687,29 +907,31 @@ class Pagina_Configuracoes(QWidget):
         QTimer.singleShot(3000, lambda: self.finalizar_aplicacao_modo_claro(progress_dialog))
 
     def finalizar_aplicacao_modo_claro(self,progress_dialog):
+        if self.config.tema == "claro":
+            # Já está no modo classico, não precisa pedir reinício
+            return
         if progress_dialog is not None:
-            progress_dialog.accept()  # Oculta o diálogo de progresso
+            progress_dialog.accept()
 
-        style_sheet = """
-            QMainWindow, QStackedWidget, QWidget, QFrame,QTableWidget {
-                background-color: #ffffff;
-                color: #000000;
-            }
-            
+        resposta = QMessageBox.question(
+            None,
+            "Reinício Necessário",
+            "Para aplicar completamente o tema Claro, é necessário reiniciar a aplicação.\nDeseja reiniciar agora?",
+            QMessageBox.Yes | QMessageBox.No,
+            QMessageBox.No 
+        )
 
-            QToolButton {
-                background-color: #f0f0f0;
-                color: #000000;
-            }
-        """
-        # Iterar sobre todos os widgets da aplicação e aplicar o estilo
-        app = QApplication.instance()
-        for widget in app.allWidgets():
-            widget.setStyleSheet(style_sheet)
-        
-        # Salvar no JSON que o tema agora é escuro
-        self.config.tema = "claro"
-        self.config.salvar(self.config.usuario, self.config.senha, self.config.mantem_conectado)
+        if resposta == QMessageBox.Yes:
+            self.config.tema = "claro"
+            self.config.salvar(self.config.usuario, self.config.senha, self.config.mantem_conectado)
+            self.reiniciar_sistema()
+        else:
+            QMessageBox.information(
+                None,
+                "Tema não aplicado",
+                "O tema Clássico será aplicado apenas após a reinicialização."
+            )
+
 
     def finalizar_aplicacao_modo_classico(self, progress_dialog):
         if self.config.tema == "classico":
@@ -756,7 +978,7 @@ class Pagina_Configuracoes(QWidget):
 
     def aplicar_tema_classico(self):
         style_sheet = """
-            QMainWindow, QStackedWidget, QWidget, QFrame,QTableWidget {
+            QMainWindow, QStackedWidget, QWidget, QFrame {
                 background-color: #005079;
                 color: #ffffff;
             }
@@ -1249,7 +1471,7 @@ class Pagina_Configuracoes(QWidget):
         for widget in app.allWidgets():
             widget.setStyleSheet(style_sheet)
         
-        # Salvar no JSON que o tema agora é escuro
+        # Salvar no JSON que o tema agora é clássico
         self.config.tema = "classico"
         self.config.salvar(self.config.usuario, self.config.senha, self.config.mantem_conectado)
 
