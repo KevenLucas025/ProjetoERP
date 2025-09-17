@@ -1,15 +1,14 @@
 #*********************************************************************************************************************
 import re
 from PySide6.QtCore import (Qt, QTimer, QDate, QBuffer, QByteArray, QIODevice, Signal,
-                            QEvent,QPropertyAnimation,QEasingCurve,QSize,QPoint)
+                            QEvent)
 from PySide6 import QtCore
 from PySide6.QtWidgets import (QMainWindow, QMessageBox, QPushButton,
                                QLabel, QFileDialog, QVBoxLayout,
                                QMenu,QTableWidgetItem,QCheckBox,QApplication,QToolButton,QHeaderView,QCompleter,
-                               QComboBox,QInputDialog,QProgressDialog,QDialog,QSizePolicy)
+                               QComboBox,QInputDialog,QProgressDialog,QDialog,QWidget,QTableWidget)
 from PySide6.QtGui import (QDoubleValidator, QIcon, QColor, QPixmap,QBrush,
                            QAction,QMovie,QImage,QShortcut,QKeySequence)
-from PySide6 import QtWidgets
 from login import Login
 from mane_python import Ui_MainWindow
 from database import DataBase
@@ -149,7 +148,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.table_saida.setShowGrid(True)
         self.table_ativos.setShowGrid(True)
         self.table_inativos.setShowGrid(True)
-        #self.table_base.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        
 
 
         # funções que precisam do banco de dados
@@ -643,7 +642,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                     " seja feito de forma responsável. ")
                     
         msg.exec()
-        
 
     def mostrar_page_estoque(self):
         # Navegar para a página de estoque
@@ -2921,8 +2919,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if hasattr(sys, '_MEIPASS'):
             return os.path.join(sys._MEIPASS, relative_path)
         return os.path.join(os.path.abspath("."), relative_path)
-
-
     # Cria a pasta "DadosSistema" na mesma pasta do executável
     base_dir = os.path.dirname(os.path.abspath(__file__))
     pasta_dados = os.path.join(base_dir, "DadosSistema")
@@ -3001,8 +2997,16 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
             QMessageBox QPushButton:pressed {
                 background-color: #c7d7f9;
-            }             
-            """)
+            }
+            QLabel#label_primeiro_acesso,
+            QLabel#label_trocar_senha {
+                color: #0078d7;  /* azul Windows */
+                font-weight: normal;
+                text-decoration: underline; /* opcional, se quiser parecer um link */
+            }
+             
+            """) 
+            
         else:  # clássico
             app.setStyleSheet("""
                 QWidget {

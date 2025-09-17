@@ -460,21 +460,23 @@ class Clientes_Juridicos(QWidget):
             lineedit_bg = "white"
             button_style = """
                 QPushButton {
-                    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                                                stop:0 rgb(50,150,250),
-                                                stop:1 rgb(100,200,255));
-                    color: black;
-                    border-radius: 8px;
-                    font-size: 12px;
-                    border: 2px solid rgb(50,150,250);
-                    padding: 6px;
+                border-radius: 8px;
+                background: qlineargradient(
+                    x1:0, y1:0, x2:0, y2:1,
+                    stop:0 rgb(220, 220, 220),  /* topo */
+                    stop:1 rgb(245, 245, 245)   /* base */
+                );
+                font-size: 14px;
+                color: #000000; /* texto escuro */
                 }
+
                 QPushButton:hover {
-                    background-color: #e5f3ff;
+                    background-color: #e0e0e0;
                 }
+
                 QPushButton:pressed {
-                    background-color: #cce7ff;
-                    border: 2px solid #3399ff;
+                    background-color: #d0d0d0;
+                    border: 2px solid #aaaaaa;
                 }
             """
             combobox_style = """
@@ -941,21 +943,44 @@ class Clientes_Juridicos(QWidget):
 
             button_style = """
                 QPushButton {
-                    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                                                stop:0 rgb(50,150,250),
-                                                stop:1 rgb(100,200,255));
-                    color: black;
-                    border-radius: 8px;
-                    font-size: 16px;
-                    border: 2px solid rgb(50,150,250);
-                    padding: 6px;
+                border-radius: 8px;
+                background: qlineargradient(
+                    x1:0, y1:0, x2:0, y2:1,
+                    stop:0 rgb(220, 220, 220),  /* topo */
+                    stop:1 rgb(245, 245, 245)   /* base */
+                );
+                font-size: 14px;
+                color: #000000; /* texto escuro */
                 }
+
                 QPushButton:hover {
-                    background-color: #e5f3ff;
+                    background-color: #e0e0e0;
                 }
+
                 QPushButton:pressed {
-                    background-color: #cce7ff;
-                    border: 2px solid #3399ff;
+                    background-color: #d0d0d0;
+                    border: 2px solid #aaaaaa;
+                }
+            """
+            scroll_style = """
+                QScrollBar:vertical {
+                    border: none;
+                    background-color: #f0f0f0;
+                    width: 12px;
+                    margin: 0px;
+                    border-radius: 5px;
+                }
+                QScrollBar::handle:vertical {
+                    background-color: #b0b0b0;  /* cinza claro */
+                    min-height: 22px;
+                    border-radius: 5px;
+                }
+                /* Groove vertical */
+                QTableView QScrollBar::groove:vertical {
+                    background-color: #e0e0e0;
+                    border-radius: 5px;
+                    width: 15px;
+                    margin: 10px 0px 10px 0px;
                 }
             """
             combobox_style = """
@@ -983,7 +1008,6 @@ class Clientes_Juridicos(QWidget):
                     min-height: 20px;
                     border-radius: 5px;
                 }
-                
             """
             lineedit_style = """
                 QLineEdit {
@@ -1778,7 +1802,8 @@ class Clientes_Juridicos(QWidget):
             }
             QCheckBox::indicator {
                 background-color: transparent;
-                border: 1px solid gray;
+                border: 1px solid gray:
+                border-radius: 2px;
                 width: 11px;
                 height: 11px;
             }
@@ -2147,21 +2172,23 @@ class Clientes_Juridicos(QWidget):
 
             button_style = """
                 QPushButton {
-                    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                                                stop:0 rgb(50,150,250),
-                                                stop:1 rgb(100,200,255));
-                    color: black;
-                    border-radius: 8px;
-                    font-size: 16px;
-                    border: 2px solid rgb(50,150,250);
-                    padding: 6px;
+                border-radius: 8px;
+                background: qlineargradient(
+                    x1:0, y1:0, x2:0, y2:1,
+                    stop:0 rgb(220, 220, 220),  /* topo */
+                    stop:1 rgb(245, 245, 245)   /* base */
+                );
+                font-size: 14px;
+                color: #000000; /* texto escuro */
                 }
+
                 QPushButton:hover {
-                    background-color: #e5f3ff;
+                    background-color: #e0e0e0;
                 }
+
                 QPushButton:pressed {
-                    background-color: #cce7ff;
-                    border: 2px solid #3399ff;
+                    background-color: #d0d0d0;
+                    border: 2px solid #aaaaaa;
                 }
             """
             combobox_style = """
@@ -2193,14 +2220,17 @@ class Clientes_Juridicos(QWidget):
             """
             scroll_style = """
                 QScrollBar:vertical {
-                    background: #f5f5f5;
-                    width: 12px;
                     border: none;
+                    background-color: #f0f0f0;
+                    width: 12px;
+                    margin: 0px;
+                    border-radius: 5px;
                 }
 
+                /* Parte que você arrasta - Handle */
                 QScrollBar::handle:vertical {
-                    background: #cccccc;
-                    min-height: 20px;
+                    background-color: #b0b0b0;  /* cinza claro */
+                    min-height: 22px;
                     border-radius: 5px;
                 }
 
@@ -2210,6 +2240,13 @@ class Clientes_Juridicos(QWidget):
                 QScrollBar::sub-page:vertical {
                     background: none;
                     height: 0px;
+                }
+                /* Groove vertical */
+                QScrollBar::groove:vertical {
+                    background-color: #e0e0e0;
+                    border-radius: 5px;
+                    width: 15px;
+                    margin: 10px 0px 10px 0px;
                 }
             """
             table_view_style = """
@@ -2233,32 +2270,51 @@ class Clientes_Juridicos(QWidget):
                     background-color: white;
                 }
 
-                QTableView QScrollBar:horizontal,
+                /* Scrollbar vertical */
+                QTableView QScrollBar:horizontal {
+                    border: none;
+                    background-color: #f0f0f0;
+                    width: 12px;
+                    margin: 0px;
+                    border-radius: 5px;
+                }
+                
+                /* Scrollbar vertical */
                 QTableView QScrollBar:vertical {
                     border: none;
-                    background-color: #f5f5f5;
+                    background-color: #f0f0f0;
+                    width: 12px;
+                    margin: 0px;
                     border-radius: 5px;
                 }
 
-                QTableView QScrollBar::handle:vertical,
-                QTableView QScrollBar::handle:horizontal {
-                    background-color: #cccccc;
+                /* Parte que você arrasta - Handle */
+                QTableView QScrollBar::handle:vertical {
+                    background-color: #b0b0b0;  /* cinza claro */
                     min-height: 22px;
                     border-radius: 5px;
                 }
 
+                QTableView QScrollBar::handle:horizontal {
+                    background-color: #b0b0b0;
+                    min-width: 22px;
+                    border-radius: 5px;
+                }
+
+                /* Groove horizontal */
                 QTableView QScrollBar::groove:horizontal {
-                    background-color: transparent;
+                    background-color: #e0e0e0;
                     border-radius: 5px;
                     height: 15px;
                     margin: 0px 10px 0px 10px;
                 }
 
+                /* Groove vertical */
                 QTableView QScrollBar::groove:vertical {
-                    background-color: transparent;
+                    background-color: #e0e0e0;
                     border-radius: 5px;
-                    width: 25px;
-                    margin: 10px 0px 10px 10px;
+                    width: 15px;
+                    margin: 10px 0px 10px 0px;
                 }
 
                 QTableWidget::item:selected {
@@ -3510,21 +3566,23 @@ class Clientes_Juridicos(QWidget):
 
             button_style = """
                 QPushButton {
-                    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                                                stop:0 rgb(50,150,250),
-                                                stop:1 rgb(100,200,255));
-                    color: black;
                     border-radius: 8px;
+                    background: qlineargradient(
+                        x1:0, y1:0, x2:0, y2:1,
+                        stop:0 rgb(220, 220, 220),  /* topo */
+                        stop:1 rgb(245, 245, 245)   /* base */
+                    );
                     font-size: 16px;
-                    border: 2px solid rgb(50,150,250);
-                    padding: 6px;
+                    color: #000000; /* texto escuro */
                 }
+
                 QPushButton:hover {
-                    background-color: #e5f3ff;
+                    background-color: #e0e0e0;
                 }
+
                 QPushButton:pressed {
-                    background-color: #cce7ff;
-                    border: 2px solid #3399ff;
+                    background-color: #d0d0d0;
+                    border: 2px solid #aaaaaa;
                 }
             """
             combobox_style = """
@@ -3554,6 +3612,27 @@ class Clientes_Juridicos(QWidget):
                 }
                 
             """
+            scroll_style = """
+                QScrollBar:vertical {
+                    border: none;
+                    background-color: #f0f0f0;
+                    width: 12px;
+                    margin: 0px;
+                    border-radius: 5px;
+                }
+                QScrollBar::handle:vertical {
+                    background-color: #b0b0b0;  /* cinza claro */
+                    min-height: 22px;
+                    border-radius: 5px;
+                }
+                /* Groove vertical */
+                QScrollBar::groove:vertical {
+                    background-color: #e0e0e0;
+                    border-radius: 5px;
+                    width: 15px;
+                    margin: 10px 0px 10px 0px;
+                }
+            """
             lineedit_style = """
                 QLineEdit {
                     background-color: white;
@@ -3573,8 +3652,8 @@ class Clientes_Juridicos(QWidget):
                 /* Estilo geral do QDateEdit */
                 QDateEdit {
                     color: black; 
-                    background-color: 2b2b2b; 
-                    border: 1px solid 3399ff;
+                    background-color: white; 
+                    border: 2px solid #0078d4;
                     border-radius: 5px;
                     padding: 2px 5px;
                 }
@@ -3588,13 +3667,13 @@ class Clientes_Juridicos(QWidget):
 
                 /* Cor de fundo do calendário popup */
                 QDateEdit QCalendarWidget {
-                    background-color: 2b2b2b;
+                    background-color: white;
                     border: 1px solid #555555;
                 }
 
                 /* Dias normais */
                 QDateEdit QCalendarWidget QAbstractItemView:enabled {
-                    background-color: #2b2b2b;
+                    background-color: white;
                     color: black;
                     selection-background-color: rgb(0, 120, 215); /* Azul no dia selecionado */
                     selection-color: white;

@@ -252,8 +252,7 @@ QLineEdit::placeholder {
         </size>
        </property>
        <property name="text">
-        <string>&lt;a href=&quot;primeiro_acesso&quot; style=&quot;color: white;&quot;&gt;Primeiro acesso?&lt;/a&gt;
-</string>
+        <string>&lt;a href=&quot;primeiro_acesso&quot;&gt;Primeiro acesso?&lt;/a&gt;</string>
        </property>
       </widget>
       <widget class="QCheckBox" name="btn_manter_conectado">
@@ -306,7 +305,7 @@ QLineEdit::placeholder {
         </size>
        </property>
        <property name="text">
-        <string>&lt;a href=&quot;trocar_senha&quot; style=&quot;color: white;&quot;&gt;Esqueci a senha&lt;/a&gt;</string>
+        <string>&lt;a href=&quot;trocar_senha&quot;&gt;Esqueci a senha&lt;/a&gt;</string>
        </property>
       </widget>
       <widget class="QPushButton" name="btn_login">

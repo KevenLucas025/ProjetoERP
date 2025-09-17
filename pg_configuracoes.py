@@ -1,7 +1,8 @@
 from PySide6.QtWidgets import (QWidget,QMenu, QVBoxLayout, 
-                               QProgressBar,QApplication,QDialog,QMessageBox,QToolButton,QMainWindow,QSizePolicy)
-from PySide6.QtCore import Qt, QTimer
-from PySide6.QtGui import QIcon
+                               QProgressBar,QApplication,QDialog,QMessageBox,
+                               QToolButton,QMainWindow)
+from PySide6.QtCore import Qt, QTimer,QDate
+from PySide6.QtGui import QIcon,QColor,QTextCharFormat
 import os
 import json
 from login import Login
@@ -597,12 +598,12 @@ class Pagina_Configuracoes(QWidget):
             QFrame#frame_8{
                 border: 2px solid white;
             }
+            
 
             
         """
         app = QApplication.instance()
-        for widget in app.allWidgets():
-            widget.setStyleSheet(style_sheet)
+        app.setStyleSheet(style_sheet)
 
         self.btn_opcoes.setIcon(QIcon("imagens/imagens_modo_escuro/seta direita preta.png")) #Esse botão é o botão de retroceder, nomenclatura errada
         self.btn_retroceder.setIcon(QIcon("imagens/imagens_modo_escuro/seta esquerda preta.png")) # Esse botão é o botão avançar, nomenclatura errada
@@ -682,6 +683,9 @@ class Pagina_Configuracoes(QWidget):
                 selection-background-color: #0078d7; /* azul Windows */
                 selection-color: #ffffff;
                 border: 1px solid #dddddd;
+            }
+            QTableView::item {
+                color: black;
             }
 
             /* Cabeçalhos da tabela */
@@ -787,7 +791,7 @@ class Pagina_Configuracoes(QWidget):
             QMessageBox QPushButton:pressed {
                 background-color: #c7d7f9;
             }
-            /* Botões gerais - Modo Claro */
+            /* Botões gerais */
             QPushButton {
                 border-radius: 8px;
                 background: qlineargradient(
@@ -827,7 +831,6 @@ class Pagina_Configuracoes(QWidget):
                 background-color: #0078d7; /* Azul para item selecionado */
                 color: white;
             }
-
             QMenu::separator {
                 height: 1px;
                 background: gray;
@@ -871,14 +874,143 @@ class Pagina_Configuracoes(QWidget):
                 border: 2px solid #005a9e; /* Azul mais escuro ao focar */
                 background-color: #f0f8ff; /* Leve destaque no fundo */
             }
-
-        
-            QToolButton {
-                background-color: #f0f0f0;
-                color: #000000;
+            QLabel#label_estoque,
+            QLabel#label_saida,
+            QLabel#label_ativos,
+            QLabel#label_inativos{
+                border: 3px solid  #cccccc;
             }
-        """
+            QComboBox#perfil_estado,
+            QComboBox#perfil_usuarios {
+                color: #2b2b2b;                 /* Texto escuro */
+                border: 2px solid #0078d4;      /* Borda cinza clara */
+                border-radius: 6px;
+                padding: 4px 10px;
+                background-color: #ffffff;      /* Fundo branco */
+            }
 
+            /* Hover em itens do dropdown */
+            QComboBox#perfil_estado QAbstractItemView::item:hover,
+            QComboBox#perfil_usuarios QAbstractItemView::item:hover {
+                background-color: #f0f0f0;      /* Cinza muito claro ao passar o mouse */
+                color: #000000;                 /* Texto preto */
+            }
+
+            /* Item selecionado no dropdown */
+            QComboBox#perfil_estado QAbstractItemView::item:selected,
+            QComboBox#perfil_usuarios QAbstractItemView::item:selected {
+                background-color: #d0d0d0;      /* Cinza médio claro */
+                color: #000000;                 /* Texto preto */
+            }
+
+            /* Altura dos itens */
+            QComboBox#perfil_estado QAbstractItemView::item,
+            QComboBox#perfil_usuarios QAbstractItemView::item {
+                height: 24px;
+            }
+
+            /* Fundo da barra de scroll */
+            QComboBox#perfil_estado QScrollBar:vertical,
+            QComboBox#perfil_usuarios QScrollBar:vertical {
+                background: #f0f0f0;            /* Cor de fundo do scroll */
+                width: 12px;
+                margin: 0px;
+                border-radius: 6px;
+            }
+
+            /* Parte que você arrasta (scroll handle) */
+            QComboBox#perfil_estado QScrollBar::handle:vertical,
+            QComboBox#perfil_usuarios QScrollBar::handle:vertical {
+                background: #b0b0b0;            /* Cinza claro */
+                border-radius: 6px;
+            }
+            QToolButton {
+                border-radius: 8px;
+                background: qlineargradient(
+                    x1:0, y1:0, x2:0, y2:1,
+                    stop:0 rgb(220, 220, 220),  /* topo */
+                    stop:1 rgb(245, 245, 245)   /* base */
+                );
+                color: #000000; /* texto escuro */
+        
+            }
+            QToolButton:hover {
+                background-color: #e0e0e0;
+            }
+
+            QToolButton:pressed {
+                background-color: #d0d0d0;
+                border: 2px solid #aaaaaa;
+            }
+            QDateEdit {
+                color: black;                     /* Texto escuro */
+                background-color: #ffffff;         /* Fundo branco */
+                border: 2px solid #0078d4;         /* Borda cinza clara */
+                border-radius: 5px;
+                padding: 2px 5px;
+            }
+
+            /* Remove o fundo das setas */
+            QDateEdit::up-button, 
+            QDateEdit::down-button {
+                background: transparent;
+                border: none;
+            }
+
+            /* Cor de fundo do calendário popup */
+            QDateEdit QCalendarWidget {
+                background-color: white;
+                border: 1px solid #555555;
+            }
+
+            /* Dias normais */
+            QDateEdit QCalendarWidget QAbstractItemView:enabled {
+                background-color: white;
+                color: black;
+                selection-background-color: rgb(0, 120, 215); /* Azul no dia selecionado */
+                selection-color: white;
+            }
+            /* Botões de navegação (setas) do calendário */
+            QDateEdit QCalendarWidget QToolButton {
+                background: transparent;   /* tira o fundo azul */
+                color: black;              /* deixa as setas pretas */
+                border: none;              /* sem borda */
+                icon-size: 16px 16px;      /* ajusta o tamanho do ícone */
+                padding: 2px;
+            }
+            QDateEdit QCalendarWidget QToolButton:hover {
+                background: rgb(220, 220, 220); /* cinza claro no hover */
+                border-radius: 4px;
+            }
+            /* Popup de meses/anos do calendário (QMenu) */
+            QDateEdit QCalendarWidget QMenu {
+                background-color: white;
+                border: 1px solid #ccc;
+                color: black;
+            }
+
+            QDateEdit QCalendarWidget QMenu::item {
+                background: transparent;
+                color: black;
+                padding: 6px 16px;
+            }
+
+            QDateEdit QCalendarWidget QMenu::item:selected {
+                background: rgb(0, 120, 215);
+                color: white;
+            }
+            QDateEdit QCalendarWidget QToolButton::menu-indicator {
+                image: none;   /* remove o ícone padrão */
+                width: 0px;    /* remove o espaço reservado */
+            }
+            QLabel#label_primeiro_acesso,
+            QLabel#label_trocar_senha {
+                color: #0078d7; /* azul padrão Windows */
+                text-decoration: underline; /* opcional */
+                font-weight: normal;
+            }
+            
+        """
         # Iterar sobre todos os widgets da aplicação e aplicar o estilo
         app = QApplication.instance()
         for widget in app.allWidgets():
@@ -1628,7 +1760,5 @@ class ProgressDialog(QDialog):
     def update_progress(self, value):
         self.progress_bar.setValue(value)
         QApplication.processEvents()
-
-
 
     

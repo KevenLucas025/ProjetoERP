@@ -72,7 +72,7 @@ class DialogoEstilizado(QDialog):
                 }
             """
             scroll_style = """
-                /* Scrollbar vertical */
+            /* Scrollbar vertical */
             QScrollBar:vertical {
                 background: #ffffff;   /* fundo do track */
                 width: 12px;
@@ -119,27 +119,29 @@ class DialogoEstilizado(QDialog):
             """
 
         elif self.tema == "claro":
-        # claro
             bg_cor = "white"
             text_cor = "black"
             lineedit_bg = "black"
             button_style = """
                 QPushButton {
-                    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                                                stop:0 rgb(50,150,250),
-                                                stop:1 rgb(100,200,255));
-                    color: black;
                     border-radius: 8px;
+                    background: qlineargradient(
+                        x1:0, y1:0, x2:0, y2:1,
+                        stop:0 rgb(220, 220, 220),  /* topo */
+                        stop:1 rgb(245, 245, 245)   /* base */
+                    );
                     font-size: 12px;
-                    border: 2px solid rgb(50,150,250);
                     padding: 5px;
+                    color: #000000; /* texto escuro */
                 }
+
                 QPushButton:hover {
-                    background-color: #e5f3ff;
+                    background-color: #e0e0e0;
                 }
+
                 QPushButton:pressed {
-                    background-color: #cce7ff;
-                    border: 2px solid #3399ff;
+                    background-color: #d0d0d0;
+                    border: 2px solid #aaaaaa;
                 }
             """
             combo_style = """
@@ -164,6 +166,27 @@ class DialogoEstilizado(QDialog):
                     background-color: white;
                     color: black;
                     font-size: 12px;
+                }
+            """
+            scroll_style = """
+                QScrollBar:vertical {
+                    border: none;
+                    background-color: #f0f0f0;
+                    width: 12px;
+                    margin: 0px;
+                    border-radius: 5px;
+                }
+                QScrollBar::handle:vertical {
+                    background-color: #b0b0b0;  /* cinza claro */
+                    min-height: 22px;
+                    border-radius: 5px;
+                }
+                /* Groove vertical */
+                QScrollBar::groove:vertical {
+                    background-color: #e0e0e0;
+                    border-radius: 5px;
+                    width: 15px;
+                    margin: 10px 0px 10px 0px;
                 }
             """
             lineedit_style = """
