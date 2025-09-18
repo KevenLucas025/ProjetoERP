@@ -63,6 +63,8 @@ class TabelaProdutos(QMainWindow):
                                                      "Desconto","Valor Total", "Data do Cadastro", "Código do Produto", 
                                                      "Cliente", "Descrição do Produto","Usuário","Status da Saída"])  # Definindo os rótulos das colunas
         
+        self.table_widget.horizontalHeader().setSectionResizeMode(QHeaderView.Interactive)
+        
          # Widget central e layout principal vertical
         widget_central = QWidget()
         # Layout principal da janela
@@ -348,21 +350,22 @@ class TabelaProdutos(QMainWindow):
 
             button_style = """
                 QPushButton {
-                    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                                                stop:0 rgb(50,150,250),
-                                                stop:1 rgb(100,200,255));
-                    color: black;
                     border-radius: 8px;
-                    font-size: 16px;
-                    border: 2px solid rgb(50,150,250);
-                    padding: 6px;
+                    background: qlineargradient(
+                        x1:0, y1:0, x2:0, y2:1,
+                        stop:0 rgb(220, 220, 220),  /* topo */
+                        stop:1 rgb(245, 245, 245)   /* base */
+                    );
+                    color: #000000; /* texto escuro */
                 }
+
                 QPushButton:hover {
-                    background-color: #e5f3ff;
+                    background-color: #e0e0e0;
                 }
+
                 QPushButton:pressed {
-                    background-color: #cce7ff;
-                    border: 2px solid #3399ff;
+                    background-color: #d0d0d0;
+                    border: 2px solid #aaaaaa;
                 }
             """
             combobox_style = """
@@ -431,6 +434,11 @@ class TabelaProdutos(QMainWindow):
                     selection-background-color: #d0e7ff;  /* azul claro */
                     selection-color: black;
                 }
+                QHeaderView:vertical {
+                    background-color: white; 
+                    border: none;              
+                }
+
 
                 /* Cabeçalhos da tabela */
                 QHeaderView::section {

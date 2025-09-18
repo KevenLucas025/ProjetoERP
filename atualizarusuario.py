@@ -47,6 +47,7 @@ class AtualizarUsuario(QDialog):
                         stop:0 rgb(220, 220, 220),   /* topo */
                         stop:1 rgb(255, 255, 255)   /* base */
                     );
+                    font-size: 16px;
                     color: black;
                     padding: 6px;
                 }

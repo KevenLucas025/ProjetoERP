@@ -598,12 +598,12 @@ class Pagina_Configuracoes(QWidget):
             QFrame#frame_8{
                 border: 2px solid white;
             }
-            
 
             
         """
         app = QApplication.instance()
-        app.setStyleSheet(style_sheet)
+        for widget in app.allWidgets():
+            widget.setStyleSheet(style_sheet)
 
         self.btn_opcoes.setIcon(QIcon("imagens/imagens_modo_escuro/seta direita preta.png")) #Esse botão é o botão de retroceder, nomenclatura errada
         self.btn_retroceder.setIcon(QIcon("imagens/imagens_modo_escuro/seta esquerda preta.png")) # Esse botão é o botão avançar, nomenclatura errada
@@ -791,7 +791,7 @@ class Pagina_Configuracoes(QWidget):
             QMessageBox QPushButton:pressed {
                 background-color: #c7d7f9;
             }
-            /* Botões gerais */
+            /* Botões gerais  */
             QPushButton {
                 border-radius: 8px;
                 background: qlineargradient(
@@ -943,73 +943,52 @@ class Pagina_Configuracoes(QWidget):
                 border: 2px solid #aaaaaa;
             }
             QDateEdit {
-                color: black;                     /* Texto escuro */
+                color: #2b2b2b;                     /* Texto escuro */
                 background-color: #ffffff;         /* Fundo branco */
                 border: 2px solid #0078d4;         /* Borda cinza clara */
                 border-radius: 5px;
                 padding: 2px 5px;
             }
 
-            /* Remove o fundo das setas */
-            QDateEdit::up-button, 
-            QDateEdit::down-button {
-                background: transparent;
-                border: none;
-            }
-
-            /* Cor de fundo do calendário popup */
             QDateEdit QCalendarWidget {
-                background-color: white;
-                border: 1px solid #555555;
+                background-color: #ffffff;         /* Fundo branco do calendário */
+                border: 1px solid #cccccc;
             }
 
-            /* Dias normais */
             QDateEdit QCalendarWidget QAbstractItemView:enabled {
-                background-color: white;
-                color: black;
-                selection-background-color: rgb(0, 120, 215); /* Azul no dia selecionado */
-                selection-color: white;
-            }
-            /* Botões de navegação (setas) do calendário */
-            QDateEdit QCalendarWidget QToolButton {
-                background: transparent;   /* tira o fundo azul */
-                color: black;              /* deixa as setas pretas */
-                border: none;              /* sem borda */
-                icon-size: 16px 16px;      /* ajusta o tamanho do ícone */
-                padding: 2px;
-            }
-            QDateEdit QCalendarWidget QToolButton:hover {
-                background: rgb(220, 220, 220); /* cinza claro no hover */
-                border-radius: 4px;
-            }
-            /* Popup de meses/anos do calendário (QMenu) */
-            QDateEdit QCalendarWidget QMenu {
-                background-color: white;
-                border: 1px solid #ccc;
-                color: black;
+                background-color: #ffffff;         /* Fundo branco da grade */
+                color: #2b2b2b;                    /* Texto escuro */
+                selection-background-color: #d0d0d0; /* Fundo do item selecionado */
+                selection-color: #000000;          /* Texto do item selecionado */
             }
 
-            QDateEdit QCalendarWidget QMenu::item {
+            QDateEdit QCalendarWidget QToolButton {
+                color: #2b2b2b;                    /* Setas escuras */
+                min-width: 20px;
+                min-height: 20px;
+                padding: 1px;
                 background: transparent;
-                color: black;
-                padding: 6px 16px;
+            }
+
+            QDateEdit QCalendarWidget QToolButton:hover {
+                background: #e0e0e0;               /* Hover em botão de navegação */
+            }
+
+            QDateEdit QCalendarWidget QMenu {
+                background-color: #ffffff;         /* Fundo do menu */
+                color: #2b2b2b;                    /* Texto do menu */
             }
 
             QDateEdit QCalendarWidget QMenu::item:selected {
-                background: rgb(0, 120, 215);
-                color: white;
+                background: #d0d0d0;               /* Fundo item selecionado */
+                color: #000000;                    /* Texto item selecionado */
             }
             QDateEdit QCalendarWidget QToolButton::menu-indicator {
                 image: none;   /* remove o ícone padrão */
                 width: 0px;    /* remove o espaço reservado */
             }
-            QLabel#label_primeiro_acesso,
-            QLabel#label_trocar_senha {
-                color: #0078d7; /* azul padrão Windows */
-                text-decoration: underline; /* opcional */
-                font-weight: normal;
-            }
             
+
         """
         # Iterar sobre todos os widgets da aplicação e aplicar o estilo
         app = QApplication.instance()
@@ -1760,5 +1739,17 @@ class ProgressDialog(QDialog):
     def update_progress(self, value):
         self.progress_bar.setValue(value)
         QApplication.processEvents()
+
+    def destacar_finais_de_semana(self, date_edit):
+        calendar = self.dateEdit_3.calendarWidget()
+        fmt_vermelho = QTextCharFormat()
+        fmt_vermelho.setForeground(QColor("red"))
+
+        ano_atual = QDate.currentDate().year()
+        for mes in range(1, 13):
+            for dia in range(1, 32):
+                data = QDate(ano_atual, mes, dia)
+                if data.isValid() and data.dayOfWeek() in (6, 7):
+                    calendar.setDateTextFormat(data, fmt_vermelho)
 
     

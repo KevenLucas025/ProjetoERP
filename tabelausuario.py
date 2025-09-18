@@ -62,7 +62,6 @@ class TabelaUsuario(QMainWindow):
         self.table_widget.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
 
 
-
          # Widget central e layout principal vertical
         widget_central = QWidget()
         self.layout_tabela = QVBoxLayout(widget_central)
@@ -415,6 +414,10 @@ class TabelaUsuario(QMainWindow):
                     selection-background-color: #e5f3ff;
                     selection-color: black;
                 }
+                QHeaderView:vertical {
+                    background-color: white; 
+                    border: none;              
+                }
 
                 QHeaderView::section {
                     background-color: #f0f0f0;
@@ -428,7 +431,7 @@ class TabelaUsuario(QMainWindow):
                     background-color: white;
                 }
 
-                /* Scrollbar vertical */
+                /* Scrollbar horizontal */
                 QTableView QScrollBar:horizontal {
                     border: none;
                     background-color: #f0f0f0;
