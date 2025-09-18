@@ -234,114 +234,86 @@ class TabelaUsuario(QMainWindow):
             }
             """
             table_view_style = """
-             /* QTableView com seleção diferenciada */
-            QTableView {
-                background-color: #202124;
-                color: white;
-                gridline-color: #555555;
-                selection-background-color: #7a7a7a;
-                selection-color: white;
-            }
-            /* Coluna dos cabeçalhos */
-            QHeaderView::section {
-                background-color: #ffffff;
-                color: black;
-                border: 1px solid #aaaaaa;
-                padding: 1px;
-            }
+                QTableView {
+                    background-color: white;
+                    color: black;
+                    gridline-color: #ccc;
+                    selection-background-color: #e5f3ff;
+                    selection-color: black;
+                }
 
-            /* QTabWidget headers brancos */
-            QTabWidget::pane {
-                border: 1px solid #444444;
-                background-color: #202124;
-            }
-            /* Estiliza a barra de rolagem horizontal */
-            QTableView QScrollBar:horizontal {
-                border: none;
-                background-color: #ffffff;
-                height: 12px;
-                margin: 0px;
-                border-radius: 5px;
-            }
+                QHeaderView::section {
+                    background-color: #f0f0f0;
+                    color: black;
+                    border: 1px solid #ccc;
+                    padding: 1px;
+                }
 
-            /* Estiliza a barra de rolagem vertical */
-            QTableView QScrollBar:vertical {
-                border: none;
-                background-color: #ffffff;  
-                width: 12px;
-                margin: 0px;
-                border-radius: 5px;
-            }
+                QTabWidget::pane {
+                    border: 1px solid #ccc;
+                    background-color: white;
+                }
 
-            /* QTabWidget headers brancos */
-            QTabWidget::pane {
-                border: 1px solid #444444;
-                background-color: #202124;
-            }
-            /* Estiliza a barra de rolagem horizontal */
-            QTableView QScrollBar:horizontal {
-                border: none;
-                background-color: none;
-                height: 12px;
-                margin: 0px;
-                border-radius: 5px;
-            }
+                /* Scrollbar vertical */
+                QTableView QScrollBar:horizontal {
+                    border: none;
+                    background-color: #f0f0f0;
+                    width: 12px;
+                    margin: 0px;
+                    border-radius: 5px;
+                }
+                
+                /* Scrollbar vertical */
+                QTableView QScrollBar:vertical {
+                    border: none;
+                    background-color: #f0f0f0;
+                    width: 12px;
+                    margin: 0px;
+                    border-radius: 5px;
+                }
 
-            /* Estiliza a barra de rolagem vertical */
-            QTableView QScrollBar:vertical {
-                border: none;
-                background-color: none; 
-                width: 12px;
-                margin: 0px;
-                border-radius: 5px;
-            }
-            
+                /* Parte que você arrasta - Handle */
+                QTableView QScrollBar::handle:vertical {
+                    background-color: #b0b0b0;  /* cinza claro */
+                    min-height: 22px;
+                    border-radius: 5px;
+                }
 
-            /* Parte que você arrasta */
-            QTableView QScrollBar::handle:vertical {
-                background-color: #777777;  /* cinza médio */
-                min-height: 22px;
-                border-radius: 5px;
-            }
+                QTableView QScrollBar::handle:horizontal {
+                    background-color: #b0b0b0;
+                    min-width: 22px;
+                    border-radius: 5px;
+                }
 
-            QTableView QScrollBar::handle:horizontal {
-                background-color: #777777;
-                min-width: 22px;
-                border-radius: 5px;
-            }
+                /* Groove horizontal */
+                QTableView QScrollBar::groove:horizontal {
+                    background-color: #e0e0e0;
+                    border-radius: 5px;
+                    height: 15px;
+                    margin: 0px 10px 0px 10px;
+                }
 
-            /* Groove horizontal */
-            QTableView QScrollBar::groove:horizontal {
-                background-color: transparent;
-                border-radius: 5px;
-                height: 15px;
-                margin: 0px 10px 0px 10px;
-            }
+                /* Groove vertical */
+                QTableView QScrollBar::groove:vertical {
+                    background-color: #e0e0e0;
+                    border-radius: 5px;
+                    width: 15px;
+                    margin: 10px 0px 10px 0px;
+                }
 
-            /* Groove vertical */
-            QTableView QScrollBar::groove:vertical {
-                background-color: transparent;
-                border-radius: 5px;
-                width: 25px;
-                margin: 10px 0px 10px 10px;
-            }
+                QTableWidget::item:selected {
+                    background-color: #cce7ff;
+                    color: black;
+                }
 
-            /* Estilo para item selecionado */
-            QTableWidget::item:selected {
-                background-color: #555555;  /* cinza de seleção */
-                color: white;
+                QTableCornerButton::section {
+                    background-color: #f0f0f0;
+                    border: 1px solid #ccc;
+                }
+                /* Forçar cor do texto do QCheckBox */
+                QCheckBox {
+                    color: white;
             }
-            /* CornerButton (canto superior esquerdo) */
-            QTableCornerButton::section {
-                background-color: #ffffff;
-                border: 1px solid #aaaaaa;
-                padding: 2px;
-            }
-            /* Forçar cor do texto do QCheckBox */
-            QCheckBox {
-                color: white;
-            }
-
             """
             lineedit_style = f"""
                 QLineEdit {{
@@ -359,21 +331,23 @@ class TabelaUsuario(QMainWindow):
 
             button_style = """
                 QPushButton {
-                    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                                                stop:0 rgb(50,150,250),
-                                                stop:1 rgb(100,200,255));
-                    color: black;
-                    border-radius: 8px;
-                    font-size: 16px;
-                    border: 2px solid rgb(50,150,250);
-                    padding: 6px;
+                border-radius: 8px;
+                background: qlineargradient(
+                    x1:0, y1:0, x2:0, y2:1,
+                    stop:0 rgb(220, 220, 220),  /* topo */
+                    stop:1 rgb(245, 245, 245)   /* base */
+                );
+                font-size: 14px;
+                color: #000000; /* texto escuro */
                 }
+
                 QPushButton:hover {
-                    background-color: #e5f3ff;
+                    background-color: #e0e0e0;
                 }
+
                 QPushButton:pressed {
-                    background-color: #cce7ff;
-                    border: 2px solid #3399ff;
+                    background-color: #d0d0d0;
+                    border: 2px solid #aaaaaa;
                 }
             """
             combobox_style = """
@@ -434,83 +408,88 @@ class TabelaUsuario(QMainWindow):
                 }
                 """
             table_view_style = """
-                /* QTableView com seleção diferenciada */
                 QTableView {
                     background-color: white;
                     color: black;
-                    gridline-color: #cccccc;
-                    selection-background-color: #d0e7ff;  /* azul claro */
+                    gridline-color: #ccc;
+                    selection-background-color: #e5f3ff;
                     selection-color: black;
                 }
 
-                /* Cabeçalhos da tabela */
                 QHeaderView::section {
-                    background-color: #eaeaea;
+                    background-color: #f0f0f0;
                     color: black;
-                    border: 1px solid #cccccc;
-                    padding: 2px;
+                    border: 1px solid #ccc;
+                    padding: 1px;
                 }
 
-                /* QTabWidget */
                 QTabWidget::pane {
-                    border: 1px solid #cccccc;
+                    border: 1px solid #ccc;
                     background-color: white;
                 }
 
-                /* Scrollbars horizontais e verticais */
-                QTableView QScrollBar:horizontal,
-                QTableView QScrollBar:vertical {
-                    background-color: #f0f0f0;
+                /* Scrollbar vertical */
+                QTableView QScrollBar:horizontal {
                     border: none;
-                    height: 12px;
+                    background-color: #f0f0f0;
+                    width: 12px;
+                    margin: 0px;
+                    border-radius: 5px;
+                }
+                
+                /* Scrollbar vertical */
+                QTableView QScrollBar:vertical {
+                    border: none;
+                    background-color: #f0f0f0;
                     width: 12px;
                     margin: 0px;
                     border-radius: 5px;
                 }
 
-                /* Handle */
-                QTableView QScrollBar::handle:vertical,
+                /* Parte que você arrasta - Handle */
+                QTableView QScrollBar::handle:vertical {
+                    background-color: #b0b0b0;  /* cinza claro */
+                    min-height: 22px;
+                    border-radius: 5px;
+                }
+
                 QTableView QScrollBar::handle:horizontal {
                     background-color: #b0b0b0;
-                    border-radius: 5px;
-                    min-height: 22px;
                     min-width: 22px;
-                }
-
-                /* Groove */
-                QTableView QScrollBar::groove:vertical {
-                    background-color: transparent;
                     border-radius: 5px;
-                    width: 25px;
-                    margin: 10px 0px 10px 10px;
                 }
 
+                /* Groove horizontal */
                 QTableView QScrollBar::groove:horizontal {
-                    background-color: transparent;
+                    background-color: #e0e0e0;
                     border-radius: 5px;
                     height: 15px;
                     margin: 0px 10px 0px 10px;
                 }
 
-                /* Estilo para item selecionado */
+                /* Groove vertical */
+                QTableView QScrollBar::groove:vertical {
+                    background-color: #e0e0e0;
+                    border-radius: 5px;
+                    width: 15px;
+                    margin: 10px 0px 10px 0px;
+                }
+
                 QTableWidget::item:selected {
-                    background-color: #cce5ff;  /* azul leve */
+                    background-color: #cce7ff;
                     color: black;
                 }
 
-                /* Botão de canto da tabela */
                 QTableCornerButton::section {
-                    background-color: #eaeaea;
-                    border: 1px solid #cccccc;
-                    padding: 2px;
+                    background-color: #f0f0f0;
+                    border: 1px solid #ccc;
                 }
-
                 /* Forçar cor do texto do QCheckBox */
                 QCheckBox {
                     color: black;
                 }
-                """
-
+                
+            """
 
             lineedit_style = """
                 QLineEdit {
