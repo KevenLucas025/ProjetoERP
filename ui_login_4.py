@@ -128,7 +128,7 @@ class Ui_Mainwindow_Login(object):
         self.btn_manter_conectado.setGeometry(QRect(41, 177, 160, 17))
         sizePolicy.setHeightForWidth(self.btn_manter_conectado.sizePolicy().hasHeightForWidth())
         self.btn_manter_conectado.setSizePolicy(sizePolicy)
-        self.btn_manter_conectado.setMaximumSize(QSize(162, 20))
+        self.btn_manter_conectado.setMaximumSize(QSize(16777215, 16777215))
         self.btn_manter_conectado.setStyleSheet(u"color: rgb(255, 255, 255);")
         self.label_trocar_senha = QLabel(self.frame_2)
         self.label_trocar_senha.setObjectName(u"label_trocar_senha")

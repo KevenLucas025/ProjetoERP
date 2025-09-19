@@ -3,6 +3,7 @@ import json
 class Configuracoes_Login:
     def __init__(self, main_window):
         self.main_window = main_window
+        self.tamanho_fonte_percentual = 100  # valor padrão
         self.usuario = None
         self.senha = None
         self.mantem_conectado = False
@@ -23,6 +24,7 @@ class Configuracoes_Login:
                 if not conteudo:
                     print("config.json está vazio, aplicando tema padrão.")
                     self.tema = "classico"  # ou "escuro", se quiser
+                    self.tamanho_fonte_percentual = 100
                     return
 
                 config = json.loads(conteudo)
@@ -36,35 +38,47 @@ class Configuracoes_Login:
                 self.nao_mostrar_mensagem_arquivo_excel_fisicos = config.get("nao_mostrar_mensagem_arquivo_excel_fisicos", False)
                 self.historico_autocompletes = config.get("historico_autocompletes", {})
 
-                # Só define tema se existir no arquivo, senão mantém padrão
-                if "tema" in config:
-                    self.tema = config["tema"]
-                else:
-                    print("Chave 'tema' não encontrada, usando tema padrão.")
-                    self.tema = "classico"  # ou "escuro"
+                # Tema
+                self.tema = config.get("tema", "classico")
+                # Percentual de fonte
+                self.tamanho_fonte_percentual = config.get("tamanho_fonte_percentual", 100)
 
         except FileNotFoundError:
             print("Arquivo config.json não encontrado, aplicando tema padrão.")
             self.tema = "classico"  # ou "escuro"
+            self.tamanho_fonte_percentual = 100
         except json.JSONDecodeError:
             print("Erro ao decodificar o JSON, aplicando tema padrão.")
             self.tema = "classico"  # ou "escuro"
+            self.tamanho_fonte_percentual = 100 
 
 
-    def salvar(self, usuario, senha, mantem_conectado):
+    def salvar(self, usuario=None, senha=None, mantem_conectado=None, tamanho_fonte_percentual=None):
+        # Atualiza atributos da instância
+        if usuario is not None:
+            self.usuario = usuario
+        if senha is not None:
+            self.senha = senha
+        if mantem_conectado is not None:
+            self.mantem_conectado = mantem_conectado
+        if tamanho_fonte_percentual is not None:
+            self.tamanho_fonte_percentual = tamanho_fonte_percentual
+
         config = {
-            "usuario": usuario or "",
-            "senha": senha or "",
-            "mantem_conectado": mantem_conectado,
+            "usuario": self.usuario or "",
+            "senha": self.senha or "",
+            "mantem_conectado": self.mantem_conectado,
             "nao_mostrar_mensagem_boas_vindas": self.nao_mostrar_mensagem_boas_vindas,
             "nao_mostrar_aviso_irreversivel": self.nao_mostrar_aviso_irreversivel,
             "nao_mostrar_mensagem_arquivo_excel": self.nao_mostrar_mensagem_arquivo_excel,
-            "nao_mostrar_mensagem_arquivo_excel_fisicos":self.nao_mostrar_mensagem_arquivo_excel_fisicos,
+            "nao_mostrar_mensagem_arquivo_excel_fisicos": self.nao_mostrar_mensagem_arquivo_excel_fisicos,
             "historico_autocompletes": self.historico_autocompletes,
-            "tema": self.tema
+            "tema": self.tema,
+            "tamanho_fonte_percentual": self.tamanho_fonte_percentual
         }
-        with open("config.json", "w",encoding="utf-8") as f:
-            json.dump(config, f,indent=4,ensure_ascii=False)
+
+        with open("config.json", "w", encoding="utf-8") as f:
+            json.dump(config, f, indent=4, ensure_ascii=False)
 
 
     def salvar_configuracoes(self, usuario, senha, mantem_conectado):
@@ -74,6 +88,10 @@ class Configuracoes_Login:
         self.mantem_conectado = mantem_conectado
         print(f"Salvando configurações: {usuario}, {mantem_conectado}")
         self.salvar(usuario, senha, mantem_conectado)
+
+    def salvar_percentual_fonte(self, percentual):
+        """Salva apenas o percentual de fonte no JSON"""
+        self.salvar(tamanho_fonte_percentual=percentual)
 
     def sair(self):
         # Lógica para desconectar o usuário e limpar as configurações

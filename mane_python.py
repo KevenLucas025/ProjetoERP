@@ -256,7 +256,7 @@ class Ui_MainWindow(object):
         self.label_imagem_sistema.setBaseSize(QSize(0, 0))
         self.label_imagem_sistema.setFocusPolicy(Qt.NoFocus)
         self.label_imagem_sistema.setFrameShape(QFrame.Box)
-        self.label_imagem_sistema.setPixmap(QPixmap(u"../../../../../../Pictures/ProjetoERP/Projeto ERP/Projeto ERP/54206.cur"))
+        self.label_imagem_sistema.setPixmap(QPixmap(u"../../../../Pictures/ProjetoERP/Projeto ERP/Projeto ERP/54206.cur"))
         self.label_imagem_sistema.setScaledContents(True)
         self.label_imagem_sistema.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
         self.label_imagem_sistema.setWordWrap(False)
@@ -737,6 +737,7 @@ class Ui_MainWindow(object):
 "    color: white;\n"
 "}")
         self.table_base.setFrameShape(QFrame.NoFrame)
+        self.table_base.setCornerButtonEnabled(True)
 
         self.gridLayout_6.addWidget(self.table_base, 2, 0, 1, 8)
 
@@ -844,6 +845,7 @@ class Ui_MainWindow(object):
 "    color: white;\n"
 "}")
         self.table_saida.setFrameShape(QFrame.NoFrame)
+        self.table_saida.setCornerButtonEnabled(True)
 
         self.gridLayout_6.addWidget(self.table_saida, 4, 0, 1, 8)
 
@@ -982,7 +984,7 @@ class Ui_MainWindow(object):
         self.table_inativos.setEditTriggers(QAbstractItemView.NoEditTriggers)
         self.table_inativos.setSelectionMode(QAbstractItemView.ExtendedSelection)
         self.table_inativos.setSelectionBehavior(QAbstractItemView.SelectRows)
-        self.table_inativos.setCornerButtonEnabled(False)
+        self.table_inativos.setCornerButtonEnabled(True)
         self.table_inativos.verticalHeader().setCascadingSectionResizes(False)
 
         self.gridLayout_21.addWidget(self.table_inativos, 5, 0, 1, 6)
@@ -1292,7 +1294,7 @@ class Ui_MainWindow(object):
         self.table_ativos.setSelectionMode(QAbstractItemView.ExtendedSelection)
         self.table_ativos.setSelectionBehavior(QAbstractItemView.SelectRows)
         self.table_ativos.setSortingEnabled(False)
-        self.table_ativos.setCornerButtonEnabled(False)
+        self.table_ativos.setCornerButtonEnabled(True)
         self.table_ativos.horizontalHeader().setCascadingSectionResizes(False)
         self.table_ativos.horizontalHeader().setProperty(u"showSortIndicator", False)
         self.table_ativos.horizontalHeader().setStretchLastSection(False)
@@ -3738,7 +3740,7 @@ class Ui_MainWindow(object):
         self.table_clientes_juridicos.setEditTriggers(QAbstractItemView.NoEditTriggers)
         self.table_clientes_juridicos.setSelectionBehavior(QAbstractItemView.SelectRows)
         self.table_clientes_juridicos.setGridStyle(Qt.SolidLine)
-        self.table_clientes_juridicos.setCornerButtonEnabled(False)
+        self.table_clientes_juridicos.setCornerButtonEnabled(True)
         self.table_clientes_juridicos.horizontalHeader().setDefaultSectionSize(118)
         self.table_clientes_juridicos.verticalHeader().setVisible(True)
 
@@ -4028,7 +4030,7 @@ class Ui_MainWindow(object):
         self.table_clientes_fisicos.setEditTriggers(QAbstractItemView.NoEditTriggers)
         self.table_clientes_fisicos.setSelectionBehavior(QAbstractItemView.SelectRows)
         self.table_clientes_fisicos.setGridStyle(Qt.SolidLine)
-        self.table_clientes_fisicos.setCornerButtonEnabled(False)
+        self.table_clientes_fisicos.setCornerButtonEnabled(True)
         self.table_clientes_fisicos.horizontalHeader().setCascadingSectionResizes(False)
         self.table_clientes_fisicos.horizontalHeader().setDefaultSectionSize(118)
         self.table_clientes_fisicos.verticalHeader().setVisible(False)
@@ -4317,7 +4319,7 @@ class Ui_MainWindow(object):
         self.table_massa_produtos.setSelectionBehavior(QAbstractItemView.SelectRows)
         self.table_massa_produtos.setShowGrid(True)
         self.table_massa_produtos.setGridStyle(Qt.SolidLine)
-        self.table_massa_produtos.setCornerButtonEnabled(False)
+        self.table_massa_produtos.setCornerButtonEnabled(True)
         self.table_massa_produtos.horizontalHeader().setCascadingSectionResizes(False)
         self.table_massa_produtos.horizontalHeader().setMinimumSectionSize(39)
         self.table_massa_produtos.horizontalHeader().setDefaultSectionSize(112)
@@ -4582,7 +4584,7 @@ class Ui_MainWindow(object):
         self.table_massa_usuarios.setSelectionMode(QAbstractItemView.ExtendedSelection)
         self.table_massa_usuarios.setSelectionBehavior(QAbstractItemView.SelectRows)
         self.table_massa_usuarios.setSortingEnabled(False)
-        self.table_massa_usuarios.setCornerButtonEnabled(False)
+        self.table_massa_usuarios.setCornerButtonEnabled(True)
         self.table_massa_usuarios.horizontalHeader().setCascadingSectionResizes(False)
         self.table_massa_usuarios.horizontalHeader().setProperty(u"showSortIndicator", False)
         self.table_massa_usuarios.horizontalHeader().setStretchLastSection(False)

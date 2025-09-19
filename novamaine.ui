@@ -483,7 +483,7 @@ QToolButton:hover {
               <string/>
              </property>
              <property name="pixmap">
-              <pixmap>../../../../../../Pictures/ProjetoERP/Projeto ERP/Projeto ERP/54206.cur</pixmap>
+              <pixmap>../../../../Pictures/ProjetoERP/Projeto ERP/Projeto ERP/54206.cur</pixmap>
              </property>
              <property name="scaledContents">
               <bool>true</bool>
@@ -1277,6 +1277,9 @@ QTableWidget::item:selected {
              <property name="frameShape">
               <enum>QFrame::NoFrame</enum>
              </property>
+             <property name="cornerButtonEnabled">
+              <bool>true</bool>
+             </property>
              <column>
               <property name="text">
                <string>Produto</string>
@@ -1450,6 +1453,9 @@ QTableWidget::item:selected {
              </property>
              <property name="frameShape">
               <enum>QFrame::NoFrame</enum>
+             </property>
+             <property name="cornerButtonEnabled">
+              <bool>true</bool>
              </property>
              <column>
               <property name="text">
@@ -1625,7 +1631,7 @@ QTableWidget::item:selected {
               <enum>QAbstractItemView::SelectRows</enum>
              </property>
              <property name="cornerButtonEnabled">
-              <bool>false</bool>
+              <bool>true</bool>
              </property>
              <attribute name="verticalHeaderCascadingSectionResizes">
               <bool>false</bool>
@@ -2209,7 +2215,7 @@ QTableWidget::item:selected {
               <bool>false</bool>
              </property>
              <property name="cornerButtonEnabled">
-              <bool>false</bool>
+              <bool>true</bool>
              </property>
              <attribute name="horizontalHeaderCascadingSectionResizes">
               <bool>false</bool>
@@ -6497,7 +6503,7 @@ QTableWidget::item:selected {
                   <enum>Qt::SolidLine</enum>
                  </property>
                  <property name="cornerButtonEnabled">
-                  <bool>false</bool>
+                  <bool>true</bool>
                  </property>
                  <attribute name="horizontalHeaderDefaultSectionSize">
                   <number>118</number>
@@ -6998,7 +7004,7 @@ QTableWidget::item:selected {
                   <enum>Qt::SolidLine</enum>
                  </property>
                  <property name="cornerButtonEnabled">
-                  <bool>false</bool>
+                  <bool>true</bool>
                  </property>
                  <attribute name="horizontalHeaderCascadingSectionResizes">
                   <bool>false</bool>
@@ -7562,7 +7568,7 @@ QTableWidget::item:selected {
               <enum>Qt::SolidLine</enum>
              </property>
              <property name="cornerButtonEnabled">
-              <bool>false</bool>
+              <bool>true</bool>
              </property>
              <attribute name="horizontalHeaderCascadingSectionResizes">
               <bool>false</bool>
@@ -7996,7 +8002,7 @@ QTableWidget::item:selected {
               <bool>false</bool>
              </property>
              <property name="cornerButtonEnabled">
-              <bool>false</bool>
+              <bool>true</bool>
              </property>
              <attribute name="horizontalHeaderCascadingSectionResizes">
               <bool>false</bool>

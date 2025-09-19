@@ -166,6 +166,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.config.carregar()
         self.fazer_login_automatico()
 
+
+        # Aplica o tamanho da fonte salvo no JSON
+        self.definir_tamanho_fonte(self.config.tamanho_fonte_percentual)
+
         # Aplica completer individual a cada campo
         for nome_campo, campo in self.campos_com_autocomplete.items():
             historico = self.config.carregar_historico_autocompletar(nome_campo)
@@ -1658,6 +1662,29 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         # Exibir mensagem de sucesso apenas se todos os campos estiverem preenchidos
         self.mostrar_mensagem_sucesso()
+
+    def definir_tamanho_fonte(self, percentual):
+        # pega a fonte padrão do QApplication
+        fonte_base = QApplication.font()
+        tamanho_base = fonte_base.pointSizeF()  # tamanho padrão do sistema, ex: 9pt
+        novo_tamanho = tamanho_base * percentual / 100.0
+
+        # aplica CSS apenas para a fonte
+        style = f"""
+        QWidget {{
+            font-size: {novo_tamanho}pt;
+        }}
+        QMenuBar, QMenu, QToolButton, QLabel, QPushButton, QLineEdit, QTextEdit, QTableWidget {{
+            font-size: {novo_tamanho}pt;
+        }}
+        QHeaderView::section {{
+            font-size: {novo_tamanho}pt;
+        }}
+        """
+        QApplication.instance().setStyleSheet(style)
+
+        # salva no JSON
+        self.config.salvar_percentual_fonte(percentual)
 #*********************************************************************************************************************
     def inserir_produto_no_bd(self, produto_info,registrar_historico=True):
         try:

@@ -1,8 +1,8 @@
 from PySide6.QtWidgets import (QWidget,QMenu, QVBoxLayout, 
                                QProgressBar,QApplication,QDialog,QMessageBox,
-                               QToolButton,QMainWindow)
-from PySide6.QtCore import Qt, QTimer,QDate
-from PySide6.QtGui import QIcon,QColor,QTextCharFormat
+                               QToolButton,QMainWindow,QTableWidget)
+from PySide6.QtCore import Qt, QTimer
+from PySide6.QtGui import QIcon,QFont
 import os
 import json
 from login import Login
@@ -574,6 +574,10 @@ class Pagina_Configuracoes(QWidget):
             QDateEdit QCalendarWidget QMenu::item:selected {
                 background: #555555;
                 color: white;
+            }
+            QDateEdit QCalendarWidget QToolButton::menu-indicator {
+                image: none;   /* remove o ícone padrão */
+                width: 0px;    /* remove o espaço reservado */
             }
             QProgressBar {
                 color: white;                        /* texto branco */
@@ -1681,25 +1685,6 @@ class Pagina_Configuracoes(QWidget):
         btn_atualizacoes.setMenu(menu_atualizacoes)
         layout.addWidget(btn_atualizacoes)
 
-        # ------------------- MENU HORA -------------------
-        btn_hora = QToolButton(self.janela_config)
-        btn_hora.setText("Hora e Data")
-        btn_hora.setPopupMode(QToolButton.InstantPopup)
-        btn_hora.setToolButtonStyle(Qt.ToolButtonTextOnly)
-        btn_hora.setCursor(Qt.PointingHandCursor)
-        btn_hora.setObjectName("btn_classe_hora")
-        btn_hora.setFixedHeight(38)
-        menu_hora = QMenu(self.janela_config)
-        menu_hora.addAction("Exibir os segundos")
-        menu_hora.addAction("Exibir relógio analógico")
-        menu_hora.addAction("Exibir relógio digital")
-        menu_hora.addAction("Exibir calendário")
-        menu_hora.addAction("Definir fuso horário automaticamente")
-        menu_hora.addAction("Definir fuso horário manualmente")
-        menu_hora.addAction("Definir horário automaticamente")
-        menu_hora.addAction("Não exibir relógio")
-        btn_hora.setMenu(menu_hora)
-        layout.addWidget(btn_hora)
 
         # ------------------- MENU FONTE -------------------
         btn_fonte = QToolButton(self.janela_config)
@@ -1710,8 +1695,12 @@ class Pagina_Configuracoes(QWidget):
         btn_fonte.setObjectName("btn_classe_fonte")
         btn_fonte.setFixedHeight(38)
         menu_fonte = QMenu(self.janela_config)
-        for i in range(8, 37, 2):
-            menu_fonte.addAction(str(i))
+        # Lista de percentuais como no Windows
+        percentuais = [100, 125, 150, 175, 200, 225]
+        for p in percentuais:
+            acao = menu_fonte.addAction(f"{p}%")
+            acao.triggered.connect(lambda checked, x=p: self.main_window.definir_tamanho_fonte(x))
+        
         btn_fonte.setMenu(menu_fonte)
         layout.addWidget(btn_fonte)
 
@@ -1746,7 +1735,11 @@ class Pagina_Configuracoes(QWidget):
 
         # Mostrar janela
         self.janela_config.show()
+        
     
+
+
+        
     def reiniciar_sistema(self):
         python = sys.executable
         script = os.path.abspath(sys.argv[0])
@@ -1789,17 +1782,5 @@ class ProgressDialog(QDialog):
     def update_progress(self, value):
         self.progress_bar.setValue(value)
         QApplication.processEvents()
-
-    def destacar_finais_de_semana(self, date_edit):
-        calendar = self.dateEdit_3.calendarWidget()
-        fmt_vermelho = QTextCharFormat()
-        fmt_vermelho.setForeground(QColor("red"))
-
-        ano_atual = QDate.currentDate().year()
-        for mes in range(1, 13):
-            for dia in range(1, 32):
-                data = QDate(ano_atual, mes, dia)
-                if data.isValid() and data.dayOfWeek() in (6, 7):
-                    calendar.setDateTextFormat(data, fmt_vermelho)
 
     
