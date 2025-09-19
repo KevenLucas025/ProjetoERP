@@ -350,10 +350,6 @@ class Pagina_Configuracoes(QWidget):
                 );
                 border: 2px solid #888888;
             }
-            QPushButton#btn_abrir_planilha,
-            QPushButton#btn_abrir_planilha_usuarios{
-                
-            }
 
             /* Campos de entrada */
             QLineEdit#txt_senha,
@@ -758,6 +754,12 @@ class Pagina_Configuracoes(QWidget):
                 width: 15px;
                 margin: 10px 0px 10px 0px;
             }
+            QTableCornerButton::section {
+                background-color: #f5f5f5;
+                border: 1px solid #cccccc;
+                padding: 2px;
+            }
+
 
             QMessageBox {
                 background: qlineargradient(
@@ -836,6 +838,7 @@ class Pagina_Configuracoes(QWidget):
                 background: gray;
                 margin: 5px 10px;
             }
+            
             QPushButton#botao_lupa_juridicos,
             QPushButton#botao_lupa_fisicos {
                 qproperty-icon: url("imagens/botao_lupa.png");
@@ -877,7 +880,9 @@ class Pagina_Configuracoes(QWidget):
             QLabel#label_estoque,
             QLabel#label_saida,
             QLabel#label_ativos,
-            QLabel#label_inativos{
+            QLabel#label_inativos,
+            QLabel#label_cadastramento_produtos,
+            QLabel#label_cadastramento{
                 border: 3px solid  #cccccc;
             }
             QComboBox#perfil_estado,
@@ -932,6 +937,8 @@ class Pagina_Configuracoes(QWidget):
                     stop:1 rgb(245, 245, 245)   /* base */
                 );
                 color: #000000; /* texto escuro */
+                min-width: 120px;
+                min-height: 30px; 
         
             }
             QToolButton:hover {
@@ -987,7 +994,50 @@ class Pagina_Configuracoes(QWidget):
                 image: none;   /* remove o ícone padrão */
                 width: 0px;    /* remove o espaço reservado */
             }
+            QFrame#frame_valor_total_produtos,
+            QFrame#frame_valor_do_desconto,
+            QFrame#frame_valor_com_desconto1,
+            QFrame#frame_quantidade{
+                background-color: #d9d9d9;
+                border-radius: 15px;
             
+            }
+            QLabel{
+                background-color: transparent;
+            }
+            QProgressBar#progress_massa_produtos,
+            QProgressBar#progress_massa_usuarios,
+            QProgressBar#progress_excel_usuarios,
+            QProgressBar#progress_excel{
+                border-radius: 13px;
+                text-align: center; /* centraliza o texto */
+                font-size: 14px;
+                color: #000000; /* texto escuro */
+                background: qlineargradient(
+                    x1:0, y1:0, x2:0, y2:1,
+                    stop:0 rgb(220, 220, 220),  /* topo */
+                    stop:1 rgb(245, 245, 245)   /* base */
+                );
+            }
+            /* Parte preenchida da barra */
+            QProgressBar#progress_massa_produtos::chunk,
+            QProgressBar#progress_massa_usuarios::chunk,
+            QProgressBar#progress_excel_usuarios::chunk,
+            QProgressBar#progress_excel::chunk {
+                border-radius: 13px;
+                background: qlineargradient(
+                    x1:0, y1:0, x2:1, y2:0,
+                    stop:0 #4caf50,  /* verde inicial */
+                    stop:1 #81c784   /* verde mais claro no final */
+                );
+            }
+            QFrame#frame_page_verificar_usuarios,
+            QFrame#frame_pag_estoque,
+            QFrame#frame_pg_clientes,
+            QFrame#frame_10,
+            QFrame#frame_8{
+                border: 2px solid #eaeaea;
+            }      
 
         """
         # Iterar sobre todos os widgets da aplicação e aplicar o estilo

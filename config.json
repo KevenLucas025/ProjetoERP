@@ -3,7 +3,7 @@
     "senha": "123",
     "mantem_conectado": false,
     "nao_mostrar_mensagem_boas_vindas": true,
-    "nao_mostrar_aviso_irreversivel": false,
+    "nao_mostrar_aviso_irreversivel": true,
     "nao_mostrar_mensagem_arquivo_excel": true,
     "nao_mostrar_mensagem_arquivo_excel_fisicos": true,
     "historico_autocompletes": {
@@ -15,6 +15,25 @@
         ],
         "txt_senha_cadastro": [
             "python .\\main.py"
+        ],
+        "txt_produto": [
+            "Pizza"
+        ],
+        "txt_quantidade": [
+            "12"
+        ],
+        "txt_valor_produto_3": [
+            "12"
+        ],
+        "txt_codigo_item": [
+            "dsdsda"
+        ],
+        "txt_cliente_3": [
+            "Keven Lucas",
+            "Keven Lucas da Silva Jesus"
+        ],
+        "txt_descricao_produto_3": [
+            "sddasdas"
         ]
     },
     "tema": "claro"

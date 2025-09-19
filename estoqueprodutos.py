@@ -985,24 +985,24 @@ class EstoqueProduto(QWidget):
             bg_cor = "white"
             text_cor = "black"
             lineedit_bg = "white"
-
             button_style = """
                 QPushButton {
-                    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                                                stop:0 rgb(50,150,250),
-                                                stop:1 rgb(100,200,255));
-                    color: black;
                     border-radius: 8px;
-                    font-size: 16px;
-                    border: 2px solid rgb(50,150,250);
-                    padding: 6px;
+                    background: qlineargradient(
+                        x1:0, y1:0, x2:0, y2:1,
+                        stop:0 rgb(220, 220, 220),  /* topo */
+                        stop:1 rgb(245, 245, 245)   /* base */
+                    );
+                    color: #000000; /* texto escuro */
                 }
+
                 QPushButton:hover {
-                    background-color: #e5f3ff;
+                    background-color: #e0e0e0;
                 }
+
                 QPushButton:pressed {
-                    background-color: #cce7ff;
-                    border: 2px solid #3399ff;
+                    background-color: #d0d0d0;
+                    border: 2px solid #aaaaaa;
                 }
             """
             combobox_style = """
@@ -1032,6 +1032,118 @@ class EstoqueProduto(QWidget):
                 }
                 
             """
+            scroll_style = """
+                /* Scrollbar vertical */
+                QScrollBar:vertical {
+                    background: #f0f0f0;  /* trilho claro */
+                    width: 12px;
+                    margin: 0px;
+                    border-radius: 6px;
+                }
+
+                QScrollBar::handle:vertical {
+                    background: #b0b0b0;  /* cor do handle */
+                    border-radius: 6px;
+                    min-height: 20px;
+                }
+
+                QScrollBar::handle:vertical:hover {
+                    background: #a0a0a0;  /* hover no handle */
+                }
+
+                QScrollBar::add-line:vertical,
+                QScrollBar::sub-line:vertical {
+                    background: none;
+                    height: 0px;
+                }
+
+                QScrollBar::add-page:vertical,
+                QScrollBar::sub-page:vertical {
+                    background: none;
+                }
+                """
+            table_view_style = """
+                /* QTableView com seleção diferenciada */
+                QTableView {
+                    background-color: white;
+                    color: black;
+                    gridline-color: #cccccc;
+                    selection-background-color: #d0e7ff;  /* azul claro */
+                    selection-color: black;
+                }
+                QHeaderView:vertical {
+                    background-color: white; 
+                    border: none;              
+                }
+
+
+                /* Cabeçalhos da tabela */
+                QHeaderView::section {
+                    background-color: #eaeaea;
+                    color: black;
+                    border: 1px solid #cccccc;
+                    padding: 2px;
+                }
+
+                /* QTabWidget */
+                QTabWidget::pane {
+                    border: 1px solid #cccccc;
+                    background-color: white;
+                }
+
+                /* Scrollbars horizontais e verticais */
+                QTableView QScrollBar:horizontal,
+                QTableView QScrollBar:vertical {
+                    background-color: #f0f0f0;
+                    border: none;
+                    height: 12px;
+                    width: 12px;
+                    margin: 0px;
+                    border-radius: 5px;
+                }
+
+                /* Handle */
+                QTableView QScrollBar::handle:vertical,
+                QTableView QScrollBar::handle:horizontal {
+                    background-color: #b0b0b0;
+                    border-radius: 5px;
+                    min-height: 22px;
+                    min-width: 22px;
+                }
+
+                /* Groove */
+                QTableView QScrollBar::groove:vertical {
+                    background-color: transparent;
+                    border-radius: 5px;
+                    width: 25px;
+                    margin: 10px 0px 10px 10px;
+                }
+
+                QTableView QScrollBar::groove:horizontal {
+                    background-color: transparent;
+                    border-radius: 5px;
+                    height: 15px;
+                    margin: 0px 10px 0px 10px;
+                }
+
+                /* Estilo para item selecionado */
+                QTableWidget::item:selected {
+                    background-color: #cce5ff;  /* azul leve */
+                    color: black;
+                }
+
+                /* Botão de canto da tabela */
+                QTableCornerButton::section {
+                    background-color: #eaeaea;
+                    border: 1px solid #cccccc;
+                    padding: 2px;
+                }
+
+                /* Forçar cor do texto do QCheckBox */
+                QCheckBox {
+                    color: black;
+                }
+                """
             lineedit_style = """
                 QLineEdit {
                     background-color: white;

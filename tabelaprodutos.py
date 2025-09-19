@@ -1228,7 +1228,7 @@ class TabelaProdutos(QMainWindow):
                 
             except Exception as e:
                 print(f"Erro ao atualizar Última Atualização: {e}")
-            self.accept()
+            self.close()
 
         except ValueError as e:
             print(f"Erro ao converter valores: {str(e)}")
