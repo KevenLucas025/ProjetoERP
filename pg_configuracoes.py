@@ -598,6 +598,20 @@ class Pagina_Configuracoes(QWidget):
             QFrame#frame_8{
                 border: 2px solid white;
             }
+            QLabel#label_foto_sistema{
+                border: none;
+            }
+            QFrame#frame_2 {
+                border-radius: 12px;
+                border: 2px solid qlineargradient(
+                    spread:pad, 
+                    x1:0, y1:0, x2:1, y2:0,
+                    stop:0 #ff7f50;   /* laranja neon */
+                    stop:1 #ffff00;   /* amarelo neon */
+                );
+            }
+
+
 
             
         """
