@@ -17,7 +17,8 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QPalette, QPixmap, QRadialGradient, QTransform)
 from PySide6.QtWidgets import (QApplication, QCheckBox, QFrame, QGridLayout,
     QLabel, QLineEdit, QMainWindow, QPushButton,
-    QSizePolicy, QSpacerItem, QWidget)
+    QSizePolicy, QSpacerItem, QToolButton, QVBoxLayout,
+    QWidget)
 
 class Ui_Mainwindow_Login(object):
     def setupUi(self, Mainwindow_Login):
@@ -35,19 +36,20 @@ class Ui_Mainwindow_Login(object):
         self.centralwidget.setObjectName(u"centralwidget")
         sizePolicy.setHeightForWidth(self.centralwidget.sizePolicy().hasHeightForWidth())
         self.centralwidget.setSizePolicy(sizePolicy)
-        self.btn_opcoes_extras = QPushButton(self.centralwidget)
+        self.btn_opcoes_extras = QToolButton(self.centralwidget)
         self.btn_opcoes_extras.setObjectName(u"btn_opcoes_extras")
         self.btn_opcoes_extras.setGeometry(QRect(653, 10, 21, 21))
         sizePolicy.setHeightForWidth(self.btn_opcoes_extras.sizePolicy().hasHeightForWidth())
         self.btn_opcoes_extras.setSizePolicy(sizePolicy)
         self.btn_opcoes_extras.setMaximumSize(QSize(21, 21))
         self.btn_opcoes_extras.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
-        self.btn_opcoes_extras.setStyleSheet(u"QPushButton {\n"
+        self.btn_opcoes_extras.setStyleSheet(u"QToolButton {\n"
 "    color: rgb(255, 255, 255);\n"
 "    border-radius: 10px;\n"
 "    border:  transparent;\n"
 "	background-color: rgb(100, 200, 255);\n"
 "}\n"
+"\n"
 "\n"
 "\n"
 "")
@@ -57,7 +59,7 @@ class Ui_Mainwindow_Login(object):
         self.btn_opcoes_extras.setIconSize(QSize(21, 21))
         self.frame_2 = QFrame(self.centralwidget)
         self.frame_2.setObjectName(u"frame_2")
-        self.frame_2.setGeometry(QRect(170, 130, 343, 341))
+        self.frame_2.setGeometry(QRect(141, 130, 398, 345))
         sizePolicy.setHeightForWidth(self.frame_2.sizePolicy().hasHeightForWidth())
         self.frame_2.setSizePolicy(sizePolicy)
         self.frame_2.setMinimumSize(QSize(0, 0))
@@ -74,111 +76,8 @@ class Ui_Mainwindow_Login(object):
         self.frame_2.setFrameShadow(QFrame.Raised)
         self.gridLayout = QGridLayout(self.frame_2)
         self.gridLayout.setObjectName(u"gridLayout")
-        self.verticalSpacer = QSpacerItem(20, 61, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
-
-        self.gridLayout.addItem(self.verticalSpacer, 0, 1, 1, 1)
-
-        self.horizontalSpacer = QSpacerItem(31, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
-
-        self.gridLayout.addItem(self.horizontalSpacer, 1, 0, 1, 1)
-
-        self.txt_usuario = QLineEdit(self.frame_2)
-        self.txt_usuario.setObjectName(u"txt_usuario")
-        sizePolicy.setHeightForWidth(self.txt_usuario.sizePolicy().hasHeightForWidth())
-        self.txt_usuario.setSizePolicy(sizePolicy)
-        self.txt_usuario.setMinimumSize(QSize(0, 0))
-        self.txt_usuario.setMaximumSize(QSize(16777215, 30))
-        self.txt_usuario.setStyleSheet(u"QLineEdit {\n"
-"    border: 2px solid #0078d4;  /* Cor da borda */\n"
-"    border-radius: 5px;          /* Bordas arredondadas */\n"
-"    padding: 5px;                /* Espa\u00e7amento interno */\n"
-"}\n"
-"\n"
-"QLineEdit::placeholder {\n"
-"    color: white;  /* Cor do placeholder */\n"
-"}\n"
-"")
-        self.txt_usuario.setAlignment(Qt.AlignCenter)
-
-        self.gridLayout.addWidget(self.txt_usuario, 1, 1, 1, 5)
-
-        self.horizontalSpacer_2 = QSpacerItem(31, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
-
-        self.gridLayout.addItem(self.horizontalSpacer_2, 1, 6, 1, 1)
-
-        self.horizontalSpacer_3 = QSpacerItem(31, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
-
-        self.gridLayout.addItem(self.horizontalSpacer_3, 2, 0, 1, 1)
-
-        self.txt_senha = QLineEdit(self.frame_2)
-        self.txt_senha.setObjectName(u"txt_senha")
-        sizePolicy.setHeightForWidth(self.txt_senha.sizePolicy().hasHeightForWidth())
-        self.txt_senha.setSizePolicy(sizePolicy)
-        self.txt_senha.setMaximumSize(QSize(16777215, 30))
-        self.txt_senha.setStyleSheet(u"QLineEdit {\n"
-"    border: 2px solid #0078d4;  /* Cor da borda */\n"
-"    border-radius: 5px;          /* Bordas arredondadas */\n"
-"    padding: 5px;                /* Espa\u00e7amento interno */\n"
-"}\n"
-"\n"
-"QLineEdit::placeholder {\n"
-"    color: white;  /* Cor do placeholder */\n"
-"}\n"
-"")
-        self.txt_senha.setEchoMode(QLineEdit.Password)
-        self.txt_senha.setAlignment(Qt.AlignCenter)
-
-        self.gridLayout.addWidget(self.txt_senha, 2, 1, 1, 5)
-
-        self.horizontalSpacer_4 = QSpacerItem(31, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
-
-        self.gridLayout.addItem(self.horizontalSpacer_4, 2, 6, 1, 1)
-
-        self.horizontalSpacer_6 = QSpacerItem(31, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
-
-        self.gridLayout.addItem(self.horizontalSpacer_6, 3, 0, 1, 1)
-
-        self.label_primeiro_acesso = QLabel(self.frame_2)
-        self.label_primeiro_acesso.setObjectName(u"label_primeiro_acesso")
-        sizePolicy.setHeightForWidth(self.label_primeiro_acesso.sizePolicy().hasHeightForWidth())
-        self.label_primeiro_acesso.setSizePolicy(sizePolicy)
-        self.label_primeiro_acesso.setMaximumSize(QSize(16777215, 16777215))
-
-        self.gridLayout.addWidget(self.label_primeiro_acesso, 3, 1, 1, 2)
-
-        self.horizontalSpacer_9 = QSpacerItem(70, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
-
-        self.gridLayout.addItem(self.horizontalSpacer_9, 3, 3, 1, 1)
-
-        self.label_trocar_senha = QLabel(self.frame_2)
-        self.label_trocar_senha.setObjectName(u"label_trocar_senha")
-        sizePolicy.setHeightForWidth(self.label_trocar_senha.sizePolicy().hasHeightForWidth())
-        self.label_trocar_senha.setSizePolicy(sizePolicy)
-        self.label_trocar_senha.setMaximumSize(QSize(16777215, 16777215))
-
-        self.gridLayout.addWidget(self.label_trocar_senha, 3, 4, 1, 2)
-
-        self.horizontalSpacer_5 = QSpacerItem(31, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
-
-        self.gridLayout.addItem(self.horizontalSpacer_5, 3, 6, 1, 1)
-
-        self.horizontalSpacer_7 = QSpacerItem(74, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
-
-        self.gridLayout.addItem(self.horizontalSpacer_7, 4, 0, 1, 2)
-
-        self.btn_manter_conectado = QCheckBox(self.frame_2)
-        self.btn_manter_conectado.setObjectName(u"btn_manter_conectado")
-        sizePolicy.setHeightForWidth(self.btn_manter_conectado.sizePolicy().hasHeightForWidth())
-        self.btn_manter_conectado.setSizePolicy(sizePolicy)
-        self.btn_manter_conectado.setMaximumSize(QSize(16777215, 16777215))
-        self.btn_manter_conectado.setStyleSheet(u"color: rgb(255, 255, 255);")
-
-        self.gridLayout.addWidget(self.btn_manter_conectado, 4, 2, 1, 3)
-
-        self.horizontalSpacer_8 = QSpacerItem(72, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
-
-        self.gridLayout.addItem(self.horizontalSpacer_8, 4, 5, 1, 2)
-
+        self.gridLayout.setHorizontalSpacing(16)
+        self.gridLayout.setContentsMargins(21, -1, 10, -1)
         self.btn_login = QPushButton(self.frame_2)
         self.btn_login.setObjectName(u"btn_login")
         sizePolicy.setHeightForWidth(self.btn_login.sizePolicy().hasHeightForWidth())
@@ -200,7 +99,110 @@ class Ui_Mainwindow_Login(object):
 "}\n"
 "")
 
-        self.gridLayout.addWidget(self.btn_login, 5, 1, 1, 5)
+        self.gridLayout.addWidget(self.btn_login, 6, 1, 1, 6)
+
+        self.horizontalSpacer_10 = QSpacerItem(98, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+
+        self.gridLayout.addItem(self.horizontalSpacer_10, 4, 6, 1, 3)
+
+        self.horizontalSpacer_9 = QSpacerItem(57, 36, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+
+        self.gridLayout.addItem(self.horizontalSpacer_9, 4, 0, 1, 2)
+
+        self.horizontalSpacer = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+
+        self.gridLayout.addItem(self.horizontalSpacer, 3, 6, 1, 1)
+
+        self.frame_4 = QFrame(self.frame_2)
+        self.frame_4.setObjectName(u"frame_4")
+        sizePolicy.setHeightForWidth(self.frame_4.sizePolicy().hasHeightForWidth())
+        self.frame_4.setSizePolicy(sizePolicy)
+        self.frame_4.setFrameShadow(QFrame.Raised)
+        self.verticalLayout_2 = QVBoxLayout(self.frame_4)
+        self.verticalLayout_2.setObjectName(u"verticalLayout_2")
+        self.btn_manter_conectado = QCheckBox(self.frame_4)
+        self.btn_manter_conectado.setObjectName(u"btn_manter_conectado")
+        sizePolicy.setHeightForWidth(self.btn_manter_conectado.sizePolicy().hasHeightForWidth())
+        self.btn_manter_conectado.setSizePolicy(sizePolicy)
+        self.btn_manter_conectado.setMaximumSize(QSize(16777215, 16777215))
+        self.btn_manter_conectado.setStyleSheet(u"color: rgb(255, 255, 255);")
+
+        self.verticalLayout_2.addWidget(self.btn_manter_conectado)
+
+
+        self.gridLayout.addWidget(self.frame_4, 4, 3, 1, 3)
+
+        self.frame_3 = QFrame(self.frame_2)
+        self.frame_3.setObjectName(u"frame_3")
+        sizePolicy.setHeightForWidth(self.frame_3.sizePolicy().hasHeightForWidth())
+        self.frame_3.setSizePolicy(sizePolicy)
+        self.frame_3.setFrameShape(QFrame.NoFrame)
+        self.frame_3.setFrameShadow(QFrame.Raised)
+        self.verticalLayout = QVBoxLayout(self.frame_3)
+        self.verticalLayout.setObjectName(u"verticalLayout")
+        self.label_trocar_senha = QLabel(self.frame_3)
+        self.label_trocar_senha.setObjectName(u"label_trocar_senha")
+        sizePolicy.setHeightForWidth(self.label_trocar_senha.sizePolicy().hasHeightForWidth())
+        self.label_trocar_senha.setSizePolicy(sizePolicy)
+        self.label_trocar_senha.setMaximumSize(QSize(16777215, 16777215))
+
+        self.verticalLayout.addWidget(self.label_trocar_senha)
+
+
+        self.gridLayout.addWidget(self.frame_3, 3, 4, 1, 1)
+
+        self.txt_senha = QLineEdit(self.frame_2)
+        self.txt_senha.setObjectName(u"txt_senha")
+        sizePolicy.setHeightForWidth(self.txt_senha.sizePolicy().hasHeightForWidth())
+        self.txt_senha.setSizePolicy(sizePolicy)
+        self.txt_senha.setMinimumSize(QSize(0, 40))
+        self.txt_senha.setMaximumSize(QSize(16777215, 30))
+        self.txt_senha.setStyleSheet(u"QLineEdit {\n"
+"    border: 2px solid #0078d4;  /* Cor da borda */\n"
+"    border-radius: 5px;          /* Bordas arredondadas */\n"
+"    padding: 5px;                /* Espa\u00e7amento interno */\n"
+"}\n"
+"\n"
+"QLineEdit::placeholder {\n"
+"    color: white;  /* Cor do placeholder */\n"
+"}\n"
+"")
+        self.txt_senha.setEchoMode(QLineEdit.Password)
+        self.txt_senha.setAlignment(Qt.AlignCenter)
+
+        self.gridLayout.addWidget(self.txt_senha, 2, 0, 1, 8)
+
+        self.txt_usuario = QLineEdit(self.frame_2)
+        self.txt_usuario.setObjectName(u"txt_usuario")
+        sizePolicy.setHeightForWidth(self.txt_usuario.sizePolicy().hasHeightForWidth())
+        self.txt_usuario.setSizePolicy(sizePolicy)
+        self.txt_usuario.setMinimumSize(QSize(0, 40))
+        self.txt_usuario.setMaximumSize(QSize(16777215, 40))
+        self.txt_usuario.setStyleSheet(u"QLineEdit {\n"
+"    border: 2px solid #0078d4;  /* Cor da borda */\n"
+"    border-radius: 5px;          /* Bordas arredondadas */\n"
+"    padding: 5px;                /* Espa\u00e7amento interno */\n"
+"}\n"
+"\n"
+"QLineEdit::placeholder {\n"
+"    color: white;  /* Cor do placeholder */\n"
+"}\n"
+"")
+        self.txt_usuario.setAlignment(Qt.AlignCenter)
+
+        self.gridLayout.addWidget(self.txt_usuario, 1, 0, 1, 8)
+
+        self.verticalSpacer_2 = QSpacerItem(20, 50, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
+
+        self.gridLayout.addItem(self.verticalSpacer_2, 5, 4, 1, 1)
+
+        self.verticalSpacer = QSpacerItem(20, 61, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
+
+        self.gridLayout.addItem(self.verticalSpacer, 0, 2, 1, 1)
+
+        self.horizontalSpacer_2 = QSpacerItem(19, 18, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+
+        self.gridLayout.addItem(self.horizontalSpacer_2, 6, 7, 1, 1)
 
         self.frame = QFrame(self.centralwidget)
         self.frame.setObjectName(u"frame")
@@ -238,12 +240,11 @@ class Ui_Mainwindow_Login(object):
         self.btn_opcoes_extras.setToolTip(QCoreApplication.translate("Mainwindow_Login", u"Reiniciar sistema", None))
 #endif // QT_CONFIG(tooltip)
         self.btn_opcoes_extras.setText("")
-        self.txt_usuario.setPlaceholderText(QCoreApplication.translate("Mainwindow_Login", u"Usu\u00e1rio,email ou CPF", None))
-        self.txt_senha.setPlaceholderText(QCoreApplication.translate("Mainwindow_Login", u"Senha", None))
-        self.label_primeiro_acesso.setText(QCoreApplication.translate("Mainwindow_Login", u"<a href=\"primeiro_acesso\">Primeiro acesso?</a>", None))
-        self.label_trocar_senha.setText(QCoreApplication.translate("Mainwindow_Login", u"<a href=\"trocar_senha\">Esqueci a senha</a>", None))
-        self.btn_manter_conectado.setText(QCoreApplication.translate("Mainwindow_Login", u"Mantenha-me conectado", None))
         self.btn_login.setText(QCoreApplication.translate("Mainwindow_Login", u"LOGIN", None))
+        self.btn_manter_conectado.setText(QCoreApplication.translate("Mainwindow_Login", u"Mantenha-me conectado", None))
+        self.label_trocar_senha.setText(QCoreApplication.translate("Mainwindow_Login", u"<html><head/><body><p align=\"center\"><a href=\"trocar_senha\"><span style=\" text-decoration: underline; color:#0000ff;\">Esqueci a senha</span></a></p></body></html>", None))
+        self.txt_senha.setPlaceholderText(QCoreApplication.translate("Mainwindow_Login", u"Senha", None))
+        self.txt_usuario.setPlaceholderText(QCoreApplication.translate("Mainwindow_Login", u"Usu\u00e1rio,email ou CPF", None))
         self.label_foto_sistema.setText("")
     # retranslateUi
 

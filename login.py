@@ -1,26 +1,23 @@
 from PySide6.QtWidgets import (
     QWidget, QMessageBox,QApplication, QDialog, 
     QVBoxLayout, QLabel, QPushButton,QMainWindow,QLabel,QLineEdit,QComboBox,
-    QHBoxLayout,QSizePolicy)
+    QHBoxLayout,QMenu,QToolButton)
 from ui_login_4 import Ui_Mainwindow_Login
 from database import DataBase
 import sys
 from PySide6.QtCore import Qt,QTimer
 from configuracoes import Configuracoes_Login
+from utils import Temas
 from PySide6.QtCore import Signal
-from PySide6 import QtCore  
-from PySide6.QtGui import QPixmap
+from PySide6 import QtCore
+from PySide6.QtGui import QPixmap,QAction
 import pyotp
 import qrcode
-import urllib3
-import ssl
-import requests
 import os
-import webbrowser
 import sqlite3
-import time
 from datetime import datetime
 import subprocess
+
 
 
 class Login(QMainWindow, Ui_Mainwindow_Login):  
@@ -32,14 +29,26 @@ class Login(QMainWindow, Ui_Mainwindow_Login):
         self.setupUi(self)
         self.login_window = login_window
         self.users = DataBase()  # Defina self.users aqui
-
-
         self.setWindowTitle("Login do Sistema")
-        self.btn_login.clicked.connect(self.checkLogin)
-        self.btn_opcoes_extras.clicked.connect(reiniciar_sistema_tela_login)
+        self.tema = Temas()
 
-        # Conexão do link "Primeiro Acesso"
-        self.label_primeiro_acesso.linkActivated.connect(self.abrir_janela_primeiro_acesso)
+        self.menu_btn_opcoes_extras = QMenu(self.btn_opcoes_extras)
+        self.btn_opcoes_extras.setMenu(self.menu_btn_opcoes_extras)
+        self.btn_opcoes_extras.setPopupMode(QToolButton.InstantPopup)
+        self.btn_opcoes_extras.setToolButtonStyle(Qt.ToolButtonIconOnly)
+        
+        
+        self.acao_reiniciar_sistema = QAction("Reiniciar sistema",self)
+        self.acao_primeiro_acesso = QAction("Primeiro acesso",self)
+        
+        self.menu_btn_opcoes_extras.addAction(self.acao_reiniciar_sistema)
+        self.menu_btn_opcoes_extras.addAction(self.acao_primeiro_acesso)
+
+        self.acao_reiniciar_sistema.triggered.connect(self.reiniciar_sistema_tela_login)
+        self.acao_primeiro_acesso.triggered.connect(self.abrir_janela_primeiro_acesso)
+        
+        self.btn_login.clicked.connect(self.checkLogin)
+
         
         if self.config.mantem_conectado:
             self.txt_usuario.setText(self.config.usuario)
@@ -48,9 +57,7 @@ class Login(QMainWindow, Ui_Mainwindow_Login):
         
 
         self.label_trocar_senha.linkActivated.connect(self.exibir_janela_trocar_senha)
-
     
-
     def abrir_janela_primeiro_acesso(self):
         # Criar e abrir a janela de cadastro
         cadastro_dialog = PrimeiroAcesso(self)
@@ -229,13 +236,13 @@ class Login(QMainWindow, Ui_Mainwindow_Login):
         self.txt_senha.clear()
 
     def usuario_logado(self):
-        print(f"Função usuario_logado(): {self.config.usuario}")  # ADICIONE ISSO
+        print(f"Função usuario_logado(): {self.config.usuario}")
         return self.config.usuario if self.config.usuario else None
 
     def carregar_configuracoes(self):
         # Carregar configurações do arquivo config.json
         self.config.carregar()
-        print(f"Usuário carregado: {self.config.usuario}")  # ADICIONE ISSO
+        print(f"Usuário carregado: {self.config.usuario}")
         # Atualizar os campos de login com as configurações carregadas
         self.txt_usuario.setText(self.config.usuario)
         self.btn_manter_conectado.setChecked(self.config.mantem_conectado)
@@ -248,10 +255,32 @@ class Login(QMainWindow, Ui_Mainwindow_Login):
         msg.setText(mensagem)
         msg.exec()
 
+    def reiniciar_sistema_tela_login(self):
+            msg_box = QMessageBox(self)
+            msg_box.setWindowTitle("Reiniciar Sistema")
+            msg_box.setText("Tem certeza que deseja reiniciar o sistema? ")
+            msg_box.setIcon(QMessageBox.Question)
+
+            botao_sim = msg_box.addButton("Sim",QMessageBox.YesRole)
+            botao_nao = msg_box.addButton("Não",QMessageBox.NoRole)
+            msg_box.setDefaultButton(botao_nao) # Define "Não" como o botão padrão
+
+            msg_box.exec()
+
+            if msg_box.clickedButton() == botao_sim:
+                python = sys.executable
+                script = os.path.abspath(sys.argv[0])
+                # Fecha o app atual
+                QApplication.quit()
+                # Reinicia com subprocess (mais robusto para caminhos com espaço)
+                subprocess.Popen([python, script] + sys.argv[1:])
+                sys.exit()
+
 class PrimeiroAcesso(QMainWindow):  
     def __init__(self, parent=None):
         super(PrimeiroAcesso, self).__init__(parent)
         self.setWindowTitle("Primeiro Acesso")
+        self.tema = Temas()
         
         self.setMinimumWidth(400)
         self.setMinimumHeight(400)
@@ -260,16 +289,248 @@ class PrimeiroAcesso(QMainWindow):
         self.setCentralWidget(self.central_widget)
         
         self.layout = QVBoxLayout(self.central_widget)
-        
-         # Nome
-        hbox_nome = QHBoxLayout()
-        self.label_nome = QLabel("Nome: ")
-        self.txt_nome = QLineEdit()
-        self.txt_nome.setStyleSheet("""
+
+        # Carregar tema
+        config = self.tema.carregar_config_arquivo()
+        tema = config.get("tema", "claro")
+
+        if tema == "escuro":
+            bg_cor = "#202124"
+            text_cor = "white"
+            lineedit_bg = "#303030"
+
+            button_style = """
+                /* Botões gerais */
+            QPushButton {
+                border-radius: 8px;
+                background: qlineargradient(
+                    x1:0, y1:0, x2:0, y2:1,
+                    stop:0 rgb(60, 60, 60),   /* topo */
+                    stop:1 rgb(100, 100, 100) /* base */
+                );      
+                min-height: 24px;  /* Adicione esta linha */
+            }
+
+            QPushButton:hover {
+                background-color: #444444;
+            }
+
+            QPushButton:pressed {
+                background-color: #555555;
+                border: 2px solid #888888;
+            }
+            """
+
+            lineedit_style = """
+            QLineEdit{
+                color: #ffffff; /* texto branco */
+                background-color: #202124; /* fundo escuro */
+                border: 2px solid #ffffff; /* branco */
+                border-radius: 6px; /* cantos arredondados */
+                padding: 3px;
+                selection-background-color: #3296fa; /* fundo da seleção */
+                selection-color: #ffffff; /* texto da seleção */
+            }
+
+            QLineEdit::placeholderText {
+                color: #bbbbbb; /* placeholder em cinza claro */
+            }
+                
+            """
+            combobox_style = """
+                QComboBox {
+                    color: #f0f0f0;
+                    border: 2px solid #ffffff;
+                    border-radius: 6px;
+                    padding: 4px 10px;
+                    background-color: #2b2b2b;
+                }
+                QComboBox QAbstractItemView::item:hover {
+                    background-color: #444444;
+                    color: #f0f0f0;
+                }
+                QComboBox QAbstractItemView::item:selected {
+                    background-color: #696969;
+                    color: #f0f0f0;
+                }
+                QComboBox QAbstractItemView::item {
+                    height: 24px;
+                }
+                QComboBox QScrollBar:vertical {
+                    background: #ffffff;
+                    width: 12px;
+                    border-radius: 6px;
+                }
+                QComboBox QScrollBar::handle:vertical {
+                    background: #555555;
+                    border-radius: 6px;
+                }
+                
+            """
+            scroll_style = """
+            /* Scrollbar vertical */
+            QScrollBar:vertical {
+                background: #ffffff;   /* fundo do track */
+                width: 12px;
+                margin: 0px;
+                border-radius: 6px;
+            }
+
+            QScrollBar::handle:vertical {
+                background: #555555;   /* cor do handle */
+                border-radius: 6px;
+                min-height: 20px;
+            }
+
+            QScrollBar::handle:vertical:hover {
+                background: #777777;   /* hover no handle */
+            }
+
+            QScrollBar::add-line:vertical,
+            QScrollBar::sub-line:vertical {
+                background: none;
+                height: 0px;
+            }
+
+            QScrollBar::add-page:vertical,
+            QScrollBar::sub-page:vertical {
+                background: none;
+            }
+            """
+        elif tema == "claro":
+            bg_cor = "white"
+            text_cor = "black"
+            lineedit_bg = "white"
+
+            button_style = """
+            /* Botões gerais  */
+            QPushButton {
+                border-radius: 8px;
+                background: qlineargradient(
+                    x1:0, y1:0, x2:0, y2:1,
+                    stop:0 rgb(220, 220, 220),  /* topo */
+                    stop:1 rgb(245, 245, 245)   /* base */
+                );
+                font-size: 14px;
+                color: #000000; /* texto escuro */
+            }
+
+            QPushButton:hover {
+                background-color: #e0e0e0;
+            }
+
+            QPushButton:pressed {
+                background-color: #d0d0d0;
+                border: 2px solid #aaaaaa;
+            }
+            
+            """
+
+            lineedit_style = """
+                QLineEdit {
+                color: #000000; /* texto preto */
+                background-color: #ffffff; /* fundo branco */
+                border: 2px solid #0078d4; /* azul moderno, como nos botões */
+                border-radius: 6px;
+                padding: 3px;
+                selection-background-color: #cce4f7; /* azul claro na seleção */
+                selection-color: #000000; /* texto preto na seleção */
+            }
+
+            QLineEdit::placeholderText {
+                color: #888888; /* placeholder em cinza médio */
+            }
+            QLineEdit:focus {
+                border: 2px solid #005a9e; /* Azul mais escuro ao focar */
+                background-color: #f0f8ff; /* Leve destaque no fundo */
+            }
+            """
+            combobox_style = """
+                QComboBox {
+                    background-color: white;
+                    border: 2px solid rgb(50,150,250);
+                    border-radius: 5px;
+                    color: black;
+                    padding: 5px;
+                }
+                QComboBox QAbstractItemView {
+                    background-color: white;
+                    color: black;
+                    border: 1px solid #ccc;
+                    selection-background-color: #e5e5e5;
+                    selection-color: black;
+                }
+                QComboBox QScrollBar:vertical {
+                    background: #f5f5f5;
+                    width: 12px;
+                    border: none;
+                }
+                QComboBox QScrollBar::handle:vertical {
+                    background: #cccccc;
+                    min-height: 20px;
+                    border-radius: 5px;
+                }
+                
+            """
+            scroll_style = """
+                /* Scrollbar vertical */
+                QScrollBar:vertical {
+                    background: #f0f0f0;  /* trilho claro */
+                    width: 12px;
+                    margin: 0px;
+                    border-radius: 6px;
+                }
+
+                QScrollBar::handle:vertical {
+                    background: #b0b0b0;  /* cor do handle */
+                    border-radius: 6px;
+                    min-height: 20px;
+                }
+
+                QScrollBar::handle:vertical:hover {
+                    background: #a0a0a0;  /* hover no handle */
+                }
+
+                QScrollBar::add-line:vertical,
+                QScrollBar::sub-line:vertical {
+                    background: none;
+                    height: 0px;
+                }
+
+                QScrollBar::add-page:vertical,
+                QScrollBar::sub-page:vertical {
+                    background: none;
+                }
+                """
+        else: #clássico
+            bg_cor = "rgb(0,80,121)"
+            text_cor = "white"
+            lineedit_bg = "white"
+
+            button_style = """
+                QPushButton{
+                color: rgb(255, 255, 255);
+                border-radius: 8px;
+                font-size: 16px;
+                background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */
+                border: 4px solid transparent;
+            }
+            
+
+            QPushButton:hover{
+                background: qlineargradient(x1:0, y1:0, x2:0, y2:1, 
+                stop:0 rgb(100, 180, 255), 
+                stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */
+                color: black;
+            }
+            
+            """
+
+            lineedit_style = """
                 QLineEdit {
                 color: black;
                 background-color: rgb(240, 240, 240); /* Cor de fundo cinza claro */
-                border: 2px solid rgb(50, 150,250); /* Borda azul */
+                border: 3px solid rgb(50, 150,250); /* Borda azul */
                 border-radius: 12px; /* Cantos arredondados */
                 padding: 3px; /* Espaçamento interno */
             }
@@ -277,8 +538,69 @@ class PrimeiroAcesso(QMainWindow):
             QLineEdit::placeholderText {
                 color: black; /* Cor do texto do placeholder */
             }
-        
-        """)
+            """
+            combobox_style = """
+                QComboBox {
+                    background-color: white;
+                    border: 3px solid rgb(50,150,250);
+                    border-radius: 5px;
+                    color: black;
+                    padding: 5px;
+                }
+                QComboBox QAbstractItemView {
+                    background-color: white;
+                    color: black;
+                    border: 1px solid #ccc;
+                    selection-background-color: #e5e5e5;
+                    selection-color: black;
+                }
+                QComboBox QScrollBar:vertical {
+                    background: #f5f5f5;
+                    width: 12px;
+                    border: none;
+                }
+                QComboBox QScrollBar::handle:vertical {
+                    background: #cccccc;
+                    min-height: 20px;
+                    border-radius: 5px;
+                }
+            """
+            scroll_style = """
+            /* Scrollbar vertical */
+            QScrollBar:vertical {
+                background: #ffffff;   /* fundo do track */
+                width: 12px;
+                margin: 0px;
+                border-radius: 6px;
+            }
+
+            QScrollBar::handle:vertical {
+                background: #555555;   /* cor do handle */
+                border-radius: 6px;
+                min-height: 20px;
+            }
+
+            QScrollBar::handle:vertical:hover {
+                background: #777777;   /* hover no handle */
+            }
+
+            QScrollBar::add-line:vertical,
+            QScrollBar::sub-line:vertical {
+                background: none;
+                height: 0px;
+            }
+
+            QScrollBar::add-page:vertical,
+            QScrollBar::sub-page:vertical {
+                background: none;
+            }
+            """
+            
+         # Nome
+        hbox_nome = QHBoxLayout()
+        self.label_nome = QLabel("Nome: ")
+        self.txt_nome = QLineEdit()
+        self.txt_nome.setStyleSheet(lineedit_style)
         hbox_nome.addWidget(self.label_nome)
         hbox_nome.addWidget(self.txt_nome)
         self.layout.addLayout(hbox_nome)
@@ -287,20 +609,7 @@ class PrimeiroAcesso(QMainWindow):
         hbox_usuario = QHBoxLayout()
         self.label_usuario = QLabel("Usuário: ")
         self.txt_usuario = QLineEdit()
-        self.txt_usuario.setStyleSheet("""
-                QLineEdit {
-                color: black;
-                background-color: rgb(240, 240, 240); /* Cor de fundo cinza claro */
-                border: 2px solid rgb(50, 150,250); /* Borda azul */
-                border-radius: 12px; /* Cantos arredondados */
-                padding: 3px; /* Espaçamento interno */
-            }
-
-            QLineEdit::placeholderText {
-                color: black; /* Cor do texto do placeholder */
-            }
-
-            """)
+        self.txt_usuario.setStyleSheet(lineedit_style)
         hbox_usuario.addWidget(self.label_usuario)
         hbox_usuario.addWidget(self.txt_usuario)
         self.layout.addLayout(hbox_usuario)
@@ -309,20 +618,7 @@ class PrimeiroAcesso(QMainWindow):
         hbox_senha = QHBoxLayout()
         self.label_senha = QLabel("Senha: ")
         self.txt_senha = QLineEdit()
-        self.txt_senha.setStyleSheet("""
-                QLineEdit {
-                color: black;
-                background-color: rgb(240, 240, 240); /* Cor de fundo cinza claro */
-                border: 2px solid rgb(50, 150,250); /* Borda azul */
-                border-radius: 12px; /* Cantos arredondados */
-                padding: 3px; /* Espaçamento interno */
-            }
-
-            QLineEdit::placeholderText {
-                color: black; /* Cor do texto do placeholder */
-            }
-        
-        """)
+        self.txt_senha.setStyleSheet(lineedit_style)
         self.txt_senha.setEchoMode(QLineEdit.Password)  # Ocultar senha
         hbox_senha.addWidget(self.label_senha)
         hbox_senha.addWidget(self.txt_senha)
@@ -334,20 +630,7 @@ class PrimeiroAcesso(QMainWindow):
         self.label_confirmar_senha = QLabel("Confirmar senha: ")
         self.txt_confirmar_senha = QLineEdit()
         self.txt_confirmar_senha.setEchoMode(QLineEdit.Password)
-        self.txt_confirmar_senha.setStyleSheet("""
-                QLineEdit {
-                color: black;
-                background-color: rgb(240, 240, 240); /* Cor de fundo cinza claro */
-                border: 2px solid rgb(50, 150,250); /* Borda azul */
-                border-radius: 12px; /* Cantos arredondados */
-                padding: 3px; /* Espaçamento interno */
-            }
-
-            QLineEdit::placeholderText {
-                color: black; /* Cor do texto do placeholder */
-            }
-        
-        """)
+        self.txt_confirmar_senha.setStyleSheet(lineedit_style)
         hbox_confirmar_senha.addWidget(self.label_confirmar_senha)
         hbox_confirmar_senha.addWidget(self.txt_confirmar_senha)
         self.layout.addLayout(hbox_confirmar_senha)
@@ -360,65 +643,18 @@ class PrimeiroAcesso(QMainWindow):
         self.combobox_acesso.addItem("Convidado")
         self.combobox_acesso.addItem("Administrador")
         self.combobox_acesso.addItem("Usuário")
-        self.combobox_acesso.setStyleSheet("""    
-                QComboBox { 
-                    background-color: white; 
-                    border: 3px solid rgb(50,150,250); 
-                    border-radius: 5px; 
-                    color: black; 
-                    padding: 5px;
-                }
-                QComboBox QAbstractItemView {
-                    background-color: white; 
-                    color: black; 
-                    border: 1px solid #ccc; 
-                    selection-background-color: #e5e5e5; 
-                    selection-color: black;
-                }
-                QComboBox QAbstractItemView QScrollBar:vertical {
-                    background: #f5f5f5; 
-                    width: 12px; 
-                    border: none;
-                }
-                QComboBox QAbstractItemView QScrollBar::handle:vertical {
-                    background: #cccccc; 
-                    min-height: 20px; 
-                    border-radius: 5px;
-                }
-                QComboBox QAbstractItemView QScrollBar::add-line:vertical, 
-                QComboBox QAbstractItemView QScrollBar::sub-line:vertical {
-                    background: none;
-                    height: 0px;  /* Remove os botões de linha (setas de cima e baixo) */
-                }
-                QComboBox QAbstractItemView QScrollBar::add-page:vertical, 
-                QComboBox QAbstractItemView QScrollBar::sub-page:vertical {
-                    background: none;
-                }   
-        """)
+        self.combobox_acesso.setStyleSheet(combobox_style)
         hbox_acesso.addWidget(self.combobox_acesso)
         self.layout.addLayout(hbox_acesso)
 
 
         self.btn_cadastrar = QPushButton("Realizar cadastro")
-        self.btn_cadastrar.setStyleSheet("""
-                QPushButton {
-                color: rgb(255, 255, 255);
-                border-radius: 8px;
-                font-size: 16px;
-                background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */
-                border: 4px solid transparent;
-            }
-
-            QPushButton:hover {
-                background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */
-                color: black;
-                }
-        """)
+        self.btn_cadastrar.setStyleSheet(button_style)
         self.btn_cadastrar.clicked.connect(self.inserir_usuario_no_banco_de_dados)
         self.layout.addWidget(self.btn_cadastrar)
 
         # Exibir a mensagem assim que a janela de primeiro acesso for exibida
-        QMessageBox.information(None,
+        QMessageBox.information(self,
             "Informação",
             "O usuário será cadastrado com  informações temporárias\n"
             "assim que logado no sistema, ir em Cadastrar Usuário e incluir/alterar todas as informações necessárias. ",
@@ -438,18 +674,18 @@ class PrimeiroAcesso(QMainWindow):
 
         # Verificar se os campos obrigatórios estão preenchidos
         if not (nome and usuario and senha and confirmar_senha):
-            QMessageBox.warning(None,"Erro", "Por favor, preencha todos os campos.")
+            QMessageBox.warning(self,"Erro", "Por favor, preencha todos os campos.")
             return
 
         # Verificar se as senhas coincidem
         if senha != confirmar_senha:
-            QMessageBox.warning(None,"Erro", "As senhas não coincidem.")
+            QMessageBox.warning(self,"Erro", "As senhas não coincidem.")
             return
 
         if self.combobox_acesso.currentText() == "Administrador":
             QMessageBox.warning(self,
                 "Erro",
-                "Para primeiro acesso o usuário pode ser cadastrado como Convidado ou Usuário comum.\n" 
+                "Para primeiro acesso o usuário pode ser cadastrado somente como Convidado ou Usuário comum.\n" 
                 "O tipo de acesso para usuário administrador só pode ser realizado por outro administrador.\n"
                 "Por favor, entre em contato com seu administrador para revogar seu privilégio.\n"
                 "Se o erro persistir, entre em contato com o desenvolvedor do sistema.",        
@@ -465,7 +701,7 @@ class PrimeiroAcesso(QMainWindow):
             cursor.execute("SELECT * FROM users WHERE Usuário = ?", (usuario,))
             existing_user = cursor.fetchone()
             if existing_user:
-                QMessageBox.warning(None,"Erro", "Já existe um usuário cadastrado no sistema! ")
+                QMessageBox.warning(self,"Erro", "Já existe um usuário cadastrado no sistema! ")
                 return
 
             # Inserir o novo usuário no banco de dados
@@ -482,7 +718,7 @@ class PrimeiroAcesso(QMainWindow):
             conn.close()
 
             # Mensagem de sucesso
-            QMessageBox.information(None,"Sucesso", "Usuário cadastrado com sucesso!")
+            QMessageBox.information(self,"Sucesso", "Usuário cadastrado com sucesso!")
             self.close()  # Fecha a janela de cadastro
 
         except sqlite3.Error as e:
@@ -492,23 +728,4 @@ class PrimeiroAcesso(QMainWindow):
     def esconder_label_acesso(self):
         pass
 
-def reiniciar_sistema_tela_login():
-        msg_box = QMessageBox()
-        msg_box.setWindowTitle("Reiniciar Sistema")
-        msg_box.setText("Tem certeza que deseja reiniciar o sistema? ")
-        msg_box.setIcon(QMessageBox.Question)
-
-        botao_sim = msg_box.addButton("Sim",QMessageBox.YesRole)
-        botao_nao = msg_box.addButton("Não",QMessageBox.NoRole)
-        msg_box.setDefaultButton(botao_nao) # Define "Não" como o botão padrão
-
-        msg_box.exec()
-
-        if msg_box.clickedButton() == botao_sim:
-            python = sys.executable
-            script = os.path.abspath(sys.argv[0])
-            # Fecha o app atual
-            QApplication.quit()
-            # Reinicia com subprocess (mais robusto para caminhos com espaço)
-            subprocess.Popen([python, script] + sys.argv[1:])
-            sys.exit()
+    

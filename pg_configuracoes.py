@@ -155,7 +155,6 @@ class Pagina_Configuracoes(QWidget):
                 border-radius: 5px;
             }
             
-
             /* Parte que você arrasta */
             QTableView QScrollBar::handle:vertical {
                 background-color: #777777;  /* cinza médio */
@@ -193,7 +192,6 @@ class Pagina_Configuracoes(QWidget):
             QTabWidget#tab_clientes_todos::pane {
                 border: none;
             }
-
             
             QTabBar::tab {
                 background-color: #ffffff; /* fundo branco */
@@ -213,7 +211,6 @@ class Pagina_Configuracoes(QWidget):
                 background-color: #f5f5f5;
             }
             
-
             QPushButton#btn_mostrar_senha{
                 qproperty-icon: url("imagens/olho_branco.png");
                 qproperty-iconSize: 16px 16px;
@@ -458,6 +455,14 @@ class Pagina_Configuracoes(QWidget):
                     stop:0 rgb(50, 50, 50),
                     stop:1 rgb(80, 80, 80)
                 );
+            }
+            QToolButton#btn_opcoes_extras{
+                border-radius: 10px;
+                min-width: 21px;
+                min-height: 21px;
+            }
+            QToolButton#btn_opcoes_extras::menu-indicator{
+                image: none;
             }
     
             QMenu::item:selected {
@@ -967,6 +972,14 @@ class Pagina_Configuracoes(QWidget):
                 background-color: #d0d0d0;
                 border: 2px solid #aaaaaa;
             }
+            QToolButton#btn_opcoes_extras{
+                border-radius: 10px;
+                min-width: 21px;
+                min-height: 21px;
+            }
+            QToolButton#btn_opcoes_extras::menu-indicator{
+                image: none;
+            }
             QDateEdit {
                 color: #2b2b2b;                     /* Texto escuro */
                 background-color: #ffffff;         /* Fundo branco */
@@ -1056,7 +1069,20 @@ class Pagina_Configuracoes(QWidget):
             QFrame#frame_8{
                 border: 2px solid #eaeaea;
             }      
+            QLabel#label_foto_sistema{
+                border: none;
+            }
+            QFrame#frame_2 {
+                border-radius: 12px;
+                border: 2px solid qlineargradient(
+                    spread:pad,
+                    x1:0, y1:0, x2:1, y2:0,
+                    stop:0 #36d1dc,   /* turquesa */
+                    stop:1 #5b86e5    /* azul claro */
+                );
+            }
 
+            
         """
         # Iterar sobre todos os widgets da aplicação e aplicar o estilo
         app = QApplication.instance()
@@ -1526,6 +1552,7 @@ class Pagina_Configuracoes(QWidget):
                 background-color: rgb(100, 180, 255);
                 border: 2px solid rgb(100, 180, 255);
             }
+            
 
             /* Menu do btn_mais_opcoes */
             QToolButton#btn_mais_opcoes QMenu {
@@ -1616,6 +1643,15 @@ class Pagina_Configuracoes(QWidget):
                 ); /* Gradiente de azul mais claro para azul ainda mais claro */
                 color: black;
             }
+            QToolButton#btn_opcoes_extras{
+                border: transparent;
+                border-radius: 10px;
+                max-width: 21px;
+                max-height: 21px;
+                }
+            QToolButton#btn_opcoes_extras::menu-indicator{
+                image: none;
+            }  
             QMenu#menu_classe_tema,
             QMenu#menu_classe_atualizacoes,
             QMenu#menu_classe_hora,
@@ -1642,7 +1678,19 @@ class Pagina_Configuracoes(QWidget):
             QFrame#frame_8{
                 border: 2px solid white;
             }  
-            
+            QLabel#label_foto_sistema{
+                border: none;
+                background: transparent;
+            }
+            QFrame#frame_2 {
+                border-radius: 12px;
+                border: 2px solid qlineargradient(
+                    spread:pad, 
+                    x1:0, y1:0, x2:1, y2:0,
+                    stop:0 #1de9b6, 
+                    stop:1 #0d47a1
+                );
+            } 
             
         """
         # Iterar sobre todos os widgets da aplicação e aplicar o estilo

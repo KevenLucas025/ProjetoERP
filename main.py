@@ -3073,6 +3073,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 QMessageBox QPushButton:pressed {
                     background-color: #c7d7f9;
                 }
+                           
             """)
 
 # Função principal
