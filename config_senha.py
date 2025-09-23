@@ -2,8 +2,10 @@ from PySide6.QtWidgets import (
     QDialog, QLabel, QLineEdit, QPushButton, QVBoxLayout, QHBoxLayout, QMessageBox
 )
 from PySide6.QtGui import QIcon
+from PySide6.QtCore import Qt
 from database import DataBase
 from datetime import datetime
+from utils import Temas
 import re
 
 
@@ -11,10 +13,15 @@ class BotaoAjuda(QHBoxLayout):
     def __init__(self, main_window,label_text="", help_text="", parent=None):
         super().__init__(parent)
         self.main_window = main_window
+        self.tema = Temas()
+
+
+
         self.label = QLabel(label_text)
         self.line_edit = QLineEdit()
         self.help_button = QPushButton("?")
-        self.help_button.setStyleSheet("border: none; padding: 0px;")
+        self.help_button.setStyleSheet("border: none; padding: 0px; background: transparent;")
+        self.help_button.setCursor(Qt.PointingHandCursor)
         self.help_button.setToolTip(help_text)
         self.help_button.clicked.connect(lambda: self.mostrar_ajuda(help_text))
 
@@ -55,6 +62,7 @@ class TrocarSenha(QDialog):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setWindowTitle("Alterar Senha")
+        self.tema = Temas()
 
         self.db = DataBase()
         self.db.connecta()
@@ -69,13 +77,201 @@ class TrocarSenha(QDialog):
             "Informe seu número de telefone:", "O número de telefone deve ser o \n mesmo cadastrado no sistema"
         )
 
+        config = self.tema.carregar_config_arquivo()
+        tema  = config.get("tema","claro")
+
+
+        if tema == "escuro":
+            bg_cor = "#202124"
+            button_style = """
+            /* Botões gerais */
+            QPushButton {
+                border-radius: 8px;
+                background: qlineargradient(
+                    x1:0, y1:0, x2:0, y2:1,
+                    stop:0 rgb(60, 60, 60),   /* topo */
+                    stop:1 rgb(100, 100, 100) /* base */
+                );      
+                min-height: 24px;  /* Adicione esta linha */
+            }
+
+            QPushButton:hover {
+                background-color: #444444;
+            }
+
+            QPushButton:pressed {
+                background-color: #555555;
+                border: 2px solid #888888;
+            }
+            QPushButton#nova_senha_show_button,
+            QPushButton#confirmar_senha_show_button{
+                qproperty-icon: url("imagens/olho_branco.png");
+                qproperty-iconSize: 16px 16px;
+                background: transparent;
+                border: none;  
+            }
+            QPushButton#nova_senha_show_button:hover,
+            QPushButton#confirmar_senha_show_button:hover{
+                background-color: #444444; 
+            }
+            """
+            lineedit_style = """
+            QLineEdit{
+                color: #ffffff; /* texto branco */
+                background-color: #202124; /* fundo escuro */
+                border: 2px solid #ffffff; /* branco */
+                border-radius: 6px; /* cantos arredondados */
+                padding: 3px;
+                selection-background-color: #3296fa; /* fundo da seleção */
+                selection-color: #ffffff; /* texto da seleção */
+                }
+
+                QLineEdit::placeholderText {
+                    color: #bbbbbb; /* placeholder em cinza claro */
+                }   
+            """
+            label_style = """
+                QLabel{
+                    color: white;
+                }
+            
+            """
+        elif tema == "claro":
+            bg_cor = "white"
+            button_style =  """
+            /* Botões gerais  */
+            QPushButton {
+                border-radius: 8px;
+                background: qlineargradient(
+                    x1:0, y1:0, x2:0, y2:1,
+                    stop:0 rgb(220, 220, 220),  /* topo */
+                    stop:1 rgb(245, 245, 245)   /* base */
+                );
+                font-size: 14px;
+                color: #000000; /* texto escuro */
+            }
+
+            QPushButton:hover {
+                background-color: #e0e0e0;
+            }
+
+            QPushButton:pressed {
+                background-color: #d0d0d0;
+                border: 2px solid #aaaaaa;
+            }
+            QPushButton#nova_senha_show_button,
+            QPushButton#confirmar_senha_show_button{
+                qproperty-icon: url("imagens/olho_preto.png");
+                qproperty-iconSize: 16px 16px;
+                background: transparent;
+                border: none;  
+            }
+            QPushButton#nova_senha_show_button:hover,
+            QPushButton#confirmar_senha_show_button:hover{
+                background-color: #e0e0e0; 
+            }
+            """
+            lineedit_style = """
+                QLineEdit {
+                    color: #000000; /* texto preto */
+                    background-color: #ffffff; /* fundo branco */
+                    border: 2px solid #0078d4; /* azul moderno, como nos botões */
+                    border-radius: 6px;
+                    padding: 3px;
+                    selection-background-color: #cce4f7; /* azul claro na seleção */
+                    selection-color: #000000; /* texto preto na seleção */
+                }
+
+                QLineEdit::placeholderText {
+                    color: #888888; /* placeholder em cinza médio */
+                }
+                QLineEdit:focus {
+                    border: 2px solid #005a9e; /* Azul mais escuro ao focar */
+                    background-color: #f0f8ff; /* Leve destaque no fundo */
+                }
+                """
+            label_style = """
+                QLabel{
+                    color: black;
+                }
+            
+            """
+            
+        else: # clássico
+            bg_cor = "rgb(0,80,121)"
+
+            button_style = """
+            QPushButton{
+                color: rgb(255, 255, 255);
+                border-radius: 8px;
+                font-size: 16px;
+                background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */
+                border: 4px solid transparent;
+            }
+
+            QPushButton:hover{
+                background: qlineargradient(x1:0, y1:0, x2:0, y2:1, 
+                stop:0 rgb(100, 180, 255), 
+                stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */
+                color: black;
+            }
+            QPushButton#nova_senha_show_button,
+            QPushButton#confirmar_senha_show_button{
+                qproperty-icon: url("imagens/olho_preto.png");
+                qproperty-iconSize: 16px 16px;
+                background: transparent;
+                border: none;  
+            }
+            QPushButton#nova_senha_show_button:hover,
+            QPushButton#confirmar_senha_show_button:hover{
+                background: qlineargradient(
+                x1:0, y1:0, x2:0, y2:1, 
+                stop:0 rgb(100, 180, 255), 
+                stop:1 rgb(150, 220, 255)
+            );
+            color: black;
+            }
+
+            """
+            lineedit_style = """
+                QLineEdit {
+                    color: black;
+                    background-color: rgb(240, 240, 240); /* Cor de fundo cinza claro */
+                    border: 3px solid rgb(50, 150,250); /* Borda azul */
+                    border-radius: 12px; /* Cantos arredondados */
+                    padding: 3px; /* Espaçamento interno */
+                }
+
+                QLineEdit::placeholderText {
+                    color: black; /* Cor do texto do placeholder */
+                }
+                """
+            label_style = """
+                QLabel{
+                    color: white;
+                }
+            
+                """
+
+        estilo_completo = f"""
+        QWidget {{
+            background-color: {bg_cor};
+        }}
+        {button_style}
+        {lineedit_style}
+        {label_style}
+        """
+        self.setStyleSheet(estilo_completo)
+
+
         self.nova_senha_label = QLabel("Nova Senha:")
         self.nova_senha_line_edit = QLineEdit()
         self.nova_senha_line_edit.setEchoMode(QLineEdit.Password)
         self.nova_senha_show_button = QPushButton()
-        self.nova_senha_show_button.setIcon(QIcon("—Pngtree—eye icon_4568689.png"))  # Verifique se o caminho do arquivo está correto
+        self.nova_senha_show_button.setObjectName("nova_senha_show_button")
+
         self.nova_senha_show_button.setCheckable(True)
-        self.nova_senha_show_button.setStyleSheet("border: none; padding: 0px;")
+        self.nova_senha_show_button.setStyleSheet(button_style)
         self.nova_senha_show_button.toggled.connect(
             lambda checked: self.nova_senha_line_edit.setEchoMode(
                 QLineEdit.Normal if checked else QLineEdit.Password
@@ -86,9 +282,10 @@ class TrocarSenha(QDialog):
         self.confirmar_senha_line_edit = QLineEdit()
         self.confirmar_senha_line_edit.setEchoMode(QLineEdit.Password)
         self.confirmar_senha_show_button = QPushButton()
-        self.confirmar_senha_show_button.setIcon(QIcon("—Pngtree—eye icon_4568689.png"))  # Verifique se o caminho do arquivo está correto
+        self.confirmar_senha_show_button.setObjectName("confirmar_senha_show_button")
         self.confirmar_senha_show_button.setCheckable(True)
-        self.confirmar_senha_show_button.setStyleSheet("border: none; padding: 0px;")
+        
+        
         self.confirmar_senha_show_button.toggled.connect(
             lambda checked: self.confirmar_senha_line_edit.setEchoMode(
                 QLineEdit.Normal if checked else QLineEdit.Password
@@ -97,20 +294,6 @@ class TrocarSenha(QDialog):
 
         self.atualizar_senha_button = QPushButton("Atualizar Senha")
         self.atualizar_senha_button.clicked.connect(self.trocar_senha)
-        self.atualizar_senha_button.setStyleSheet("""
-            QPushButton {
-                color: rgb(255, 255, 255);
-                border-radius: 3px;
-                font-size: 16px;
-                background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255));
-                border: 3px solid transparent;
-            }
-
-            QPushButton:hover {
-                background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255));
-                color: black;
-            }
-        """)
 
         layout = QVBoxLayout()
         layout.addLayout(self.usuario_line_edit)
@@ -132,6 +315,9 @@ class TrocarSenha(QDialog):
         layout.addWidget(self.atualizar_senha_button)
 
         self.setLayout(layout)
+
+        
+
 
     def formatar_telefone(self, text):
         # Remover todos os caracteres que não são dígitos
