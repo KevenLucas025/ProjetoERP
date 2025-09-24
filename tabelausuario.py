@@ -142,9 +142,6 @@ class TabelaUsuario(QMainWindow):
         self.btn_gerar_excel.clicked.connect(self.gerar_arquivo_excel_usuarios)
 
     
-    
-
-    
     def aplicar_tema(self, tema: str) -> str:
         # Definições de tema
         if tema == "escuro":

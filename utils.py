@@ -1,6 +1,5 @@
 from PySide6.QtWidgets import QLineEdit, QPushButton,QVBoxLayout,QLabel,QFrame
-from PySide6.QtGui import QIcon, QPixmap, QTransform
-from PySide6.QtCore import Qt, QPropertyAnimation, QEasingCurve
+from PySide6.QtCore import Qt, QPropertyAnimation
 import json
 import os
 

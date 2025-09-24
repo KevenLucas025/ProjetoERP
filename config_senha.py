@@ -2,28 +2,25 @@ from PySide6.QtWidgets import (
     QDialog, QLabel, QLineEdit, QPushButton, QVBoxLayout, QHBoxLayout, QMessageBox
 )
 from PySide6.QtGui import QIcon
-from PySide6.QtCore import Qt
+from PySide6.QtCore import Qt,QPropertyAnimation
 from database import DataBase
 from datetime import datetime
-from utils import Temas
+from utils import Temas,MostrarSenha
 import re
 
 
 class BotaoAjuda(QHBoxLayout):
-    def __init__(self, main_window,label_text="", help_text="", parent=None):
+    def __init__(self,label_text="", help_text="", parent=None):
         super().__init__(parent)
-        self.main_window = main_window
         self.tema = Temas()
-
-
 
         self.label = QLabel(label_text)
         self.line_edit = QLineEdit()
         self.help_button = QPushButton("?")
-        self.help_button.setStyleSheet("border: none; padding: 0px; background: transparent;")
+        self.help_button.setObjectName("helpButton")
         self.help_button.setCursor(Qt.PointingHandCursor)
         self.help_button.setToolTip(help_text)
-        self.help_button.clicked.connect(lambda: self.mostrar_ajuda(help_text))
+        self.help_button.clicked.connect(lambda: self.animar_help(help_text))
 
         self.addWidget(self.label)
         self.addWidget(self.line_edit)
@@ -32,10 +29,19 @@ class BotaoAjuda(QHBoxLayout):
         # Conectar o sinal textChanged ao método formatar_telefone
         self.line_edit.textChanged.connect(self.formatar_telefone)
 
-    def mostrar_ajuda(self, help_text):
+    def animar_help(self, help_text):
+        #Animar botão de ajuda
+        rect = self.help_button.geometry()
+        self.help_button.anim = QPropertyAnimation(self.help_button,b"geometry")
+        self.help_button.anim.setDuration(100)
+        self.help_button.anim.setStartValue(rect)
+        self.help_button.anim.setKeyValueAt(0.5,rect.adjusted(2,2,2,2)) # afunda 2px
+        self.help_button.anim.setEndValue(rect)
+        self.help_button.anim.start()
+
+        # Mostrar o texto de ajuda
         QMessageBox.information(None, "Ajuda", help_text)
 
-        
     
     def formatar_telefone(self, text):
         # Remover todos os caracteres que não são dígitos
@@ -102,19 +108,21 @@ class TrocarSenha(QDialog):
             QPushButton:pressed {
                 background-color: #555555;
                 border: 2px solid #888888;
+                padding-left: 1px;
+                padding-top: 1px;      
             }
-            QPushButton#nova_senha_show_button,
-            QPushButton#confirmar_senha_show_button{
-                qproperty-icon: url("imagens/olho_branco.png");
-                qproperty-iconSize: 16px 16px;
-                background: transparent;
-                border: none;  
+            QPushButton#helpButton {
+                background:transparent;
+                min-width: 21px;
+                min-height: 21px;
             }
-            QPushButton#nova_senha_show_button:hover,
-            QPushButton#confirmar_senha_show_button:hover{
-                background-color: #444444; 
+            QPushButton#helpButton:hover {
+                background-color: #444444;
+                border: 2px solid #888888;
+
             }
             """
+            
             lineedit_style = """
             QLineEdit{
                 color: #ffffff; /* texto branco */
@@ -159,18 +167,14 @@ class TrocarSenha(QDialog):
                 background-color: #d0d0d0;
                 border: 2px solid #aaaaaa;
             }
-            QPushButton#nova_senha_show_button,
-            QPushButton#confirmar_senha_show_button{
-                qproperty-icon: url("imagens/olho_preto.png");
-                qproperty-iconSize: 16px 16px;
-                background: transparent;
-                border: none;  
+            QPushButton#helpButton {
+                background:transparent;
             }
-            QPushButton#nova_senha_show_button:hover,
-            QPushButton#confirmar_senha_show_button:hover{
-                background-color: #e0e0e0; 
+            QPushButton#helpButton:hover {
+                background-color: #e0e0e0;
             }
             """
+            
             lineedit_style = """
                 QLineEdit {
                     color: #000000; /* texto preto */
@@ -231,6 +235,14 @@ class TrocarSenha(QDialog):
             );
             color: black;
             }
+            QPushButton#helpButton {
+                background:transparent;
+            }
+            QPushButton#helpButton:hover {
+                background-color: rgb(50,150,250);
+                color: black;
+                
+            }
 
             """
             lineedit_style = """
@@ -262,35 +274,19 @@ class TrocarSenha(QDialog):
         {label_style}
         """
         self.setStyleSheet(estilo_completo)
+        
+        # Criar labels
+        self.nova_senha_label = QLabel("Nova senha:")
+        self.confirmar_senha_label = QLabel("Confirmar senha:")
 
 
-        self.nova_senha_label = QLabel("Nova Senha:")
         self.nova_senha_line_edit = QLineEdit()
-        self.nova_senha_line_edit.setEchoMode(QLineEdit.Password)
-        self.nova_senha_show_button = QPushButton()
-        self.nova_senha_show_button.setObjectName("nova_senha_show_button")
-
-        self.nova_senha_show_button.setCheckable(True)
-        self.nova_senha_show_button.setStyleSheet(button_style)
-        self.nova_senha_show_button.toggled.connect(
-            lambda checked: self.nova_senha_line_edit.setEchoMode(
-                QLineEdit.Normal if checked else QLineEdit.Password
-            )
-        )
-
-        self.confirmar_senha_label = QLabel("Confirmar Nova Senha:")
         self.confirmar_senha_line_edit = QLineEdit()
-        self.confirmar_senha_line_edit.setEchoMode(QLineEdit.Password)
-        self.confirmar_senha_show_button = QPushButton()
-        self.confirmar_senha_show_button.setObjectName("confirmar_senha_show_button")
-        self.confirmar_senha_show_button.setCheckable(True)
-        
-        
-        self.confirmar_senha_show_button.toggled.connect(
-            lambda checked: self.confirmar_senha_line_edit.setEchoMode(
-                QLineEdit.Normal if checked else QLineEdit.Password
-            )
-        )
+
+        # Criar botões de mostrar senha
+        self._criar_botao_mostrar_senha(self.nova_senha_line_edit)
+        self._criar_botao_mostrar_senha(self.confirmar_senha_line_edit)
+
 
         self.atualizar_senha_button = QPushButton("Atualizar Senha")
         self.atualizar_senha_button.clicked.connect(self.trocar_senha)
@@ -303,20 +299,105 @@ class TrocarSenha(QDialog):
         nova_senha_layout = QHBoxLayout()
         nova_senha_layout.addWidget(self.nova_senha_label)
         nova_senha_layout.addWidget(self.nova_senha_line_edit)
-        nova_senha_layout.addWidget(self.nova_senha_show_button)
         layout.addLayout(nova_senha_layout)
 
         confirmar_senha_layout = QHBoxLayout()
         confirmar_senha_layout.addWidget(self.confirmar_senha_label)
         confirmar_senha_layout.addWidget(self.confirmar_senha_line_edit)
-        confirmar_senha_layout.addWidget(self.confirmar_senha_show_button)
         layout.addLayout(confirmar_senha_layout)
 
         layout.addWidget(self.atualizar_senha_button)
 
         self.setLayout(layout)
 
-        
+    def _criar_botao_mostrar_senha(self, line_edit: QLineEdit):
+        config = self.tema.carregar_config_arquivo()
+        tema = config.get("tema", "claro")
+
+        # Estilo do botão por tema
+        if tema == "escuro":
+            button_style = """
+            QPushButton {
+                qproperty-icon: url("imagens/olho_branco.png");
+                qproperty-iconSize: 16px 16px;
+                background: transparent;
+                border: none;
+            }
+            QPushButton:hover {
+                background-color: #444444; 
+            }
+            QPushButton::pressed{
+                padding-left: 1px;
+                padding-top: 1px;      
+            }
+            """
+        elif tema == "claro":
+            button_style = """
+            QPushButton {
+                qproperty-icon: url("imagens/olho_preto.png");
+                qproperty-iconSize: 16px 16px;
+                border: none;  
+            }
+            QPushButton:hover {
+                background-color: #e0e0e0;
+            }
+            """
+        else:  # clássico
+            button_style = """
+            QPushButton#btn_mostrar_senha {
+                qproperty-icon: url("imagens/olho_preto.png");
+                qproperty-iconSize: 16px 16px;
+                background: transparent;
+                border: none;  
+            }
+            QPushButton#btn_mostrar_senha:hover {
+                background-color: #a0cfff;
+            }
+            """
+
+        # Criar botão dentro do QLineEdit
+        btn = QPushButton(line_edit)
+        btn.setCursor(Qt.PointingHandCursor)
+        btn.setStyleSheet(button_style)
+        btn.setCheckable(True)
+
+        # Função para posicionar o botão corretamente
+        def posicionar_botao():
+            altura = line_edit.height() - 4
+            btn.setFixedSize(altura, altura)
+            btn.move(line_edit.width() - altura - 2, 2)
+
+        posicionar_botao()
+
+        # Atualizar posição caso o QLineEdit seja redimensionado
+        def on_resize(event):
+            posicionar_botao()
+            if hasattr(super(type(line_edit), line_edit), "resizeEvent"):
+                super(type(line_edit), line_edit).resizeEvent(event)
+        line_edit.resizeEvent = on_resize
+
+        # Função de animação ao clicar
+        def animar_botao():
+            rect = btn.geometry()
+            btn.anim = QPropertyAnimation(btn, b"geometry")  # mantém a referência viva no botão
+            btn.anim.setDuration(100)
+            btn.anim.setStartValue(rect)
+            btn.anim.setKeyValueAt(0.5, rect.adjusted(2, 2, 2, 2))  # afunda 2px
+            btn.anim.setEndValue(rect)
+            btn.anim.start()
+
+        # Alternar visibilidade da senha
+        def toggle_senha(checked):
+            animar_botao()
+            if checked:
+                line_edit.setEchoMode(QLineEdit.Normal)
+            else:
+                line_edit.setEchoMode(QLineEdit.Password)
+
+        btn.clicked.connect(toggle_senha)
+
+        # Definir modo password inicialmente
+        line_edit.setEchoMode(QLineEdit.Password)
 
 
     def formatar_telefone(self, text):
