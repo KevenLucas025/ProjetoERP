@@ -1,13 +1,14 @@
 from PySide6.QtWidgets import (QWidget,QMenu, QVBoxLayout, 
                                QProgressBar,QApplication,QDialog,QMessageBox,
-                               QToolButton,QMainWindow,QTableWidget)
-from PySide6.QtCore import Qt, QTimer
-from PySide6.QtGui import QIcon,QFont
+                               QToolButton,QMainWindow,QPushButton,QLabel,QLineEdit)
+from PySide6.QtCore import Qt, QTimer,QKeyCombination
+from PySide6.QtGui import QIcon,QKeySequence
 import os
 import json
 from login import Login
 import sys
 from configuracoes import Configuracoes_Login
+from dialogos import ComboDialog,DialogoEstilizado
 from mane_python import Ui_MainWindow
 import subprocess
 
@@ -21,7 +22,7 @@ class Pagina_Configuracoes(QWidget):
                  label_cadastramento, label_cadastramento_produtos,frame_valor_total_produtos,
                  frame_valor_do_desconto, frame_valor_desconto,frame_quantidade,parent=None):
         super().__init__(parent)
-
+        self.atalhos = {}  # dicionário para guardar atalhos
         self.main_window = main_window
         self.paginas_sistemas = paginas_sistemas
         self.frame_botoes_navegacoes = frame_botoes_navegacoes
@@ -1788,7 +1789,7 @@ class Pagina_Configuracoes(QWidget):
         btn_atalhos.setObjectName("btn_classe_atalhos")
         btn_atalhos.setFixedHeight(38)
         menu_atalhos = QMenu(self.janela_config)
-        menu_atalhos.addAction("Mapear teclas de atalhos")
+        menu_atalhos.addAction("Mapear teclas de atalhos",self.mapear_teclas_atalhos)
         menu_atalhos.addAction("Abrir painel de atalhos")
         menu_atalhos.addAction("Editar atalhos")
         menu_atalhos.addAction("Sobre atalhos")
@@ -1798,7 +1799,50 @@ class Pagina_Configuracoes(QWidget):
         # Mostrar janela
         self.janela_config.show()
         
+    def mapear_teclas_atalhos(self):
+        # 1. Perguntar qual ação o usuário quer mapear 
+        opcoes = ["Pesquisar", "Fechar Sistema", "Abrir Mais Opções"] 
+        dialog = ComboDialog("Mapear Teclas", "Escolha a ação que deseja mapear:", opcoes, parent=self.janela_config) 
+
+        if dialog.exec() != QDialog.Accepted: 
+            return 
+        acao = dialog.escolha() 
+
+        # 2. Abrir mini janela para capturar a tecla 
+        captura = DialogoEstilizado(parent=self.janela_config) 
+        captura.setWindowTitle(f"Definir atalho para {acao}") 
+
+        layout = QVBoxLayout(captura) 
+        layout.addWidget(QLabel(f"Pressione a tecla para '{acao}':")) 
+
+        input_tecla = TeclaLineEdit() 
+        layout.addWidget(input_tecla)
+
+        btn_salvar = QPushButton("Salvar") 
+        btn_salvar.clicked.connect(captura.accept) 
+        layout.addWidget(btn_salvar)
+
+        if captura.exec() == QDialog.Accepted: 
+            tecla = input_tecla.text().strip()
+
+        if not hasattr(self, "atalhos"): 
+            self.atalhos = {} 
+            self.atalhos[acao] = tecla 
+            print("Atalhos definidos:", self.atalhos)
+
+        self.main_window.registrar_atalhos(acao,tecla)
     
+    def abrir_painel_atalhos(self):
+        print("Abrir painel de atalhos")
+
+    def editar_atalhos(self):
+        print("Editar atalhos")
+
+    def sobre_atalhos(self):
+        QMessageBox.information(
+            self,
+            "Sobre Atalhos",
+            "Aqui você pode configurar os atalhos")
 
 
         
@@ -1845,4 +1889,24 @@ class ProgressDialog(QDialog):
         self.progress_bar.setValue(value)
         QApplication.processEvents()
 
-    
+class TeclaLineEdit(QLineEdit):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        
+    def keyPressEvent(self, event):
+        if event.key() == Qt.Key_unknown:
+            return
+
+        key = event.key()
+        modifiers = event.modifiers()
+
+        # Pega o valor inteiro do bitmask de modificadores
+        seq_int = modifiers.value | key
+
+        # Cria QKeySequence a partir do inteiro
+        seq = QKeySequence(seq_int)
+
+        # Mostra o atalho no QLineEdit
+        self.setText(seq.toString(QKeySequence.NativeText))
+
+        event.accept()

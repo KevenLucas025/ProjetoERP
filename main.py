@@ -6,7 +6,7 @@ from PySide6 import QtCore
 from PySide6.QtWidgets import (QMainWindow, QMessageBox, QPushButton,
                                QLabel, QFileDialog, QVBoxLayout,
                                QMenu,QTableWidgetItem,QCheckBox,QApplication,QToolButton,QHeaderView,QCompleter,
-                               QComboBox,QInputDialog,QProgressDialog,QDialog,QWidget,QTableWidget)
+                               QComboBox,QInputDialog,QProgressDialog,QDialog,QLineEdit,QWidget,QHBoxLayout,QDockWidget)
 from PySide6.QtGui import (QDoubleValidator, QIcon, QColor, QPixmap,QBrush,
                            QAction,QMovie,QImage,QShortcut,QKeySequence)
 from login import Login
@@ -62,6 +62,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.imagem_removida_usuario = False
         self.usuario_tem_imagem_salva = False
         self.temas = Temas()
+        self.atalhos = {}  # dicionário com os atalhos definidos
 
 
         self.table_base.verticalHeader().setFixedWidth(20)  # você pode ajustar o valor
@@ -109,7 +110,33 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if app is not None:
             self.aplicar_tema_global(app, tema_atual)
 
-        
+        # --- Caixa de pesquisa com botão "X" ---
+        self.widget_pesquisa = QWidget()
+        layout_pesquisa = QHBoxLayout(self.widget_pesquisa)
+        layout_pesquisa.setContentsMargins(2, 2, 2, 2)
+
+        self.caixa_pesquisa = QLineEdit()
+        self.caixa_pesquisa.setPlaceholderText("Procurar na página")
+        layout_pesquisa.addWidget(self.caixa_pesquisa)
+
+        # Botão "X" para fechar
+        btn_fechar = QPushButton("X")
+        btn_fechar.setFixedSize(25, 25)
+        btn_fechar.clicked.connect(lambda: self.dock_pesquisa.hide())
+        layout_pesquisa.addWidget(btn_fechar)
+
+        # Criação do dock
+        self.dock_pesquisa = QDockWidget("Pesquisar", self)
+        self.dock_pesquisa.setWidget(self.widget_pesquisa)
+
+
+        self.dock_pesquisa.setAllowedAreas(Qt.TopDockWidgetArea)
+        self.addDockWidget(Qt.TopDockWidgetArea, self.dock_pesquisa)
+
+        # Impede redimensionamento
+        self.dock_pesquisa.setFixedSize(260, 30)
+
+        self.dock_pesquisa.hide()  # começa escondido
 
         # Mapeia os campos com identificadores únicos
         self.campos_com_autocomplete = {
@@ -1416,6 +1443,22 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # Conectar o sinal focusIn ao método esconder_asteriscos
         for widget in self.campos_obrigatorios.values():
             widget.installEventFilter(self)
+
+    def registrar_atalhos(self,acao,tecla_str):
+        seq = QKeySequence(tecla_str)
+        shortcut = QShortcut(seq,self)
+
+        if acao == "Pesquisar":
+            shortcut.activated.connect(self.abrir_pesquisa)
+        elif acao == "Fechar Sistema":
+            shortcut.activated.connect(self.close)
+        elif acao == "Abrir Mais Opções":
+            pass
+
+    def abrir_pesquisa(self):
+        self.dock_pesquisa.show()
+        self.caixa_pesquisa.setFocus()
+
 #*********************************************************************************************************************
     def exibir_asteriscos_produtos(self, campos_nao_preenchidos):
         for campo in campos_nao_preenchidos:
