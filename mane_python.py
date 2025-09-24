@@ -1560,18 +1560,18 @@ class Ui_MainWindow(object):
 
         self.gridLayout_11.addWidget(self.frame_botoes_a_e_a_a, 2, 1, 1, 1)
 
-        self.frame_2 = QFrame(self.frame_cadastrar_produto)
-        self.frame_2.setObjectName(u"frame_2")
-        sizePolicy.setHeightForWidth(self.frame_2.sizePolicy().hasHeightForWidth())
-        self.frame_2.setSizePolicy(sizePolicy)
-        self.frame_2.setMinimumSize(QSize(340, 0))
-        self.frame_2.setMaximumSize(QSize(331, 16777215))
-        self.frame_2.setStyleSheet(u"background-color: rgb(0, 80, 121);")
-        self.frame_2.setFrameShape(QFrame.NoFrame)
-        self.frame_2.setFrameShadow(QFrame.Raised)
-        self.verticalLayout_11 = QVBoxLayout(self.frame_2)
+        self.frame_line_cadastro_produtos = QFrame(self.frame_cadastrar_produto)
+        self.frame_line_cadastro_produtos.setObjectName(u"frame_line_cadastro_produtos")
+        sizePolicy.setHeightForWidth(self.frame_line_cadastro_produtos.sizePolicy().hasHeightForWidth())
+        self.frame_line_cadastro_produtos.setSizePolicy(sizePolicy)
+        self.frame_line_cadastro_produtos.setMinimumSize(QSize(340, 0))
+        self.frame_line_cadastro_produtos.setMaximumSize(QSize(331, 16777215))
+        self.frame_line_cadastro_produtos.setStyleSheet(u"background-color: rgb(0, 80, 121);")
+        self.frame_line_cadastro_produtos.setFrameShape(QFrame.NoFrame)
+        self.frame_line_cadastro_produtos.setFrameShadow(QFrame.Raised)
+        self.verticalLayout_11 = QVBoxLayout(self.frame_line_cadastro_produtos)
         self.verticalLayout_11.setObjectName(u"verticalLayout_11")
-        self.frame_produto = QFrame(self.frame_2)
+        self.frame_produto = QFrame(self.frame_line_cadastro_produtos)
         self.frame_produto.setObjectName(u"frame_produto")
         self.frame_produto.setMaximumSize(QSize(328, 50))
         self.frame_produto.setFrameShape(QFrame.NoFrame)
@@ -1626,7 +1626,7 @@ class Ui_MainWindow(object):
 
         self.verticalLayout_11.addWidget(self.frame_produto)
 
-        self.frame_quantidade_2 = QFrame(self.frame_2)
+        self.frame_quantidade_2 = QFrame(self.frame_line_cadastro_produtos)
         self.frame_quantidade_2.setObjectName(u"frame_quantidade_2")
         self.frame_quantidade_2.setMaximumSize(QSize(328, 50))
         self.frame_quantidade_2.setFrameShape(QFrame.NoFrame)
@@ -1681,7 +1681,7 @@ class Ui_MainWindow(object):
 
         self.verticalLayout_11.addWidget(self.frame_quantidade_2)
 
-        self.frame_valor_produto = QFrame(self.frame_2)
+        self.frame_valor_produto = QFrame(self.frame_line_cadastro_produtos)
         self.frame_valor_produto.setObjectName(u"frame_valor_produto")
         self.frame_valor_produto.setMaximumSize(QSize(328, 50))
         self.frame_valor_produto.setStyleSheet(u"background-color: rgb(0, 80, 121);")
@@ -1737,7 +1737,7 @@ class Ui_MainWindow(object):
 
         self.verticalLayout_11.addWidget(self.frame_valor_produto)
 
-        self.frame_desconto = QFrame(self.frame_2)
+        self.frame_desconto = QFrame(self.frame_line_cadastro_produtos)
         self.frame_desconto.setObjectName(u"frame_desconto")
         self.frame_desconto.setMaximumSize(QSize(328, 50))
         self.frame_desconto.setStyleSheet(u"background-color: rgb(0, 80, 121);")
@@ -1785,7 +1785,7 @@ class Ui_MainWindow(object):
 
         self.verticalLayout_11.addWidget(self.frame_desconto)
 
-        self.frame_data_compra = QFrame(self.frame_2)
+        self.frame_data_compra = QFrame(self.frame_line_cadastro_produtos)
         self.frame_data_compra.setObjectName(u"frame_data_compra")
         self.frame_data_compra.setMaximumSize(QSize(328, 50))
         self.frame_data_compra.setStyleSheet(u"background-color: rgb(0, 80, 121);")
@@ -1840,7 +1840,7 @@ class Ui_MainWindow(object):
 
         self.verticalLayout_11.addWidget(self.frame_data_compra)
 
-        self.frame_codigo_item = QFrame(self.frame_2)
+        self.frame_codigo_item = QFrame(self.frame_line_cadastro_produtos)
         self.frame_codigo_item.setObjectName(u"frame_codigo_item")
         self.frame_codigo_item.setMaximumSize(QSize(328, 50))
         self.frame_codigo_item.setFrameShape(QFrame.NoFrame)
@@ -1886,7 +1886,7 @@ class Ui_MainWindow(object):
 
         self.verticalLayout_11.addWidget(self.frame_codigo_item)
 
-        self.frame_cliente = QFrame(self.frame_2)
+        self.frame_cliente = QFrame(self.frame_line_cadastro_produtos)
         self.frame_cliente.setObjectName(u"frame_cliente")
         self.frame_cliente.setMaximumSize(QSize(328, 50))
         self.frame_cliente.setFrameShape(QFrame.NoFrame)
@@ -1940,7 +1940,7 @@ class Ui_MainWindow(object):
 
         self.verticalLayout_11.addWidget(self.frame_cliente)
 
-        self.frame_descricao_produto = QFrame(self.frame_2)
+        self.frame_descricao_produto = QFrame(self.frame_line_cadastro_produtos)
         self.frame_descricao_produto.setObjectName(u"frame_descricao_produto")
         self.frame_descricao_produto.setMaximumSize(QSize(328, 50))
         self.frame_descricao_produto.setFrameShape(QFrame.NoFrame)
@@ -1997,7 +1997,7 @@ class Ui_MainWindow(object):
         self.verticalLayout_11.addWidget(self.frame_descricao_produto)
 
 
-        self.gridLayout_11.addWidget(self.frame_2, 2, 0, 3, 1)
+        self.gridLayout_11.addWidget(self.frame_line_cadastro_produtos, 2, 0, 3, 1)
 
         self.label_cadastramento_produtos = QLabel(self.frame_cadastrar_produto)
         self.label_cadastramento_produtos.setObjectName(u"label_cadastramento_produtos")

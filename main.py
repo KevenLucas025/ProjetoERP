@@ -437,7 +437,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         
         
-        self.pagina_configuracoes = Pagina_Configuracoes(self,self,self,self.centralwidget,self.frame_pag_estoque,self.frame_2,self.paginas_sistemas,
+        self.pagina_configuracoes = Pagina_Configuracoes(self,self,self,self.centralwidget,self.frame_pag_estoque,self.frame_line_cadastro_produtos,self.paginas_sistemas,
                                                          self.pg_cadastrar_usuario,self.frame_pag_cadastrar_usuario,
                                                          self.btn_mais_opcoes,self.btn_avancar,self.btn_retroceder,self.btn_home,self.btn_verificar_estoque,
                                                          self.btn_cadastrar_produto, self.btn_cadastrar_usuarios, self.btn_clientes,

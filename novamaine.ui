@@ -2809,7 +2809,7 @@ QPushButton:hover {
             </widget>
            </item>
            <item row="2" column="0" rowspan="3">
-            <widget class="QFrame" name="frame_2">
+            <widget class="QFrame" name="frame_line_cadastro_produtos">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
                <horstretch>0</horstretch>

@@ -19,15 +19,12 @@ class BotaoAjuda(QHBoxLayout):
         self.help_button = QPushButton("?")
         self.help_button.setObjectName("helpButton")
         self.help_button.setCursor(Qt.PointingHandCursor)
-        self.help_button.setToolTip(help_text)
+        self.help_button.setToolTip("Ajuda")
         self.help_button.clicked.connect(lambda: self.animar_help(help_text))
 
         self.addWidget(self.label)
         self.addWidget(self.line_edit)
-        self.addWidget(self.help_button)
-
-        # Conectar o sinal textChanged ao método formatar_telefone
-        self.line_edit.textChanged.connect(self.formatar_telefone)
+        self.addWidget(self.help_button)   
 
     def animar_help(self, help_text):
         #Animar botão de ajuda
@@ -41,28 +38,6 @@ class BotaoAjuda(QHBoxLayout):
 
         # Mostrar o texto de ajuda
         QMessageBox.information(None, "Ajuda", help_text)
-
-    
-    def formatar_telefone(self, text):
-        # Remover todos os caracteres que não são dígitos
-        numero_limpo = ''.join(filter(str.isdigit, text))
-        
-        # Limitar o texto a 14 caracteres
-        numero_limpo = numero_limpo[:14]
-        
-        # Verificar se o número tem pelo menos 2 dígitos
-        if len(numero_limpo) >= 2:
-            numero_formatado = "({}) ".format(numero_limpo[:2])
-            
-            # Adicionar o hífen se o número tiver mais de 8 dígitos
-            if len(numero_limpo) >= 8:
-                numero_formatado += "{}-{}".format(numero_limpo[2:7], numero_limpo[7:11])
-                
-                # Atualizar o texto do campo de texto
-                self.line_edit.setText(numero_formatado)
-            else:
-                # Se o número não tiver mais de 7 dígitos, apenas atualizar o texto
-                self.line_edit.setText(numero_formatado + numero_limpo[2:])
 
 class TrocarSenha(QDialog):
     def __init__(self, parent=None):
@@ -82,6 +57,9 @@ class TrocarSenha(QDialog):
         self.telefone_line_edit = BotaoAjuda(
             "Informe seu número de telefone:", "O número de telefone deve ser o \n mesmo cadastrado no sistema"
         )
+
+        # Conectar o formatador de telefone SOMENTE nesse campo
+        self.telefone_line_edit.line_edit.textChanged.connect(self.formatar_telefone)
 
         config = self.tema.carregar_config_arquivo()
         tema  = config.get("tema","claro")
@@ -169,9 +147,12 @@ class TrocarSenha(QDialog):
             }
             QPushButton#helpButton {
                 background:transparent;
+                min-width: 21px;
+                min-height: 21px;
             }
             QPushButton#helpButton:hover {
-                background-color: #e0e0e0;
+                background-color: #d0e7ff;
+                border: 2px solid #d0e7ff;
             }
             """
             
@@ -219,29 +200,19 @@ class TrocarSenha(QDialog):
                 stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */
                 color: black;
             }
-            QPushButton#nova_senha_show_button,
-            QPushButton#confirmar_senha_show_button{
-                qproperty-icon: url("imagens/olho_preto.png");
-                qproperty-iconSize: 16px 16px;
-                background: transparent;
-                border: none;  
-            }
-            QPushButton#nova_senha_show_button:hover,
-            QPushButton#confirmar_senha_show_button:hover{
-                background: qlineargradient(
-                x1:0, y1:0, x2:0, y2:1, 
-                stop:0 rgb(100, 180, 255), 
-                stop:1 rgb(150, 220, 255)
-            );
-            color: black;
-            }
             QPushButton#helpButton {
                 background:transparent;
+                min-width: 21px;
+                min-height: 21px;
             }
             QPushButton#helpButton:hover {
                 background-color: rgb(50,150,250);
                 color: black;
                 
+            }
+            QPushButton:pressed {
+                background-color: #d0d0d0;
+                border: 2px solid #aaaaaa;
             }
 
             """
@@ -336,22 +307,33 @@ class TrocarSenha(QDialog):
             QPushButton {
                 qproperty-icon: url("imagens/olho_preto.png");
                 qproperty-iconSize: 16px 16px;
+                background: transparent;
                 border: none;  
             }
             QPushButton:hover {
-                background-color: #e0e0e0;
+                background-color: #d0e7ff;
+            }
+            QPushButton::pressed{
+                padding-left: 1px;
+                padding-top: 1px;      
             }
             """
         else:  # clássico
             button_style = """
-            QPushButton#btn_mostrar_senha {
+            QPushButton {
                 qproperty-icon: url("imagens/olho_preto.png");
                 qproperty-iconSize: 16px 16px;
                 background: transparent;
                 border: none;  
             }
-            QPushButton#btn_mostrar_senha:hover {
-                background-color: #a0cfff;
+            QPushButton:hover {
+                background-color: rgb(50,150,250);
+                color: black;
+                
+            }
+            QPushButton::pressed{
+                padding-left: 1px;
+                padding-top: 1px;      
             }
             """
 
@@ -399,28 +381,6 @@ class TrocarSenha(QDialog):
         # Definir modo password inicialmente
         line_edit.setEchoMode(QLineEdit.Password)
 
-
-    def formatar_telefone(self, text):
-        # Remover todos os caracteres que não são dígitos
-        numero_limpo = ''.join(filter(str.isdigit, text))
-        
-        # Limitar o texto a 14 caracteres
-        numero_limpo = numero_limpo[:14]
-        
-        # Verificar se o número tem pelo menos 2 dígitos
-        if len(numero_limpo) >= 2:
-            numero_formatado = "({}) ".format(numero_limpo[:2])
-            
-            # Adicionar o hífen se o número tiver mais de 8 dígitos
-            if len(numero_limpo) >= 8:
-                numero_formatado += "{}-{}".format(numero_limpo[2:7], numero_limpo[7:11])
-                
-                # Atualizar o texto do campo de texto
-                self.txt_telefone.setText(numero_formatado)
-            else:
-                # Se o número não tiver mais de 7 dígitos, apenas atualizar o texto
-                self.txt_telefone.setText(numero_formatado + numero_limpo[2:])
-
     
     def trocar_senha(self):
         usuario = self.usuario_line_edit.line_edit.text()
@@ -463,7 +423,7 @@ class TrocarSenha(QDialog):
             QMessageBox.warning(self, "Erro", "As senhas não coincidem.")
             return False
 
-        if not self.validar_senha(nova_senha):
+        if not self.validar_senha(nova_senha,confirmar_senha):
             QMessageBox.warning(self, "Erro", "A nova senha deve conter pelo menos um caractere especial e uma letra maiúscula.")
             return False
 
@@ -547,10 +507,6 @@ class TrocarSenha(QDialog):
         
     
     def validar_senha(self, senha, confirmar_senha):
-        """
-        Valida se a senha tem pelo menos 8 caracteres, letras, números
-        e se a confirmação de senha é igual à senha.
-        """
         if senha != confirmar_senha:
             return False  # As senhas não coincidem
 
@@ -579,5 +535,24 @@ class TrocarSenha(QDialog):
     def closeEvent(self, event):
         self.db.close_connection()
         event.accept()
+
+    def formatar_telefone(self, text):
+        # Remover todos os caracteres que não são dígitos
+        numero_limpo = ''.join(filter(str.isdigit, text))[:11]  # até 11 dígitos
+        
+        if len(numero_limpo) <= 2:
+            numero_formatado = f"({numero_limpo}"
+        elif len(numero_limpo) <= 6:
+            numero_formatado = f"({numero_limpo[:2]}) {numero_limpo[2:]}"
+        elif len(numero_limpo) <= 10:
+            numero_formatado = f"({numero_limpo[:2]}) {numero_limpo[2:6]}-{numero_limpo[6:]}"
+        else:  # celular com 9 dígitos
+            numero_formatado = f"({numero_limpo[:2]}) {numero_limpo[2:7]}-{numero_limpo[7:]}"
+        
+        # Atualizar sem disparar o sinal em loop
+        self.telefone_line_edit.line_edit.blockSignals(True)
+        self.telefone_line_edit.line_edit.setText(numero_formatado)
+        self.telefone_line_edit.line_edit.blockSignals(False)
+
 
     
