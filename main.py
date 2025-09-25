@@ -102,6 +102,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.db.create_table_clientes_fisicos()
         self.db.create_table_historico_fisico()
         self.db.create_table_historico_juridico()
+
+        
     
         # Carregar tema do sistema ou  configuração
         config = self.temas.carregar_config_arquivo()  # função de config do JSON
@@ -192,6 +194,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.config = Configuracoes_Login(self)
         self.config.carregar()
         self.fazer_login_automatico()
+
+        for acao,tecla in self.config.obter_todos_atalhos().items():
+            self.registrar_atalhos(acao,tecla)
 
 
         # Aplica o tamanho da fonte salvo no JSON

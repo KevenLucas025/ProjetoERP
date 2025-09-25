@@ -1805,7 +1805,7 @@ class Pagina_Configuracoes(QWidget):
         dialog = ComboDialog("Mapear Teclas", "Escolha a ação que deseja mapear:", opcoes, parent=self.janela_config) 
 
         if dialog.exec() != QDialog.Accepted: 
-            return 
+            return  # usuário cancelou
         acao = dialog.escolha() 
 
         # 2. Abrir mini janela para capturar a tecla 
@@ -1822,15 +1822,21 @@ class Pagina_Configuracoes(QWidget):
         btn_salvar.clicked.connect(captura.accept) 
         layout.addWidget(btn_salvar)
 
+        # Só entra aqui se o usuário clicar em "Salvar"
         if captura.exec() == QDialog.Accepted: 
             tecla = input_tecla.text().strip()
+            if tecla:
+                # garante que não salva vazio
+                if not hasattr(self, "atalhos"): 
+                    self.atalhos = {} 
+                    self.atalhos[acao] = tecla 
+                    print("Atalhos definidos:", self.atalhos)
 
-        if not hasattr(self, "atalhos"): 
-            self.atalhos = {} 
-            self.atalhos[acao] = tecla 
-            print("Atalhos definidos:", self.atalhos)
+                #  Salvar no JSON usando Configuracoes_Login
+                self.config.salvar_atalho(acao,tecla)
 
-        self.main_window.registrar_atalhos(acao,tecla)
+                #  Registrar no sistema
+                self.main_window.registrar_atalhos(acao,tecla)
     
     def abrir_painel_atalhos(self):
         print("Abrir painel de atalhos")

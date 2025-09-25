@@ -13,6 +13,7 @@ class Configuracoes_Login:
         self.nao_mostrar_mensagem_arquivo_excel_fisicos = False
         self.historico_autocompletes = {}
         self.tema = "classico"
+        self.atalhos = {}
         self.carregar()
 
     def carregar(self):
@@ -37,6 +38,7 @@ class Configuracoes_Login:
                 self.nao_mostrar_mensagem_arquivo_excel = config.get("nao_mostrar_mensagem_arquivo_excel", False)
                 self.nao_mostrar_mensagem_arquivo_excel_fisicos = config.get("nao_mostrar_mensagem_arquivo_excel_fisicos", False)
                 self.historico_autocompletes = config.get("historico_autocompletes", {})
+                self.atalhos = config.get("atalhos", {})
 
                 # Tema
                 self.tema = config.get("tema", "classico")
@@ -74,11 +76,25 @@ class Configuracoes_Login:
             "nao_mostrar_mensagem_arquivo_excel_fisicos": self.nao_mostrar_mensagem_arquivo_excel_fisicos,
             "historico_autocompletes": self.historico_autocompletes,
             "tema": self.tema,
-            "tamanho_fonte_percentual": self.tamanho_fonte_percentual
+            "tamanho_fonte_percentual": self.tamanho_fonte_percentual,
+            "atalhos": self.atalhos,
         }
 
         with open("config.json", "w", encoding="utf-8") as f:
             json.dump(config, f, indent=4, ensure_ascii=False)
+            
+    def salvar_atalho(self, acao, tecla):
+        """Salva/atualiza um atalho específico e persiste no JSON"""
+        self.atalhos[acao] = tecla
+        self.salvar(self.usuario, self.senha, self.mantem_conectado)
+
+    def obter_atalho(self, acao):
+        """Retorna o atalho de uma ação, ou None"""
+        return self.atalhos.get(acao)
+
+    def obter_todos_atalhos(self):
+        """Retorna todos os atalhos"""
+        return self.atalhos
 
 
     def salvar_configuracoes(self, usuario, senha, mantem_conectado):
