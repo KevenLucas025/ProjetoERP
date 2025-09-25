@@ -1,8 +1,9 @@
 from PySide6.QtWidgets import (QWidget,QMenu, QVBoxLayout, 
                                QProgressBar,QApplication,QDialog,QMessageBox,
-                               QToolButton,QMainWindow,QPushButton,QLabel,QLineEdit)
-from PySide6.QtCore import Qt, QTimer,QKeyCombination
-from PySide6.QtGui import QIcon,QKeySequence
+                               QToolButton,QMainWindow,QPushButton,QLabel,
+                               QLineEdit,QTableWidget,QTextEdit)
+from PySide6.QtCore import Qt, QTimer
+from PySide6.QtGui import QIcon,QKeySequence,QColor,QBrush,QTextDocument
 import os
 import json
 from login import Login
@@ -11,6 +12,7 @@ from configuracoes import Configuracoes_Login
 from dialogos import ComboDialog,DialogoEstilizado
 from mane_python import Ui_MainWindow
 import subprocess
+from html import escape
 
 class Pagina_Configuracoes(QWidget):
     def __init__(self,
@@ -51,15 +53,10 @@ class Pagina_Configuracoes(QWidget):
         self.frame_valor_do_desconto = frame_valor_do_desconto
         self.frame_valor_desconto = frame_valor_desconto
         self.frame_quantidade = frame_quantidade
-
-        
-
-  
        
         self.estilo_original_classico = Ui_MainWindow()
         self.config = Configuracoes_Login(main_window=main_window)
         
-
         
         if self.config.tema == "escuro":
             self.aplicar_modo_escuro_sem_progress()
@@ -1849,7 +1846,137 @@ class Pagina_Configuracoes(QWidget):
             self,
             "Sobre Atalhos",
             "Aqui você pode configurar os atalhos")
+        
+    def configurar_pesquisa(self):
+        self.main_window.caixa_pesquisa.returnPressed.connect(self.executar_pesquisa)
 
+    def executar_pesquisa(self):
+        texto = self.main_window.caixa_pesquisa.text().strip().lower()
+        diferenciar_maiusculas = self.main_window.checkbox_maiusculas.isChecked()
+
+        self.resetar_destaques(self.main_window.centralWidget())
+
+        if not texto:
+            return
+
+        pagina_atual = self.main_window.paginas_sistemas.currentWidget()  # <- só a página ativa
+        encontrado = self.procurar_widget(pagina_atual, texto,diferenciar_maiusculas)
+
+        if not encontrado:
+            QMessageBox.warning(
+                self,
+                "Pesquisa",
+                f"Nenhum resultado encontrado para: {texto}"
+            )
+
+    def procurar_widget(self, widget, texto,case_sensitive=False):
+        """Percorre todos os widgets dentro da página atual e procura o texto"""
+        encontrado = False
+
+        if isinstance(widget, QLabel):
+            conteudo = widget.text()
+
+            '''if conteudo.strip().lower().startswith("<html>"):
+                return False'''
+
+            # salva o texto original no property (se ainda não tiver salvo)
+            if widget.property("texto_original") is None:
+                widget.setProperty("texto_original", conteudo)
+
+            # Extrai apenas o texto visível (mesmo que conteudo_original seja HTML)
+            doc = QTextDocument()
+            doc.setHtml(conteudo)
+            texto_visivel = doc.toPlainText()
+
+            texto_sem_destaque  = conteudo
+            conteudo_visivel = conteudo
+
+            # comparar com ou sem distinção de maiúsculas
+            if not case_sensitive:
+                texto_base = texto_visivel.lower()
+                texto_procura = texto.lower()
+            else:
+                texto_procura = texto
+                texto_base = texto_visivel
+
+
+            if texto_base in conteudo_visivel:
+                start = conteudo_visivel.find(texto_base)
+                end = start + len(texto)
+
+                # escapa HTML para evitar quebra em letras soltas (ex: <b>, <i>, etc)
+                conteudo_escapado = escape(texto_sem_destaque )
+
+                destaque = (
+                    conteudo_escapado[:start] +
+                     f"<span style='background-color: yellow'>{escape(texto_sem_destaque [start:end])}</span>" +
+                    conteudo_escapado[end:]
+                )
+
+                widget.setTextFormat(Qt.RichText)
+                widget.setText(destaque)
+                encontrado = True
+            else:
+                widget.setText(conteudo)
+
+        elif isinstance(widget, QTableWidget):
+            for row in range(widget.rowCount()):
+                for col in range(widget.columnCount()):
+                    item = widget.item(row, col)
+                    if item:
+                        item_texto = item.text()
+                        item_texto_cmp = item_texto if case_sensitive else item_texto.lower()
+                        texto_cmp = texto if case_sensitive else texto.lower()
+                        if texto_cmp in item_texto_cmp:
+                            item.setBackground(QColor("yellow"))
+                            widget.scrollToItem(item)
+                            encontrado = True
+                        else:
+                            item.setBackground(QColor())
+
+        # Recursivamente percorre filhos
+        for tipo in (QLabel, QLineEdit, QTextEdit, QTableWidget):
+            for child in widget.findChildren(tipo):
+                if self.procurar_widget(child, texto,case_sensitive):
+                    encontrado = True
+
+        return encontrado
+    
+    
+    def resetar_destaques(self, widget):
+        """Limpa todos os destaques e seleções de todos os widgets recursivamente"""
+
+        if isinstance(widget, QLabel):
+            # restaura texto original se existir
+            texto_original = widget.property("texto_original")
+            if texto_original is not None:
+                widget.setText(texto_original)
+                widget.setProperty("texto_original", None)
+
+        elif isinstance(widget, (QLineEdit, QTextEdit)):
+            widget.setStyleSheet("")  # remove fundo amarelo
+
+        elif isinstance(widget, QTableWidget):
+            for row in range(widget.rowCount()):
+                for col in range(widget.columnCount()):
+                    item = widget.item(row, col)
+                    if item:
+                        item.setBackground(QBrush())
+            widget.clearSelection()
+
+        # percorre todos os filhos recursivamente
+        for child in widget.findChildren(QWidget):
+            self.resetar_destaques(child)
+
+    def fechar_pesquisa(self):
+        """Fecha a barra de pesquisa e limpa todos os destaques"""
+        # Garanta que o resetar_destaques seja chamado para a página atual
+        pagina_atual = self.main_window.paginas_sistemas.currentWidget()
+        if pagina_atual:
+            self.resetar_destaques(pagina_atual)
+        # Limpa a caixa de pesquisa
+        self.main_window.caixa_pesquisa.clear()
+        self.main_window.widget_pesquisa.hide()
 
         
     def reiniciar_sistema(self):

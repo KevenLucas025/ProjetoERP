@@ -112,33 +112,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if app is not None:
             self.aplicar_tema_global(app, tema_atual)
 
-        # --- Caixa de pesquisa com botão "X" ---
-        self.widget_pesquisa = QWidget()
-        layout_pesquisa = QHBoxLayout(self.widget_pesquisa)
-        layout_pesquisa.setContentsMargins(2, 2, 2, 2)
-
-        self.caixa_pesquisa = QLineEdit()
-        self.caixa_pesquisa.setPlaceholderText("Procurar na página")
-        layout_pesquisa.addWidget(self.caixa_pesquisa)
-
-        # Botão "X" para fechar
-        btn_fechar = QPushButton("X")
-        btn_fechar.setFixedSize(25, 25)
-        btn_fechar.clicked.connect(lambda: self.dock_pesquisa.hide())
-        layout_pesquisa.addWidget(btn_fechar)
-
-        # Criação do dock
-        self.dock_pesquisa = QDockWidget("Pesquisar", self)
-        self.dock_pesquisa.setWidget(self.widget_pesquisa)
-
-
-        self.dock_pesquisa.setAllowedAreas(Qt.TopDockWidgetArea)
-        self.addDockWidget(Qt.TopDockWidgetArea, self.dock_pesquisa)
-
-        # Impede redimensionamento
-        self.dock_pesquisa.setFixedSize(260, 30)
-
-        self.dock_pesquisa.hide()  # começa escondido
+        
 
         # Mapeia os campos com identificadores únicos
         self.campos_com_autocomplete = {
@@ -165,8 +139,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             "txt_cnpj": self.txt_cnpj
         }
         
-        
-
         self.table_base.verticalHeader().setVisible(True)
         self.table_saida.verticalHeader().setVisible(True)
         self.table_ativos.verticalHeader().setVisible(True)
@@ -178,7 +150,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.table_ativos.setShowGrid(True)
         self.table_inativos.setShowGrid(True)
         
-
 
         # funções que precisam do banco de dados
         self.erros_frames_produtos()
@@ -235,6 +206,34 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.selected_user_id = None
         self.is_editing_produto = False
         self.selected_produto_id = None
+        
+        # Criação dos botões      
+        self.btn_avancar = QPushButton(self)
+        self.btn_avancar.setIcon(QIcon("imagens/seta_direita-removebg-preview.png"))  # Adicione o caminho do ícone de avançar
+        self.btn_avancar.setGeometry(35, 5, 30, 30)
+        self.btn_avancar.setToolTip("Avançar")  # Adiciona uma dica de ferramenta
+      
+        
+        self.btn_retroceder = QPushButton(self)
+        self.btn_retroceder.setIcon(QIcon("imagens/seta esquerda 2.png"))  # Adicione o caminho do ícone de retroceder
+        self.btn_retroceder.setGeometry(5, 5, 30, 30) 
+        self.btn_retroceder.setToolTip("Retroceder") # Adiciona uma dica de ferramenta
+
+
+        # Criar o menu dentro do botão btn_opcoes
+        self.menu_opcoes = QMenu(self.btn_mais_opcoes)
+        
+        self.pagina_configuracoes = Pagina_Configuracoes(self,self,self,self.paginas_sistemas,self.centralwidget,
+                                                         self.frame_pag_estoque,self.frame_line_cadastro_produtos,
+                                                         self.pg_cadastrar_usuario,self.frame_pag_cadastrar_usuario,
+                                                         self.btn_mais_opcoes,self.btn_avancar,self.btn_retroceder,self.btn_home,self.btn_verificar_estoque,
+                                                         self.btn_cadastrar_produto, self.btn_cadastrar_usuarios, self.btn_clientes,
+                                                         self.btn_abrir_planilha,self.btn_importar,self.btn_gerar_saida,
+                                                         self.line_excel,self.btn_gerar_estorno,
+                                                         self.label_cadastramento,self.label_cadastramento_produtos,self.frame_valor_total_produtos,
+                                                         self.frame_valor_do_desconto,self.frame_valor_com_desconto1,self.frame_quantidade)
+
+        
 
 
         self.pagina_clientes_juridicos = Clientes_Juridicos(self.line_clientes,self,self.btn_adicionar_cliente_juridico,self.btn_editar_clientes,
@@ -270,21 +269,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.imagem_carregada_produto = False
 
 
-        # Criação dos botões      
-        self.btn_avancar = QPushButton(self)
-        self.btn_avancar.setIcon(QIcon("imagens/seta_direita-removebg-preview.png"))  # Adicione o caminho do ícone de avançar
-        self.btn_avancar.setGeometry(35, 5, 30, 30)
-        self.btn_avancar.setToolTip("Avançar")  # Adiciona uma dica de ferramenta
-      
         
-        self.btn_retroceder = QPushButton(self)
-        self.btn_retroceder.setIcon(QIcon("imagens/seta esquerda 2.png"))  # Adicione o caminho do ícone de retroceder
-        self.btn_retroceder.setGeometry(5, 5, 30, 30) 
-        self.btn_retroceder.setToolTip("Retroceder") # Adiciona uma dica de ferramenta
-
-
-        # Criar o menu dentro do botão btn_opcoes
-        self.menu_opcoes = QMenu(self.btn_mais_opcoes)
 
 
         # Criar as ações do menu
@@ -314,8 +299,40 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # Associar o menu ao botão
         self.btn_mais_opcoes.setMenu(self.menu_opcoes)
         self.btn_mais_opcoes.setPopupMode(QToolButton.InstantPopup)
+        
+        # --- Caixa de pesquisa personalizada ---
+        self.widget_pesquisa = QWidget(self)
+        self.widget_pesquisa.setFixedSize(260, 55)
+
+        # Layout principal vertical
+        layout_pesquisa_vertical = QVBoxLayout(self.widget_pesquisa)
+        layout_pesquisa_vertical.setContentsMargins(2, 2, 2, 2)
+        layout_pesquisa_vertical.setSpacing(2)
+
+        # Layout horizontal para QLineEdit e botão fechar
+        layout_linha_superior = QHBoxLayout()
+        layout_linha_superior.setContentsMargins(0, 0, 0, 0)
+
+        self.caixa_pesquisa = QLineEdit()
+        self.caixa_pesquisa.setPlaceholderText("Procurar na página")
+        layout_linha_superior.addWidget(self.caixa_pesquisa)
+
+        self.checkbox_maiusculas = QCheckBox("Diferenciar maiúsculas")
+
+        # Monta o layout
+        layout_pesquisa_vertical.addLayout(layout_linha_superior)
+        layout_pesquisa_vertical.addWidget(self.checkbox_maiusculas)
 
 
+        btn_fechar = QPushButton("X")
+        btn_fechar.setFixedSize(25, 25)
+        btn_fechar.clicked.connect(self.pagina_configuracoes.fechar_pesquisa)
+        layout_linha_superior.addWidget(btn_fechar)
+
+        # Esconde no início
+        self.widget_pesquisa.hide()
+
+        self.pagina_configuracoes.configurar_pesquisa()
 
         # Conectar as ações do menu aos slots correspondentes
         self.action_sair.triggered.connect(self.desconectarUsuario)
@@ -343,6 +360,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.btn_clientes.setVisible(False)
 
         self.carregar_configuracoes()
+        
+        
         
 
         self.pagina_usuarios = Pagina_Usuarios(self, self.btn_abrir_planilha_usuarios,self.btn_cadastrar_novo_usuario,
@@ -463,28 +482,32 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.btn_atualizar_produto.clicked.connect(self.atualizar_produto)
         self.btn_carregar_imagem.clicked.connect(self.carregar_imagem_produto)
         
-        
+        # Conecta ao evento de redimensionamento
+        self.resizeEvent = lambda event: (self.reposicionar_pesquisa(), QMainWindow.resizeEvent(self, event))
+
+        # Sempre centralizar ao mostrar
+        self.widget_pesquisa.showEvent = lambda event: self.reposicionar_pesquisa()
 
         self.txt_cep.editingFinished.connect(self.on_cep_editing_finished)
 
-        
-        
-        self.pagina_configuracoes = Pagina_Configuracoes(self,self,self,self.centralwidget,self.frame_pag_estoque,self.frame_line_cadastro_produtos,self.paginas_sistemas,
-                                                         self.pg_cadastrar_usuario,self.frame_pag_cadastrar_usuario,
-                                                         self.btn_mais_opcoes,self.btn_avancar,self.btn_retroceder,self.btn_home,self.btn_verificar_estoque,
-                                                         self.btn_cadastrar_produto, self.btn_cadastrar_usuarios, self.btn_clientes,
-                                                         self.btn_abrir_planilha,self.btn_importar,self.btn_gerar_saida,
-                                                         self.line_excel,self.btn_gerar_estorno,
-                                                         self.label_cadastramento,self.label_cadastramento_produtos,self.frame_valor_total_produtos,
-                                                         self.frame_valor_do_desconto,self.frame_valor_com_desconto1,self.frame_quantidade)
-
+    
         if tema_atual == "escuro":
             self.pagina_configuracoes.aplicar_tema_escuro()
         elif tema_atual == "claro":
             self.pagina_configuracoes.aplicar_tema_claro()
         else:
             self.pagina_configuracoes.aplicar_tema_classico()
-
+        
+            
+  
+    # Garante que sempre fique centralizado no topo
+    def reposicionar_pesquisa(self):
+        largura_janela = self.width()
+        largura_widget = self.widget_pesquisa.width()
+        x = (largura_janela - largura_widget) // 2
+        self.widget_pesquisa.move(x, 20)  # 20 px do topo
+        
+        
     def carregar_config_padrao(self):
         return {
             "tema": "classico",
@@ -1452,6 +1475,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def registrar_atalhos(self,acao,tecla_str):
         seq = QKeySequence(tecla_str)
         shortcut = QShortcut(seq,self)
+        
+        # Se já existir, sobrescreve
+        self.atalhos[acao] = shortcut
 
         if acao == "Pesquisar":
             shortcut.activated.connect(self.abrir_pesquisa)
@@ -1461,7 +1487,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             pass
 
     def abrir_pesquisa(self):
-        self.dock_pesquisa.show()
+        self.widget_pesquisa.show()
+        self.reposicionar_pesquisa()  # garante que apareça centralizado
         self.caixa_pesquisa.setFocus()
 
 #*********************************************************************************************************************
