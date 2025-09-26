@@ -1874,7 +1874,11 @@ class Pagina_Configuracoes(QWidget):
         encontrado = False
 
         if isinstance(widget, QLabel):
+            if widget.pixmap() is not None and not widget.text():
+                return False # Ignora, ela é uma "label de imagem"
+
             conteudo = widget.text()
+
 
             '''if conteudo.strip().lower().startswith("<html>"):
                 return False'''
@@ -1888,8 +1892,9 @@ class Pagina_Configuracoes(QWidget):
             doc.setHtml(conteudo)
             texto_visivel = doc.toPlainText()
 
-            texto_sem_destaque  = conteudo
-            conteudo_visivel = conteudo
+            # comparar as duas strings no mesmo formato
+            texto_procura = texto
+            texto_base = texto_visivel
 
             # comparar com ou sem distinção de maiúsculas
             if not case_sensitive:
@@ -1901,23 +1906,25 @@ class Pagina_Configuracoes(QWidget):
 
 
             if texto_base in conteudo_visivel:
-                start = conteudo_visivel.find(texto_base)
+                start = conteudo_visivel.find(texto_procura)
                 end = start + len(texto)
 
-                # escapa HTML para evitar quebra em letras soltas (ex: <b>, <i>, etc)
-                conteudo_escapado = escape(texto_sem_destaque )
 
+                # destaque o trecho no texto visível, com escape para evitar problemas com HTML
                 destaque = (
-                    conteudo_escapado[:start] +
-                     f"<span style='background-color: yellow'>{escape(texto_sem_destaque [start:end])}</span>" +
-                    conteudo_escapado[end:]
+                    escape(texto_visivel[:start]) +
+                    f"<span style='background-color: yellow'>{escape(texto_visivel[start:end])}</span>" +
+                    escape(texto_visivel[end:])
                 )
 
                 widget.setTextFormat(Qt.RichText)
                 widget.setText(destaque)
                 encontrado = True
             else:
-                widget.setText(conteudo)
+                 # Restaurar original, se houver
+                texto_original = widget.property("texto_original")
+                if texto_original:
+                    widget.setText(texto_original)
 
         elif isinstance(widget, QTableWidget):
             for row in range(widget.rowCount()):
