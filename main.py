@@ -331,6 +331,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         # Esconde no início
         self.widget_pesquisa.hide()
+        
+        # Atalho ESC para fechar a pesquisa
+        atalho_esc = QShortcut(QKeySequence("Esc"), self.widget_pesquisa)
+        atalho_esc.activated.connect(self.pagina_configuracoes.fechar_pesquisa)
 
         self.pagina_configuracoes.configurar_pesquisa()
 

@@ -1,9 +1,9 @@
 from PySide6.QtWidgets import (QWidget,QMenu, QVBoxLayout, 
                                QProgressBar,QApplication,QDialog,QMessageBox,
                                QToolButton,QMainWindow,QPushButton,QLabel,
-                               QLineEdit,QTableWidget,QTextEdit)
-from PySide6.QtCore import Qt, QTimer
-from PySide6.QtGui import QIcon,QKeySequence,QColor,QBrush,QTextDocument
+                               QLineEdit,QTableWidget,QTextEdit,QAbstractItemView,QStyledItemDelegate,QStyleOptionViewItem)
+from PySide6.QtCore import Qt, QTimer,QRect
+from PySide6.QtGui import QIcon,QKeySequence,QColor,QBrush,QTextDocument,QPainter,QPalette,QPen
 import os
 import json
 from login import Login
@@ -13,6 +13,7 @@ from dialogos import ComboDialog,DialogoEstilizado
 from mane_python import Ui_MainWindow
 import subprocess
 from html import escape
+from utils import Temas
 
 class Pagina_Configuracoes(QWidget):
     def __init__(self,
@@ -25,6 +26,7 @@ class Pagina_Configuracoes(QWidget):
                  frame_valor_do_desconto, frame_valor_desconto,frame_quantidade,parent=None):
         super().__init__(parent)
         self.atalhos = {}  # dicionário para guardar atalhos
+        self.tema = Temas()
         self.main_window = main_window
         self.paginas_sistemas = paginas_sistemas
         self.frame_botoes_navegacoes = frame_botoes_navegacoes
@@ -1851,8 +1853,11 @@ class Pagina_Configuracoes(QWidget):
         self.main_window.caixa_pesquisa.returnPressed.connect(self.executar_pesquisa)
 
     def executar_pesquisa(self):
-        texto = self.main_window.caixa_pesquisa.text().strip().lower()
+        texto = self.main_window.caixa_pesquisa.text().strip()
         diferenciar_maiusculas = self.main_window.checkbox_maiusculas.isChecked()
+        
+        if not diferenciar_maiusculas:
+            texto = texto.lower()
 
         self.resetar_destaques(self.main_window.centralWidget())
 
@@ -1869,19 +1874,18 @@ class Pagina_Configuracoes(QWidget):
                 f"Nenhum resultado encontrado para: {texto}"
             )
 
-    def procurar_widget(self, widget, texto,case_sensitive=False):
+    def procurar_widget(self, widget, texto, case_sensitive=False):
         """Percorre todos os widgets dentro da página atual e procura o texto"""
-        encontrado = False
+        encontrado = False # Reinicia o status de 'encontrado' para esta tabela
+        
+        # Restaura o estado original de todos os widgets antes da busca
+        self.resetar_destaques(widget)   
 
         if isinstance(widget, QLabel):
-            if widget.pixmap() is not None and not widget.text():
-                return False # Ignora, ela é uma "label de imagem"
-
             conteudo = widget.text()
-
-
-            '''if conteudo.strip().lower().startswith("<html>"):
-                return False'''
+            
+            if widget.pixmap() is not None and not conteudo:
+                return False  # Ignora, ela é uma "label de imagem"
 
             # salva o texto original no property (se ainda não tiver salvo)
             if widget.property("texto_original") is None:
@@ -1892,9 +1896,7 @@ class Pagina_Configuracoes(QWidget):
             doc.setHtml(conteudo)
             texto_visivel = doc.toPlainText()
 
-            # comparar as duas strings no mesmo formato
-            texto_procura = texto
-            texto_base = texto_visivel
+            
 
             # comparar com ou sem distinção de maiúsculas
             if not case_sensitive:
@@ -1904,55 +1906,63 @@ class Pagina_Configuracoes(QWidget):
                 texto_procura = texto
                 texto_base = texto_visivel
 
+            if texto_procura in texto_base:
+                start = texto_base.find(texto_procura)
+                end = start + len(texto_procura)
 
-            if texto_base in conteudo_visivel:
-                start = conteudo_visivel.find(texto_procura)
-                end = start + len(texto)
+                # trecho visível encontrado
+                trecho_original = texto_visivel[start:end]
 
+                # cria o trecho destacado
+                trecho_destacado = f"<span style='background-color: yellow'>{trecho_original}</span>"
 
-                # destaque o trecho no texto visível, com escape para evitar problemas com HTML
-                destaque = (
-                    escape(texto_visivel[:start]) +
-                    f"<span style='background-color: yellow'>{escape(texto_visivel[start:end])}</span>" +
-                    escape(texto_visivel[end:])
-                )
+                # substitui apenas a primeira ocorrência dentro do HTML original
+                html_destacado = conteudo.replace(trecho_original, trecho_destacado, 1)
 
                 widget.setTextFormat(Qt.RichText)
-                widget.setText(destaque)
+                widget.setText(html_destacado)
                 encontrado = True
             else:
-                 # Restaurar original, se houver
+                # Restaurar original, se houver
                 texto_original = widget.property("texto_original")
                 if texto_original:
                     widget.setText(texto_original)
 
         elif isinstance(widget, QTableWidget):
+           # Aplica delegate para destacar texto
+            delegate = CustomTableDelegate(texto_procura=texto, case_sensitive=case_sensitive, parent=widget)
+            widget.setItemDelegate(delegate)
             for row in range(widget.rowCount()):
                 for col in range(widget.columnCount()):
                     item = widget.item(row, col)
                     if item:
+                        item.setBackground(QColor())
                         item_texto = item.text()
                         item_texto_cmp = item_texto if case_sensitive else item_texto.lower()
                         texto_cmp = texto if case_sensitive else texto.lower()
+
                         if texto_cmp in item_texto_cmp:
-                            item.setBackground(QColor("yellow"))
-                            widget.scrollToItem(item)
+                            item.setBackground(QColor("#FAFA43"))
+                            # Rola para o item sem alterar seleção
+                            widget.scrollToItem(item, QAbstractItemView.EnsureVisible)
+                            widget.clearSelection()
                             encontrado = True
+                            return encontrado
                         else:
-                            item.setBackground(QColor())
+                            # Se não encontrar, garante que o fundo seja o padrão
+                            item.setBackground(QBrush()) #  limpa o fundo
+            
 
         # Recursivamente percorre filhos
         for tipo in (QLabel, QLineEdit, QTextEdit, QTableWidget):
             for child in widget.findChildren(tipo):
-                if self.procurar_widget(child, texto,case_sensitive):
+                if self.procurar_widget(child, texto, case_sensitive):
                     encontrado = True
 
         return encontrado
     
-    
     def resetar_destaques(self, widget):
         """Limpa todos os destaques e seleções de todos os widgets recursivamente"""
-
         if isinstance(widget, QLabel):
             # restaura texto original se existir
             texto_original = widget.property("texto_original")
@@ -1964,6 +1974,7 @@ class Pagina_Configuracoes(QWidget):
             widget.setStyleSheet("")  # remove fundo amarelo
 
         elif isinstance(widget, QTableWidget):
+            widget.setItemDelegate(None)  # remove delegate → volta ao estilo normal   
             for row in range(widget.rowCount()):
                 for col in range(widget.columnCount()):
                     item = widget.item(row, col)
@@ -2050,3 +2061,66 @@ class TeclaLineEdit(QLineEdit):
         self.setText(seq.toString(QKeySequence.NativeText))
 
         event.accept()
+
+
+class CustomTableDelegate(QStyledItemDelegate):
+    def __init__(self, texto_procura="", case_sensitive=False, parent=None):
+        super().__init__(parent)
+        self.texto_procura = texto_procura
+        self.case_sensitive = case_sensitive
+
+    def paint(self, painter: QPainter, option: QStyleOptionViewItem, index):
+        # Desenhamos o fundo e a borda do item, usando a lógica padrão do Qt.
+        # Isso garante que a cor do tema seja mantida.
+        super().paint(painter, option, index)
+
+        text = index.data()
+        if not text:
+            return
+
+        # Prepara a string de pesquisa e a string de texto para comparação.
+        texto_base = text if self.case_sensitive else text.lower()
+        busca = self.texto_procura if self.case_sensitive else self.texto_procura.lower()
+        
+        # Apenas se houver um termo de busca e ele for encontrado
+        if busca and busca in texto_base:
+            start = texto_base.find(busca)
+            end = start + len(busca)
+            
+            # Precisamos da métrica da fonte para calcular a posição do texto.
+            font_metrics = painter.fontMetrics()
+            
+            # Posição do texto na célula.
+            text_x = option.rect.left() + option.rect.width() // 2 - font_metrics.horizontalAdvance(text) // 2
+            text_y = option.rect.top() + (option.rect.height() + font_metrics.height()) // 2 - font_metrics.descent()
+            
+            # Calculamos a largura do trecho destacado
+            width_before = font_metrics.horizontalAdvance(text[:start])
+            width_highlight = font_metrics.horizontalAdvance(text[start:end])
+            
+            # Posição do destaque (x, y, largura, altura)
+            highlight_rect = QRect(
+                text_x + width_before,
+                option.rect.top(),
+                width_highlight,
+                option.rect.height()
+            )
+
+            # Define a cor de fundo do destaque e pinta o retângulo.
+            painter.save()
+            painter.setBrush(QBrush(QColor("#FFFF99"))) # Amarelo claro
+            painter.setPen(QPen(Qt.NoPen)) # Sem borda
+            painter.drawRect(highlight_rect)
+            painter.restore()
+
+        # Define a cor do texto para o tema atual.
+        # Isto é crucial para que o texto não fique preto.
+        palette = option.widget.palette()
+        text_color = palette.color(QPalette.Text)
+        painter.setPen(text_color)
+        
+        # Define a fonte para o tema atual
+        painter.setFont(option.font)
+
+        # Desenha o texto do item.
+        painter.drawText(option.rect, option.displayAlignment, text)
