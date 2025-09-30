@@ -47,8 +47,6 @@ import requests
 import shutil
 
 
-
-
 class MainWindow(QMainWindow, Ui_MainWindow):
     fechar_janela_login_signal = Signal(str)
     def __init__(self, user=None, login_window=None, tipo_usuario=None, connection=None,app=None):
@@ -312,6 +310,21 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # Layout horizontal para QLineEdit e botão fechar
         layout_linha_superior = QHBoxLayout()
         layout_linha_superior.setContentsMargins(0, 0, 0, 0)
+        
+        # Adiciona a contagem de resultados
+        self.label_contagem = QLabel("")
+        layout_linha_superior.addWidget(self.label_contagem)
+        
+        # Adiciona botões de navegação
+        self.btn_anterior = QPushButton("↑")
+        self.btn_anterior.setFixedSize(25, 25)
+        self.btn_anterior.setEnabled(False)  # Começa desabilitado
+        layout_linha_superior.addWidget(self.btn_anterior)
+        
+        self.btn_proximo = QPushButton("↓")
+        self.btn_proximo.setFixedSize(25, 25)
+        self.btn_proximo.setEnabled(False)  # Começa desabilitado
+        layout_linha_superior.addWidget(self.btn_proximo)
 
         self.caixa_pesquisa = QLineEdit()
         self.caixa_pesquisa.setPlaceholderText("Procurar na página")
