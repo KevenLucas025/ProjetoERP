@@ -1,9 +1,10 @@
 from PySide6.QtWidgets import (QWidget,QMenu, QVBoxLayout, 
                                QProgressBar,QApplication,QDialog,QMessageBox,
                                QToolButton,QMainWindow,QPushButton,QLabel,
-                               QLineEdit,QTableWidget,QStyle,QTextEdit,QAbstractItemView,QStyledItemDelegate,QStyleOptionViewItem)
+                               QLineEdit,QTableWidget,QTextEdit,QAbstractItemView,
+                               QStyledItemDelegate,QStyleOptionViewItem,QTableWidgetItem,QAbstractScrollArea,QScrollArea)
 from PySide6.QtCore import Qt, QTimer,QRect
-from PySide6.QtGui import (QIcon,QKeySequence,QColor,QBrush,
+from PySide6.QtGui import (QIcon,QKeySequence,QColor,
                            QTextDocument,QPainter,QFontMetrics)
 import os
 import json
@@ -1874,42 +1875,83 @@ class Pagina_Configuracoes(QWidget):
         # Limpa os resultados anteriores
         self.resultados_encontrados = []
         self.indice_atual = -1
-        
-        if not diferenciar_maiusculas:
-            texto = texto.lower()
 
+        #   resetar todos os delegates antigos
         self.resetar_destaques(self.main_window.centralWidget())
 
         if not texto:
             return
         
-        pagina_atual = self.main_window.paginas_sistemas.currentWidget()  # <- só a página ativa
+        pagina_atual = self.main_window.paginas_sistemas.currentWidget()
         self.buscar_todos_resultados(pagina_atual, texto, self.main_window.checkbox_maiusculas.isChecked())
 
         if self.resultados_encontrados:
             self.main_window.btn_proximo.setEnabled(True)
-            self.proximo_resultado() # Rola para o primeiro resultado
+            self.proximo_resultado()
         else:
             QMessageBox.warning(self, "Pesquisa", f"Nenhum resultado encontrado para: {texto}")
+
     
-    def buscar_todos_resultados(self,widget, texto, case_sensitive):
-        """Percorre e armazena todas as ocorrências de texto, sem destacar."""
-        if isinstance(widget,QTableWidget):
-            delegate = CustomTableDelegate(texto_procura=texto,case_sensitive=case_sensitive,parent=widget)
-            widget.setItemDelegate(delegate)
-            
+    def buscar_todos_resultados(self, widget, texto, case_sensitive):
+        """Percorre e armazena todas as ocorrências de texto, sem duplicações."""
+
+        # Ignora widgets invisíveis ou irrelevantes
+        if not widget.isVisible() or isinstance(widget, (QPushButton, QLineEdit)):
+            return
+
+        # --- Caso 1: Tabelas ---
+        if isinstance(widget, QTableWidget): 
             for row in range(widget.rowCount()):
                 for col in range(widget.columnCount()):
-                    item = widget.item(row,col)
-                    if item and (texto.lower() in item.text().lower() if not case_sensitive else texto in item.text()):
-                        self.resultados_encontrados.append(item)
-        elif isinstance(widget, QLabel):
-            pass
+                    item = widget.item(row, col)
+                    if not item:
+                        continue
+
+                    item_text = item.text()
+                    if not case_sensitive:
+                        if texto.lower() in item_text.lower():
+                            self.resultados_encontrados.append(item)
+                    else:
+                        if texto in item_text:
+                            self.resultados_encontrados.append(item)
+            # ⚠️ IMPORTANTE: não continuar recursão dentro da tabela!
+            return
         
-        # Recursivamente para os filhos
-        for child in widget.findChildren(QWidget):
-            self.buscar_todos_resultados(child,texto,case_sensitive)
-         
+        # --- Caso 2: Labels ---
+        elif isinstance(widget, QLabel):
+            conteudo = widget.text()
+            if not conteudo:
+                return
+            # Extrai texto visível mesmo que seja HTML
+            doc = QTextDocument()
+            doc.setHtml(conteudo)
+            texto_visivel = doc.toPlainText()
+
+            if not case_sensitive:
+                texto_base = texto_visivel.lower()
+                texto_procura = texto.lower()
+            else:
+                texto_base = texto_visivel
+                texto_procura = texto
+
+            if texto_procura in texto_base:
+                self.resultados_encontrados.append(widget)
+
+        # --- Caso 3: Texto editável (somente leitura) ---
+        elif isinstance(widget, QTextEdit) and widget.isReadOnly():
+            texto_edit = widget.toPlainText()
+            if not case_sensitive:
+                if texto.lower() in texto_edit.lower():
+                    self.resultados_encontrados.append(widget)
+            else:
+                if texto in texto_edit:
+                    self.resultados_encontrados.append(widget)
+
+        # --- Repetição recursiva apenas nos filhos diretos ---
+        for child in widget.findChildren(QWidget, options=Qt.FindDirectChildrenOnly):
+            self.buscar_todos_resultados(child, texto, case_sensitive)
+
+            
     def proximo_resultado(self):
         if not self.resultados_encontrados:
             return
@@ -1924,39 +1966,105 @@ class Pagina_Configuracoes(QWidget):
         self.indice_atual = (self.indice_atual - 1) % len(self.resultados_encontrados)
         self.navegar_para_resultado(self.indice_atual)
         
-    def destacar_resultado_atual(self):
-        if not self.resultados_encontrados:
-            pass
+    def destacar_resultado_atual(self, item):
+        """Destaca o resultado atual conforme o tipo de widget."""
+        self.resetar_destaques_tabelas()  # remove destaques antigos em tabelas
+        texto_procura = self.main_window.caixa_pesquisa.text()
+        case_sensitive = self.main_window.checkbox_maiusculas.isChecked()
+
+        # --- Caso 1: Resultado em uma célula de tabela ---
+        if isinstance(item, QTableWidgetItem):
+            tabela = item.tableWidget()
+            if tabela:
+                delegate = CustomTableDelegate(
+                    texto_procura=texto_procura,
+                    case_sensitive=case_sensitive,
+                    item_para_destaque=item,
+                    parent=tabela
+                )
+                tabela.setItemDelegate(delegate)
+                tabela.viewport().update()
+                tabela.scrollToItem(item, QAbstractItemView.EnsureVisible)
+            return
+
+        # --- Caso 2: Resultado é uma QLabel ---
+        elif isinstance(item, QLabel):
+            conteudo = item.text()
+            if not conteudo:
+                return
+
+            # salva o texto original se ainda não tiver
+            if item.property("texto_original") is None:
+                item.setProperty("texto_original", conteudo)
+
+            doc = QTextDocument()
+            doc.setHtml(conteudo)
+            texto_visivel = doc.toPlainText()
+
+            texto_base = texto_visivel if case_sensitive else texto_visivel.lower()
+            texto_cmp = texto_procura if case_sensitive else texto_procura.lower()
+
+            if texto_cmp in texto_base:
+                start = texto_base.find(texto_cmp)
+                end = start + len(texto_cmp)
+                trecho_original = texto_visivel[start:end]
+                trecho_destacado = f"<span style='background-color: yellow'>{trecho_original}</span>"
+                html_destacado = conteudo.replace(trecho_original, trecho_destacado, 1)
+                item.setTextFormat(Qt.RichText)
+                item.setText(html_destacado)
+
+            # rola até o label se possível
+            self.rolar_para_widget(item)
+            return
+
+        # --- Caso 3: Resultado é um QTextEdit ---
+        elif isinstance(item, QTextEdit):
+            self.rolar_para_widget(item)
+            cursor = item.textCursor()
+            conteudo = item.toPlainText()
+            texto_base = conteudo if case_sensitive else conteudo.lower()
+            texto_cmp = texto_procura if case_sensitive else texto_procura.lower()
+            pos = texto_base.find(texto_cmp)
+            if pos != -1:
+                cursor.setPosition(pos)
+                cursor.movePosition(cursor.Right, cursor.KeepAnchor, len(texto_procura))
+                item.setTextCursor(cursor)
+            return
         
-        self.resetar_destaques(self.main_window.centralWidget())
-        
-        item = self.resultados_encontrados[self.indice_atual]
-        
-        # Aplica o delegate na tabela do item
-        tabela = item.tableWidget()
-        if tabela:
-            delegate = CustomTableDelegate(texto_procura=self.main_window.caixa_pesquisa.text(),case_sensitive=self.main_window.checkbox_maiusculas.isChecked(),
-                                           item_para_destaque=item,parent=tabela)
+    def rolar_para_widget(self, widget):
+        """Tenta rolar a página até o widget visível."""
+        # Pega o widget pai com barra de rolagem (QScrollArea, QAbstractScrollArea, etc)
+        area = widget.parent()
+        while area and not isinstance(area, (QAbstractScrollArea, QScrollArea)):
+            area = area.parent()
+
+        if area and hasattr(area, "ensureWidgetVisible"):
+            area.ensureWidgetVisible(widget)
+        elif area and hasattr(area, "verticalScrollBar"):
+            # fallback genérico: rola o máximo possível até o widget
+            y = widget.mapTo(area.viewport(), widget.rect().topLeft()).y()
+            area.verticalScrollBar().setValue(y)
             
-            tabela.setItemDelegate(delegate)
-            tabela.scrollToItem(item, QAbstractItemView.EnsureVisible)
+    def resetar_destaques_tabelas(self):
+        pagina_atual = self.main_window.paginas_sistemas.currentWidget()
+        if pagina_atual:
+            tabelas = pagina_atual.findChildren(QTableWidget)
+            for tabela in tabelas:
+                # Reseta o delegate da tabela para o padrão
+                tabela.setItemDelegate(QStyledItemDelegate(tabela))
+                tabela.viewport().update() # Força a repintura
         
     def navegar_para_resultado(self, indice):
+        """Vai até o resultado encontrado e aplica o destaque apropriado."""
         item = self.resultados_encontrados[indice]
-        
-        # Rola para o item
-        widget = item.tableWidget()
-        widget.scrollToItem(item, QAbstractItemView.EnsureVisible)
-        
-        # Atualiza a contagem na UI
         self.main_window.label_contagem.setText(f"{self.indice_atual + 1} de {len(self.resultados_encontrados)}")
-        
-        # Habilita/desabilita os botões de navegação
+
+        # Habilita botões de navegação
         self.main_window.btn_proximo.setEnabled(True)
         self.main_window.btn_anterior.setEnabled(True)
-        
-        #  Destaca o resultado atual
-        self.destacar_resultado_atual()
+
+        # Destaca o resultado
+        self.destacar_resultado_atual(item)
 
     def procurar_widget(self, widget, texto, case_sensitive=False):
         """Percorre todos os widgets dentro da página atual e procura o texto"""
@@ -2042,33 +2150,36 @@ class Pagina_Configuracoes(QWidget):
         return encontrado
     
     def resetar_destaques(self, widget):
-        """Limpa todos os destaques e seleções de todos os widgets recursivamente"""
-        if isinstance(widget, QLabel):
-            # restaura texto original se existir
+        """Limpa todos os destaques de todos os widgets recursivamente."""
+        
+        # Se o widget for uma tabela, reseta o delegate
+        if isinstance(widget, QTableWidget):
+            widget.setItemDelegate(QStyledItemDelegate(widget))
+            widget.viewport().update() # Força a repintura para remover o destaque
+            
+        # Se for uma Label, restaura o texto original
+        elif isinstance(widget, QLabel):
             texto_original = widget.property("texto_original")
             if texto_original is not None:
                 widget.setText(texto_original)
                 widget.setProperty("texto_original", None)
+                
+        # Remove estilos de widgets que os tenham
+        elif isinstance(widget, (QTextEdit, QPushButton)):
+            widget.setStyleSheet("")
 
-        elif isinstance(widget, ( QTextEdit,QPushButton)):
-            widget.setStyleSheet("")  # remove fundo amarelo
-
-        elif isinstance(widget, QTableWidget):
-            widget.setItemDelegate(QStyledItemDelegate(widget)) 
-            for row in range(widget.rowCount()):
-                for col in range(widget.columnCount()):
-                    item = widget.item(row, col)
-                    if item:
-                        item.setBackground(QBrush())
-            widget.clearSelection()
-
-        # percorre todos os filhos recursivamente
+        # Recursivamente percorre os filhos para fazer a mesma limpeza
         for child in widget.findChildren(QWidget):
             self.resetar_destaques(child)
 
     def fechar_pesquisa(self):
         """Fecha a barra de pesquisa e limpa todos os destaques"""
-        # Garanta que o resetar_destaques seja chamado para a página atual
+        # Zera estado da pesquisa
+        self.resultados_encontrados = []
+        self.indice_atual = -1
+        self.main_window.label_contagem.setText("")
+        self.main_window.btn_proximo.setEnabled(False)
+        self.main_window.btn_anterior.setEnabled(False)
         pagina_atual = self.main_window.paginas_sistemas.currentWidget()
         if pagina_atual:
             self.resetar_destaques(pagina_atual)
@@ -2144,65 +2255,77 @@ class TeclaLineEdit(QLineEdit):
 
 
 class CustomTableDelegate(QStyledItemDelegate):
-    def __init__(self, texto_procura="", case_sensitive=False, item_para_destaque=None, parent=None):
+    def __init__(self, texto_procura="", case_sensitive=False, item_para_destaque=None, tema="claro", parent=None):
         super().__init__(parent)
         self.texto_procura = texto_procura
         self.case_sensitive = case_sensitive
         self.item_para_destaque = item_para_destaque
+        self.tema = tema
 
     def paint(self, painter: QPainter, option: QStyleOptionViewItem, index):
+        item_text = index.data(Qt.DisplayRole) or ""
 
+        # Desenha o fundo e a borda da célula normalmente
+        super().paint(painter, option, index)
 
-        # Desenhe o fundo e a seleção padrão primeiro
-        style = option.widget.style()
-        style.drawPrimitive(QStyle.PE_PanelItemViewItem, option, painter)
-
-
-        text = index.data() or ""
-        # Se não há texto para destacar, desenhe o texto normal
-        if not self.texto_procura or (self.item_para_destaque and option.widget.item(index.row(), index.column()) != self.item_para_destaque):
-            # Desenhe o texto e saia
-            style.drawItemText(painter, option.rect, option.displayAlignment, option.palette, True, text)
-            return
-
+        # Se o item não for o item de destaque específico, não faça mais nada
         item = option.widget.item(index.row(), index.column())
         if self.item_para_destaque and item != self.item_para_destaque:
-            super().paint(painter, option, index)
             return
 
-       
-
-        # Configura regex para encontrar o texto a destacar
+        # Ajusta o comportamento da busca para o tema escuro
         flags = 0 if self.case_sensitive else re.IGNORECASE
         pattern = re.escape(self.texto_procura)
-        match = re.search(pattern, text, flags)
-        if not match:
-            return
+        match = re.search(pattern, item_text, flags)
 
         if match:
-                # Desenha o destaque amarelo
-                highlight_rect = QRect(
-                    option.rect.x() + painter.fontMetrics().horizontalAdvance(text[:match.start()]),
-                    option.rect.y(),
-                    painter.fontMetrics().horizontalAdvance(text[match.start():match.end()]),
-                    option.rect.height()
-                )
-                
-                painter.save()
-                painter.setBrush(QColor("#FFD54F"))  # Amarelo do destaque
-                painter.setPen(Qt.NoPen)
-                painter.drawRect(highlight_rect)
-                painter.restore()
+            # Define a cor do destaque baseada no tema
+            if self.tema == "escuro":
+                highlight_color = QColor(80, 150, 255, 100)
+            elif self.tema == "clássico":
+                highlight_color = QColor(50, 150, 250, 100)
+            else:  # claro
+                highlight_color = QColor(50, 100, 200, 100)
 
-                # Desenhe o texto, com a cor correta (dependendo se a célula está selecionada)
-                text_color = option.palette.text().color()
-                if option.state & QStyle.State_Selected:
-                    text_color = option.palette.highlightedText().color()
+            painter.save()
+            painter.setPen(Qt.NoPen)
+            painter.setBrush(highlight_color)
 
-                painter.setPen(text_color)
-                painter.drawText(option.rect, option.displayAlignment, text)
+            # Calcula as dimensões do texto para encontrar a posição do trecho
+            font_metrics = QFontMetrics(option.font)
+            start_pos = match.start()
+            matched_text = item_text[start_pos:match.end()]
+            
+            # Use o alinhamento da célula para calcular a posição correta
+            alignment = index.data(Qt.TextAlignmentRole) or Qt.AlignLeft | Qt.AlignVCenter
+
+            text_width_before = font_metrics.horizontalAdvance(item_text[:start_pos])
+            matched_width = font_metrics.horizontalAdvance(matched_text)
+            full_text_width = font_metrics.horizontalAdvance(item_text)
+
+            # A base do alinhamento é a posição do retangulo da célula
+            text_rect = option.rect
+            base_x = text_rect.x()
+
+            if alignment & Qt.AlignHCenter:
+                base_x += (text_rect.width() - full_text_width) / 2
+            elif alignment & Qt.AlignRight:
+                base_x += text_rect.width() - full_text_width
+
+            highlight_rect = QRect(
+                base_x + text_width_before,
+                text_rect.y(),
+                matched_width,
+                text_rect.height()
+            )
+
+            # Desenha o retângulo de destaque
+            painter.drawRect(highlight_rect)
+            painter.restore()
+
+            
+
 
             
 
         
-
