@@ -1865,6 +1865,14 @@ class Pagina_Configuracoes(QWidget):
         else:
             self.proximo_resultado() # já tem resultados → vai para o próximo
 
+    def cor_destaque_html(self):
+        if self.tema == "escuro":
+            return "rgba(80, 150, 255, 0.4)"
+        elif self.tema == "clássico":
+            return "rgba(50, 150, 250, 0.4)"
+        else:  # claro
+            return "rgba(50, 100, 200, 0.4)"
+
     def executar_pesquisa(self):
         texto = self.main_window.caixa_pesquisa.text().strip()
         diferenciar_maiusculas = self.main_window.checkbox_maiusculas.isChecked()
@@ -1901,6 +1909,7 @@ class Pagina_Configuracoes(QWidget):
 
         # --- Caso 1: Tabelas ---
         if isinstance(widget, QTableWidget): 
+            # Células da tabela
             for row in range(widget.rowCount()):
                 for col in range(widget.columnCount()):
                     item = widget.item(row, col)
@@ -1914,9 +1923,25 @@ class Pagina_Configuracoes(QWidget):
                     else:
                         if texto in item_text:
                             self.resultados_encontrados.append(item)
+
+            # --- Cabeçalhos horizontais ---
+            header = widget.horizontalHeader()
+            for col in range(widget.columnCount()):
+                header_item = widget.horizontalHeaderItem(col)
+                if not header_item:
+                    continue
+
+                texto_header = header_item.text()
+                if not case_sensitive:
+                    if texto.lower() in texto_header.lower():
+                        self.resultados_encontrados.append(("header", widget, col))
+                else:
+                    if texto in texto_header:
+                        self.resultados_encontrados.append(("header", widget, col))
+
             # ⚠️ IMPORTANTE: não continuar recursão dentro da tabela!
             return
-        
+
         # --- Caso 2: Labels ---
         elif isinstance(widget, QLabel):
             conteudo = widget.text()
@@ -1951,26 +1976,32 @@ class Pagina_Configuracoes(QWidget):
         for child in widget.findChildren(QWidget, options=Qt.FindDirectChildrenOnly):
             self.buscar_todos_resultados(child, texto, case_sensitive)
 
-            
-    def proximo_resultado(self):
-        if not self.resultados_encontrados:
-            return
 
-        self.indice_atual = (self.indice_atual + 1) % len(self.resultados_encontrados)
-        self.navegar_para_resultado(self.indice_atual)
-            
-    def anterior_resultado(self):
-        if not self.resultados_encontrados:
-            return
-        
-        self.indice_atual = (self.indice_atual - 1) % len(self.resultados_encontrados)
-        self.navegar_para_resultado(self.indice_atual)
         
     def destacar_resultado_atual(self, item):
         """Destaca o resultado atual conforme o tipo de widget."""
         self.resetar_destaques_tabelas()  # remove destaques antigos em tabelas
         texto_procura = self.main_window.caixa_pesquisa.text()
         case_sensitive = self.main_window.checkbox_maiusculas.isChecked()
+
+        # --- Caso 0: Resultado é um cabeçalho de tabela ---
+        if isinstance(item, tuple) and item[0] == "header":
+            _, tabela, col = item
+            header = tabela.horizontalHeader()
+            cor = self.cor_destaque_html()
+            c = QColor(cor)
+            rgb = f"rgba({c.red()},{c.green()},{c.blue()}, 0.5)"
+
+            # Cria um estilo de destaque visual (background na seção do cabeçalho)
+            header.setStyleSheet(f"""
+                QHeaderView::section {{
+                    background-color: none;
+                }}
+                QHeaderView::section:nth-child({col+1}) {{
+                    background-color: {rgb};
+                }}
+            """)
+            return
 
         # --- Caso 1: Resultado em uma célula de tabela ---
         if isinstance(item, QTableWidgetItem):
@@ -2008,7 +2039,8 @@ class Pagina_Configuracoes(QWidget):
                 start = texto_base.find(texto_cmp)
                 end = start + len(texto_cmp)
                 trecho_original = texto_visivel[start:end]
-                trecho_destacado = f"<span style='background-color: yellow'>{trecho_original}</span>"
+                cor = self.cor_destaque_html()
+                trecho_destacado = f"<span style='background-color: {cor}'>{trecho_original}</span>"
                 html_destacado = conteudo.replace(trecho_original, trecho_destacado, 1)
                 item.setTextFormat(Qt.RichText)
                 item.setText(html_destacado)
@@ -2030,6 +2062,20 @@ class Pagina_Configuracoes(QWidget):
                 cursor.movePosition(cursor.Right, cursor.KeepAnchor, len(texto_procura))
                 item.setTextCursor(cursor)
             return
+        
+    def proximo_resultado(self):
+        if not self.resultados_encontrados:
+            return
+
+        self.indice_atual = (self.indice_atual + 1) % len(self.resultados_encontrados)
+        self.navegar_para_resultado(self.indice_atual)
+            
+    def anterior_resultado(self):
+        if not self.resultados_encontrados:
+            return
+        
+        self.indice_atual = (self.indice_atual - 1) % len(self.resultados_encontrados)
+        self.navegar_para_resultado(self.indice_atual)
         
     def rolar_para_widget(self, widget):
         """Tenta rolar a página até o widget visível."""
@@ -2053,6 +2099,10 @@ class Pagina_Configuracoes(QWidget):
                 # Reseta o delegate da tabela para o padrão
                 tabela.setItemDelegate(QStyledItemDelegate(tabela))
                 tabela.viewport().update() # Força a repintura
+
+                # Limpa estilos de cabeçalho
+                tabela.horizontalHeader().setStyleSheet("")
+                tabela.verticalHeader().setStyleSheet("")
         
     def navegar_para_resultado(self, indice):
         """Vai até o resultado encontrado e aplica o destaque apropriado."""
@@ -2103,8 +2153,11 @@ class Pagina_Configuracoes(QWidget):
                 # trecho visível encontrado
                 trecho_original = texto_visivel[start:end]
 
+
                 # cria o trecho destacado
-                trecho_destacado = f"<span style='background-color: yellow'>{trecho_original}</span>"
+                cor = self.cor_destaque_html()
+                trecho_destacado = f"<span style='background-color: {cor}'>{trecho_original}</span>"
+
 
                 # substitui apenas a primeira ocorrência dentro do HTML original
                 html_destacado = conteudo.replace(trecho_original, trecho_destacado, 1)
