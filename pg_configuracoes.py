@@ -1859,11 +1859,24 @@ class Pagina_Configuracoes(QWidget):
         self.main_window.btn_proximo.clicked.connect(self.proximo_resultado)
         self.main_window.btn_anterior.clicked.connect(self.anterior_resultado)
 
+
     def acao_enter(self):
-        if not self.resultados_encontrados:
-            self.executar_pesquisa()  # primeira vez → faz a busca
+        """ENTER faz a pesquisa se o texto mudou, ou vai para o próximo se for o mesmo texto."""
+        texto = self.main_window.caixa_pesquisa.text().strip()
+        if not texto:
+            return
+
+        # Se o texto é diferente → nova pesquisa
+        if texto != self.ultimo_texto_pesquisado:
+            self.ultimo_texto_pesquisado = texto
+            self.executar_pesquisa()
         else:
-            self.proximo_resultado() # já tem resultados → vai para o próximo
+            # Se já tem resultados → vai pro próximo
+            if self.resultados_encontrados:
+                self.proximo_resultado()
+            else:
+                # caso não tenha (ex: limpou resultados antes), pesquisa de novo
+                self.executar_pesquisa()
 
     def cor_destaque_html(self):
         if self.tema == "escuro":
@@ -1876,40 +1889,40 @@ class Pagina_Configuracoes(QWidget):
     def executar_pesquisa(self):
         texto = self.main_window.caixa_pesquisa.text().strip()
         diferenciar_maiusculas = self.main_window.checkbox_maiusculas.isChecked()
+
         self.main_window.label_contagem.setText("")
         self.main_window.btn_proximo.setEnabled(False)
         self.main_window.btn_anterior.setEnabled(False)
-        
-        # Limpa os resultados anteriores
+
+        # limpa os resultados anteriores
         self.resultados_encontrados = []
         self.indice_atual = -1
-
-        #   resetar todos os delegates antigos
         self.resetar_destaques(self.main_window.centralWidget())
 
         if not texto:
             return
-        
+
         pagina_atual = self.main_window.paginas_sistemas.currentWidget()
-        self.buscar_todos_resultados(pagina_atual, texto, self.main_window.checkbox_maiusculas.isChecked())
+        self.buscar_todos_resultados(pagina_atual, texto, diferenciar_maiusculas)
 
         if self.resultados_encontrados:
             self.main_window.btn_proximo.setEnabled(True)
-            self.proximo_resultado()
+            self.main_window.btn_anterior.setEnabled(True)
+            self.indice_atual = 0
+            self.main_window.label_contagem.setText(f"1 de {len(self.resultados_encontrados)}")
+            self.navegar_para_resultado(0)
         else:
             QMessageBox.warning(self, "Pesquisa", f"Nenhum resultado encontrado para: {texto}")
 
     
     def buscar_todos_resultados(self, widget, texto, case_sensitive):
-        """Percorre e armazena todas as ocorrências de texto, sem duplicações."""
+        """Percorre todos os widgets e armazena TODAS as ocorrências (inclusive múltiplas por item)."""
 
-        # Ignora widgets invisíveis ou irrelevantes
         if not widget.isVisible() or isinstance(widget, (QPushButton, QLineEdit)):
             return
 
         # --- Caso 1: Tabelas ---
-        if isinstance(widget, QTableWidget): 
-            # Células da tabela
+        if isinstance(widget, QTableWidget):
             for row in range(widget.rowCount()):
                 for col in range(widget.columnCount()):
                     item = widget.item(row, col)
@@ -1917,94 +1930,119 @@ class Pagina_Configuracoes(QWidget):
                         continue
 
                     item_text = item.text()
-                    if not case_sensitive:
-                        if texto.lower() in item_text.lower():
-                            self.resultados_encontrados.append(item)
-                    else:
-                        if texto in item_text:
-                            self.resultados_encontrados.append(item)
+                    texto_base = item_text if case_sensitive else item_text.lower()
+                    texto_cmp = texto if case_sensitive else texto.lower()
 
-            # --- Cabeçalhos horizontais ---
-            header = widget.horizontalHeader()
+                    start = 0
+                    while True:
+                        idx = texto_base.find(texto_cmp, start)
+                        if idx == -1:
+                            break
+                        self.resultados_encontrados.append({
+                            "tipo": "tabela",
+                            "widget": item,
+                            "row": row,
+                            "col": col,
+                            "pos": idx,
+                            "len": len(texto)
+                        })
+                        start = idx + len(texto)
+
+            # Cabeçalhos
             for col in range(widget.columnCount()):
                 header_item = widget.horizontalHeaderItem(col)
                 if not header_item:
                     continue
-
                 texto_header = header_item.text()
-                if not case_sensitive:
-                    if texto.lower() in texto_header.lower():
-                        self.resultados_encontrados.append(("header", widget, col))
-                else:
-                    if texto in texto_header:
-                        self.resultados_encontrados.append(("header", widget, col))
+                texto_base = texto_header if case_sensitive else texto_header.lower()
+                texto_cmp = texto if case_sensitive else texto.lower()
 
-            # ⚠️ IMPORTANTE: não continuar recursão dentro da tabela!
+                start = 0
+                while True:
+                    idx = texto_base.find(texto_cmp, start)
+                    if idx == -1:
+                        break
+                    self.resultados_encontrados.append({
+                        "tipo": "header",
+                        "widget": widget,
+                        "col": col,
+                        "pos": idx,
+                        "len": len(texto)
+                    })
+                    start = idx + len(texto)
+
             return
 
-        # --- Caso 2: Labels ---
+        # --- Caso 2: QLabel ---
         elif isinstance(widget, QLabel):
             conteudo = widget.text()
             if not conteudo:
                 return
-            # Extrai texto visível mesmo que seja HTML
             doc = QTextDocument()
             doc.setHtml(conteudo)
             texto_visivel = doc.toPlainText()
 
-            if not case_sensitive:
-                texto_base = texto_visivel.lower()
-                texto_procura = texto.lower()
-            else:
-                texto_base = texto_visivel
-                texto_procura = texto
+            texto_base = texto_visivel if case_sensitive else texto_visivel.lower()
+            texto_cmp = texto if case_sensitive else texto.lower()
 
-            if texto_procura in texto_base:
-                self.resultados_encontrados.append(widget)
+            start = 0
+            while True:
+                idx = texto_base.find(texto_cmp, start)
+                if idx == -1:
+                    break
+                self.resultados_encontrados.append({
+                    "tipo": "label",
+                    "widget": widget,
+                    "pos": idx,
+                    "len": len(texto)
+                })
+                start = idx + len(texto)
 
-        # --- Caso 3: Texto editável (somente leitura) ---
+        # --- Caso 3: QTextEdit (somente leitura) ---
         elif isinstance(widget, QTextEdit) and widget.isReadOnly():
             texto_edit = widget.toPlainText()
-            if not case_sensitive:
-                if texto.lower() in texto_edit.lower():
-                    self.resultados_encontrados.append(widget)
-            else:
-                if texto in texto_edit:
-                    self.resultados_encontrados.append(widget)
+            texto_base = texto_edit if case_sensitive else texto_edit.lower()
+            texto_cmp = texto if case_sensitive else texto.lower()
 
-        # --- Repetição recursiva apenas nos filhos diretos ---
+            start = 0
+            while True:
+                idx = texto_base.find(texto_cmp, start)
+                if idx == -1:
+                    break
+                self.resultados_encontrados.append({
+                    "tipo": "textedit",
+                    "widget": widget,
+                    "pos": idx,
+                    "len": len(texto)
+                })
+                start = idx + len(texto)
+
+        # --- Recursão ---
         for child in widget.findChildren(QWidget, options=Qt.FindDirectChildrenOnly):
             self.buscar_todos_resultados(child, texto, case_sensitive)
 
 
+
         
-    def destacar_resultado_atual(self, item):
-        """Destaca o resultado atual conforme o tipo de widget."""
-        self.resetar_destaques_tabelas()  # remove destaques antigos em tabelas
+    def destacar_resultado_atual(self, resultado):
+        """Destaca uma ocorrência específica (única posição) em QLabel, tabela ou QTextEdit."""
+        self.resetar_destaques_tabelas()
         texto_procura = self.main_window.caixa_pesquisa.text()
         case_sensitive = self.main_window.checkbox_maiusculas.isChecked()
+        cor = self.cor_destaque_html()
 
-        # --- Caso 0: Resultado é um cabeçalho de tabela ---
-        if isinstance(item, tuple) and item[0] == "header":
-            _, tabela, col = item
-            header = tabela.horizontalHeader()
-            cor = self.cor_destaque_html()
-            c = QColor(cor)
-            rgb = f"rgba({c.red()},{c.green()},{c.blue()}, 0.5)"
+        tipo = resultado["tipo"]
 
-            # Cria um estilo de destaque visual (background na seção do cabeçalho)
-            header.setStyleSheet(f"""
-                QHeaderView::section {{
-                    background-color: none;
-                }}
-                QHeaderView::section:nth-child({col+1}) {{
-                    background-color: {rgb};
-                }}
-            """)
-            return
+        # Limpa destaque anterior de QLabel
+        if hasattr(self, "ultimo_label_destacado") and self.ultimo_label_destacado is not None:
+            texto_original = self.ultimo_label_destacado.property("texto_original")
+            if texto_original:
+                self.ultimo_label_destacado.setText(texto_original)
+            self.ultimo_label_destacado = None
 
-        # --- Caso 1: Resultado em uma célula de tabela ---
-        if isinstance(item, QTableWidgetItem):
+        # --- TABELA ---
+        if tipo == "tabela":
+            item = resultado["widget"]
             tabela = item.tableWidget()
             if tabela:
                 delegate = CustomTableDelegate(
@@ -2018,50 +2056,57 @@ class Pagina_Configuracoes(QWidget):
                 tabela.scrollToItem(item, QAbstractItemView.EnsureVisible)
             return
 
-        # --- Caso 2: Resultado é uma QLabel ---
-        elif isinstance(item, QLabel):
-            conteudo = item.text()
+        # --- HEADER ---
+        elif tipo == "header":
+            tabela = resultado["widget"]
+            col = resultado["col"]
+            header = tabela.horizontalHeader()
+            c = QColor(cor)
+            rgb = f"rgba({c.red()},{c.green()},{c.blue()}, 0.5)"
+            header.setStyleSheet(f"""
+                QHeaderView::section:nth-child({col+1}) {{
+                    background-color: {rgb};
+                }}
+            """)
+            return
+
+        # --- QLabel ---
+        elif tipo == "label":
+            widget = resultado["widget"]
+            pos = resultado["pos"]
+            length = resultado["len"]
+            conteudo = widget.text()
             if not conteudo:
                 return
 
-            # salva o texto original se ainda não tiver
-            if item.property("texto_original") is None:
-                item.setProperty("texto_original", conteudo)
+            if widget.property("texto_original") is None:
+                widget.setProperty("texto_original", conteudo)
 
             doc = QTextDocument()
             doc.setHtml(conteudo)
             texto_visivel = doc.toPlainText()
 
-            texto_base = texto_visivel if case_sensitive else texto_visivel.lower()
-            texto_cmp = texto_procura if case_sensitive else texto_procura.lower()
+            trecho_original = texto_visivel[pos:pos+length]
+            trecho_destacado = f"<span style='background-color: {cor}'>{trecho_original}</span>"
+            html_destacado = conteudo.replace(trecho_original, trecho_destacado, 1)
 
-            if texto_cmp in texto_base:
-                start = texto_base.find(texto_cmp)
-                end = start + len(texto_cmp)
-                trecho_original = texto_visivel[start:end]
-                cor = self.cor_destaque_html()
-                trecho_destacado = f"<span style='background-color: {cor}'>{trecho_original}</span>"
-                html_destacado = conteudo.replace(trecho_original, trecho_destacado, 1)
-                item.setTextFormat(Qt.RichText)
-                item.setText(html_destacado)
-
-            # rola até o label se possível
-            self.rolar_para_widget(item)
+            widget.setTextFormat(Qt.RichText)
+            widget.setText(html_destacado)
+            self.ultimo_label_destacado = widget
+            self.rolar_para_widget(widget)
             return
 
-        # --- Caso 3: Resultado é um QTextEdit ---
-        elif isinstance(item, QTextEdit):
-            self.rolar_para_widget(item)
-            cursor = item.textCursor()
-            conteudo = item.toPlainText()
-            texto_base = conteudo if case_sensitive else conteudo.lower()
-            texto_cmp = texto_procura if case_sensitive else texto_procura.lower()
-            pos = texto_base.find(texto_cmp)
-            if pos != -1:
-                cursor.setPosition(pos)
-                cursor.movePosition(cursor.Right, cursor.KeepAnchor, len(texto_procura))
-                item.setTextCursor(cursor)
+        # --- QTextEdit ---
+        elif tipo == "textedit":
+            edit = resultado["widget"]
+            cursor = edit.textCursor()
+            cursor.setPosition(resultado["pos"])
+            cursor.movePosition(cursor.Right, cursor.KeepAnchor, resultado["len"])
+            edit.setTextCursor(cursor)
+            self.rolar_para_widget(edit)
             return
+
+
         
     def proximo_resultado(self):
         if not self.resultados_encontrados:
