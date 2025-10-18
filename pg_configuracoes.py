@@ -5,7 +5,7 @@ from PySide6.QtWidgets import (QWidget,QMenu, QVBoxLayout,
                                QStyledItemDelegate,QStyleOptionViewItem,QTableWidgetItem,QAbstractScrollArea,QScrollArea)
 from PySide6.QtCore import Qt, QTimer,QRect
 from PySide6.QtGui import (QIcon,QKeySequence,QColor,
-                           QTextDocument,QPainter,QFontMetrics)
+                           QTextDocument,QPainter,QFontMetrics,QTextCursor,QTextCharFormat)
 import os
 import json
 from login import Login
@@ -30,6 +30,7 @@ class Pagina_Configuracoes(QWidget):
         super().__init__(parent)
         self.atalhos = {}  # dicionário para guardar atalhos
         self.resultados_encontrados = []
+        self.ultimo_texto_pesquisado = ""
         self.indice_atual = -1
         self.tema = Temas()
         self.main_window = main_window
@@ -2042,13 +2043,15 @@ class Pagina_Configuracoes(QWidget):
 
         # --- TABELA ---
         if tipo == "tabela":
-            item = resultado["widget"]
+            item = resultado["widget"] # O item da célula
             tabela = item.tableWidget()
             if tabela:
                 delegate = CustomTableDelegate(
                     texto_procura=texto_procura,
                     case_sensitive=case_sensitive,
-                    item_para_destaque=item,
+                    # MUDANÇA AQUI: Passe o dicionário de resultado completo
+                    resultado_para_destaque=resultado, # <--- NOVO PARÂMETRO
+                    tema=self.tema,
                     parent=tabela
                 )
                 tabela.setItemDelegate(delegate)
@@ -2070,31 +2073,78 @@ class Pagina_Configuracoes(QWidget):
             """)
             return
 
+
         # --- QLabel ---
         elif tipo == "label":
             widget = resultado["widget"]
-            pos = resultado["pos"]
+            pos = resultado["pos"] # Posição de início no texto PÚRO
             length = resultado["len"]
-            conteudo = widget.text()
-            if not conteudo:
+            cor = self.cor_destaque_html()
+
+            # 1. Recupera o conteúdo original (PODE CONTER TAGS DE ESTILO DO QT)
+            conteudo_original = widget.property("texto_original")
+            if conteudo_original is None:
+                conteudo_original = widget.text()
+                widget.setProperty("texto_original", conteudo_original)
+            
+            if not conteudo_original:
                 return
 
-            if widget.property("texto_original") is None:
-                widget.setProperty("texto_original", conteudo)
-
+            # 2. Obter o texto PURO para usar as posições (Ex: "ESTOQUE")
             doc = QTextDocument()
-            doc.setHtml(conteudo)
+            doc.setHtml(conteudo_original)
             texto_visivel = doc.toPlainText()
 
-            trecho_original = texto_visivel[pos:pos+length]
-            trecho_destacado = f"<span style='background-color: {cor}'>{trecho_original}</span>"
-            html_destacado = conteudo.replace(trecho_original, trecho_destacado, 1)
+            if pos + length > len(texto_visivel):
+                return
 
+            # 3. Localizar o trecho (o texto em si, Ex: o 'E' na posição 0 ou 6)
+            trecho = texto_visivel[pos:pos+length]
+            
+            # --- NOVO BLOCO: APLICAÇÃO DE FORMATO COM QTextCursor ---
+            # Para preservar a formatação complexa do Qt Designer/Stylesheet, 
+            # é melhor trabalhar com o documento de texto do widget.
+
+            # Cria um novo documento (ou reusa o doc anterior)
+            doc_destaque = QTextDocument()
+            doc_destaque.setHtml(conteudo_original)
+            
+            cursor = QTextCursor(doc_destaque)
+            
+            # Move o cursor para a posição de início do texto plano
+            # O QTCursor trabalha com o texto plano, o que é perfeito para as posições `pos` e `length`
+            cursor.movePosition(QTextCursor.Start)
+            cursor.movePosition(QTextCursor.Right, QTextCursor.MoveAnchor, pos)
+            cursor.movePosition(QTextCursor.Right, QTextCursor.KeepAnchor, length)
+
+            # 4. Define o formato de caractere para o destaque
+            char_format = QTextCharFormat(cursor.charFormat())
+            char_format.setBackground(QColor(cor)) # A cor já vem como string rgba, mas aqui precisamos de QColor
+
+            # Converte a string rgba (ex: "rgba(80, 150, 255, 0.4)") para QColor
+            import re
+            m = re.match(r'rgba\((\d+),\s*(\d+),\s*(\d+),\s*(\d+(\.\d+)?)\)', cor)
+            if m:
+                r, g, b, a_str = m.groups()[0:4]
+                a = int(float(a_str) * 255) # Converte 0.4 para 100
+                highlight_color = QColor(int(r), int(g), int(b), a)
+                char_format.setBackground(highlight_color)
+            else:
+                # Fallback caso a regex falhe, para garantir que algo funcione
+                char_format.setBackground(QColor(80, 150, 255, 100)) # Exemplo de cor com transparência (0-255)
+
+            # Aplica o formato SÓ na seleção
+            cursor.mergeCharFormat(char_format)
+            
+            # 5. Aplicar o novo HTML gerado (que contém o estilo original + o destaque)
             widget.setTextFormat(Qt.RichText)
-            widget.setText(html_destacado)
+            widget.setText(doc_destaque.toHtml()) # <--- Usa toHtml() do documento com destaque
+
+            # 6. Salvar e rolar
             self.ultimo_label_destacado = widget
             self.rolar_para_widget(widget)
             return
+
 
         # --- QTextEdit ---
         elif tipo == "textedit":
@@ -2151,6 +2201,11 @@ class Pagina_Configuracoes(QWidget):
         
     def navegar_para_resultado(self, indice):
         """Vai até o resultado encontrado e aplica o destaque apropriado."""
+        pagina_atual = self.main_window.paginas_sistemas.currentWidget()
+
+        # ✅ Limpa os destaques anteriores antes de aplicar o novo
+        #self.resetar_destaques(pagina_atual)
+
         item = self.resultados_encontrados[indice]
         self.main_window.label_contagem.setText(f"{self.indice_atual + 1} de {len(self.resultados_encontrados)}")
 
@@ -2160,6 +2215,7 @@ class Pagina_Configuracoes(QWidget):
 
         # Destaca o resultado
         self.destacar_resultado_atual(item)
+
 
     def procurar_widget(self, widget, texto, case_sensitive=False):
         """Percorre todos os widgets dentro da página atual e procura o texto"""
@@ -2295,6 +2351,88 @@ class Pagina_Configuracoes(QWidget):
         subprocess.Popen([python, script] + sys.argv[1:])
         sys.exit()
 
+class CustomTableDelegate(QStyledItemDelegate):
+    # 1. MUDANÇA: Substituímos 'item_para_destaque' por 'resultado_para_destaque'
+    def __init__(self, texto_procura="", case_sensitive=False, resultado_para_destaque=None, tema="claro", parent=None):
+        super().__init__(parent)
+        self.texto_procura = texto_procura
+        self.case_sensitive = case_sensitive
+        # Armazena o dicionário de resultado completo (com 'widget', 'pos', 'len')
+        self.resultado_para_destaque = resultado_para_destaque 
+        self.tema = tema
+
+    def paint(self, painter: QPainter, option: QStyleOptionViewItem, index):
+        item_text = index.data(Qt.DisplayRole) or ""
+
+        # Desenha o fundo e a borda da célula normalmente
+        super().paint(painter, option, index)
+
+        # 1. Verifica se esta célula deve ser destacada (e se temos dados de posição)
+        item = option.widget.item(index.row(), index.column())
+        
+        # Obtemos o item (widget) que armazena a ocorrência e verificamos se corresponde ao item atual
+        item_para_destaque = self.resultado_para_destaque.get("widget") if self.resultado_para_destaque else None
+        
+        if item != item_para_destaque:
+            return
+
+        # 2. Obtemos a posição EXATA do destaque a partir dos dados armazenados
+        # O código original usava match.start(), que sempre encontrava a primeira ocorrência.
+        # Agora usamos a posição armazenada na lista self.resultados_encontrados.
+        start_pos = self.resultado_para_destaque.get("pos", -1)
+        length = self.resultado_para_destaque.get("len", 0)
+
+        if start_pos == -1 or length == 0:
+            return
+
+        # Define a cor do destaque baseada no tema
+        if self.tema == "escuro":
+            # Usamos QColor com componente alpha (0-255)
+            highlight_color = QColor(80, 150, 255, 100)
+        elif self.tema == "clássico":
+            highlight_color = QColor(50, 150, 250, 100)
+        else:  # claro
+            highlight_color = QColor(50, 100, 200, 100)
+
+        painter.save()
+        painter.setPen(Qt.NoPen)
+        painter.setBrush(highlight_color)
+
+        # 3. Calcula as dimensões do texto usando a posição exata (start_pos)
+        font_metrics = QFontMetrics(option.font)
+        
+        # Utilizamos start_pos e length diretamente
+        matched_text = item_text[start_pos : start_pos + length]
+        
+        # Use o alinhamento da célula para calcular a posição correta
+        alignment = index.data(Qt.TextAlignmentRole) or Qt.AlignLeft | Qt.AlignVCenter
+
+        # Cálculo da largura do texto antes do destaque
+        text_width_before = font_metrics.horizontalAdvance(item_text[:start_pos])
+        matched_width = font_metrics.horizontalAdvance(matched_text)
+        full_text_width = font_metrics.horizontalAdvance(item_text)
+
+        # A base do alinhamento é a posição do retangulo da célula
+        text_rect = option.rect
+        base_x = text_rect.x()
+
+        if alignment & Qt.AlignHCenter:
+            base_x += (text_rect.width() - full_text_width) / 2
+        elif alignment & Qt.AlignRight:
+            base_x += text_rect.width() - full_text_width
+            
+        # Corrigindo para garantir que os valores sejam inteiros ao construir o QRect
+        highlight_rect = QRect(
+            int(base_x + text_width_before),
+            text_rect.y(),
+            int(matched_width),
+            text_rect.height()
+        )
+
+        # Desenha o retângulo de destaque
+        painter.drawRect(highlight_rect)
+        painter.restore()
+
 
 class ProgressDialog(QDialog):
     def __init__(self, tema="Escuro", parent=None):
@@ -2352,74 +2490,7 @@ class TeclaLineEdit(QLineEdit):
         event.accept()
 
 
-class CustomTableDelegate(QStyledItemDelegate):
-    def __init__(self, texto_procura="", case_sensitive=False, item_para_destaque=None, tema="claro", parent=None):
-        super().__init__(parent)
-        self.texto_procura = texto_procura
-        self.case_sensitive = case_sensitive
-        self.item_para_destaque = item_para_destaque
-        self.tema = tema
 
-    def paint(self, painter: QPainter, option: QStyleOptionViewItem, index):
-        item_text = index.data(Qt.DisplayRole) or ""
-
-        # Desenha o fundo e a borda da célula normalmente
-        super().paint(painter, option, index)
-
-        # Se o item não for o item de destaque específico, não faça mais nada
-        item = option.widget.item(index.row(), index.column())
-        if self.item_para_destaque and item != self.item_para_destaque:
-            return
-
-        # Ajusta o comportamento da busca para o tema escuro
-        flags = 0 if self.case_sensitive else re.IGNORECASE
-        pattern = re.escape(self.texto_procura)
-        match = re.search(pattern, item_text, flags)
-
-        if match:
-            # Define a cor do destaque baseada no tema
-            if self.tema == "escuro":
-                highlight_color = QColor(80, 150, 255, 100)
-            elif self.tema == "clássico":
-                highlight_color = QColor(50, 150, 250, 100)
-            else:  # claro
-                highlight_color = QColor(50, 100, 200, 100)
-
-            painter.save()
-            painter.setPen(Qt.NoPen)
-            painter.setBrush(highlight_color)
-
-            # Calcula as dimensões do texto para encontrar a posição do trecho
-            font_metrics = QFontMetrics(option.font)
-            start_pos = match.start()
-            matched_text = item_text[start_pos:match.end()]
-            
-            # Use o alinhamento da célula para calcular a posição correta
-            alignment = index.data(Qt.TextAlignmentRole) or Qt.AlignLeft | Qt.AlignVCenter
-
-            text_width_before = font_metrics.horizontalAdvance(item_text[:start_pos])
-            matched_width = font_metrics.horizontalAdvance(matched_text)
-            full_text_width = font_metrics.horizontalAdvance(item_text)
-
-            # A base do alinhamento é a posição do retangulo da célula
-            text_rect = option.rect
-            base_x = text_rect.x()
-
-            if alignment & Qt.AlignHCenter:
-                base_x += (text_rect.width() - full_text_width) / 2
-            elif alignment & Qt.AlignRight:
-                base_x += text_rect.width() - full_text_width
-
-            highlight_rect = QRect(
-                base_x + text_width_before,
-                text_rect.y(),
-                matched_width,
-                text_rect.height()
-            )
-
-            # Desenha o retângulo de destaque
-            painter.drawRect(highlight_rect)
-            painter.restore()
 
             
 
