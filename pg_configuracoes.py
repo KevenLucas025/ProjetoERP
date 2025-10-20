@@ -5,7 +5,7 @@ from PySide6.QtWidgets import (QWidget,QMenu, QVBoxLayout,
                                QStyledItemDelegate,QStyleOptionViewItem,QTableWidgetItem,QAbstractScrollArea,QScrollArea)
 from PySide6.QtCore import Qt, QTimer,QRect
 from PySide6.QtGui import (QIcon,QKeySequence,QColor,
-                           QTextDocument,QPainter,QFontMetrics,QTextCursor,QTextCharFormat)
+                           QTextDocument,QPainter,QFontMetrics,QTextCursor,QTextCharFormat,QPalette)
 import os
 import json
 from login import Login
@@ -17,6 +17,8 @@ import subprocess
 from html import escape
 from utils import Temas
 import re
+import string
+
 
 class Pagina_Configuracoes(QWidget):
     def __init__(self,
@@ -61,9 +63,23 @@ class Pagina_Configuracoes(QWidget):
         self.frame_valor_do_desconto = frame_valor_do_desconto
         self.frame_valor_desconto = frame_valor_desconto
         self.frame_quantidade = frame_quantidade
+
+        # Criar a janela de configurações
+        self.janela_config = QMainWindow()
+        self.janela_config.setWindowTitle("Configurações")
+        self.janela_config.setMinimumSize(600, 500)
+        
+        # Aplica o style_sheet atual do sistema à janela de configurações
+        self.janela_config.setStyleSheet(self.styleSheet())
+
+        self.central = QWidget()
+        self.layout = QVBoxLayout(self.central)
+        self.janela_config.setCentralWidget(self.central)
        
         self.estilo_original_classico = Ui_MainWindow()
         self.config = Configuracoes_Login(main_window=main_window)
+        
+        
         
         
         if self.config.tema == "escuro":
@@ -1710,18 +1726,8 @@ class Pagina_Configuracoes(QWidget):
 
 
     def configurar_menu_opcoes(self, parent_button):
-        # Criar a janela de configurações
-        self.janela_config = QMainWindow()
-        self.janela_config.setWindowTitle("Configurações")
-        self.janela_config.setMinimumSize(600, 500)
-        
-        # Aplica o style_sheet atual do sistema à janela de configurações
-        self.janela_config.setStyleSheet(self.styleSheet())
-
-        central = QWidget()
-        layout = QVBoxLayout(central)
-        self.janela_config.setCentralWidget(central)
-
+        # Limpa o layout antes de adicionar novos botões
+        self.limpar_layout(self.layout)
         # ------------------- MENU TEMA -------------------
         btn_tema = QToolButton(self.janela_config)
         btn_tema.setText("Tema do Sistema")
@@ -1735,7 +1741,7 @@ class Pagina_Configuracoes(QWidget):
         menu_tema.addAction("Modo claro", self.aplicar_modo_claro)
         menu_tema.addAction("Modo clássico", self.aplicar_modo_classico)
         btn_tema.setMenu(menu_tema)
-        layout.addWidget(btn_tema)
+        self.layout.addWidget(btn_tema)
 
         # ------------------- BOTÃO ATUALIZAÇÕES -------------------
         btn_atualizacoes = QToolButton(self.janela_config)
@@ -1751,7 +1757,7 @@ class Pagina_Configuracoes(QWidget):
         menu_atualizacoes.addAction("Verificar se há atualizações")
         menu_atualizacoes.addAction("Exibir histórico de atualizações")
         btn_atualizacoes.setMenu(menu_atualizacoes)
-        layout.addWidget(btn_atualizacoes)
+        self.layout.addWidget(btn_atualizacoes)
 
 
         # ------------------- MENU FONTE -------------------
@@ -1770,7 +1776,7 @@ class Pagina_Configuracoes(QWidget):
             acao.triggered.connect(lambda checked, x=p: self.main_window.definir_tamanho_fonte(x))
         
         btn_fonte.setMenu(menu_fonte)
-        layout.addWidget(btn_fonte)
+        self.layout.addWidget(btn_fonte)
 
         # ------------------- MENU NOTIFICAÇÕES -------------------
         btn_notificacoes = QToolButton(self.janela_config)
@@ -1783,7 +1789,7 @@ class Pagina_Configuracoes(QWidget):
         menu_notificacoes = QMenu(self.janela_config)
         menu_notificacoes.addAction("Definir notificação de boas-vindas")
         btn_notificacoes.setMenu(menu_notificacoes)
-        layout.addWidget(btn_notificacoes)
+        self.layout.addWidget(btn_notificacoes)
 
         # ------------------- MENU ATALHOS -------------------
         btn_atalhos = QToolButton(self.janela_config)
@@ -1799,14 +1805,21 @@ class Pagina_Configuracoes(QWidget):
         menu_atalhos.addAction("Editar atalhos")
         menu_atalhos.addAction("Sobre atalhos")
         btn_atalhos.setMenu(menu_atalhos)
-        layout.addWidget(btn_atalhos)
+        self.layout.addWidget(btn_atalhos)
 
         # Mostrar janela
         self.janela_config.show()
+
+    def limpar_layout(self, layout):
+        while layout.count():
+            child = layout.takeAt(0)
+            if child.widget():
+                child.widget().deleteLater()
+
         
     def mapear_teclas_atalhos(self):
         # 1. Perguntar qual ação o usuário quer mapear 
-        opcoes = ["Pesquisar", "Fechar Sistema", "Abrir Mais Opções"] 
+        opcoes = ["Pesquisar", "Abrir Mais Opções","Abrir Configurações","Imprimir","Abrir Página Inicial"] 
         dialog = ComboDialog("Mapear Teclas", "Escolha a ação que deseja mapear:", opcoes, parent=self.janela_config) 
 
         if dialog.exec() != QDialog.Accepted: 
@@ -1842,6 +1855,8 @@ class Pagina_Configuracoes(QWidget):
 
                 #  Registrar no sistema
                 self.main_window.registrar_atalhos(acao,tecla)
+
+    
     
     def abrir_painel_atalhos(self):
         print("Abrir painel de atalhos")
@@ -1930,7 +1945,12 @@ class Pagina_Configuracoes(QWidget):
                     if not item:
                         continue
 
-                    item_text = item.text()
+                    item_text = item.text().strip()
+
+                    # Ignorar células vazias ou com caracteres invisíveis
+                    if not item_text or all(c not in string.printable for c in item_text):
+                        continue
+
                     texto_base = item_text if case_sensitive else item_text.lower()
                     texto_cmp = texto if case_sensitive else texto.lower()
 
@@ -1939,6 +1959,7 @@ class Pagina_Configuracoes(QWidget):
                         idx = texto_base.find(texto_cmp, start)
                         if idx == -1:
                             break
+
                         self.resultados_encontrados.append({
                             "tipo": "tabela",
                             "widget": item,
@@ -1948,30 +1969,6 @@ class Pagina_Configuracoes(QWidget):
                             "len": len(texto)
                         })
                         start = idx + len(texto)
-
-            # Cabeçalhos
-            for col in range(widget.columnCount()):
-                header_item = widget.horizontalHeaderItem(col)
-                if not header_item:
-                    continue
-                texto_header = header_item.text()
-                texto_base = texto_header if case_sensitive else texto_header.lower()
-                texto_cmp = texto if case_sensitive else texto.lower()
-
-                start = 0
-                while True:
-                    idx = texto_base.find(texto_cmp, start)
-                    if idx == -1:
-                        break
-                    self.resultados_encontrados.append({
-                        "tipo": "header",
-                        "widget": widget,
-                        "col": col,
-                        "pos": idx,
-                        "len": len(texto)
-                    })
-                    start = idx + len(texto)
-
             return
 
         # --- Caso 2: QLabel ---
@@ -2059,20 +2056,6 @@ class Pagina_Configuracoes(QWidget):
                 tabela.scrollToItem(item, QAbstractItemView.EnsureVisible)
             return
 
-        # --- HEADER ---
-        elif tipo == "header":
-            tabela = resultado["widget"]
-            col = resultado["col"]
-            header = tabela.horizontalHeader()
-            c = QColor(cor)
-            rgb = f"rgba({c.red()},{c.green()},{c.blue()}, 0.5)"
-            header.setStyleSheet(f"""
-                QHeaderView::section:nth-child({col+1}) {{
-                    background-color: {rgb};
-                }}
-            """)
-            return
-
 
         # --- QLabel ---
         elif tipo == "label":
@@ -2100,14 +2083,25 @@ class Pagina_Configuracoes(QWidget):
 
             # 3. Localizar o trecho (o texto em si, Ex: o 'E' na posição 0 ou 6)
             trecho = texto_visivel[pos:pos+length]
-            
-            # --- NOVO BLOCO: APLICAÇÃO DE FORMATO COM QTextCursor ---
-            # Para preservar a formatação complexa do Qt Designer/Stylesheet, 
-            # é melhor trabalhar com o documento de texto do widget.
+        
 
             # Cria um novo documento (ou reusa o doc anterior)
             doc_destaque = QTextDocument()
             doc_destaque.setHtml(conteudo_original)
+
+            font = widget.font()
+            color = widget.palette().color(QPalette.WindowText) # Pega a cor do texto
+            color_name = color.name(QColor.HexRgb) # Converte para ex: "#ffffff"
+
+            # 2. Define a fonte padrão para o documento
+            doc_destaque.setDefaultFont(font)
+            
+            #    FORÇA a cor do texto que lemos da paleta.
+            #    Isso preserva a cor do QSS.
+            styled_html = f"<div style='color: {color_name};'>{conteudo_original}</div>"
+            
+            # 4. Define o HTML no documento
+            doc_destaque.setHtml(styled_html)
             
             cursor = QTextCursor(doc_destaque)
             
@@ -2122,7 +2116,6 @@ class Pagina_Configuracoes(QWidget):
             char_format.setBackground(QColor(cor)) # A cor já vem como string rgba, mas aqui precisamos de QColor
 
             # Converte a string rgba (ex: "rgba(80, 150, 255, 0.4)") para QColor
-            import re
             m = re.match(r'rgba\((\d+),\s*(\d+),\s*(\d+),\s*(\d+(\.\d+)?)\)', cor)
             if m:
                 r, g, b, a_str = m.groups()[0:4]
@@ -2219,65 +2212,75 @@ class Pagina_Configuracoes(QWidget):
 
     def procurar_widget(self, widget, texto, case_sensitive=False):
         """Percorre todos os widgets dentro da página atual e procura o texto"""
-        encontrado = False # Reinicia o status de 'encontrado' para esta tabela
-        
-        # Restaura o estado original de todos os widgets antes da busca
-        self.resetar_destaques(widget)   
+        encontrado = False  # Reinicia o status de 'encontrado' para esta tabela
 
+        self.resetar_destaques(widget)  # Limpa destaques anteriores
+
+        # === QLabel ===
         if isinstance(widget, QLabel):
             conteudo = widget.text()
-            
-            if widget.pixmap() is not None and not conteudo:
-                return False  # Ignora, ela é uma "label de imagem"
 
-            # salva o texto original no property (se ainda não tiver salvo)
+            if widget.pixmap() is not None and not conteudo:
+                return False  # Ignora QLabel que exibe imagem
+
+            # Armazena o HTML original (com formatação)
             if widget.property("texto_original") is None:
                 widget.setProperty("texto_original", conteudo)
+            else:
+                conteudo = widget.property("texto_original")
 
-            # Extrai apenas o texto visível (mesmo que conteudo_original seja HTML)
             doc = QTextDocument()
             doc.setHtml(conteudo)
-            texto_visivel = doc.toPlainText() 
+            texto_visivel = doc.toPlainText()
 
-            # comparar com ou sem distinção de maiúsculas
             if not case_sensitive:
                 texto_base = texto_visivel.lower()
                 texto_procura = texto.lower()
             else:
-                texto_procura = texto
                 texto_base = texto_visivel
+                texto_procura = texto
 
-            if texto_procura in texto_base:
-                start = texto_base.find(texto_procura)
-                end = start + len(texto_procura)
+            pos = texto_base.find(texto_procura)
+            if pos != -1:
+                # Aplica destaque com QTextCursor
+                doc_destaque = QTextDocument()
+                doc_destaque.setHtml(conteudo)
 
-                # trecho visível encontrado
-                trecho_original = texto_visivel[start:end]
+                cursor = QTextCursor(doc_destaque)
+                cursor.movePosition(QTextCursor.Start)
+                cursor.movePosition(QTextCursor.Right, QTextCursor.MoveAnchor, pos)
+                cursor.movePosition(QTextCursor.Right, QTextCursor.KeepAnchor, len(texto_procura))
 
-
-                # cria o trecho destacado
+                # Formato do destaque
                 cor = self.cor_destaque_html()
-                trecho_destacado = f"<span style='background-color: {cor}'>{trecho_original}</span>"
+                char_format = QTextCharFormat(cursor.charFormat())
 
+                # Converte rgba → QColor
+                m = re.match(r'rgba\((\d+),\s*(\d+),\s*(\d+),\s*(\d+(\.\d+)?)\)', cor)
+                if m:
+                    r, g, b, a_str = m.groups()[0:4]
+                    a = int(float(a_str) * 255)
+                    highlight_color = QColor(int(r), int(g), int(b), a)
+                    char_format.setBackground(highlight_color)
+                else:
+                    char_format.setBackground(QColor(80, 150, 255, 100))
 
-                # substitui apenas a primeira ocorrência dentro do HTML original
-                html_destacado = conteudo.replace(trecho_original, trecho_destacado, 1)
+                cursor.mergeCharFormat(char_format)
 
+                # Aplica o texto com destaque mantendo o HTML original
                 widget.setTextFormat(Qt.RichText)
-                widget.setText(html_destacado)
+                widget.setText(doc_destaque.toHtml())
                 encontrado = True
             else:
-                # Restaurar original, se houver
                 texto_original = widget.property("texto_original")
                 if texto_original:
                     widget.setText(texto_original)
 
+        # === QTableWidget ===
         elif isinstance(widget, QTableWidget):
-            # Aplica delegate para destacar texto
             delegate = CustomTableDelegate(texto_procura=texto, case_sensitive=case_sensitive, parent=widget)
             widget.setItemDelegate(delegate)
-            
-            # Percorre a tabela apenas para encontrar se há algum resultado e rolar para o primeiro
+
             for row in range(widget.rowCount()):
                 for col in range(widget.columnCount()):
                     item = widget.item(row, col)
@@ -2293,15 +2296,15 @@ class Pagina_Configuracoes(QWidget):
                             break
                 if encontrado:
                     break
-                
 
-        # Recursivamente percorre filhos
-        for tipo in (QLabel,QPushButton, QTextEdit, QTableWidget):
+        # === Recursão ===
+        for tipo in (QLabel, QTextEdit, QTableWidget):
             for child in widget.findChildren(tipo):
                 if self.procurar_widget(child, texto, case_sensitive):
                     encontrado = True
 
         return encontrado
+
     
     def resetar_destaques(self, widget):
         """Limpa todos os destaques de todos os widgets recursivamente."""

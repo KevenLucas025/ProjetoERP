@@ -1,4 +1,4 @@
-from PySide6.QtWidgets import QMainWindow, QApplication, QMessageBox
+'''from PySide6.QtWidgets import QMainWindow, QApplication, QMessageBox
 import sys
 
 class MainWindow(QMainWindow):
@@ -20,4 +20,6 @@ if __name__ == "__main__":
     app.setStyle("WindowsVista")
     main_window = MainWindow()
     main_window.show()
-    sys.exit(app.exec())
+    sys.exit(app.exec())'''
+
+

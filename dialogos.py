@@ -1,4 +1,3 @@
-# dialogos.py
 from PySide6.QtWidgets import QDialog, QVBoxLayout, QLabel, QComboBox, QDialogButtonBox,QLineEdit
 import json
 from utils import Temas
@@ -27,6 +26,7 @@ class DialogoEstilizado(QDialog):
 
         # Aplica o estilo
         self.aplicar_estilo()
+        
 
     def aplicar_estilo(self):
         # Estilos por tema
@@ -317,6 +317,8 @@ class DialogoEstilizado(QDialog):
                 background: transparent;
             }}
         """)
+
+        
 
 
 # -----------------------------

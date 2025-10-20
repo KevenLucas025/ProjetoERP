@@ -64,7 +64,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
 
         self.table_base.verticalHeader().setFixedWidth(20)  # você pode ajustar o valor
-    
+
+
         
         # Atalho F5 global
         self.atalho_f5 = QShortcut(QKeySequence("F5"), self)
@@ -335,7 +336,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # Monta o layout
         layout_pesquisa_vertical.addLayout(layout_linha_superior)
         layout_pesquisa_vertical.addWidget(self.checkbox_maiusculas)
-
+        
 
         btn_fechar = QPushButton("X")
         btn_fechar.setFixedSize(25, 25)
@@ -1498,15 +1499,33 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         if acao == "Pesquisar":
             shortcut.activated.connect(self.abrir_pesquisa)
-        elif acao == "Fechar Sistema":
-            shortcut.activated.connect(self.close)
         elif acao == "Abrir Mais Opções":
-            pass
+            shortcut.activated.connect(self.abrir_mais_opcoes)
+        elif acao == "Abrir Configurações":
+            shortcut.activated.connect(self.abrir_configuracoes)
+        elif acao == "Imprimir":
+            shortcut.activated.connect(self.imprimir_documento)
+        elif acao == "Abrir Página Inicial":
+            shortcut.activated.connect(self.abrir_pagina_inicial)
 
     def abrir_pesquisa(self):
         self.widget_pesquisa.show()
         self.reposicionar_pesquisa()  # garante que apareça centralizado
         self.caixa_pesquisa.setFocus()
+
+    def abrir_mais_opcoes(self):
+        if hasattr(self, "btn_mais_opcoes") and self.btn_mais_opcoes.menu():
+            menu = self.btn_mais_opcoes.menu()
+            # Abre o menu abaixo do botão
+            menu.exec(self.btn_mais_opcoes.mapToGlobal(
+                self.btn_mais_opcoes.rect().bottomLeft()
+            ))
+    def abrir_configuracoes(self):
+        self.pagina_configuracoes.configurar_menu_opcoes(self)
+        self.pagina_configuracoes.janela_config.show()
+        self.pagina_configuracoes.janela_config.raise_()
+        self.pagina_configuracoes.janela_config.activateWindow()
+
 
 #*********************************************************************************************************************
     def exibir_asteriscos_produtos(self, campos_nao_preenchidos):

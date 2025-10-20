@@ -39,6 +39,8 @@
     "tema": "escuro",
     "tamanho_fonte_percentual": 100,
     "atalhos": {
-        "Pesquisar": "Ctrl+F"
+        "Pesquisar": "Ctrl+F",
+        "Abrir Mais Opções": "Ctrl+I",
+        "Abrir Configurações": "Ctrl+L"
     }
 }
