@@ -41,6 +41,7 @@
     "atalhos": {
         "Pesquisar": "Ctrl+F",
         "Abrir Mais Opções": "Ctrl+I",
-        "Abrir Configurações": "Ctrl+L"
+        "Abrir Configurações": "Ctrl+L",
+        "Imprimir": "Ctrl+P"
     }
 }

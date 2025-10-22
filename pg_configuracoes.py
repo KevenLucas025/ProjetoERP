@@ -1843,21 +1843,63 @@ class Pagina_Configuracoes(QWidget):
         # Só entra aqui se o usuário clicar em "Salvar"
         if captura.exec() == QDialog.Accepted: 
             tecla = input_tecla.text().strip()
-            if tecla:
-                # garante que não salva vazio
-                if not hasattr(self, "atalhos"): 
-                    self.atalhos = {} 
-                    self.atalhos[acao] = tecla 
-                    print("Atalhos definidos:", self.atalhos)
+            if not tecla:
+                return
+            conflito = self.verificar_atalhos(tecla)
+            atalhos_atuais = self.config.obter_todos_atalhos()
 
-                #  Salvar no JSON usando Configuracoes_Login
-                self.config.salvar_atalho(acao,tecla)
+            # Se há conflito com outra ação
+            if conflito and conflito != acao:
+                resposta = QMessageBox.question(
+                    self.janela_config,
+                    "Atalho duplicado",
+                    f"A tecla '{tecla}' já está sendo usada para {conflito};\n"
+                    "Deseja trocar os atalhos entre as duas funções?",
+                    QMessageBox.Yes | QMessageBox.No
+                )
+                if resposta == QMessageBox.No:
+                    return
+                # Troca as teclas entre as ações
+                tecla_conflito = atalhos_atuais.get(acao, None)  # tecla atual da ação escolhida
+                # conflito → ação que usava a tecla nova
+                # acao → ação que o usuário está mapeando
 
-                #  Registrar no sistema
-                self.main_window.registrar_atalhos(acao,tecla)
+                # Atualiza as duas no dicionário
+                self.config.atalhos[conflito] = tecla_conflito or ""
+                self.config.atalhos[acao] = tecla
 
-    
-    
+                # Persiste no JSON
+                self.config.salvar_atalho(conflito, self.config.atalhos[conflito])
+                self.config.salvar_atalho(acao, tecla)
+
+                # Atualiza no sistema (main)
+                if tecla_conflito:
+                    self.main_window.registrar_atalhos(conflito, tecla_conflito)
+                self.main_window.registrar_atalhos(acao, tecla)
+
+                QMessageBox.information(
+                    self.janela_config,
+                    "Troca realizada",
+                    f"Atalhos trocados com sucesso:\n"
+                    f"• {acao} → {tecla}\n"
+                    f"• {conflito} → {tecla_conflito or 'nenhum atalho definido antes'}"
+                )
+
+                return
+
+        # Se não há conflito, só salva normalmente
+        self.config.salvar_atalho(acao, tecla)
+        self.main_window.registrar_atalhos(acao, tecla)
+        QMessageBox.information(self.janela_config, "Atalho salvo", f"Atalho '{tecla}' definido para '{acao}' com sucesso.")
+
+    def verificar_atalhos(self, tecla):
+        """Retorna a ação que já usa a tecla (se houver)"""
+        atalhos_existentes = self.config.obter_todos_atalhos()
+        for acao_existente, tecla_existente in atalhos_existentes.items():
+            if tecla_existente and tecla_existente.lower() == tecla.lower():
+                return acao_existente
+        return None
+
     def abrir_painel_atalhos(self):
         print("Abrir painel de atalhos")
 

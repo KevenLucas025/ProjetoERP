@@ -1,14 +1,15 @@
 #*********************************************************************************************************************
 import re
 from PySide6.QtCore import (Qt, QTimer, QDate, QBuffer, QByteArray, QIODevice, Signal,
-                            QEvent)
+                            QEvent,QPoint,QSize)
 from PySide6 import QtCore
 from PySide6.QtWidgets import (QMainWindow, QMessageBox, QPushButton,
                                QLabel, QFileDialog, QVBoxLayout,
                                QMenu,QTableWidgetItem,QCheckBox,QApplication,QToolButton,QHeaderView,QCompleter,
-                               QComboBox,QInputDialog,QProgressDialog,QDialog,QLineEdit,QWidget,QHBoxLayout,QDockWidget)
+                               QComboBox,QInputDialog,QProgressDialog,QDialog,QLineEdit,QWidget,QHBoxLayout,QDialogButtonBox)
 from PySide6.QtGui import (QDoubleValidator, QIcon, QColor, QPixmap,QBrush,
-                           QAction,QMovie,QImage,QShortcut,QKeySequence)
+                           QAction,QMovie,QImage,QShortcut,QKeySequence,QPainter,QPageLayout)
+from PySide6.QtPrintSupport import QPrintDialog,QPrinter
 from login import Login
 from mane_python import Ui_MainWindow
 from database import DataBase
@@ -1490,13 +1491,29 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         for widget in self.campos_obrigatorios.values():
             widget.installEventFilter(self)
 
-    def registrar_atalhos(self,acao,tecla_str):
+    def registrar_atalhos(self, acao, tecla_str):
         seq = QKeySequence(tecla_str)
-        shortcut = QShortcut(seq,self)
-        
-        # Se já existir, sobrescreve
+
+        # Se o atalho já existir, desconecta o anterior antes de recriar
+        if hasattr(self, "atalhos") and acao in self.atalhos:
+            antigo_shortcut = self.atalhos[acao]
+            try:
+                antigo_shortcut.disconnect()  # desconecta o sinal
+            except Exception:
+                pass
+            antigo_shortcut.setParent(None)  # remove da hierarquia de widgets
+            del self.atalhos[acao]  # remove do dicionário
+
+        # Cria novo atalho
+        shortcut = QShortcut(seq, self)
+
+        # Garante que o dicionário existe
+        if not hasattr(self, "atalhos"):
+            self.atalhos = {}
+
         self.atalhos[acao] = shortcut
 
+        # Conecta de acordo com a ação
         if acao == "Pesquisar":
             shortcut.activated.connect(self.abrir_pesquisa)
         elif acao == "Abrir Mais Opções":
@@ -1507,6 +1524,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             shortcut.activated.connect(self.imprimir_documento)
         elif acao == "Abrir Página Inicial":
             shortcut.activated.connect(self.abrir_pagina_inicial)
+
+
+
 
     def abrir_pesquisa(self):
         self.widget_pesquisa.show()
@@ -1520,12 +1540,67 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             menu.exec(self.btn_mais_opcoes.mapToGlobal(
                 self.btn_mais_opcoes.rect().bottomLeft()
             ))
+
     def abrir_configuracoes(self):
         self.pagina_configuracoes.configurar_menu_opcoes(self)
         self.pagina_configuracoes.janela_config.show()
         self.pagina_configuracoes.janela_config.raise_()
         self.pagina_configuracoes.janela_config.activateWindow()
 
+    def imprimir_documento(self):
+        # 1. Determina o widget atual
+        try:
+            widget_atual = self.paginas_sistemas.currentWidget()
+        except AttributeError:
+            widget_atual = self.centralWidget()
+
+        if not widget_atual:
+            QMessageBox.warning(self, "Erro", "Nenhuma página atual para imprimir.")
+            return
+
+        # 2. Cria a impressora
+        printer = QPrinter(QPrinter.PrinterMode.HighResolution)
+        printer.setFullPage(True)
+
+        # --- Configurações extras antes do diálogo ---
+        # Tamanho do papel: A4, Letter, etc.
+        printer.setPageSize(QPrinter.PageSize.A4)  # A4 padrão
+        # Orientação: Portrait ou Landscape
+        printer.setOrientation(QPrinter.Orientation.Portrait)  # Portrait padrão
+
+        # 3. Abre o diálogo de impressão
+        dialog = QPrintDialog(printer, self)
+        dialog.setWindowTitle("Imprimir página atual")
+        
+        # Permite que o usuário escolha tamanho do papel e orientação
+        dialog.setOptions(QPrintDialog.DialogOption.PrintToFile | 
+                        QPrintDialog.DialogOption.PrintSelection |
+                        QPrintDialog.DialogOption.PrintPageRange)
+
+        if dialog.exec() != QDialog.DialogCode.Accepted:
+            return  # usuário cancelou
+
+        # --- Código de desenho (renderiza o widget na página) ---
+        painter = QPainter(printer)
+        page_rect = printer.pageRect(QPrinter.Unit.DevicePixel)
+        widget_size = widget_atual.size()
+
+        if widget_size.width() == 0 or widget_size.height() == 0:
+            QMessageBox.warning(self, "Erro", "Não é possível imprimir um widget com tamanho zero.")
+            painter.end()
+            return
+
+        scale = min(page_rect.width() / widget_size.width(),
+                    page_rect.height() / widget_size.height())
+        x_offset = (page_rect.width() - (widget_size.width() * scale)) / 2
+        y_offset = (page_rect.height() - (widget_size.height() * scale)) / 2
+
+        painter.translate(page_rect.x() + x_offset, page_rect.y() + y_offset)
+        painter.scale(scale, scale)
+        widget_atual.render(painter, QPoint(0, 0))
+        painter.end()
+
+        QMessageBox.information(self, "Impressão enviada", "A página atual foi enviada para a impressora com sucesso!")
 
 #*********************************************************************************************************************
     def exibir_asteriscos_produtos(self, campos_nao_preenchidos):
@@ -3186,6 +3261,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 }
                            
             """)
+
+
 
 # Função principal
 if __name__ == '__main__':
