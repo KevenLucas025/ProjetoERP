@@ -36,12 +36,12 @@
             "sddasdas"
         ]
     },
-    "tema": "escuro",
+    "tema": "classico",
     "tamanho_fonte_percentual": 100,
     "atalhos": {
         "Pesquisar": "Ctrl+F",
         "Abrir Mais Opções": "Ctrl+I",
         "Abrir Configurações": "Ctrl+L",
-        "Imprimir": "Ctrl+P"
+        "Abrir Página Inicial": "Ctrl+H"
     }
 }

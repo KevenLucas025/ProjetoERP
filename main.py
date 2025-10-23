@@ -6,10 +6,10 @@ from PySide6 import QtCore
 from PySide6.QtWidgets import (QMainWindow, QMessageBox, QPushButton,
                                QLabel, QFileDialog, QVBoxLayout,
                                QMenu,QTableWidgetItem,QCheckBox,QApplication,QToolButton,QHeaderView,QCompleter,
-                               QComboBox,QInputDialog,QProgressDialog,QDialog,QLineEdit,QWidget,QHBoxLayout,QDialogButtonBox)
+                               QComboBox,QInputDialog,QProgressDialog,QDialog,QLineEdit,QWidget,QHBoxLayout,QDialogButtonBox,QScrollArea)
 from PySide6.QtGui import (QDoubleValidator, QIcon, QColor, QPixmap,QBrush,
-                           QAction,QMovie,QImage,QShortcut,QKeySequence,QPainter,QPageLayout)
-from PySide6.QtPrintSupport import QPrintDialog,QPrinter
+                           QAction,QMovie,QImage,QShortcut,QKeySequence,QPainter,QPageLayout,QPageSize,QTransform)
+from PySide6.QtPrintSupport import QPrintDialog,QPrinter,QPrintPreviewDialog
 from login import Login
 from mane_python import Ui_MainWindow
 from database import DataBase
@@ -1520,10 +1520,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             shortcut.activated.connect(self.abrir_mais_opcoes)
         elif acao == "Abrir Configurações":
             shortcut.activated.connect(self.abrir_configuracoes)
-        elif acao == "Imprimir":
-            shortcut.activated.connect(self.imprimir_documento)
         elif acao == "Abrir Página Inicial":
-            shortcut.activated.connect(self.abrir_pagina_inicial)
+            shortcut.activated.connect(self.ir_pagina_inicial)
 
 
 
@@ -1547,60 +1545,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.pagina_configuracoes.janela_config.raise_()
         self.pagina_configuracoes.janela_config.activateWindow()
 
-    def imprimir_documento(self):
-        # 1. Determina o widget atual
-        try:
-            widget_atual = self.paginas_sistemas.currentWidget()
-        except AttributeError:
-            widget_atual = self.centralWidget()
+    def ir_pagina_inicial(self):
+        if hasattr(self,"home_pag"):
+            self.paginas_sistemas.setCurrentWidget(self.home_pag)
 
-        if not widget_atual:
-            QMessageBox.warning(self, "Erro", "Nenhuma página atual para imprimir.")
-            return
 
-        # 2. Cria a impressora
-        printer = QPrinter(QPrinter.PrinterMode.HighResolution)
-        printer.setFullPage(True)
-
-        # --- Configurações extras antes do diálogo ---
-        # Tamanho do papel: A4, Letter, etc.
-        printer.setPageSize(QPrinter.PageSize.A4)  # A4 padrão
-        # Orientação: Portrait ou Landscape
-        printer.setOrientation(QPrinter.Orientation.Portrait)  # Portrait padrão
-
-        # 3. Abre o diálogo de impressão
-        dialog = QPrintDialog(printer, self)
-        dialog.setWindowTitle("Imprimir página atual")
-        
-        # Permite que o usuário escolha tamanho do papel e orientação
-        dialog.setOptions(QPrintDialog.DialogOption.PrintToFile | 
-                        QPrintDialog.DialogOption.PrintSelection |
-                        QPrintDialog.DialogOption.PrintPageRange)
-
-        if dialog.exec() != QDialog.DialogCode.Accepted:
-            return  # usuário cancelou
-
-        # --- Código de desenho (renderiza o widget na página) ---
-        painter = QPainter(printer)
-        page_rect = printer.pageRect(QPrinter.Unit.DevicePixel)
-        widget_size = widget_atual.size()
-
-        if widget_size.width() == 0 or widget_size.height() == 0:
-            QMessageBox.warning(self, "Erro", "Não é possível imprimir um widget com tamanho zero.")
-            painter.end()
-            return
-
-        scale = min(page_rect.width() / widget_size.width(),
-                    page_rect.height() / widget_size.height())
-        x_offset = (page_rect.width() - (widget_size.width() * scale)) / 2
-        y_offset = (page_rect.height() - (widget_size.height() * scale)) / 2
-
-        painter.translate(page_rect.x() + x_offset, page_rect.y() + y_offset)
-        painter.scale(scale, scale)
-        widget_atual.render(painter, QPoint(0, 0))
-        painter.end()
-
-        QMessageBox.information(self, "Impressão enviada", "A página atual foi enviada para a impressora com sucesso!")
 
 #*********************************************************************************************************************
     def exibir_asteriscos_produtos(self, campos_nao_preenchidos):

@@ -1787,7 +1787,11 @@ class Pagina_Configuracoes(QWidget):
         btn_notificacoes.setObjectName("btn_classe_notificacoes")
         btn_notificacoes.setFixedHeight(38)
         menu_notificacoes = QMenu(self.janela_config)
-        menu_notificacoes.addAction("Definir notificação de boas-vindas")
+        menu_notificacoes.addAction("Definir todas as notificações",self.definir_todas_as_notificacoes)
+        menu_notificacoes.addAction("Definir notificação de boas-vindas",self.definir_notificacao_boas_vindas)
+        menu_notificacoes.addAction("Definir notificação de aviso irreversível",self.definir_aviso_irreversilvel)
+        menu_notificacoes.addAction("Definir notificação de aviso Excel para clientes jurídicos",self.definir_nao_mostrar_mensagem_arquivo_excel)
+        menu_notificacoes.addAction("Definir notificação de aviso Excel para clientes físicos",self.definir_nao_mostrar_mensagem_arquivo_excel_fisicos)
         btn_notificacoes.setMenu(menu_notificacoes)
         self.layout.addWidget(btn_notificacoes)
 
@@ -1801,14 +1805,48 @@ class Pagina_Configuracoes(QWidget):
         btn_atalhos.setFixedHeight(38)
         menu_atalhos = QMenu(self.janela_config)
         menu_atalhos.addAction("Mapear teclas de atalhos",self.mapear_teclas_atalhos)
-        menu_atalhos.addAction("Abrir painel de atalhos")
-        menu_atalhos.addAction("Editar atalhos")
-        menu_atalhos.addAction("Sobre atalhos")
+        menu_atalhos.addAction("Abrir painel de atalhos",self.abrir_painel_atalhos)
         btn_atalhos.setMenu(menu_atalhos)
         self.layout.addWidget(btn_atalhos)
 
         # Mostrar janela
         self.janela_config.show()
+
+    def definir_todas_as_notificacoes(self):
+        # Ativa todas as notificações
+        self.config.nao_mostrar_mensagem_boas_vindas = False
+        self.config.nao_mostrar_aviso_irreversivel = False
+        self.config.nao_mostrar_mensagem_arquivo_excel = False
+        self.config.nao_mostrar_mensagem_arquivo_excel_fisicos = False
+        
+        # Salva todas as alterações de uma vez
+        self.config.salvar()
+        
+        # Mostra aviso único
+        QMessageBox.information(self, "Aviso", "Todas as notificações foram ativadas!")
+
+    def definir_nao_mostrar_mensagem_arquivo_excel(self):
+        self.config.nao_mostrar_mensagem_arquivo_excel = False
+        self.config.salvar()
+        QMessageBox.information(self, "Aviso", "Notificação de aviso Excel para clientes jurídicos ativada!")
+
+    def definir_nao_mostrar_mensagem_arquivo_excel_fisicos(self):
+        self.config.nao_mostrar_mensagem_arquivo_excel_fisicos = False
+        self.config.salvar()
+        QMessageBox.information(self, "Aviso", "Notificação de aviso Excel para clientes físicos ativada!")
+
+    def definir_aviso_irreversilvel(self):
+        self.config.nao_mostrar_aviso_irreversivel = False
+        self.config.salvar()
+        QMessageBox.information(self, "Aviso", "Notificação de aviso irreversível ativada!")
+
+    def definir_notificacao_boas_vindas(self):
+        # Ativa a notificação para ser exibida
+        self.config.nao_mostrar_mensagem_boas_vindas = False
+        self.config.salvar()
+        QMessageBox.information(self, "Aviso", "Notificação de boas-vindas ativada!")
+
+
 
     def limpar_layout(self, layout):
         while layout.count():
@@ -1819,7 +1857,7 @@ class Pagina_Configuracoes(QWidget):
         
     def mapear_teclas_atalhos(self):
         # 1. Perguntar qual ação o usuário quer mapear 
-        opcoes = ["Pesquisar", "Abrir Mais Opções","Abrir Configurações","Imprimir","Abrir Página Inicial"] 
+        opcoes = ["Pesquisar", "Abrir Mais Opções","Abrir Configurações","Abrir Página Inicial"] 
         dialog = ComboDialog("Mapear Teclas", "Escolha a ação que deseja mapear:", opcoes, parent=self.janela_config) 
 
         if dialog.exec() != QDialog.Accepted: 
@@ -1899,18 +1937,262 @@ class Pagina_Configuracoes(QWidget):
             if tecla_existente and tecla_existente.lower() == tecla.lower():
                 return acao_existente
         return None
+    
+    
 
     def abrir_painel_atalhos(self):
-        print("Abrir painel de atalhos")
+        """Exibe uma janela estilizada com a lista de atalhos registrados e suas funções."""
+        atalhos_registrados = getattr(self.main_window, "atalhos", {})
 
-    def editar_atalhos(self):
-        print("Editar atalhos")
+        if not atalhos_registrados:
+            QMessageBox.information(self, "Atalhos", "Nenhum atalho foi definido ainda.")
+            return
 
-    def sobre_atalhos(self):
-        QMessageBox.information(
-            self,
-            "Sobre Atalhos",
-            "Aqui você pode configurar os atalhos")
+        # --- CRIA A JANELA ---
+        dialog = QDialog(self)
+        dialog.setWindowTitle("Painel de Atalhos")
+        dialog.resize(600, 500)
+        
+
+
+        layout = QVBoxLayout(dialog)
+        layout.setAlignment(Qt.AlignmentFlag.AlignTop)
+        
+
+
+        # --- DEFINE CORES BASEADAS NO TEMA ATUAL ---
+        config = self.tema.carregar_config_arquivo()
+        tema  = config.get("tema","claro")
+
+        if tema == "escuro":
+            text_cor = "white"
+            bg_cor = "#202124"
+            button_style = """
+                QPushButton {
+                    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                                                stop:0 rgb(60,60,60),
+                                                stop:1 rgb(100,100,100));
+                    color: white;
+                    border-radius: 8px;
+                    font-size: 16px;
+                    border: 2px solid #666666;
+                    padding: 6px;
+                }
+                QPushButton:hover {
+                    background-color: #444444;
+                }
+                QPushButton:pressed {
+                    background-color: #555555;
+                    border: 2px solid #888888;
+                }
+            """
+            scroll_style = """
+            /* Scrollbar vertical */
+            QScrollBar:vertical {
+                background: #ffffff;   /* fundo do track */
+                width: 12px;
+                margin: 0px;
+                border-radius: 6px;
+            }
+
+            QScrollBar::handle:vertical {
+                background: #555555;   /* cor do handle */
+                border-radius: 6px;
+                min-height: 20px;
+            }
+
+            QScrollBar::handle:vertical:hover {
+                background: #777777;   /* hover no handle */
+            }
+
+            QScrollBar::add-line:vertical,
+            QScrollBar::sub-line:vertical {
+                background: none;
+                height: 0px;
+            }
+
+            QScrollBar::add-page:vertical,
+            QScrollBar::sub-page:vertical {
+                background: none;
+            }
+            """
+            table_view_style = """
+             /* QTableView com seleção diferenciada */
+            QTableView {
+                background-color: #202124;
+                alternate-background-color: #202124;
+                color: white;
+                gridline-color: #555555;
+                selection-background-color: #7a7a7a;
+                selection-color: white;
+            }
+            /* Coluna dos cabeçalhos */
+            QHeaderView::section {
+                background-color: #ffffff;
+                color: black;
+                border: 1px solid #aaaaaa;
+                padding: 1px;
+            }"""
+        elif tema == "claro":
+            bg_cor = "white"
+            text_cor = "black"
+            button_style = """
+                QPushButton {
+                border-radius: 8px;
+                background: qlineargradient(
+                    x1:0, y1:0, x2:0, y2:1,
+                    stop:0 rgb(220, 220, 220),  /* topo */
+                    stop:1 rgb(245, 245, 245)   /* base */
+                );
+                font-size: 14px;
+                color: #000000; /* texto escuro */
+                }
+
+                QPushButton:hover {
+                    background-color: #e0e0e0;
+                }
+
+                QPushButton:pressed {
+                    background-color: #d0d0d0;
+                    border: 2px solid #aaaaaa;
+                }
+            """
+            scroll_style = """
+                QScrollBar:vertical {
+                    background: #ffffff;
+                    width: 12px;
+                    border-radius: 6px;
+                }
+                QScrollBar::handle:vertical {
+                    background: #cccccc;
+                    min-height: 20px;
+                    border-radius: 5px;
+                }
+            """
+            table_view_style = """
+                /* QTableView com seleção diferenciada */
+                QTableView {
+                    background-color: white;
+                    alternate-background-color: #f8f8f8;
+                    color: black;
+                    gridline-color: #cccccc;
+                    selection-background-color: #d0e7ff;  /* azul claro */
+                    selection-color: black;
+                }
+                QHeaderView:vertical {
+                    background-color: white; 
+                    border: none;              
+                }
+
+
+                /* Cabeçalhos da tabela */
+                QHeaderView::section {
+                    background-color: #eaeaea;
+                    color: black;
+                    border: 1px solid #cccccc;
+                    padding: 2px;
+                }"""
+        else:  # clássico
+            bg_cor = "rgb(0,80,121)"
+            text_cor = "white"
+            button_style = """
+            QPushButton {
+                color: rgb(255, 255, 255);
+                border-radius: 8px;
+                font-size: 16px;
+                background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */
+                border: 4px solid transparent;
+            }
+
+            QPushButton:hover {
+                background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */
+                color: black;
+            }
+            QPushButton:pressed {
+                background-color: #006bb3;
+                border: 2px solid #005c99;
+            }
+            """
+            scroll_style = """
+                QScrollBar:vertical {
+                    background: #ffffff;
+                    width: 12px;
+                    border-radius: 6px;
+                }
+                QScrollBar::handle:vertical {
+                    background: #b4b4b4;
+                    min-height: 20px;
+                    border-radius: 5px;
+                }
+            """
+            table_view_style = """
+                QTableView {
+                    background-color: rgb(0,80,121);
+                    alternate-background-color: rgb(0, 80, 121);
+                    color: white;
+                    gridline-color: black;
+                    border: 1px solid white;
+                    selection-background-color: #007acc;
+                    selection-color: white;
+                }
+
+                QHeaderView::section {
+                    background-color: white;
+                    color: black;
+                    border: 1px solid #eeeeee;  /* Borda branco-acinzentada */
+                    padding: 1px;
+                }"""
+
+        dialog.setStyleSheet(f"background-color: {bg_cor}; color: {text_cor};")
+
+        # --- TÍTULO ---
+        titulo = QLabel("🧭 <b>Lista de Atalhos</b>")
+        titulo.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        titulo.setStyleSheet(f"""
+            color: {text_cor};
+            font-size: 18px;
+            margin-bottom: 10px;
+        """)
+        layout.addWidget(titulo)
+
+        # --- TABELA ---
+        tabela = QTableWidget()
+        tabela.setColumnCount(2)
+        tabela.setHorizontalHeaderLabels(["Ação", "Tecla"])
+        tabela.horizontalHeader().setStretchLastSection(True)
+        tabela.verticalHeader().setVisible(False)
+        tabela.setEditTriggers(QTableWidget.NoEditTriggers)
+        tabela.setSelectionMode(QTableWidget.NoSelection)
+        tabela.setAlternatingRowColors(True)
+        tabela.setStyleSheet(table_view_style)
+        
+
+        # --- POPULA A TABELA ---
+        tabela.setRowCount(0)
+        for i, (acao, shortcut) in enumerate(atalhos_registrados.items()):
+            tabela.insertRow(i)
+            item_acao = QTableWidgetItem(acao)
+            item_tecla = QTableWidgetItem(shortcut.key().toString())
+            item_acao.setTextAlignment(Qt.AlignmentFlag.AlignVCenter | Qt.AlignmentFlag.AlignLeft)
+            item_tecla.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
+            tabela.setItem(i, 0, item_acao)
+            tabela.setItem(i, 1, item_tecla)
+
+        # --- SCROLL AUTOMÁTICO ---
+        tabela.setSizeAdjustPolicy(QAbstractScrollArea.AdjustToContents)
+        layout.addWidget(tabela)
+
+        tabela.resizeColumnsToContents()
+        tabela.resizeRowsToContents()
+
+        # --- BOTÃO FECHAR ---
+        btn_fechar = QPushButton("Fechar")
+        btn_fechar.setFixedWidth(100)
+        btn_fechar.setStyleSheet(button_style)
+        btn_fechar.clicked.connect(dialog.close)
+        layout.addWidget(btn_fechar, alignment=Qt.AlignmentFlag.AlignRight)
+
+        dialog.exec()
         
     def configurar_pesquisa(self):
         self.main_window.caixa_pesquisa.returnPressed.connect(self.acao_enter)
