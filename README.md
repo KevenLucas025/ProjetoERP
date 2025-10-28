@@ -72,5 +72,91 @@ Suas funções são semelhantes às da página Verificar Estoque, garantindo uma
 ⚠️ Importante: nesta página não é possível realizar o “estorno” ou recuperar um usuário excluído.
 Portanto, recomenda-se atenção ao remover registros, já que essa ação é definitiva e não pode ser desfeita.
 
-6º: 
+6º: 🧾 Página de Cadastrar Produto
+
+A página Cadastrar Produto foi desenvolvida para ser intuitiva e prática, permitindo cadastrar novos produtos e também editar informações já existentes.
+
+Além disso, o usuário pode adicionar uma imagem para melhorar a identificação visual do produto.
+
+Por exemplo, ao cadastrar um produto como “Pizza”, a página oferece os seguintes campos:
+
+Campo	                                  Descrição
+Produto	                                Nome do produto (ex: Pizza)
+Quantidade	                            Quantidade em estoque (ex: 2)
+Valor do Produto	                      O sistema formata automaticamente o valor para a moeda nacional (R$)
+Desconto	                              Pode ser aplicado até 100%; se não houver desconto, deixe em branco ou insira 0
+Data do Cadastro/Compra	                O usuário escolhe a data desejada
+Código do Item	Gerado automaticamente; o botão ADICIONAR cria esse código
+Cliente	                                Deve estar cadastrado previamente no sistema
+Descrição do Produto	                  Campo livre para uma descrição breve e clara
+
+Após preencher todos os campos, basta clicar no botão ADICIONAR — o sistema realizará todos os cálculos automaticamente, garantindo praticidade e consistência nos registros.
+
+
+7º: 👤 Página de Cadastrar Usuários
+
+A página Cadastrar Usuários foi desenvolvida para ser simples, organizada e eficiente, facilitando o gerenciamento de dados cadastrais dos usuários do sistema.
+
+Ela permite cadastrar, editar e atualizar informações, além de carregar ou remover imagens de perfil para melhor visualização do usuário.
+
+Os principais campos disponíveis incluem:
+
+Campo	                        Descrição
+Nome completo	                Nome completo do usuário
+Nome de Usuário	              Utilizado para login no sistema
+Senha / Confirmar Senha	      Garantem segurança e autenticação
+CPF / RG / CEP	              Campos formatados automaticamente/ O sistema utiliza uma API de consulta de CEP para preencher automaticamente os campos de endereço, cidade, estado e bairro
+Endereço	                    Endereço completo do usuário
+E-mail	                      Contato e recuperação de acesso
+Data de Nascimento	          Informações pessoais adicionais
+Imagem do Usuário	            Opcional, pode ser carregada ou removida a qualquer momento
+
+A interface foi pensada para oferecer agilidade e praticidade, mantendo a consistência com o restante do sistema e reduzindo o tempo de preenchimento manual.
+
+8º: 🧑‍💼 Página de Clientes
+
+A página Clientes permite o cadastro e gerenciamento completo de clientes físicos e jurídicos, reunindo todas as informações essenciais em uma única interface.
+
+Ela conta com uma tabela detalhada, exibindo os principais dados de cada cliente de forma organizada e acessível.
+
+Entre as funcionalidades disponíveis estão:
+
+📝 Cadastro de clientes (pessoa física e jurídica)
+✏️ Edição e atualização de informações existentes
+🕓 Histórico completo de cada cliente, incluindo quem realizou o cadastro e quando foi feito
+📄 Geração de relatórios para análise e controle de clientes
+🔍 Pesquisa avançada, permitindo localizar rapidamente clientes ao digitar parte do nome, CNPJ ou CPF
+
+Essa página foi projetada para oferecer agilidade, clareza e eficiência no gerenciamento dos registros, tornando a navegação mais intuitiva e profissional.
+
+9: ⚡ Páginas Extras — Cadastro em Massa
+
+As páginas Cadastrar Cliente (Físico e Jurídico), Cadastrar Produtos em Massa e Cadastrar Usuários em Massa foram desenvolvidas para otimizar o processo de cadastro de grandes volumes de informações.
+
+Essas páginas permitem registrar vários clientes, produtos ou usuários de uma só vez, proporcionando mais agilidade e eficiência no gerenciamento dos dados.
+
+🔒 Atenção: essas funcionalidades estarão disponíveis somente para usuários com assinatura mensal ou anual do sistema.
+
+Para facilitar o uso, o sistema disponibiliza planilhas de exemplo, servindo como modelo para o preenchimento correto das informações antes da importação em massa.
+
+10º ⚙️ Página de Configurações
+
+A página Configurações foi criada para permitir que o usuário personalize o funcionamento e a aparência do sistema de acordo com suas preferências.
+
+Entre as principais opções disponíveis estão:
+
+🎨 Alteração de tema: escolha entre Modo Claro, Modo Escuro ou Modo Clássico
+🔠 Ajuste do tamanho dos botões para melhor usabilidade
+⌨️ Mapeamento de teclas personalizável, permitindo redefinir atalhos do sistema
+🔔 Ativar ou desativar notificações e mensagens informativas
+🔄 Ativar ou desativar atualizações automáticas (em desenvolvimento)
+
+⚠️ Observação: a opção de ativar/desativar atualizações ainda está em fase de desenvolvimento, pois envolve uma integração mais complexa.
+Estou trabalhando para aprimorar essa funcionalidade e garantir que seja implementada da melhor forma possível.
+
+
+
+
+
+
 
