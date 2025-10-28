@@ -1,25 +1,76 @@
-Fala pessoal, tudo bem?
+👋 Fala, pessoal! Tudo bem?
 
-Esse é meu terceiro projeto em Python, um projeto mais ambicioso e detalhado.
-Contém tudo e mais um pouco dos 2 projetos anteriores, espero que gostem. Abaixo detalharei um pouco mais sobre o que o projeto utiliza e quais suas melhorias.
+Este é o meu terceiro projeto em Python, um projeto mais ambicioso e detalhado, reunindo tudo — e um pouco mais — dos dois projetos anteriores.
+Espero que gostem! 👇
+Abaixo explico um pouco mais sobre as tecnologias utilizadas e as melhorias implementadas.
 
-Antes de mais nada, é bom lembrar que o projeto ainda está em fase de desenvolvimento..
-pois como o projeto é bem extenso e exige atenção e só eu estou trabalhando nele, então preciso de mais alguns meses para que o projeto possa ser finalizado.
+💡 Observação: o projeto está em fase final de desenvolvimento.
+Como ele é bastante extenso e estou trabalhando sozinho, ainda estou realizando os últimos ajustes e otimizações.
+A previsão é que até o final de 2025 o sistema esteja 100% finalizado e disponível para download.
 
-Lembrando também que possa ser que tenha "atualizações" e que essa versão não represente o produto final.
+Além disso, podem ocorrer atualizações e ajustes ao longo do tempo, portanto esta versão ainda não representa o produto final.
 
-1°: O projeto chama-se ERP em inglês Enterprise Resource Planning [Planejamento de Recursos Empresariais]. Pois quis fazer algo como um sistema de gerenciamento incremento tudo em um lugar só,
-como a ideia de cadastrar pessoas (essa ideia foi o principal conceito dos meus 2 projetos anteriores, aqui foi melhorado), e também de cadastrar produtos, já que o sistema utiliza também,
-a ideia dos projetos anteriores.
+1°: O Sistema de Gerenciamento foi desenvolvido com o objetivo de gerenciar pessoas e produtos, aprimorando o conceito central presente nos meus dois projetos anteriores.
+Nesta versão, o sistema foi melhorado e expandido, reunindo as melhores ideias e funcionalidades já testadas anteriormente, com foco em organização, praticidade e eficiência.
 
-2°: O projeto conta com uma variedade vasta de opções para o usuário manipular, como disse acima é possível cadastrar e gerir pessoas e produtos. Dependendo da intenção do usuário.
-Dentre as opções existe por exemplo a opção de poder controlar o histório de manipulação. Por exemplo tudo o que for feito no sistema considerado "importante" o sistema guarda isso, 
-em uma aba de Histórico, nela podendo ver a data/hora o usuário que fez a alteração, o que foi alterado e aonde foi alterado. Por exemplo o usuário exclui o produto X na data do dia XX/XX/XXXX.
-É interresante mencionar que dentro dessa aba há opções de criar PDF com todas as informações, criar arquivo CSV, importar arquivo CSV, pesquisar e filtrar por datas específicas e muito mais.
+2°: ⚙️ Funcionalidades do sistema
 
-3°: O sistema conta com páginas dedicadas somente ao usuário e aos produtos cadastrados. Sendo que cada uma conta com suas próprias opções. Claro que em algum momento vocês iram notar algo parecido, como por exemplo na página de Verificar Estoque, dentro dela há uma tabela com produtos cadastrado e que podem ser ou não excluído (a opção de excluir é relativamente permanente, irei falar sobre isso logo abaixo),o usuário que "excluir" um produto e se arrepender ou caso exclua de forma equivocada poderá estornar esse produto para que o mesmo possa entrar em estoque novamente.Lembrando que ao fazer a exclusão, o produto irá para a tabela abaixo chamada de "Sáida". Os produtos que forem movidos para lá ficam suspensos como se não estivessem mais no estoque. Porém continuam salvos dentro do banco de dados. Estará definido uma data média para exclusão permanente desses produtos de no mínimo 12 meses (1 ano).
+O projeto conta com uma ampla variedade de opções para o usuário manipular e gerenciar informações.
+Como mencionado anteriormente, é possível cadastrar e administrar pessoas e produtos, de acordo com a necessidade de uso.
 
-4°: A página de Verificar Estoque já está finalizada. Tendo todas  as suas funções de (Novo Produto, Atualizar Saída, Atualizar Estoque, Histórico, Gerar PDF, Limpar tabelas e Incluir produto no sistema). Lembrando que essa página permite o estorno dos produtos, ao contrário da página de Verificar Usuários que não possue essa opção.
+Entre as funcionalidades disponíveis, destaca-se o controle completo do histórico de ações.
+Tudo o que for considerado importante dentro do sistema é registrado automaticamente em uma aba de Histórico, onde o usuário pode visualizar:
 
-5º: A página de Verificar Usuários está em desenvolvimento, com quase todas as suas funções prontas. Suas funções são semelhantes as funções da página de Verificar Estoque. 
+📅 Data e hora da ação
+👤 Usuário responsável
+📝 O que foi alterado
+📍 Onde ocorreu a alteração
+
+Por exemplo: caso um usuário exclua o produto X no dia XX/XX/XXXX, essa ação será registrada e poderá ser consultada a qualquer momento.
+
+Além disso, dentro dessa aba o sistema oferece recursos adicionais, como:
+
+📄 Geração de relatórios em PDF
+📊 Exportação e importação de arquivos CSV
+🔍 Pesquisa e filtros por data específica
+➕ E muito mais!
+
+3°: 🧾 Páginas e gerenciamento de dados
+
+O sistema conta com páginas dedicadas exclusivamente aos usuários e aos produtos cadastrados, cada uma com suas próprias opções e funcionalidades.
+
+Em alguns momentos, você pode notar semelhanças entre as páginas, como na seção Verificar Estoque, onde há uma tabela com todos os produtos cadastrados.
+Nessa tela, é possível excluir produtos — lembrando que essa exclusão é relativamente permanente (explicado mais abaixo).
+
+Caso o usuário exclua um produto por engano ou se arrependa, ele poderá estornar o produto, retornando-o ao estoque normalmente.
+
+Ao realizar uma exclusão, o produto é movido para uma tabela inferior chamada “Saída”, onde permanece suspenso, como se não estivesse mais disponível no estoque.
+No entanto, os dados do produto continuam armazenados no banco de dados, garantindo a segurança das informações.
+
+Por fim, o sistema define uma data média de exclusão permanente desses produtos — um prazo mínimo de 12 meses (1 ano) — antes que sejam removidos definitivamente.
+
+4°: 📦 Página de Verificar Estoque
+
+A página Verificar Estoque já está completamente finalizada, contendo todas as suas principais funcionalidades:
+
+➕ Novo Produto
+🔄 Atualizar Saída
+📥 Atualizar Estoque
+🕓 Histórico de ações
+🧹 Limpar tabelas
+✅ Incluir produto no sistema
+
+Essa página também permite estornar produtos excluídos, possibilitando que retornem ao estoque caso o usuário tenha removido algo por engano.
+
+⚠️ Diferente da página Verificar Usuários, esta possui a opção de estorno, oferecendo mais flexibilidade no gerenciamento dos produtos.
+
+5º: 👥 Página de Verificar Usuários
+
+A página Verificar Usuários também está totalmente finalizada, com todas as suas funcionalidades prontas e operacionais.
+Suas funções são semelhantes às da página Verificar Estoque, garantindo uma experiência de uso consistente em todo o sistema.
+
+⚠️ Importante: nesta página não é possível realizar o “estorno” ou recuperar um usuário excluído.
+Portanto, recomenda-se atenção ao remover registros, já que essa ação é definitiva e não pode ser desfeita.
+
+6º: 
 
