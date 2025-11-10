@@ -20,9 +20,20 @@
   "workbench.startupEditor": "newUntitledFile",
   "workbench.editor.labelFormat": "short",
   "explorer.compactFolders": false,
-  "editor.semanticHighlighting.enabled": false
+  "editor.tokenColorCustomizations": {
+        "textMateRules": [
+            {
+                "scope": "variable.language.self",
+                "settings": {
+                    "foreground": "#FFA500", 
+                    "fontStyle": ""
+                }
+            }
+        ]
+    }
 
 }
+
 
 
 

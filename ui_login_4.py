@@ -222,7 +222,7 @@ class Ui_Mainwindow_Login(object):
         self.label_foto_sistema.setStyleSheet(u"border-radius: 45px;\n"
 "background: transparent;")
         self.label_foto_sistema.setFrameShape(QFrame.Box)
-        self.label_foto_sistema.setPixmap(QPixmap(u"../../../../Downloads/Imagem2.png"))
+        self.label_foto_sistema.setPixmap(QPixmap(u"imagens/Imagem2.png"))
         self.label_foto_sistema.setScaledContents(True)
         self.label_foto_sistema.setAlignment(Qt.AlignCenter)
         self.label_foto_sistema.setWordWrap(False)

@@ -7,3 +7,4 @@ openpyxl
 plyer
 qrcode
 pyotp
+pyupdater

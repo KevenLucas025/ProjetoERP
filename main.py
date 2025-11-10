@@ -1,7 +1,7 @@
 #*********************************************************************************************************************
 import re
 from PySide6.QtCore import (Qt, QTimer, QDate, QBuffer, QByteArray, QIODevice, Signal,
-                            QEvent,QPoint,QSize)
+                            QEvent,QPoint,QThread)
 from PySide6 import QtCore
 from PySide6.QtWidgets import (QMainWindow, QMessageBox, QPushButton,
                                QLabel, QFileDialog, QVBoxLayout,
@@ -45,7 +45,12 @@ from openpyxl.utils import get_column_letter
 from openpyxl.styles import Alignment
 from openpyxl import load_workbook
 import requests
+from packaging import version  # Para comparar versões
+import tempfile  # Para salvar o download
 import shutil
+
+VERSAO_ATUAL = "1.1.1"  # O arquivo versao.json precisa ser maior que essa para chegar a atualização
+
 
 
 class MainWindow(QMainWindow, Ui_MainWindow):
@@ -62,6 +67,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.usuario_tem_imagem_salva = False
         self.temas = Temas()
         self.atalhos = {}  # dicionário com os atalhos definidos
+        
+        
 
 
         self.table_base.verticalHeader().setFixedWidth(20)  # você pode ajustar o valor
@@ -193,8 +200,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # Iniciar a animação
         self.movie.start()
 
-     
-
 
         # Configuração do produto
         self.produto_original = {}
@@ -218,7 +223,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.btn_retroceder.setIcon(QIcon("imagens/seta esquerda 2.png"))  # Adicione o caminho do ícone de retroceder
         self.btn_retroceder.setGeometry(5, 5, 30, 30) 
         self.btn_retroceder.setToolTip("Retroceder") # Adiciona uma dica de ferramenta
-
+        
+        
+        '''self.update_thread = UpdateCheckThread(VERSAO_ATUAL)
+        self.update_thread.update_disponivel.connect(self.notificar_atualizacao)
+        self.update_thread.start()'''
 
         # Criar o menu dentro do botão btn_opcoes
         self.menu_opcoes = QMenu(self.btn_mais_opcoes)
@@ -380,7 +389,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.carregar_configuracoes()
         
-        
+        #self.pagina_configuracoes_atualizacao = UpdateCheckThread(VERSAO_ATUAL)
         
 
         self.pagina_usuarios = Pagina_Usuarios(self, self.btn_abrir_planilha_usuarios,self.btn_cadastrar_novo_usuario,
@@ -516,16 +525,54 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.pagina_configuracoes.aplicar_tema_claro()
         else:
             self.pagina_configuracoes.aplicar_tema_classico()
-        
             
-  
-    # Garante que sempre fique centralizado no topo
-    def reposicionar_pesquisa(self):
-        largura_janela = self.width()
-        largura_widget = self.widget_pesquisa.width()
-        x = (largura_janela - largura_widget) // 2
-        self.widget_pesquisa.move(x, 20)  # 20 px do topo
+        QTimer.singleShot(3000, self.verificar_atualizacao_automatica)
+
+    def verificar_atualizacao_automatica(self):
+        try:
+            url = "https://drive.google.com/uc?export=download&id=1giHyPwHx2LdD_tVQTfXcnJAuW9FDu3Nd"
+            response = requests.get(url, timeout=5)
+            dados = response.json()
+            versao_remota = dados.get("versao")
+            link_download = dados.get("url_download")
+
+            if version.parse(versao_remota) > version.parse(VERSAO_ATUAL):
+                from plyer import notification
+                notification.notify(
+                    title="Atualização disponível",
+                    message=f"Versão {versao_remota} disponível! Abra Configurações > Atualizações para baixar.",
+                    timeout=8
+                )
+        except:
+            pass
         
+    def baixar_arquivo(self, url, destino):
+        response = requests.get(url, stream=True)
+        total = int(response.headers.get('content-length', 0))
+
+        progresso = QProgressDialog("Baixando atualização...", "Cancelar", 0, total, self.janela_config)
+        progresso.setWindowTitle("Atualização")
+        progresso.setWindowModality(Qt.WindowModal)
+        progresso.show()
+
+        with open(destino, 'wb') as arquivo:
+            baixado = 0
+            for chunk in response.iter_content(chunk_size=8192):
+                if progresso.wasCanceled():
+                    response.close()
+                    os.remove(destino)
+                    return None
+                if chunk:
+                    arquivo.write(chunk)
+                    baixado += len(chunk)
+                    progresso.setValue(baixado)
+                    QApplication.processEvents()
+
+        progresso.setValue(total)
+        return destino
+
+            
+    
         
     def carregar_config_padrao(self):
         return {
@@ -1523,7 +1570,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         elif acao == "Abrir Página Inicial":
             shortcut.activated.connect(self.ir_pagina_inicial)
 
-
+     # Garante que sempre fique centralizado no topo
+    def reposicionar_pesquisa(self):
+        largura_janela = self.width()
+        largura_widget = self.widget_pesquisa.width()
+        x = (largura_janela - largura_widget) // 2
+        self.widget_pesquisa.move(x, 20)  # 20 px do topo
 
 
     def abrir_pesquisa(self):
@@ -2060,13 +2112,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # Junta todos os resultados
         clientes_encontrados = clientes_fisicos + clientes_juridicos
 
-
         if not clientes_encontrados:
             QMessageBox.warning(
-                None,"Cliente não Encontrado",
-                f"O cliente {produto_info["cliente"]} precisa estar cadastrado antes de adicionar um produto"
+                None,
+                "Cliente não Encontrado",
+                f"O cliente {produto_info['cliente']} precisa estar cadastrado antes de adicionar um produto"
             )
             return
+
         
         # Se houver mais de um cliente com o mesmo nome, perguntar por qual seguir
         if len(clientes_encontrados) > 1:

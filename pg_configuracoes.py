@@ -3,7 +3,7 @@ from PySide6.QtWidgets import (QWidget,QMenu, QVBoxLayout,
                                QToolButton,QMainWindow,QPushButton,QLabel,
                                QLineEdit,QTableWidget,QTextEdit,QAbstractItemView,
                                QStyledItemDelegate,QStyleOptionViewItem,QTableWidgetItem,QAbstractScrollArea,QScrollArea)
-from PySide6.QtCore import Qt, QTimer,QRect
+from PySide6.QtCore import Qt, QTimer,QRect,QThread,Signal
 from PySide6.QtGui import (QIcon,QKeySequence,QColor,
                            QTextDocument,QPainter,QFontMetrics,QTextCursor,QTextCharFormat,QPalette)
 import os
@@ -13,11 +13,18 @@ import sys
 from configuracoes import Configuracoes_Login
 from dialogos import ComboDialog,DialogoEstilizado
 from mane_python import Ui_MainWindow
+from packaging import version
 import subprocess
 from html import escape
 from utils import Temas
 import re
 import string
+import tempfile
+import requests
+from pathlib import Path
+import shutil
+import webbrowser
+
 
 
 class Pagina_Configuracoes(QWidget):
@@ -63,6 +70,8 @@ class Pagina_Configuracoes(QWidget):
         self.frame_valor_do_desconto = frame_valor_do_desconto
         self.frame_valor_desconto = frame_valor_desconto
         self.frame_quantidade = frame_quantidade
+        
+        
 
         # Criar a janela de configurações
         self.janela_config = QMainWindow()
@@ -1754,7 +1763,7 @@ class Pagina_Configuracoes(QWidget):
         menu_atualizacoes = QMenu(self.janela_config)
         menu_atualizacoes.addAction("Definir atualizações automaticamente")
         menu_atualizacoes.addAction("Não definir atualizações automáticas")
-        menu_atualizacoes.addAction("Verificar se há atualizações")
+        menu_atualizacoes.addAction("Verificar se há atualizações",self.verificar_atualizacoes)
         menu_atualizacoes.addAction("Exibir histórico de atualizações")
         btn_atualizacoes.setMenu(menu_atualizacoes)
         self.layout.addWidget(btn_atualizacoes)
@@ -1811,6 +1820,43 @@ class Pagina_Configuracoes(QWidget):
 
         # Mostrar janela
         self.janela_config.show()
+        
+    def verificar_atualizacoes(self):
+        try:
+            url = "https://drive.google.com/uc?export=download&id=1giHyPwHx2LdD_tVQTfXcnJAuW9FDu3Nd"
+
+            response = requests.get(url, timeout=5)
+            if response.status_code != 200:
+                QMessageBox.warning(self.janela_config, "Erro", "Não foi possível verificar atualizações.")
+                return
+
+            dados = response.json()
+            versao_remota = dados.get("versao")
+            link_download = dados.get("url_download")
+
+            from main import VERSAO_ATUAL
+            if version.parse(versao_remota) > version.parse(VERSAO_ATUAL):
+                resposta = QMessageBox.question(
+                    self.janela_config,
+                    "Atualização disponível",
+                    f"Uma nova versão ({versao_remota}) está disponível!\n\nDeseja baixar agora?",
+                    QMessageBox.Yes | QMessageBox.No
+                )
+                if resposta == QMessageBox.Yes:
+                    destino = os.path.join(os.getenv('USERPROFILE'), 'Desktop', 'SistemadeGerenciamento_Novo.exe')
+                    arquivo_baixado = self.baixar_arquivo(link_download, destino)
+
+                if arquivo_baixado:
+                    QMessageBox.information(self.janela_config, "Atualização", "Download concluído!\nO instalador foi salvo na sua área de trabalho.")
+
+            else:
+                QMessageBox.information(self.janela_config, "Atualizações", "Você já está na versão mais recente.")
+        except Exception as e:
+            QMessageBox.warning(self.janela_config, "Erro", f"Falha ao verificar atualizações:\n{e}")
+
+            
+  
+
 
     def definir_todas_as_notificacoes(self):
         # Ativa todas as notificações
@@ -2819,7 +2865,6 @@ class TeclaLineEdit(QLineEdit):
 
 
 
-            
 
 
             
