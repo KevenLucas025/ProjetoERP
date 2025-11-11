@@ -1507,7 +1507,7 @@ class TabelaProdutos(QMainWindow):
         return label_imagem
     
     def carregar_tabela_produtos(self):
-        with sqlite3.connect('banco_de_dados.db') as cn:
+        with self.db.connection as cn:
             cursor = cn.cursor()
             cursor.execute('SELECT id, Produto, Quantidade, Valor_Real, Desconto, "Valor Total", "Data do Cadastro", '
                         'Código_Item, Cliente, Descrição_Produto, "Usuário" '

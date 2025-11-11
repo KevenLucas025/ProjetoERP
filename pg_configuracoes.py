@@ -1843,16 +1843,24 @@ class Pagina_Configuracoes(QWidget):
                     QMessageBox.Yes | QMessageBox.No
                 )
                 if resposta == QMessageBox.Yes:
-                    destino = os.path.join(os.getenv('USERPROFILE'), 'Desktop', 'SistemadeGerenciamento_Novo.exe')
-                    arquivo_baixado = self.baixar_arquivo(link_download, destino)
+                    # Baixa como temporário para não bloquear o exe em uso
+                    destino_temp = os.path.join(os.getenv('USERPROFILE'), 'Desktop', 'SistemadeGerenciamento_tmp.exe')
+                    arquivo_baixado = self.baixar_arquivo(link_download, destino_temp)
 
-                if arquivo_baixado:
-                    QMessageBox.information(self.janela_config, "Atualização", "Download concluído!\nO instalador foi salvo na sua área de trabalho.")
+                    if arquivo_baixado:
+                        QMessageBox.information(
+                            self.janela_config,
+                            "Atualização",
+                            "Download concluído!\n"
+                            "Feche o sistema para que a atualização substitua o executável antigo.\n"
+                            "Após fechar, execute o arquivo baixado que terá o mesmo nome do sistema."
+                        )
 
             else:
                 QMessageBox.information(self.janela_config, "Atualizações", "Você já está na versão mais recente.")
         except Exception as e:
             QMessageBox.warning(self.janela_config, "Erro", f"Falha ao verificar atualizações:\n{e}")
+
 
             
   

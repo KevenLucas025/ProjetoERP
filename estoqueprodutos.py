@@ -85,7 +85,7 @@ class EstoqueProduto(QWidget):
 
     def tabela_estoque(self):
         # Conectando ao banco de dados SQLite
-        cn = sqlite3.connect("banco_de_dados.db")
+        cn = self.db.connection
         
         # Carregar dados da tabela "products" usando pandas
         query = """
@@ -133,7 +133,7 @@ class EstoqueProduto(QWidget):
         if produtos_selecionados:
             mensagem = "Tem certeza de que deseja gerar a saída do produto selecionado?"
 
-            caixa_dialogo = QMessageBox()
+            caixa_dialogo = QMessageBox(self)
             caixa_dialogo.setWindowTitle("Confirmar Saída")
             caixa_dialogo.setText(mensagem)
             caixa_dialogo.setIcon(QMessageBox.Question)
@@ -282,7 +282,7 @@ class EstoqueProduto(QWidget):
             self.main_window.registrar_historico("Gerado Saída", texto)
 
         if produtos_saida:
-            msg_box = QMessageBox()
+            msg_box = QMessageBox(self)
             msg_box.setIcon(QMessageBox.Information)
             msg_box.setWindowTitle("Aviso")
             msg_box.setText("Saída do(s) produto(s) gerada com sucesso!")
@@ -342,7 +342,7 @@ class EstoqueProduto(QWidget):
 
     # Função para recuperar imagem de um produto com base no código do produto
     def recuperar_imagem_produto_bd_products(self, codigo_produto):
-        conexao = sqlite3.connect('banco_de_dados.db')
+        conexao = self.db.connection
         cursor = conexao.cursor()
         cursor.execute("SELECT Imagem FROM products WHERE Código_Item = ?", (codigo_produto,))
         
@@ -363,7 +363,7 @@ class EstoqueProduto(QWidget):
         row_count = self.main_window.table_saida.rowCount()
 
         if row_count == 0:
-            msg_box = QMessageBox()
+            msg_box = QMessageBox(self)
             msg_box.setIcon(QMessageBox.Warning)
             msg_box.setWindowTitle("ERRO")
             msg_box.setText("Não há nenhum dado disponível na tabela para gerar estorno!")
@@ -427,7 +427,7 @@ class EstoqueProduto(QWidget):
             imagem = self.recuperar_imagem_produto_bd_products_saida(codigo_produto)
 
             # Atualiza ou insere no banco
-            with sqlite3.connect("banco_de_dados.db") as cn:
+            with self.db.connection as cn:
                 cursor = cn.cursor()
 
                 # Verifica se o produto já existe
@@ -509,7 +509,7 @@ class EstoqueProduto(QWidget):
         self.main_window.table_saida.setRowCount(0)
 
         # Mensagem de sucesso
-        msg_box = QMessageBox()
+        msg_box = QMessageBox(self)
         msg_box.setIcon(QMessageBox.Information)
         msg_box.setWindowTitle("Sucesso")
         msg_box.setText("Estorno realizado com sucesso.")
@@ -519,7 +519,7 @@ class EstoqueProduto(QWidget):
     # Função para recuperar a imagem do produto pelo código (recupera a imagem do banco de dados)
     def recuperar_imagem_produto_bd_products_saida(self, codigo_produto):
         try:
-            with sqlite3.connect('banco_de_dados.db') as conexao:
+            with self.db.connection as conexao:
                 cursor = conexao.cursor()
                 # Corrigir se necessário o nome da coluna
                 cursor.execute("SELECT Imagem FROM products_saida WHERE `Código do Produto` = ?", (codigo_produto,))
@@ -569,7 +569,7 @@ class EstoqueProduto(QWidget):
                 print("Nenhum produto para adicionar.")
 
             # Exibir uma mensagem de sucesso
-            msg_box = QMessageBox()
+            msg_box = QMessageBox(self)
             msg_box.setIcon(QMessageBox.Information)
             msg_box.setWindowTitle("Informação")
             msg_box.setText("Tabela estoque atualizada com sucesso!")       
@@ -578,7 +578,7 @@ class EstoqueProduto(QWidget):
         except Exception as e:
             print(f"Erro ao atualizar a tabela de estoque: {e}")
 
-            msg_box = QMessageBox()
+            msg_box = QMessageBox(self)
             msg_box.setIcon(QMessageBox.Information)
             msg_box.setWindowTitle("Erro")
             msg_box.setText("Erro ao atualizar a tabela de estoque")       
@@ -635,7 +635,7 @@ class EstoqueProduto(QWidget):
                         item = self.criar_item(str(value))
                         self.table_saida.setItem(row_position, column, item)
                         
-            msg_box = QMessageBox()
+            msg_box = QMessageBox(self)
             msg_box.setIcon(QMessageBox.Information)
             msg_box.setWindowTitle("Informação")
             msg_box.setText("Tabela saída atualizada com sucesso!")       
@@ -650,7 +650,7 @@ class EstoqueProduto(QWidget):
     def limpar_tabela(self):
         # Verifica se as tabelas estão vazias
         if self.table_base.rowCount() == 0 and self.table_saida.rowCount() == 0:
-            msg = QMessageBox()
+            msg = QMessageBox(self)
             msg.setIcon(QMessageBox.Warning)
             msg.setWindowTitle("Aviso")
             msg.setText("As tabelas já estão vazias.")
@@ -666,7 +666,7 @@ class EstoqueProduto(QWidget):
         self.reaplicar_formatacao_tabela(self.table_saida)
 
         # Mensagem de confirmação após a limpeza
-        msg = QMessageBox()
+        msg = QMessageBox(self)
         msg.setIcon(QMessageBox.Information)
         msg.setWindowTitle("Limpeza Concluída")
         msg.setText("As tabelas foram limpas com sucesso.")
@@ -732,14 +732,14 @@ class EstoqueProduto(QWidget):
             c.save()
 
             # Mensagem de sucesso
-            msg = QMessageBox()
+            msg = QMessageBox(self)
             msg.setIcon(QMessageBox.Information)
             msg.setWindowTitle("PDF Gerado")
             msg.setText("O PDF foi gerado com sucesso!")
             msg.exec()
 
         except Exception as e:
-            msg = QMessageBox()
+            msg = QMessageBox(self)
             msg.setIcon(QMessageBox.Critical)
             msg.setWindowTitle("Erro")
             msg.setText(f"Erro ao gerar PDF: {str(e)}")
@@ -1383,7 +1383,7 @@ class EstoqueProduto(QWidget):
     
 
     def carregar_historico(self):
-        with sqlite3.connect('banco_de_dados.db') as cn:
+        with self.db.connection as cn:
             cursor = cn.cursor()
             cursor.execute('SELECT * FROM historico ORDER BY "Data e Hora" DESC')
             registros = cursor.fetchall()
@@ -1408,14 +1408,14 @@ class EstoqueProduto(QWidget):
 
 
     def atualizar_historico(self):
-        QMessageBox.information(None, "Sucesso", "Dados carregados com sucesso!")
+        QMessageBox.information(self, "Sucesso", "Dados carregados com sucesso!")
         self.carregar_historico()
 
     def confirmar_historico_apagado(self, mensagem):
         """
         Exibe uma caixa de diálogo para confirmar a exclusão.
         """
-        msgbox = QMessageBox()
+        msgbox = QMessageBox(self)
         msgbox.setWindowTitle("Confirmação")
         msgbox.setText(mensagem)
 
@@ -1441,7 +1441,7 @@ class EstoqueProduto(QWidget):
                     linhas_para_remover.append(row)
                     coluna_data_hora = self.obter_indice_coluna_produtos("data/hora")
                     if coluna_data_hora == -1:
-                        QMessageBox.warning(None, "Erro", "A coluna 'Data e Hora' não foi encontrada!")
+                        QMessageBox.warning(self, "Erro", "A coluna 'Data e Hora' não foi encontrada!")
                         return
                     item_data_widget = self.tabela_historico.item(row, coluna_data_hora)  # Coluna de Data/Hora
                     if item_data_widget:
@@ -1455,7 +1455,7 @@ class EstoqueProduto(QWidget):
                         print(f"Erro ao capturar Data/Hora na linha {row}")
 
             if not ids_para_remover:
-                QMessageBox.warning(None, "Erro", "Nenhum item válido foi selecionado para apagar!")
+                QMessageBox.warning(self, "Erro", "Nenhum item válido foi selecionado para apagar!")
                 return
 
             # Confirmar exclusão
@@ -1469,44 +1469,44 @@ class EstoqueProduto(QWidget):
                 return
 
             # Excluir do banco de dados
-            with sqlite3.connect('banco_de_dados.db') as cn:
+            with self.db.connection as cn:
                 cursor = cn.cursor()
                 try:
                     for data_hora in ids_para_remover:
                         cursor.execute('DELETE FROM historico WHERE "Data e Hora" = ?', (data_hora,))
                     cn.commit()
                 except Exception as e:
-                    QMessageBox.critical(None, "Erro", f"Erro ao excluir do banco de dados: {e}")
+                    QMessageBox.critical(self, "Erro", f"Erro ao excluir do banco de dados: {e}")
                     return
 
             # Remover as linhas na interface
             for row in sorted(linhas_para_remover, reverse=True):
                 self.tabela_historico.removeRow(row)
 
-            QMessageBox.information(None, "Sucesso", "Itens removidos com sucesso!")
+            QMessageBox.information(self, "Sucesso", "Itens removidos com sucesso!")
 
         # Caso sem checkboxes (seleção manual)
         else:
             linha_selecionada = self.tabela_historico.currentRow()
 
             if linha_selecionada < 0:
-                QMessageBox.warning(None, "Erro", "Nenhum item foi selecionado para apagar!")
+                QMessageBox.warning(self, "Erro", "Nenhum item foi selecionado para apagar!")
                 return
 
             # Capturar a Data/Hora da célula correspondente (coluna 0)
             coluna_data_hora = self.obter_indice_coluna_produtos("data/hora")
             if coluna_data_hora == -1: 
-                QMessageBox.warning(None, "Erro", "A coluna 'Data e Hora' não foi encontrada!")
+                QMessageBox.warning(self, "Erro", "A coluna 'Data e Hora' não foi encontrada!")
 
             item_data_widget = self.tabela_historico.item(linha_selecionada, coluna_data_hora)  # Coluna de Data/Hora
             if not item_data_widget:
-                QMessageBox.warning(None, "Erro", "Não foi possível identificar a Data/Hora do item a ser apagado!")
+                QMessageBox.warning(self, "Erro", "Não foi possível identificar a Data/Hora do item a ser apagado!")
                 return
 
             item_data_text = item_data_widget.text().strip()
 
             # Conectar ao banco de dados para buscar o ID relacionado à Data/Hora
-            with sqlite3.connect('banco_de_dados.db') as cn:
+            with self.db.connection as cn:
                 cursor = cn.cursor()
                 try:
                     # Buscar o ID com base na Data/Hora, removendo espaços ou caracteres extras
@@ -1516,11 +1516,11 @@ class EstoqueProduto(QWidget):
                     if item_data_text:
                         item_id = resultado[0]  # Pegamos o ID encontrado
                     else:
-                        QMessageBox.warning(None, "Erro", f"Não foi encontrado um item para a Data/Hora: {item_data_text}")
+                        QMessageBox.warning(self, "Erro", f"Não foi encontrado um item para a Data/Hora: {item_data_text}")
                         return
 
                 except Exception as e:
-                    QMessageBox.critical(None, "Erro", f"Erro ao buscar ID: {e}")
+                    QMessageBox.critical(self, "Erro", f"Erro ao buscar ID: {e}")
                     return
 
             # Confirmar exclusão
@@ -1530,20 +1530,20 @@ class EstoqueProduto(QWidget):
                 return
 
             # Excluir do banco de dados
-            with sqlite3.connect('banco_de_dados.db') as cn:
+            with self.db.connection as cn:
                 cursor = cn.cursor()
                 try:
                     cursor.execute('DELETE FROM historico WHERE "Data e Hora" = ?', (item_id,))
                     print(f"Item removido do banco de dados: ID {item_id}")
                     cn.commit()
                 except Exception as e:
-                    QMessageBox.critical(None, "Erro", f"Erro ao excluir do banco de dados: {e}")
+                    QMessageBox.critical(self, "Erro", f"Erro ao excluir do banco de dados: {e}")
                     return
 
             # Remover a linha da interface
             self.tabela_historico.removeRow(linha_selecionada)
 
-            QMessageBox.information(None, "Sucesso", "Item removido com sucesso!")
+            QMessageBox.information(self, "Sucesso", "Item removido com sucesso!")
 
     def obter_indice_coluna_produtos(self, nome_coluna):
         for col in range(self.tabela_historico.columnCount()):
@@ -1554,7 +1554,7 @@ class EstoqueProduto(QWidget):
     
     def selecionar_todos(self):
         if not self.coluna_checkboxes_adicionada:
-            QMessageBox.warning(None, "Aviso", "Ative a opção 'Selecionar Individualmente' antes.")
+            QMessageBox.warning(self, "Aviso", "Ative a opção 'Selecionar Individualmente' antes.")
             if hasattr(self, "checkbox_header"):
                 self.checkbox_header.setChecked(False)
             return
@@ -1576,7 +1576,7 @@ class EstoqueProduto(QWidget):
      # Função para adicionar checkboxes selecionar_individual na tabela de histórico
     def selecionar_individual(self):
         if self.tabela_historico.rowCount() == 0:
-            QMessageBox.warning(None, "Aviso", "Nenhum histórico para selecionar.")
+            QMessageBox.warning(self, "Aviso", "Nenhum histórico para selecionar.")
             self.checkbox_selecionar_individual.setChecked(False)
             return
 
@@ -1732,7 +1732,7 @@ class EstoqueProduto(QWidget):
         
         # Verificar se a coluna escolhida é válida
         if coluna not in colunas_para_indices:
-            QMessageBox.warning(None, "Erro", "Coluna inválida para ordenação!")
+            QMessageBox.warning(self, "Erro", "Coluna inválida para ordenação!")
             return
         
         # Obter o índice da coluna escolhida
@@ -1968,7 +1968,7 @@ class EstoqueProduto(QWidget):
         # Verificar se há caracteres alfabéticos (letras)
         if any(char.isalpha() for char in texto_data):
             # Mostrar mensagem de erro caso haja letras
-            QMessageBox.warning(None, "Erro", "Somente números são permitidos.")
+            QMessageBox.warning(self, "Erro", "Somente números são permitidos.")
             campo_data.clear()
             return  # Não aplica a formatação se houver letras
 
@@ -1991,7 +1991,7 @@ class EstoqueProduto(QWidget):
 
 
     def aplicar_filtro(self, data, filtrar_novo, filtrar_velho):
-        with sqlite3.connect('banco_de_dados.db') as cn:
+        with self.db.connection as cn:
             cursor = cn.cursor()
 
             query = "SELECT * FROM historico"
@@ -2005,7 +2005,7 @@ class EstoqueProduto(QWidget):
                     query += " WHERE SUBSTR([Data e Hora], 1, 10) = ?"
                     params.append(data_formatada)
                 except ValueError:
-                    QMessageBox.warning(None, "Erro", "Data inválida. Use o formato DD/MM/AAAA.")
+                    QMessageBox.warning(self, "Erro", "Data inválida. Use o formato DD/MM/AAAA.")
                     return
 
             # Ordenar por hora, se aplicável
@@ -2028,7 +2028,7 @@ class EstoqueProduto(QWidget):
             self.tabela_historico.setItem(i, 2, QTableWidgetItem(row[2]))  # Ação
             self.tabela_historico.setItem(i, 3, QTableWidgetItem(row[3]))  # Descrição
 
-        QMessageBox.information(None, "Filtro Aplicado", f"{len(registros)} registro(s) encontrado(s)!")
+        QMessageBox.information(self, "Filtro Aplicado", f"{len(registros)} registro(s) encontrado(s)!")
 
     def exportar_csv(self):
         num_linhas = self.tabela_historico.rowCount()
@@ -2036,7 +2036,7 @@ class EstoqueProduto(QWidget):
 
         # Verificar se a tabela está vazia
         if self.tabela_historico.rowCount() == 0:
-            QMessageBox.warning(None, "Aviso", "Nenhum histórico encontrado para gerar arquivo CSV.")
+            QMessageBox.warning(self, "Aviso", "Nenhum histórico encontrado para gerar arquivo CSV.")
             return  # Se a tabela estiver vazia, encerra a função sem prosseguir
 
         nome_arquivo, _ = QFileDialog.getSaveFileName(
@@ -2068,10 +2068,10 @@ class EstoqueProduto(QWidget):
                     ]
                     escritor.writerow(dados_linhas)
 
-                    QMessageBox.information(None, "Sucesso", f"Arquivo CSV salvo com sucesso em:\n{nome_arquivo}")
+                    QMessageBox.information(self, "Sucesso", f"Arquivo CSV salvo com sucesso em:\n{nome_arquivo}")
 
         except Exception as e:
-            QMessageBox.critical(None, "Erro", f"Falha ao salvar o arquivo CSV:\n{str(e)}")
+            QMessageBox.critical(self, "Erro", f"Falha ao salvar o arquivo CSV:\n{str(e)}")
 
 
     def exportar_excel(self):
@@ -2120,9 +2120,9 @@ class EstoqueProduto(QWidget):
 
             # Exportar para Excel
             df.to_excel(nome_arquivo, index=False,engine="openpyxl")
-            QMessageBox.information(None, "Sucesso",f"Arquivo Excel gerado com sucesso em: \n{nome_arquivo}")
+            QMessageBox.information(self, "Sucesso",f"Arquivo Excel gerado com sucesso em: \n{nome_arquivo}")
         except Exception as e:
-            QMessageBox.critical(None, "Erro",f"Erro ao salvar arquivo Excel: {str(e)}")
+            QMessageBox.critical(self, "Erro",f"Erro ao salvar arquivo Excel: {str(e)}")
 
 
 
@@ -2132,7 +2132,7 @@ class EstoqueProduto(QWidget):
 
         # Verificar se a tabela está vazia
         if self.tabela_historico.rowCount() == 0:
-            QMessageBox.warning(None, "Aviso", "Nenhum histórico encontrado para gerar arquivo PDF.")
+            QMessageBox.warning(self, "Aviso", "Nenhum histórico encontrado para gerar arquivo PDF.")
             return  # Se a tabela estiver vazia, encerra a função sem prosseguir
 
         nome_arquivo, _ = QFileDialog.getSaveFileName(
@@ -2183,10 +2183,10 @@ class EstoqueProduto(QWidget):
 
             # Gerar o PDF
             pdf.build([tabela])
-            QMessageBox.information(None, "Sucesso", f"Arquivo PDF gerado com sucesso em: \n{nome_arquivo}")
+            QMessageBox.information(self, "Sucesso", f"Arquivo PDF gerado com sucesso em: \n{nome_arquivo}")
 
         except Exception as e:
-            QMessageBox.critical(None, "Erro", f"Erro ao salvar arquivo PDF: {str(e)}")
+            QMessageBox.critical(self, "Erro", f"Erro ao salvar arquivo PDF: {str(e)}")
 
     def pausar_historico_produtos(self):
         dialog = ConfirmacaoDialog("Pausar Histórico", "Deseja pausar o histórico?")
@@ -2200,19 +2200,19 @@ class EstoqueProduto(QWidget):
     def historico_ativo(self):
         # Atualiza o estado do histórico para ativo
         self.main_window.historico_pausado = True  # Atualiza a variável no MainWindow
-        QMessageBox.information(None, "Histórico", "O registro do histórico foi pausado.")
+        QMessageBox.information(self, "Histórico", "O registro do histórico foi pausado.")
         
 
     def historico_inativo(self):
         # Atualiza o estado do histórico para inativo (continua registrando)
         self.main_window.historico_pausado = False  # Atualiza a variável no MainWindow
-        QMessageBox.information(None, "Histórico", "O registro do histórico continua ativo.")
+        QMessageBox.information(self, "Histórico", "O registro do histórico continua ativo.")
         
 
 
     def abrir_planilha(self):
         # Abrir o diálogo para selecionar o arquivo Excel
-        nome_arquivo, _ = QFileDialog.getOpenFileName(None, "Abrir Arquivo Excel", "", "Arquivos Excel (*.xlsx)")
+        nome_arquivo, _ = QFileDialog.getOpenFileName(self, "Abrir Arquivo Excel", "", "Arquivos Excel (*.xlsx)")
 
         if not nome_arquivo:
             return  # Se o usuário cancelar a seleção do arquivo
@@ -2247,7 +2247,7 @@ class EstoqueProduto(QWidget):
                                     "Código do Item", "Cliente", "Descrição do Produto", "Usuário","Status da Saída"]
 
                 if df.shape[1] != len(colunas_table_base):
-                    QMessageBox.warning(None, "Erro", "O número de colunas no arquivo Excel não corresponde ao número esperado.")
+                    QMessageBox.warning(self, "Erro", "O número de colunas no arquivo Excel não corresponde ao número esperado.")
                     self.line_excel.clear()
                     # Zerando a barra de progresso
                     self.progress_excel.setValue(0)
@@ -2255,7 +2255,7 @@ class EstoqueProduto(QWidget):
                     return
 
                 if df.shape[0] == 0:
-                    QMessageBox.warning(None, "Erro", "O arquivo Excel está vazio.")
+                    QMessageBox.warning(self, "Erro", "O arquivo Excel está vazio.")
                     self.line_excel.clear()
                     # Zerando a barra de progresso
                     self.progress_excel.setValue(0)
@@ -2287,10 +2287,10 @@ class EstoqueProduto(QWidget):
                         item = self.criar_item(str(value))
                         self.table_base.setItem(row_position, column, item)
 
-                QMessageBox.information(None, "Sucesso", "Arquivo Excel importado com sucesso!")
+                QMessageBox.information(self, "Sucesso", "Arquivo Excel importado com sucesso!")
 
             except Exception as e:
-                QMessageBox.critical(None, "Erro", f"Erro ao importar o arquivo Excel: {e}")
+                QMessageBox.critical(self, "Erro", f"Erro ao importar o arquivo Excel: {e}")
 
             # Quando o arquivo for carregado, atualizar o texto da line_excel com o caminho do arquivo
             self.line_excel.setText(self.nome_arquivo_excel)
@@ -2302,7 +2302,7 @@ class EstoqueProduto(QWidget):
     def importar_produto(self):
         # Verificar se a tabela está vazia
         if self.table_base.rowCount() == 0 and self.table_saida.rowCount() == 0:
-            QMessageBox.warning(None, "Aviso", "Nenhum dado encontrado para gerar arquivo Excel.")
+            QMessageBox.warning(self, "Aviso", "Nenhum dado encontrado para gerar arquivo Excel.")
             return  # Se a tabela estiver vazia, encerra a função sem prosseguir
         
         nome_arquivo, _ = QFileDialog.getSaveFileName(
@@ -2343,10 +2343,10 @@ class EstoqueProduto(QWidget):
                     df_estoque = tabela_para_dataframe(self.table_saida)
                     df_estoque.to_excel(writer, sheet_name="Saída", index=False)
         
-            QMessageBox.information(None, "Sucesso", f"Arquivo Excel gerado com sucesso em:\n{nome_arquivo}")
+            QMessageBox.information(self, "Sucesso", f"Arquivo Excel gerado com sucesso em:\n{nome_arquivo}")
         
         except Exception as e:
-            QMessageBox.critical(None, "Erro", f"Erro ao salvar arquivo Excel: {str(e)}")
+            QMessageBox.critical(self, "Erro", f"Erro ao salvar arquivo Excel: {str(e)}")
 
 
     
@@ -2354,15 +2354,15 @@ class EstoqueProduto(QWidget):
         selected_rows = self.main_window.table_base.selectionModel().selectedRows()
 
         if not hasattr(self, 'nome_arquivo_excel') or not self.nome_arquivo_excel:
-            QMessageBox.warning(None, "Aviso", "Você precisa carregar uma planilha antes de cadastrar os produtos no sistema.")
+            QMessageBox.warning(self, "Aviso", "Você precisa carregar uma planilha antes de cadastrar os produtos no sistema.")
             return
 
         if not selected_rows:
-            QMessageBox.critical(None, "Aviso", "Nenhum produto selecionado para gerar saída!")
+            QMessageBox.critical(self, "Aviso", "Nenhum produto selecionado para gerar saída!")
             return False
 
         try:
-            conn = sqlite3.connect("banco_de_dados.db")
+            conn = self.db.connection
             cursor = conn.cursor()
 
             for model_index in selected_rows:
@@ -2392,7 +2392,7 @@ class EstoqueProduto(QWidget):
 
             conn.commit()
             conn.close()
-            QMessageBox.information(None, "Sucesso", "Produto(s) incluído(s) com sucesso no sistema.")
+            QMessageBox.information(self, "Sucesso", "Produto(s) incluído(s) com sucesso no sistema.")
 
             # Registrar histórico
             descricao = f"Produto '{produto}' foi incluído no sistema."
@@ -2400,7 +2400,7 @@ class EstoqueProduto(QWidget):
 
 
         except Exception as e:
-            QMessageBox.critical(None, "Erro", f"Erro ao incluir o produto no sistema:\n{e}")
+            QMessageBox.critical(self, "Erro", f"Erro ao incluir o produto no sistema:\n{e}")
 
 
 

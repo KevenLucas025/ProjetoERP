@@ -100,8 +100,8 @@ class Clientes_Fisicos(QWidget):
         if not texto:
             return self._listar_todos_clientes()
 
-        with sqlite3.connect('banco_de_dados.db') as conn:
-            cursor = conn.cursor()
+        try:
+            cursor = self.db.connection.cursor()
             cursor.execute("""
                 SELECT  
                     "Nome do Cliente",
@@ -135,10 +135,12 @@ class Clientes_Fisicos(QWidget):
                     Telefone LIKE ?
             """, (f'%{texto}%', f'%{texto}%', f'%{texto}%', f'%{texto}%'))
             return cursor.fetchall()
+        except Exception as e:
+            print("Erro ao buscar clientes físicos:", e)
+            return []
 
     def _listar_todos_clientes(self):
-        with sqlite3.connect('banco_de_dados.db') as conn:
-            cursor = conn.cursor()
+            cursor =  self.db.connection.cursor()
             cursor.execute("""
                 SELECT  
                     "Nome do Cliente",
@@ -227,63 +229,61 @@ class Clientes_Fisicos(QWidget):
     
     def carregar_clientes_fisicos(self):
         try:
-            with self.db.connecta() as conexao:
-                cursor = conexao.cursor()
+            cursor = self.db.connection.cursor()  # pega o cursor da conexão existente
+            cursor.execute("""
+                SELECT 
+                    "Nome do Cliente",
+                    "Data da Inclusão",
+                    RG,      
+                    CPF, 
+                    Email,
+                    CNH,
+                    "Categoria da CNH",
+                    "Data de Emissão da CNH",
+                    "Data de Vencimento da CNH",
+                    Telefone, 
+                    CEP, 
+                    Endereço, 
+                    Número,
+                    Complemento,
+                    Cidade, 
+                    Bairro,
+                    Estado,
+                    "Status do Cliente", 
+                    "Categoria do Cliente",
+                    "Última Atualização",
+                    "Valor Gasto Total",
+                    "Última Compra"
+                FROM clientes_fisicos
+                ORDER BY "Data da Inclusão" DESC
+            """)
 
-                cursor.execute("""
-                    SELECT 
-                        "Nome do Cliente",
-                        "Data da Inclusão",
-                        RG,      
-                        CPF, 
-                        Email,
-                        CNH,
-                        "Categoria da CNH",
-                        "Data de Emissão da CNH",
-                        "Data de Vencimento da CNH",
-                        Telefone, 
-                        CEP, 
-                        Endereço, 
-                        Número,
-                        Complemento,
-                        Cidade, 
-                        Bairro,
-                        Estado,
-                        "Status do Cliente", 
-                        "Categoria do Cliente",
-                        "Última Atualização",
-                        "Valor Gasto Total",
-                        "Última Compra"
-                    FROM clientes_fisicos
-                    ORDER BY "Data da Inclusão" DESC
-                """)
+            dados = cursor.fetchall()
 
-                dados = cursor.fetchall()
+            # Limpa a tabela antes de recarregar
+            self.table_clientes_fisicos.clearContents()
+            self.table_clientes_fisicos.setRowCount(0)
 
-                # Limpa a tabela antes de recarregar
-                self.table_clientes_fisicos.clearContents()
-                self.table_clientes_fisicos.setRowCount(0)
+            deslocamento = 1 if self.coluna_checkboxes_clientes_fisicos_adicionada else 0
+            self.checkboxes_clientes_fisicos = []
 
-                deslocamento = 1 if self.coluna_checkboxes_clientes_fisicos_adicionada else 0
-                self.checkboxes_clientes_fisicos = []
+            for linha_idx, linha_dados in enumerate(dados):
+                self.table_clientes_fisicos.insertRow(linha_idx)
 
-                for linha_idx, linha_dados in enumerate(dados):
-                    self.table_clientes_fisicos.insertRow(linha_idx)
+                # Adiciona checkbox se estiver ativado
+                if self.coluna_checkboxes_clientes_fisicos_adicionada:
+                    checkbox = QCheckBox()
+                    checkbox.setStyleSheet("margin-left: 9px; margin-right: 9px;")
+                    self.table_clientes_fisicos.setCellWidget(linha_idx, 0, checkbox)
+                    self.checkboxes_clientes_fisicos.append(checkbox)
 
-                    # Adiciona checkbox se estiver ativado
-                    if self.coluna_checkboxes_clientes_fisicos_adicionada:
-                        checkbox = QCheckBox()
-                        checkbox.setStyleSheet("margin-left: 9px; margin-right: 9px;")
-                        self.table_clientes_fisicos.setCellWidget(linha_idx, 0, checkbox)
-                        self.checkboxes_clientes_fisicos.append(checkbox)
+                # Preenche os dados nas colunas (com deslocamento)
+                for coluna_idx, dado in enumerate(linha_dados):
+                    item = self.formatar_texto_fisico(str(dado))
+                    self.table_clientes_fisicos.setItem(linha_idx, coluna_idx + deslocamento, item)
 
-                    # Preenche os dados nas colunas (com deslocamento)
-                    for coluna_idx, dado in enumerate(linha_dados):
-                        item = self.formatar_texto_fisico(str(dado))
-                        self.table_clientes_fisicos.setItem(linha_idx, coluna_idx + deslocamento, item)
-
-                self.table_clientes_fisicos.resizeColumnsToContents()
-                self.table_clientes_fisicos.resizeRowsToContents()
+            self.table_clientes_fisicos.resizeColumnsToContents()
+            self.table_clientes_fisicos.resizeRowsToContents()
 
         except Exception as e:
             QMessageBox.critical(self.main_window, "Erro", f"Erro ao carregar clientes:\n{e}")
@@ -1304,109 +1304,108 @@ class Clientes_Fisicos(QWidget):
     def cadastrar_clientes_fisicos(self):
         # Atualiza a lista de campos obrigatórios de acordo com o preenchimento
         self.informacoes_obrigatorias_cadastro_clientes_fisicos()
-        try:
-            with self.db.connecta() as conexao:
-                cursor = conexao.cursor()
-                usuario_logado = self.config.obter_usuario_logado()
+        try:   
+            cursor = self.db.connection.cursor()
+            usuario_logado = self.config.obter_usuario_logado()
 
-                # Coletar dados dos campos
-                get = lambda campo: self.campos_cliente_fisico[campo].text().strip() \
-                    if isinstance(self.campos_cliente_fisico[campo], QLineEdit) \
-                    else self.campos_cliente_fisico[campo].currentText()
+            # Coletar dados dos campos
+            get = lambda campo: self.campos_cliente_fisico[campo].text().strip() \
+                if isinstance(self.campos_cliente_fisico[campo], QLineEdit) \
+                else self.campos_cliente_fisico[campo].currentText()
 
-                nome = get("Nome do Cliente")
-                rg = get("RG")
-                cpf = get("CPF")
-                email = get("Email")
-                cnh = get("CNH")
-                categoria_cnh = get("Categoria da CNH")
-                data_emissao_cnh = get("Data de Emissão da CNH")
-                data_vencimento_cnh = get("Data de Vencimento da CNH")
-                telefone = get("Telefone")
-                cep = get("CEP")
-                endereco = get("Endereço")
-                numero = get("Número")
-                complemento = get("Complemento")
-                cidade = get("Cidade")
-                bairro = get("Bairro")
-                estado = get("Estado")
-                categoria = get("Categoria do Cliente")
-                status = get("Status do Cliente")
+            nome = get("Nome do Cliente")
+            rg = get("RG")
+            cpf = get("CPF")
+            email = get("Email")
+            cnh = get("CNH")
+            categoria_cnh = get("Categoria da CNH")
+            data_emissao_cnh = get("Data de Emissão da CNH")
+            data_vencimento_cnh = get("Data de Vencimento da CNH")
+            telefone = get("Telefone")
+            cep = get("CEP")
+            endereco = get("Endereço")
+            numero = get("Número")
+            complemento = get("Complemento")
+            cidade = get("Cidade")
+            bairro = get("Bairro")
+            estado = get("Estado")
+            categoria = get("Categoria do Cliente")
+            status = get("Status do Cliente")
 
-                # Verificar campos únicos individualmente
-                cursor.execute('SELECT 1 FROM clientes_fisicos WHERE RG = ?',(rg,))
-                if cursor.fetchone():
-                    QMessageBox.information(self,"Duplicidade","Já existe um cliente cadastrado com este RG.")
-                    return
-                cursor.execute("SELECT 1 FROM clientes_fisicos WHERE CPF = ?",(cpf,))
-                if cursor.fetchone():
-                    QMessageBox.information(self,"Duplicidade","Já existe um cliente cadastrado com este CPF.")
-                    return
-                cursor.execute('SELECT 1 FROM clientes_fisicos WHERE Email = ?',(email,))
-                if cursor.fetchone():
-                    QMessageBox.information(self,"Duplicidade","Já existe um cliente cadastrado com este Email.")
-                    return
-                cursor.execute('SELECT 1 FROM clientes_fisicos WHERE RG = ?',(telefone,))
-                if cursor.fetchone():
-                    QMessageBox.information(self,"Duplicidade","Já existe um cliente cadastrado com este Telefone.")
-                    return
+            # Verificar campos únicos individualmente
+            cursor.execute('SELECT 1 FROM clientes_fisicos WHERE RG = ?',(rg,))
+            if cursor.fetchone():
+                QMessageBox.information(self,"Duplicidade","Já existe um cliente cadastrado com este RG.")
+                return
+            cursor.execute("SELECT 1 FROM clientes_fisicos WHERE CPF = ?",(cpf,))
+            if cursor.fetchone():
+                QMessageBox.information(self,"Duplicidade","Já existe um cliente cadastrado com este CPF.")
+                return
+            cursor.execute('SELECT 1 FROM clientes_fisicos WHERE Email = ?',(email,))
+            if cursor.fetchone():
+                QMessageBox.information(self,"Duplicidade","Já existe um cliente cadastrado com este Email.")
+                return
+            cursor.execute('SELECT 1 FROM clientes_fisicos WHERE RG = ?',(telefone,))
+            if cursor.fetchone():
+                QMessageBox.information(self,"Duplicidade","Já existe um cliente cadastrado com este Telefone.")
+                return
 
-                cursor.execute('SELECT 1 FROM clientes_fisicos WHERE CNH = ?',(cnh,))
-                if cursor.fetchone():
-                    QMessageBox.information(self,"Duplicidade","Já existe um cliente cadastrado com esta CNH.")
-                    return
+            cursor.execute('SELECT 1 FROM clientes_fisicos WHERE CNH = ?',(cnh,))
+            if cursor.fetchone():
+                QMessageBox.information(self,"Duplicidade","Já existe um cliente cadastrado com esta CNH.")
+                return
 
-                # Validação de todos os campos obrigatórios
-                for campo, mensagem in self.campos_obrigatorios_clientes_fisicos.items():
-                    widget = self.campos_cliente_fisico[campo]
-                    valor = widget.text().strip() if isinstance(widget, QLineEdit) else widget.currentText()
-                    
-                    if not valor or (isinstance(widget, QComboBox) and valor == "Selecionar"):
-                        QMessageBox.warning(self, "Atenção", mensagem)
-                        return
-                    
-
-                data_inclusao = datetime.now().strftime("%d/%m/%Y %H:%M")
+            # Validação de todos os campos obrigatórios
+            for campo, mensagem in self.campos_obrigatorios_clientes_fisicos.items():
+                widget = self.campos_cliente_fisico[campo]
+                valor = widget.text().strip() if isinstance(widget, QLineEdit) else widget.currentText()
                 
-                # Valores padrão para os campos não preenchidos manualmente
-                valor_gasto_total = "Não Cadastrado"
-                ultima_compra = "Não Cadastrado"
-                ultima_atualizacao = "Não Cadastrado"
-
-                if not cnh:
-                    cnh = "Não Cadastrado"
-                    categoria_cnh = "Não Cadastrado"
-                    data_emissao_cnh = "Não Cadastrado"
-                    data_vencimento_cnh = "Não Cadastrado"
-
-                if not complemento:
-                    complemento = "Não se aplica"
+                if not valor or (isinstance(widget, QComboBox) and valor == "Selecionar"):
+                    QMessageBox.warning(self, "Atenção", mensagem)
+                    return
                 
-                # Inserir no banco
-                cursor.execute("""
-                    INSERT INTO clientes_fisicos(
-                        "Nome do Cliente", "Data da Inclusão",RG, CPF,Email, CNH, "Categoria da CNH", "Data de Emissão da CNH", 
-                        "Data de Vencimento da CNH",  Telefone, CEP, Endereço, Número, Complemento, Cidade, Bairro, Estado, 
-                        "Status do Cliente", "Categoria do Cliente", "Última Atualização", "Valor Gasto Total", "Última Compra"
-                    )
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-                """, (
-                    nome, data_inclusao, rg, cpf,email, cnh, categoria_cnh, data_emissao_cnh, data_vencimento_cnh, 
-                    telefone, cep, endereco, numero, complemento, cidade, bairro, estado, 
-                    status, categoria, ultima_atualizacao, valor_gasto_total,ultima_compra
-                ))
-                conexao.commit()
 
-                self.main_window.registrar_historico_clientes_fisicos(
-                    "Cadastro de Cliente", f"Cliente {nome} cadastrado com sucesso"
+            data_inclusao = datetime.now().strftime("%d/%m/%Y %H:%M")
+            
+            # Valores padrão para os campos não preenchidos manualmente
+            valor_gasto_total = "Não Cadastrado"
+            ultima_compra = "Não Cadastrado"
+            ultima_atualizacao = "Não Cadastrado"
+
+            if not cnh:
+                cnh = "Não Cadastrado"
+                categoria_cnh = "Não Cadastrado"
+                data_emissao_cnh = "Não Cadastrado"
+                data_vencimento_cnh = "Não Cadastrado"
+
+            if not complemento:
+                complemento = "Não se aplica"
+            
+            # Inserir no banco
+            cursor.execute("""
+                INSERT INTO clientes_fisicos(
+                    "Nome do Cliente", "Data da Inclusão",RG, CPF,Email, CNH, "Categoria da CNH", "Data de Emissão da CNH", 
+                    "Data de Vencimento da CNH",  Telefone, CEP, Endereço, Número, Complemento, Cidade, Bairro, Estado, 
+                    "Status do Cliente", "Categoria do Cliente", "Última Atualização", "Valor Gasto Total", "Última Compra"
                 )
-                
-                QMessageBox.information(self, "Sucesso", "Cliente cadastrado com sucesso!")
-                # Redimensiona apenas uma vez após preencher
-                self.table_clientes_fisicos.resizeColumnsToContents()
-                self.table_clientes_fisicos.resizeRowsToContents()
-                self.limpar_campos_clientes_fisicos()
-                self.carregar_clientes_fisicos()       
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """, (
+                nome, data_inclusao, rg, cpf,email, cnh, categoria_cnh, data_emissao_cnh, data_vencimento_cnh, 
+                telefone, cep, endereco, numero, complemento, cidade, bairro, estado, 
+                status, categoria, ultima_atualizacao, valor_gasto_total,ultima_compra
+            ))
+            self.db.connection.commit()
+
+            self.main_window.registrar_historico_clientes_fisicos(
+                "Cadastro de Cliente", f"Cliente {nome} cadastrado com sucesso"
+            )
+            
+            QMessageBox.information(self, "Sucesso", "Cliente cadastrado com sucesso!")
+            # Redimensiona apenas uma vez após preencher
+            self.table_clientes_fisicos.resizeColumnsToContents()
+            self.table_clientes_fisicos.resizeRowsToContents()
+            self.limpar_campos_clientes_fisicos()
+            self.carregar_clientes_fisicos()       
         except Exception as e:
             QMessageBox.critical(self, "Erro", f"Erro ao cadastrar cliente: \n{e}")
             
@@ -2466,27 +2465,26 @@ class Clientes_Fisicos(QWidget):
         self.tabela_historico_clientes_fisicos.resizeRowsToContents()
 
     def carregar_historico_clientes_fisicos(self):
-            with sqlite3.connect('banco_de_dados.db') as cn:
-                cursor = cn.cursor()
-                cursor.execute('SELECT * FROM historico_clientes_fisicos ORDER BY "Data e Hora" DESC')
-                registros = cursor.fetchall()
+        cursor = self.db.connection.cursor()
+        cursor.execute('SELECT * FROM historico_clientes_fisicos ORDER BY "Data e Hora" DESC')
+        registros = cursor.fetchall()
 
-            self.tabela_historico_clientes_fisicos.clearContents()
-            self.tabela_historico_clientes_fisicos.setRowCount(len(registros))
+        self.tabela_historico_clientes_fisicos.clearContents()
+        self.tabela_historico_clientes_fisicos.setRowCount(len(registros))
 
-            deslocamento = 1 if self.coluna_checkboxes_clientes_fisicos_adicionada else 0
-            self.checkboxes_clientes_fisicos = []  # Zerar e recriar lista de checkboxes
+        deslocamento = 1 if self.coluna_checkboxes_clientes_fisicos_adicionada else 0
+        self.checkboxes_clientes_fisicos = []  # Zerar e recriar lista de checkboxes
 
-            for i, (data, usuario, acao, descricao) in enumerate(registros):
-                if self.coluna_checkboxes_clientes_fisicos_adicionada:
-                    checkbox = QCheckBox()
-                    checkbox.setStyleSheet("margin-left:9px; margin-right:9px;")
-                    self.tabela_historico_clientes_fisicos.setCellWidget(i,0,checkbox)
-                    self.checkboxes_clientes_fisicos.append(checkbox)
-                self.tabela_historico_clientes_fisicos.setItem(i, 0 + deslocamento, QTableWidgetItem(data))
-                self.tabela_historico_clientes_fisicos.setItem(i, 1 + deslocamento, QTableWidgetItem(usuario))
-                self.tabela_historico_clientes_fisicos.setItem(i, 2 + deslocamento, QTableWidgetItem(acao))
-                self.tabela_historico_clientes_fisicos.setItem(i, 3 + deslocamento, QTableWidgetItem(descricao))
+        for i, (data, usuario, acao, descricao) in enumerate(registros):
+            if self.coluna_checkboxes_clientes_fisicos_adicionada:
+                checkbox = QCheckBox()
+                checkbox.setStyleSheet("margin-left:9px; margin-right:9px;")
+                self.tabela_historico_clientes_fisicos.setCellWidget(i,0,checkbox)
+                self.checkboxes_clientes_fisicos.append(checkbox)
+            self.tabela_historico_clientes_fisicos.setItem(i, 0 + deslocamento, QTableWidgetItem(data))
+            self.tabela_historico_clientes_fisicos.setItem(i, 1 + deslocamento, QTableWidgetItem(usuario))
+            self.tabela_historico_clientes_fisicos.setItem(i, 2 + deslocamento, QTableWidgetItem(acao))
+            self.tabela_historico_clientes_fisicos.setItem(i, 3 + deslocamento, QTableWidgetItem(descricao))
 
     def atualizar_historico_clientes_fisicos(self):
         QMessageBox.information(self, "Sucesso", "Dados carregados com sucesso!")
@@ -2544,15 +2542,14 @@ class Clientes_Fisicos(QWidget):
                 return
 
             # Excluir do banco de dados
-            with sqlite3.connect('banco_de_dados.db') as cn:
-                cursor = cn.cursor()
-                try:
-                    for data in datas_para_remover:
-                        cursor.execute('DELETE FROM historico_clientes_fisicos WHERE "Data e Hora" = ?', (data,))
-                    cn.commit()
-                except Exception as e:
-                    QMessageBox.critical(self, "Erro", f"Erro ao excluir do banco de dados: {e}")
-                    return
+            cursor = self.db.connection.cursor()
+            try:
+                for data in datas_para_remover:
+                    cursor.execute('DELETE FROM historico_clientes_fisicos WHERE "Data e Hora" = ?', (data,))
+                self.db.connection.commit()
+            except Exception as e:
+                QMessageBox.critical(self, "Erro", f"Erro ao excluir do banco de dados: {e}")
+                return
 
             # Remover as linhas na interface
             for row in sorted(linhas_para_remover, reverse=True):
@@ -2590,14 +2587,13 @@ class Clientes_Fisicos(QWidget):
                 return
 
             # Excluir do banco de dados
-            with sqlite3.connect('banco_de_dados.db') as cn:
-                cursor = cn.cursor()
-                try:
-                    cursor.execute('DELETE FROM historico_clientes_fisicos WHERE "Data e Hora" = ?', (item_data_text,))
-                    cn.commit()
-                except Exception as e:
-                    QMessageBox.critical(self, "Erro", f"Erro ao excluir do banco de dados: {e}")
-                    return
+            cursor = self.db.connection.cursor()
+            try:
+                cursor.execute('DELETE FROM historico_clientes_fisicos WHERE "Data e Hora" = ?', (item_data_text,))
+                self.db.connection.commit()
+            except Exception as e:
+                QMessageBox.critical(self, "Erro", f"Erro ao excluir do banco de dados: {e}")
+                return
 
             # Remover a linha da interface
             self.tabela_historico_clientes_fisicos.removeRow(linha_selecionada)
@@ -3012,32 +3008,31 @@ class Clientes_Fisicos(QWidget):
             campo_data.setCursorPosition(len(data_formatada))  # Move o cursor para o final do texto
 
     def aplicar_filtro_clientes_fisicos(self, data, filtrar_novo, filtrar_velho):
-        with sqlite3.connect('banco_de_dados.db') as cn:
-            cursor = cn.cursor()
+        cursor = self.db.connection.cursor()
 
-            query = "SELECT * FROM historico_clientes_fisicos"
-            params = []
+        query = "SELECT * FROM historico_clientes_fisicos"
+        params = []
 
-            # Filtrar pela data, se fornecida
-            if data:
-                try:
-                    # Garantir que a data seja no formato correto (DD/MM/AAAA)
-                    data_formatada = datetime.strptime(data, "%d/%m/%Y").strftime("%d/%m/%Y")  # Formato DD/MM/YYYY
-                    query += " WHERE SUBSTR([Data e Hora], 1, 10) = ?"
-                    params.append(data_formatada)
-                except ValueError:
-                    QMessageBox.warning(self, "Erro", "Data inválida. Use o formato DD/MM/AAAA.")
-                    return
+        # Filtrar pela data, se fornecida
+        if data:
+            try:
+                # Garantir que a data seja no formato correto (DD/MM/AAAA)
+                data_formatada = datetime.strptime(data, "%d/%m/%Y").strftime("%d/%m/%Y")  # Formato DD/MM/YYYY
+                query += " WHERE SUBSTR([Data e Hora], 1, 10) = ?"
+                params.append(data_formatada)
+            except ValueError:
+                QMessageBox.warning(self, "Erro", "Data inválida. Use o formato DD/MM/AAAA.")
+                return
 
-            # Ordenar por hora, se aplicável
-            if filtrar_novo:
-                query += " ORDER BY [Data e Hora] DESC LIMIT 1"
-            elif filtrar_velho:
-                query += " ORDER BY [Data e Hora] ASC LIMIT 1"
+        # Ordenar por hora, se aplicável
+        if filtrar_novo:
+            query += " ORDER BY [Data e Hora] DESC LIMIT 1"
+        elif filtrar_velho:
+            query += " ORDER BY [Data e Hora] ASC LIMIT 1"
 
-            # Executar a consulta
-            cursor.execute(query, params)
-            registros = cursor.fetchall()
+        # Executar a consulta
+        cursor.execute(query, params)
+        registros = cursor.fetchall()
 
         # Atualizar a tabela com os registros filtrados
         self.tabela_historico_clientes_fisicos.clearContents()
@@ -3914,8 +3909,7 @@ class Clientes_Fisicos(QWidget):
         params.append(data_ate.strftime("%Y-%m-%d"))
 
         try:
-            conn = sqlite3.connect("banco_de_dados.db")
-            cursor = conn.cursor()
+            cursor = self.db.connection.cursor()
             cursor.execute(sql, params)
             resultados = cursor.fetchall()
         except Exception as e:
@@ -4079,8 +4073,7 @@ class Clientes_Fisicos(QWidget):
         params.append(data_ate.strftime("%Y-%m-%d"))
 
         try:
-            conn = sqlite3.connect("banco_de_dados.db")
-            cursor = conn.cursor()
+            cursor = self.db.connection.cursor()
             cursor.execute(sql, params)
             resultados = cursor.fetchall()
         except Exception as e:
@@ -4135,8 +4128,8 @@ class Clientes_Fisicos(QWidget):
 
     def carregar_opcoes_combo_fisicos(self, nome_coluna, combo_box):
         try:
-            conn = sqlite3.connect("banco_de_dados.db")  # substitua com seu caminho
-            cursor = conn.cursor()
+            # Usando a conexão do banco central
+            cursor = self.db.connection.cursor()
 
             # Aspas duplas se o nome da coluna tiver espaços
             cursor.execute(f'''
@@ -4153,6 +4146,7 @@ class Clientes_Fisicos(QWidget):
 
         except Exception as e:
             print(f"Erro ao carregar opções de {nome_coluna}:", e)
+
 
     def confirmar_historico_apagado_clientes_fisicos(self, mensagem):
         """

@@ -29,6 +29,7 @@ class Login(QMainWindow, Ui_Mainwindow_Login):
         self.setupUi(self)
         self.login_window = login_window
         self.users = DataBase()  # Defina self.users aqui
+        self.users.connecta()    # <-- Conecta ao banco de dados
         self.setWindowTitle("Login do Sistema")
         self.tema = Temas()
 
@@ -249,7 +250,7 @@ class Login(QMainWindow, Ui_Mainwindow_Login):
         
 
     def mostrarMensagem(self, titulo, mensagem, icone):
-        msg = QMessageBox()
+        msg = QMessageBox(self)
         msg.setIcon(icone)
         msg.setWindowTitle(titulo)
         msg.setText(mensagem)
@@ -281,6 +282,8 @@ class PrimeiroAcesso(QMainWindow):
         super(PrimeiroAcesso, self).__init__(parent)
         self.setWindowTitle("Primeiro Acesso")
         self.tema = Temas()
+        self.users = DataBase()  # Defina self.users aqui
+        self.users.connecta()    # <-- Conecta ao banco de dados
         
         self.setMinimumWidth(400)
         self.setMinimumHeight(400)
@@ -694,32 +697,32 @@ class PrimeiroAcesso(QMainWindow):
 
         # Conectar ao banco de dados e inserir os dados
         try:
-            conn = sqlite3.connect("banco_de_dados.db")
-            cursor = conn.cursor()
+            with self.users.connection as cn:
+                cursor = cn.cursor()
 
-            # Verificar se o usuário já existe
-            cursor.execute("SELECT * FROM users WHERE Usuário = ?", (usuario,))
-            existing_user = cursor.fetchone()
-            if existing_user:
-                QMessageBox.warning(self,"Erro", "Já existe um usuário cadastrado no sistema! ")
-                return
+                # Verificar se o usuário já existe
+                cursor.execute("SELECT * FROM users WHERE Usuário = ?", (usuario,))
+                existing_user = cursor.fetchone()
+                if existing_user:
+                    QMessageBox.warning(self,"Erro", "Já existe um usuário cadastrado no sistema! ")
+                    return
 
-            # Inserir o novo usuário no banco de dados
-            cursor.execute("""
-                    INSERT INTO users(
-                        Nome, Usuário, Senha, "Confirmar Senha",Acesso,
-                        "Última Troca de Senha","Data da Senha Cadastrada",
-                        "Data da Inclusão do Usuário",Segredo, "Usuário Logado"
-                    )
-                    VALUES (?,?,?,?,?,?,?,?,?,?)
-            """,(nome, usuario,senha,confirmar_senha,acesso,data_ultima_troca,
-                  data_atual,data_atual,segredo,usuario_logado))
-            conn.commit()
-            conn.close()
+                # Inserir o novo usuário no banco de dados
+                cursor.execute("""
+                        INSERT INTO users(
+                            Nome, Usuário, Senha, "Confirmar Senha",Acesso,
+                            "Última Troca de Senha","Data da Senha Cadastrada",
+                            "Data da Inclusão do Usuário",Segredo, "Usuário Logado"
+                        )
+                        VALUES (?,?,?,?,?,?,?,?,?,?)
+                """,(nome, usuario,senha,confirmar_senha,acesso,data_ultima_troca,
+                    data_atual,data_atual,segredo,usuario_logado))
+                cn.commit()
+                
 
-            # Mensagem de sucesso
-            QMessageBox.information(self,"Sucesso", "Usuário cadastrado com sucesso!")
-            self.close()  # Fecha a janela de cadastro
+                # Mensagem de sucesso
+                QMessageBox.information(self,"Sucesso", "Usuário cadastrado com sucesso!")
+                self.close()  # Fecha a janela de cadastro
 
         except sqlite3.Error as e:
             print(f"Erro ao salvar o usuário: {e}")

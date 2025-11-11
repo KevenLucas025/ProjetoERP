@@ -84,7 +84,7 @@ class Pagina_Usuarios(QWidget):
         return item
 
     def tabela_ativos(self):
-        cn = sqlite3.connect("banco_de_dados.db")
+        cn = self.db.connection
 
         # Carregar dados da tabela users usando pandas
         query = """
@@ -240,7 +240,7 @@ class Pagina_Usuarios(QWidget):
         
      # Função para recuperar imagem de um produto com base no código do produto
     def recuperar_imagem_usuario_bd_users(self, id_usuario):
-        conexao = sqlite3.connect('banco_de_dados.db')
+        conexao = self.db.connection
         cursor = conexao.cursor()
         cursor.execute("SELECT Imagem FROM users WHERE Usuário = ?", (id_usuario,))
         
@@ -1087,7 +1087,7 @@ class Pagina_Usuarios(QWidget):
 
 
     def carregar_historico_usuario(self):
-        with sqlite3.connect('banco_de_dados.db') as cn:
+        with self.db.connection as cn:
             cursor = cn.cursor()
             cursor.execute('SELECT * FROM historico_usuarios ORDER BY "Data e Hora" DESC')
             registros = cursor.fetchall()
@@ -1156,7 +1156,7 @@ class Pagina_Usuarios(QWidget):
                 return
 
             # Excluir do banco de dados
-            with sqlite3.connect('banco_de_dados.db') as cn:
+            with self.db.connection as cn:
                 cursor = cn.cursor()
                 try:
                     for item_id in ids_para_remover:
@@ -1193,7 +1193,7 @@ class Pagina_Usuarios(QWidget):
             item_data_text = item_data_widget.text().strip()
 
             # Conectar ao banco de dados para buscar o ID relacionado à Data/Hora
-            with sqlite3.connect('banco_de_dados.db') as cn:
+            with self.db.connection as cn:
                 cursor = cn.cursor()
                 try:
                     # Buscar o ID com base na Data/Hora, removendo espaços ou caracteres extras
@@ -1217,7 +1217,7 @@ class Pagina_Usuarios(QWidget):
                 return
 
             # Excluir do banco de dados
-            with sqlite3.connect('banco_de_dados.db') as cn:
+            with self.db.connection as cn:
                 cursor = cn.cursor()
                 try:
                     cursor.execute('DELETE FROM historico_usuarios WHERE "Data e Hora" = ?', (item_id,))
@@ -1671,7 +1671,7 @@ class Pagina_Usuarios(QWidget):
         janela_filtro.exec()
 
     def aplicar_filtro_usuarios(self, data, filtrar_novo, filtrar_velho):
-        with sqlite3.connect('banco_de_dados.db') as cn:
+        with self.db.connection as cn:
             cursor = cn.cursor()
 
             query = "SELECT * FROM historico_usuarios"

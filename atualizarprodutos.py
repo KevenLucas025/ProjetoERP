@@ -37,6 +37,12 @@ class AtualizarProduto(QDialog):
                     border: 2px solid #888888;
                 }
             """
+            dialog_style = """
+                QDialog {
+                    background-color: #2b2b2b;
+                    color: white;
+                }
+            """
         else:  # claro
             button_style = """
                 QPushButton {
@@ -60,6 +66,15 @@ class AtualizarProduto(QDialog):
                     border: 2px solid #aaaaaa;
                 }
             """
+            dialog_style = """
+                QDialog {
+                    background-color: #f0f0f0;
+                    color: black;
+                }
+            """
+            
+        # Aplicar estilo do diálogo
+        self.setStyleSheet(dialog_style)
         
         # Botão para abrir a lista de produtos
         self.btn_mostrar_produtos = QPushButton("Exibir Tabela de Produtos")

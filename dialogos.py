@@ -311,6 +311,7 @@ class DialogoEstilizado(QDialog):
             {scroll_style}
             {lineedit_style}
             {dialog_style}
+            {bg_cor}
             QLabel {{
                 color: {text_cor};
                 font-size: 12px;

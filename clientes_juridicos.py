@@ -107,65 +107,63 @@ class Clientes_Juridicos(QWidget):
                 
     def carregar_clientes_juridicos(self):
         try:
-            with self.db.connecta() as conexao:
-                cursor = conexao.cursor()
+            cursor = self.db.connection.cursor()
+            cursor.execute("""
+                SELECT 
+                    "Nome do Cliente",
+                    "Razão Social",
+                    "Data da Inclusão",
+                    CNPJ,
+                    RG,
+                    CPF,
+                    Email,
+                    CNH,
+                    "Categoria da CNH",
+                    "Data de Emissão da CNH",
+                    "Data de Vencimento da CNH",
+                    Telefone, 
+                    CEP, 
+                    Endereço, 
+                    Número,
+                    Complemento,
+                    Cidade, 
+                    Bairro,
+                    Estado,
+                    "Status do Cliente", 
+                    "Categoria do Cliente",
+                    "Última Atualização",
+                    "Valor Gasto Total",
+                    "Última Compra"
+                FROM clientes_juridicos
+                ORDER BY "Data da Inclusão" DESC
+            """)
 
-                cursor.execute("""
-                    SELECT 
-                        "Nome do Cliente",
-                        "Razão Social",
-                        "Data da Inclusão",
-                        CNPJ,
-                        RG,
-                        CPF,
-                        Email,
-                        CNH,
-                        "Categoria da CNH",
-                        "Data de Emissão da CNH",
-                        "Data de Vencimento da CNH",
-                        Telefone, 
-                        CEP, 
-                        Endereço, 
-                        Número,
-                        Complemento,
-                        Cidade, 
-                        Bairro,
-                        Estado,
-                        "Status do Cliente", 
-                        "Categoria do Cliente",
-                        "Última Atualização",
-                        "Valor Gasto Total",
-                        "Última Compra"
-                    FROM clientes_juridicos
-                    ORDER BY "Data da Inclusão" DESC
-                """)
+            dados = cursor.fetchall()
 
-                dados = cursor.fetchall()
+            # Limpa a tabela antes de recarregar
+            self.table_clientes_juridicos.clearContents()
+            self.table_clientes_juridicos.setRowCount(0)
 
-                # Limpa a tabela antes de recarregar
-                self.table_clientes_juridicos.clearContents()
-                self.table_clientes_juridicos.setRowCount(0)
+            deslocamento = 1 if self.coluna_checkboxes_clientes_adicionada else 0
+            self.checkboxes_clientes = []
 
-                deslocamento = 1 if self.coluna_checkboxes_clientes_adicionada else 0
-                self.checkboxes_clientes = []
+            for linha_idx, linha_dados in enumerate(dados):
+                self.table_clientes_juridicos.insertRow(linha_idx)
 
-                for linha_idx, linha_dados in enumerate(dados):
-                    self.table_clientes_juridicos.insertRow(linha_idx)
+                # Adiciona checkbox se estiver ativado
+                if self.coluna_checkboxes_clientes_adicionada:
+                    checkbox = QCheckBox()
+                    checkbox.setStyleSheet("margin-left: 9px; margin-right: 9px;")
+                    self.table_clientes_juridicos.setCellWidget(linha_idx, 0, checkbox)
+                    self.checkboxes_clientes.append(checkbox)
 
-                    # Adiciona checkbox se estiver ativado
-                    if self.coluna_checkboxes_clientes_adicionada:
-                        checkbox = QCheckBox()
-                        checkbox.setStyleSheet("margin-left: 9px; margin-right: 9px;")
-                        self.table_clientes_juridicos.setCellWidget(linha_idx, 0, checkbox)
-                        self.checkboxes_clientes.append(checkbox)
+                # Preenche os dados nas colunas (com deslocamento)
+                for coluna_idx, dado in enumerate(linha_dados):
+                    item = self.formatar_texto_juridico(str(dado))
+                    self.table_clientes_juridicos.setItem(linha_idx, coluna_idx + deslocamento, item)
 
-                    # Preenche os dados nas colunas (com deslocamento)
-                    for coluna_idx, dado in enumerate(linha_dados):
-                        item = self.formatar_texto_juridico(str(dado))
-                        self.table_clientes_juridicos.setItem(linha_idx, coluna_idx + deslocamento, item)
-
-                self.table_clientes_juridicos.resizeColumnsToContents()
-                self.table_clientes_juridicos.resizeRowsToContents()
+            self.table_clientes_juridicos.resizeColumnsToContents()
+            self.table_clientes_juridicos.resizeRowsToContents()
 
         except Exception as e:
             QMessageBox.critical(self.main_window, "Erro", f"Erro ao carregar clientes:\n{e}")
@@ -198,77 +196,75 @@ class Clientes_Juridicos(QWidget):
         if not texto:
             return self._listar_todos_clientes()
 
-        with sqlite3.connect('banco_de_dados.db') as conn:
-            cursor = conn.cursor()
-            cursor.execute("""
-                SELECT  
-                    "Nome do Cliente",
-                    "Razão Social",
-                    "Data da Inclusão",
-                    CNPJ,
-                    RG,       
-                    CPF,
-                    Email,
-                    CNH,
-                    "Categoria da CNH",
-                    "Data de Emissão da CNH",
-                    "Data de Vencimento da CNH",
-                    Telefone,
-                    CEP,
-                    Endereço,
-                    Número,
-                    Complemento,
-                    Cidade,
-                    Bairro,
-                    Estado,
-                    "Status do Cliente",
-                    "Categoria do Cliente",
-                    "Última Atualização",
-                    "Origem do Cliente",
-                    "Valor Gasto Total",
-                    "Última Compra"
-                FROM clientes_juridicos
-                WHERE 
-                    LOWER("Nome do Cliente") LIKE LOWER(?) OR
-                    CPF LIKE ? OR
-                    RG LIKE ? OR
-                    Telefone LIKE ?
-            """, (f'%{texto}%', f'%{texto}%', f'%{texto}%', f'%{texto}%'))
-            return cursor.fetchall()
+        cursor = self.db.connection.cursor()
+        cursor.execute("""
+            SELECT  
+                "Nome do Cliente",
+                "Razão Social",
+                "Data da Inclusão",
+                CNPJ,
+                RG,       
+                CPF,
+                Email,
+                CNH,
+                "Categoria da CNH",
+                "Data de Emissão da CNH",
+                "Data de Vencimento da CNH",
+                Telefone,
+                CEP,
+                Endereço,
+                Número,
+                Complemento,
+                Cidade,
+                Bairro,
+                Estado,
+                "Status do Cliente",
+                "Categoria do Cliente",
+                "Última Atualização",
+                "Origem do Cliente",
+                "Valor Gasto Total",
+                "Última Compra"
+            FROM clientes_juridicos
+            WHERE 
+                LOWER("Nome do Cliente") LIKE LOWER(?) OR
+                CPF LIKE ? OR
+                RG LIKE ? OR
+                Telefone LIKE ?
+        """, (f'%{texto}%', f'%{texto}%', f'%{texto}%', f'%{texto}%'))
+        return cursor.fetchall()
 
     def _listar_todos_clientes(self):
-        with sqlite3.connect('banco_de_dados.db') as conn:
-            cursor = conn.cursor()
-            cursor.execute("""
-                SELECT  
-                    "Nome do Cliente",
-                    "Razão Social",
-                    "Data da Inclusão",
-                    CNPJ,
-                    RG,       
-                    CPF,
-                    Email,
-                    CNH,
-                    "Categoria da CNH",
-                    "Data de Emissão da CNH",
-                    "Data de Vencimento da CNH",
-                    Telefone,
-                    CEP,
-                    Endereço,
-                    Número,
-                    Complemento,
-                    Cidade,
-                    Bairro,
-                    Estado,
-                    "Status do Cliente",
-                    "Categoria do Cliente",
-                    "Última Atualização",
-                    "Origem do Cliente",
-                    "Valor Gasto Total",
-                    "Última Compra"
-                FROM clientes_juridicos
-            """)
-            return cursor.fetchall()
+        cursor = self.db.connection.cursor()
+        cursor.execute("""
+            SELECT  
+                "Nome do Cliente",
+                "Razão Social",
+                "Data da Inclusão",
+                CNPJ,
+                RG,       
+                CPF,
+                Email,
+                CNH,
+                "Categoria da CNH",
+                "Data de Emissão da CNH",
+                "Data de Vencimento da CNH",
+                Telefone,
+                CEP,
+                Endereço,
+                Número,
+                Complemento,
+                Cidade,
+                Bairro,
+                Estado,
+                "Status do Cliente",
+                "Categoria do Cliente",
+                "Última Atualização",
+                "Origem do Cliente",
+                "Valor Gasto Total",
+                "Última Compra"
+            FROM clientes_juridicos
+        """)
+        return cursor.fetchall()
 
     def buscar_cliente_juridico_dinamico(self, texto=None, manual=False):
         # Captura o texto do campo se não foi passado
@@ -1504,124 +1500,123 @@ class Clientes_Juridicos(QWidget):
     def cadastrar_clientes_juridicos(self):
         self.informacoes_obrigatorias_cadastro_clientes()
         try:
-            with self.db.connecta() as conexao:
-                cursor = conexao.cursor()
-                usuario_logado = self.config.obter_usuario_logado()
+            cursor = self.db.connection.cursor()
+            usuario_logado = self.config.obter_usuario_logado()
 
-                # Coletar dados dos campos
-                get = lambda campo: self.campos_cliente_juridico[campo].text().strip() \
-                    if isinstance(self.campos_cliente_juridico[campo], QLineEdit) \
-                    else self.campos_cliente_juridico[campo].currentText()
+            # Coletar dados dos campos
+            get = lambda campo: self.campos_cliente_juridico[campo].text().strip() \
+                if isinstance(self.campos_cliente_juridico[campo], QLineEdit) \
+                else self.campos_cliente_juridico[campo].currentText()
 
-                nome = get("Nome do Cliente")
-                razao_social = get("Razão Social")
-                cnpj = get("CNPJ")
-                rg = get("RG")
-                cpf = get("CPF")
-                email = get("Email")
-                cnh = get("CNH")
-                categoria_cnh = get("Categoria da CNH")
-                data_emissao_cnh = get("Data de Emissão da CNH")
-                data_vencimento_cnh = get("Data de Vencimento da CNH")
-                telefone = get("Telefone")
-                cep = get("CEP")
-                endereco = get("Endereço")
-                numero = get("Número")
-                complemento = get("Complemento")
-                cidade = get("Cidade")
-                bairro = get("Bairro")
-                estado = get("Estado")
-                categoria = get("Categoria do Cliente")
-                status = get("Status do Cliente")
+            nome = get("Nome do Cliente")
+            razao_social = get("Razão Social")
+            cnpj = get("CNPJ")
+            rg = get("RG")
+            cpf = get("CPF")
+            email = get("Email")
+            cnh = get("CNH")
+            categoria_cnh = get("Categoria da CNH")
+            data_emissao_cnh = get("Data de Emissão da CNH")
+            data_vencimento_cnh = get("Data de Vencimento da CNH")
+            telefone = get("Telefone")
+            cep = get("CEP")
+            endereco = get("Endereço")
+            numero = get("Número")
+            complemento = get("Complemento")
+            cidade = get("Cidade")
+            bairro = get("Bairro")
+            estado = get("Estado")
+            categoria = get("Categoria do Cliente")
+            status = get("Status do Cliente")
 
 
-                # Verificar campos únicos individualmente
-                cursor.execute('SELECT 1 FROM clientes_juridicos WHERE CNPJ = ?',(cnpj,))
-                if cursor.fetchone():
-                    QMessageBox.information(self,"Duplicidade","Já existe um cliente cadastrado com este CNPJ.")
-                    return
-                cursor.execute('SELECT 1 FROM clientes_juridicos WHERE "Razão Social" = ?',(razao_social,))
-                if cursor.fetchone():
-                    QMessageBox.information(self,"Duplicidade","Já existe um cliente cadastrado com esta Razão Social.")
-                    return
-                cursor.execute('SELECT 1 FROM clientes_juridicos WHERE Telefone = ?',(telefone,))
-                if cursor.fetchone():
-                    QMessageBox.information(self,"Duplicidade","Já existe um cliente cadastrado com este Telefone.")
-                    return
-                cursor.execute('SELECT 1 FROM clientes_juridicos WHERE RG = ?',(rg,))
-                if cursor.fetchone():
-                    QMessageBox.information(self,"Duplicidade","Já existe um cliente cadastrado com este RG.")
+            # Verificar campos únicos individualmente
+            cursor.execute('SELECT 1 FROM clientes_juridicos WHERE CNPJ = ?',(cnpj,))
+            if cursor.fetchone():
+                QMessageBox.information(self,"Duplicidade","Já existe um cliente cadastrado com este CNPJ.")
+                return
+            cursor.execute('SELECT 1 FROM clientes_juridicos WHERE "Razão Social" = ?',(razao_social,))
+            if cursor.fetchone():
+                QMessageBox.information(self,"Duplicidade","Já existe um cliente cadastrado com esta Razão Social.")
+                return
+            cursor.execute('SELECT 1 FROM clientes_juridicos WHERE Telefone = ?',(telefone,))
+            if cursor.fetchone():
+                QMessageBox.information(self,"Duplicidade","Já existe um cliente cadastrado com este Telefone.")
+                return
+            cursor.execute('SELECT 1 FROM clientes_juridicos WHERE RG = ?',(rg,))
+            if cursor.fetchone():
+                QMessageBox.information(self,"Duplicidade","Já existe um cliente cadastrado com este RG.")
+                return
+            
+            cursor.execute('SELECT 1 FROM clientes_juridicos WHERE CPF = ?',(cpf,))
+            if cursor.fetchone():
+                QMessageBox.information(self,"Duplicidade","Já existe um cliente cadastrado com este CPF.")
+                return
+            
+            cursor.execute('SELECT 1 FROM clientes_juridicos WHERE Email = ?',(email,))
+            if cursor.fetchone():
+                QMessageBox.information(self,"Duplicidade","Já existe um cliente cadastrado com este Email.")
+                return
+            
+            cursor.execute('SELECT 1 FROM clientes_juridicos WHERE CNH = ?',(cnh,))
+            if cursor.fetchone():
+                QMessageBox.information(self,"Duplicidade","Já existe um cliente cadastrado com esta CNH.")
+                return
+
+            # Validação de todos os campos obrigatórios
+            for campo, mensagem in self.campos_obrigatorios_clientes.items():
+                widget = self.campos_cliente_juridico[campo]
+                valor = widget.text().strip() if isinstance(widget, QLineEdit) else widget.currentText()
+                
+                if not valor or (isinstance(widget, QComboBox) and valor == "Selecionar"):
+                    QMessageBox.warning(self, "Atenção", mensagem)
                     return
                 
-                cursor.execute('SELECT 1 FROM clientes_juridicos WHERE CPF = ?',(cpf,))
-                if cursor.fetchone():
-                    QMessageBox.information(self,"Duplicidade","Já existe um cliente cadastrado com este CPF.")
-                    return
-                
-                cursor.execute('SELECT 1 FROM clientes_juridicos WHERE Email = ?',(email,))
-                if cursor.fetchone():
-                    QMessageBox.information(self,"Duplicidade","Já existe um cliente cadastrado com este Email.")
-                    return
-                
-                cursor.execute('SELECT 1 FROM clientes_juridicos WHERE CNH = ?',(cnh,))
-                if cursor.fetchone():
-                    QMessageBox.information(self,"Duplicidade","Já existe um cliente cadastrado com esta CNH.")
-                    return
 
-                # Validação de todos os campos obrigatórios
-                for campo, mensagem in self.campos_obrigatorios_clientes.items():
-                    widget = self.campos_cliente_juridico[campo]
-                    valor = widget.text().strip() if isinstance(widget, QLineEdit) else widget.currentText()
-                    
-                    if not valor or (isinstance(widget, QComboBox) and valor == "Selecionar"):
-                        QMessageBox.warning(self, "Atenção", mensagem)
-                        return
-                    
+            data_inclusao = datetime.now().strftime("%d/%m/%Y %H:%M")
+            
+            # Valores padrão para os campos não preenchidos manualmente
+            valor_gasto_total = "Não Cadastrado"
+            ultima_compra = "Não Cadastrado"
+            ultima_atualizacao = "Não Cadastrado"
 
-                data_inclusao = datetime.now().strftime("%d/%m/%Y %H:%M")
-                
-                # Valores padrão para os campos não preenchidos manualmente
-                valor_gasto_total = "Não Cadastrado"
-                ultima_compra = "Não Cadastrado"
-                ultima_atualizacao = "Não Cadastrado"
+            if not cnh:
+                cnh = "Não Cadastrado"
+                categoria_cnh = "Não Cadastrado"
+                data_emissao_cnh = "Não Cadastrado"
+                data_vencimento_cnh = "Não Cadastrado"
 
-                if not cnh:
-                    cnh = "Não Cadastrado"
-                    categoria_cnh = "Não Cadastrado"
-                    data_emissao_cnh = "Não Cadastrado"
-                    data_vencimento_cnh = "Não Cadastrado"
-
-                if not complemento:
-                    complemento = "Não se aplica"
-                
-                # Inserir no banco
-                cursor.execute("""
-                    INSERT INTO clientes_juridicos(
-                        "Nome do Cliente", "Razão Social", "Data da Inclusão", CNPJ, RG, 
-                         CPF,Email, CNH, "Categoria da CNH", "Data de Emissão da CNH", "Data de Vencimento da CNH",  
-                        Telefone, CEP, Endereço, Número, Complemento, Cidade, Bairro, Estado, 
-                        "Status do Cliente", "Categoria do Cliente", "Última Atualização", "Valor Gasto Total", "Última Compra"
-                    )
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?,?)
-                """, (
-                    nome, razao_social, data_inclusao, cnpj, rg, 
-                    cpf,email, cnh, categoria_cnh, data_emissao_cnh, data_vencimento_cnh, 
-                    telefone, cep, endereco, numero, complemento, cidade, bairro, estado, 
-                    status, categoria, ultima_atualizacao, valor_gasto_total,ultima_compra
-                ))
-                conexao.commit()
-
-                self.main_window.registrar_historico_clientes_juridicos(
-                    "Cadastro de Cliente", f"Cliente {nome} cadastrado com sucesso"
+            if not complemento:
+                complemento = "Não se aplica"
+            
+            # Inserir no banco
+            cursor.execute("""
+                INSERT INTO clientes_juridicos(
+                    "Nome do Cliente", "Razão Social", "Data da Inclusão", CNPJ, RG, 
+                        CPF,Email, CNH, "Categoria da CNH", "Data de Emissão da CNH", "Data de Vencimento da CNH",  
+                    Telefone, CEP, Endereço, Número, Complemento, Cidade, Bairro, Estado, 
+                    "Status do Cliente", "Categoria do Cliente", "Última Atualização", "Valor Gasto Total", "Última Compra"
                 )
-                
-                QMessageBox.information(self, "Sucesso", "Cliente cadastrado com sucesso!")
-                # Redimensiona apenas uma vez após preencher
-                self.table_clientes_juridicos.resizeColumnsToContents()
-                self.table_clientes_juridicos.resizeRowsToContents()
-                self.limpar_campos_clientes()
-                self.carregar_clientes_juridicos()
-                
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?,?)
+            """, (
+                nome, razao_social, data_inclusao, cnpj, rg, 
+                cpf,email, cnh, categoria_cnh, data_emissao_cnh, data_vencimento_cnh, 
+                telefone, cep, endereco, numero, complemento, cidade, bairro, estado, 
+                status, categoria, ultima_atualizacao, valor_gasto_total,ultima_compra
+            ))
+            self.db.connection.commit()
+
+            self.main_window.registrar_historico_clientes_juridicos(
+                "Cadastro de Cliente", f"Cliente {nome} cadastrado com sucesso"
+            )
+            
+            QMessageBox.information(self, "Sucesso", "Cliente cadastrado com sucesso!")
+            # Redimensiona apenas uma vez após preencher
+            self.table_clientes_juridicos.resizeColumnsToContents()
+            self.table_clientes_juridicos.resizeRowsToContents()
+            self.limpar_campos_clientes()
+            self.carregar_clientes_juridicos()
+            
 
         except Exception as e:
             QMessageBox.critical(self, "Erro", f"Erro ao cadastrar cliente: \n{e}")
@@ -2562,27 +2557,26 @@ class Clientes_Juridicos(QWidget):
         self.tabela_historico_clientes.resizeRowsToContents()
 
     def carregar_historico_clientes_juridicos(self):
-            with sqlite3.connect('banco_de_dados.db') as cn:
-                cursor = cn.cursor()
-                cursor.execute('SELECT * FROM historico_clientes_juridicos ORDER BY "Data e Hora" DESC')
-                registros = cursor.fetchall()
+        cursor = self.db.connection.cursor()
+        cursor.execute('SELECT * FROM historico_clientes_juridicos ORDER BY "Data e Hora" DESC')
+        registros = cursor.fetchall()
 
-            self.tabela_historico_clientes.clearContents()
-            self.tabela_historico_clientes.setRowCount(len(registros))
+        self.tabela_historico_clientes.clearContents()
+        self.tabela_historico_clientes.setRowCount(len(registros))
 
-            deslocamento = 1 if self.coluna_checkboxes_clientes_adicionada else 0
-            self.checkboxes_clientes = []  # Zerar e recriar lista de checkboxes
+        deslocamento = 1 if self.coluna_checkboxes_clientes_adicionada else 0
+        self.checkboxes_clientes = []  # Zerar e recriar lista de checkboxes
 
-            for i, (data, usuario, acao, descricao) in enumerate(registros):
-                if self.coluna_checkboxes_clientes_adicionada:
-                    checkbox = QCheckBox()
-                    checkbox.setStyleSheet("margin-left:9px; margin-right:9px;")
-                    self.tabela_historico_clientes.setCellWidget(i,0,checkbox)
-                    self.checkboxes_clientes.append(checkbox)
-                self.tabela_historico_clientes.setItem(i, 0 + deslocamento, QTableWidgetItem(data))
-                self.tabela_historico_clientes.setItem(i, 1 + deslocamento, QTableWidgetItem(usuario))
-                self.tabela_historico_clientes.setItem(i, 2 + deslocamento, QTableWidgetItem(acao))
-                self.tabela_historico_clientes.setItem(i, 3 + deslocamento, QTableWidgetItem(descricao))
+        for i, (data, usuario, acao, descricao) in enumerate(registros):
+            if self.coluna_checkboxes_clientes_adicionada:
+                checkbox = QCheckBox()
+                checkbox.setStyleSheet("margin-left:9px; margin-right:9px;")
+                self.tabela_historico_clientes.setCellWidget(i,0,checkbox)
+                self.checkboxes_clientes.append(checkbox)
+            self.tabela_historico_clientes.setItem(i, 0 + deslocamento, QTableWidgetItem(data))
+            self.tabela_historico_clientes.setItem(i, 1 + deslocamento, QTableWidgetItem(usuario))
+            self.tabela_historico_clientes.setItem(i, 2 + deslocamento, QTableWidgetItem(acao))
+            self.tabela_historico_clientes.setItem(i, 3 + deslocamento, QTableWidgetItem(descricao))
 
     def atualizar_historico_clientes_jurididos(self):
         QMessageBox.information(self, "Sucesso", "Dados carregados com sucesso!")
@@ -2640,15 +2634,14 @@ class Clientes_Juridicos(QWidget):
                 return
 
             # Excluir do banco de dados
-            with sqlite3.connect('banco_de_dados.db') as cn:
-                cursor = cn.cursor()
-                try:
-                    for data in datas_para_remover:
-                        cursor.execute('DELETE FROM historico_clientes_juridicos WHERE "Data e Hora" = ?', (data,))
-                    cn.commit()
-                except Exception as e:
-                    QMessageBox.critical(self, "Erro", f"Erro ao excluir do banco de dados: {e}")
-                    return
+            cursor = self.db.connection.cursor()
+            try:
+                for data in datas_para_remover:
+                    cursor.execute('DELETE FROM historico_clientes_juridicos WHERE "Data e Hora" = ?', (data,))
+                self.db.connection.commit()
+            except Exception as e:
+                QMessageBox.critical(self, "Erro", f"Erro ao excluir do banco de dados: {e}")
+                return
 
             # Remover as linhas na interface
             for row in sorted(linhas_para_remover, reverse=True):
@@ -2686,14 +2679,13 @@ class Clientes_Juridicos(QWidget):
                 return
 
             # Excluir do banco de dados
-            with sqlite3.connect('banco_de_dados.db') as cn:
-                cursor = cn.cursor()
-                try:
-                    cursor.execute('DELETE FROM historico_clientes_juridicos WHERE "Data e Hora" = ?', (item_data_text,))
-                    cn.commit()
-                except Exception as e:
-                    QMessageBox.critical(self, "Erro", f"Erro ao excluir do banco de dados: {e}")
-                    return
+            cursor = self.db.connection.cursor()
+            try:
+                cursor.execute('DELETE FROM historico_clientes_juridicos WHERE "Data e Hora" = ?', (item_data_text,))
+                self.db.connection.commit()
+            except Exception as e:
+                QMessageBox.critical(self, "Erro", f"Erro ao excluir do banco de dados: {e}")
+                return
 
             # Remover a linha da interface
             self.tabela_historico_clientes.removeRow(linha_selecionada)
@@ -3136,32 +3128,31 @@ class Clientes_Juridicos(QWidget):
             campo_data.setCursorPosition(len(data_formatada))  # Move o cursor para o final do texto
 
     def aplicar_filtro_clientes_juridicos(self, data, filtrar_novo, filtrar_velho):
-        with sqlite3.connect('banco_de_dados.db') as cn:
-            cursor = cn.cursor()
+        cursor = self.db.connection.cursor()
 
-            query = "SELECT * FROM historico_clientes_juridicos"
-            params = []
+        query = "SELECT * FROM historico_clientes_juridicos"
+        params = []
 
-            # Filtrar pela data, se fornecida
-            if data:
-                try:
-                    # Garantir que a data seja no formato correto (DD/MM/AAAA)
-                    data_formatada = datetime.strptime(data, "%d/%m/%Y").strftime("%d/%m/%Y")  # Formato DD/MM/YYYY
-                    query += " WHERE SUBSTR([Data e Hora], 1, 10) = ?"
-                    params.append(data_formatada)
-                except ValueError:
-                    QMessageBox.warning(self, "Erro", "Data inválida. Use o formato DD/MM/AAAA.")
-                    return
+        # Filtrar pela data, se fornecida
+        if data:
+            try:
+                # Garantir que a data seja no formato correto (DD/MM/AAAA)
+                data_formatada = datetime.strptime(data, "%d/%m/%Y").strftime("%d/%m/%Y")  # Formato DD/MM/YYYY
+                query += " WHERE SUBSTR([Data e Hora], 1, 10) = ?"
+                params.append(data_formatada)
+            except ValueError:
+                QMessageBox.warning(self, "Erro", "Data inválida. Use o formato DD/MM/AAAA.")
+                return
 
-            # Ordenar por hora, se aplicável
-            if filtrar_novo:
-                query += " ORDER BY [Data e Hora] DESC LIMIT 1"
-            elif filtrar_velho:
-                query += " ORDER BY [Data e Hora] ASC LIMIT 1"
+        # Ordenar por hora, se aplicável
+        if filtrar_novo:
+            query += " ORDER BY [Data e Hora] DESC LIMIT 1"
+        elif filtrar_velho:
+            query += " ORDER BY [Data e Hora] ASC LIMIT 1"
 
-            # Executar a consulta
-            cursor.execute(query, params)
-            registros = cursor.fetchall()
+        # Executar a consulta
+        cursor.execute(query, params)
+        registros = cursor.fetchall()
 
         # Atualizar a tabela com os registros filtrados
         self.tabela_historico_clientes.clearContents()
@@ -4037,7 +4028,7 @@ class Clientes_Juridicos(QWidget):
         params.append(data_ate.strftime("%Y-%m-%d"))
 
         try:
-            conn = sqlite3.connect("banco_de_dados.db")
+            conn = sqlite3.connect(self.db.db_path)
             cursor = conn.cursor()
             cursor.execute(sql, params)
             resultados = cursor.fetchall()
@@ -4202,8 +4193,7 @@ class Clientes_Juridicos(QWidget):
         params.append(data_ate.strftime("%Y-%m-%d"))
 
         try:
-            conn = sqlite3.connect("banco_de_dados.db")
-            cursor = conn.cursor()
+            cursor = self.db.connection.cursor()
             cursor.execute(sql, params)
             resultados = cursor.fetchall()
         except Exception as e:
@@ -4258,8 +4248,7 @@ class Clientes_Juridicos(QWidget):
 
     def carregar_opcoes_combo(self, nome_coluna, combo_box):
         try:
-            conn = sqlite3.connect("banco_de_dados.db")  # substitua com seu caminho
-            cursor = conn.cursor()
+            cursor = self.db.connection.cursor()
 
             # Aspas duplas se o nome da coluna tiver espaços
             cursor.execute(f'''

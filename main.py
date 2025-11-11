@@ -48,6 +48,7 @@ import requests
 from packaging import version  # Para comparar versões
 import tempfile  # Para salvar o download
 import shutil
+import atexit
 
 VERSAO_ATUAL = "1.1.1"  # O arquivo versao.json precisa ser maior que essa para chegar a atualização
 
@@ -65,8 +66,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.historico_usuario_pausado = False
         self.imagem_removida_usuario = False
         self.usuario_tem_imagem_salva = False
+        # Inicialize o banco de dados antes de qualquer operação que dependa dele
+        self.db = DataBase('banco_de_dados.db')
         self.temas = Temas()
         self.atalhos = {}  # dicionário com os atalhos definidos
+        atexit.register(self.aplicar_atualizacao_automaticamente)
         
         
 
@@ -84,12 +88,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         calendario.setFixedSize(220, 200)           # define tamanho menor do popup
         
 
-        # Inicialize o banco de dados antes de qualquer operação que dependa dele
-        self.db = DataBase('banco_de_dados.db')
+        
+        
         self.login_window = login_window
         # Se já vier uma conexão, usa ela. Caso contrário, cria uma nova
         if connection is None:
-            self.connection = sqlite3.connect('banco_de_dados.db')
+            self.connection = sqlite3.connect(self.db.db_path)
         else:
             self.connection = connection
 
@@ -527,6 +531,20 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.pagina_configuracoes.aplicar_tema_classico()
             
         QTimer.singleShot(3000, self.verificar_atualizacao_automatica)
+        
+    def aplicar_atualizacao_automaticamente(self):
+        try:
+            # Caminho do arquivo temporário baixado
+            destino_temp = os.path.join(os.getenv('USERPROFILE'), 'Desktop', 'SistemadeGerenciamento_tmp.exe')
+            # Caminho do executável atual
+            destino_final = os.path.join(os.getenv('USERPROFILE'), 'Desktop', 'SistemadeGerenciamento.exe')
+            
+            # Se existir o arquivo temporário, substitui o executável antigo
+            if os.path.exists(destino_temp):
+                # Substitui o antigo pelo novo
+                shutil.move(destino_temp, destino_final)
+        except Exception as e:
+            print(f"Erro ao aplicar atualização automática: {e}")
 
     def verificar_atualizacao_automatica(self):
         try:
@@ -2445,7 +2463,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         usuario = self.get_usuario_logado()  # Obtenha o usuário logado
         data_hora = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
 
-        with sqlite3.connect('banco_de_dados.db') as cn:
+        with self.db.connection as cn:
             cursor = cn.cursor()
             cursor.execute("""
                 INSERT INTO historico ('Data e Hora', Usuário, Ação, Descrição)
@@ -2461,7 +2479,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         usuario = self.get_usuario_logado()
         data_hora = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
 
-        with sqlite3.connect('banco_de_dados.db') as cn:
+        with self.db.connection as cn:
             cursor = cn.cursor()
             cursor.execute("""
                 INSERT INTO historico_usuarios('Data e Hora', Usuário, Ação, Descrição)
@@ -2477,7 +2495,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         usuario = self.get_usuario_logado()  # Obtenha o usuário logado
         data_hora = datetime.now().strftime("%d/%m/%Y %H:%M")
         
-        with sqlite3.connect('banco_de_dados.db') as cn:
+        with self.db.connection as cn:
             cursor = cn.cursor()
             cursor.execute("""
                 INSERT INTO historico_clientes_juridicos ('Data e Hora', Usuário, Ação, Descrição)
@@ -2493,7 +2511,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         usuario = self.get_usuario_logado()
         data_hora = datetime.now().strftime("%d/%m/%Y %H:%M")
 
-        with sqlite3.connect("banco_de_dados.db") as cn:
+        with self.db.connection as cn:
             cursor = cn.cursor()
             cursor.execute("""
                 INSERT INTO historico_clientes_fisicos ('Data e Hora',Usuário,Ação,Descrição)
@@ -3129,20 +3147,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             print("⚠️ Página atual não tem método de atualização com F5.")
 
 
-    def resource_way(relative_path):
-        """Retorna o caminho absoluto para arquivos embutidos no .exe."""
-        if hasattr(sys, '_MEIPASS'):
-            return os.path.join(sys._MEIPASS, relative_path)
-        return os.path.join(os.path.abspath("."), relative_path)
-    # Cria a pasta "DadosSistema" na mesma pasta do executável
-    base_dir = os.path.dirname(os.path.abspath(__file__))
-    pasta_dados = os.path.join(base_dir, "DadosSistema")
-
-    if not os.path.exists(pasta_dados):
-        os.makedirs(pasta_dados)
-
-    # Caminho completo do banco de dados
-    caminho_banco = os.path.join(pasta_dados, "banco_de_dados.db")
+    
 
     
     def aplicar_tema_global(self,app: QApplication, tema: str):

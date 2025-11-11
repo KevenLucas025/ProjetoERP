@@ -1,15 +1,27 @@
 import sqlite3
 from datetime import datetime
+import os
 
 class DataBase:
     def __init__(self, name="banco_de_dados.db"):
         self.name = name
         self.connection = None
+        self.db_path = self.obter_caminho_banco()
         self.connecta()  # Tente conectar ao banco ao instanciar
+        
+#*********************************************************************************************************************       
+    def obter_caminho_banco(self):
+         # Pega a pasta onde o executável ou script está rodando
+        pasta_exec = os.path.dirname(os.path.abspath(__file__))
+        
+        # Cria uma subpasta chamada SistemaGerenciamento
+        pasta_dados = os.path.join(pasta_exec,"SistemaGerenciamento")
+        os.makedirs(pasta_dados,exist_ok=True)
+        return os.path.join(pasta_dados,self.name)
 #*********************************************************************************************************************
     def connecta(self):
         try:
-            self.connection = sqlite3.connect("banco_de_dados.db")
+            self.connection = sqlite3.connect(self.db_path)
             return self.connection
         except Exception as e:
             print(f"Erro ao conectar ao banco: {e}")
@@ -138,7 +150,9 @@ class DataBase:
                     Descrição_Produto TEXT,
                     Usuário TEXT,
                     "Status da Saída" TEXT,
-                    Imagem TEXT
+                    Imagem TEXT,
+                    CNPJ TEXT,
+                    CPF TEXT
                 )
             """)
             self.connection.commit()  # Confirmar a transação
@@ -1034,7 +1048,6 @@ class DataBase:
 
 if __name__ == "__main__":
     db = DataBase()
-    db.connecta()
     db.close_connection()
     
     
