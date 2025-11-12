@@ -151,7 +151,7 @@ class EstoqueProduto(QWidget):
                 self.gerar_saida(produtos_selecionados)
 
         else:
-            msg_box = QMessageBox()
+            msg_box = QMessageBox(self)
             msg_box.setIcon(QMessageBox.Information)
             msg_box.setWindowTitle("Aviso")
             msg_box.setText("Nenhum produto selecionado para gerar saída")
@@ -398,7 +398,7 @@ class EstoqueProduto(QWidget):
 
             #  Verifica se a quantidade é válida
             if int(quantidade) <= 0:
-                msg_box = QMessageBox()
+                msg_box = QMessageBox(self)
                 msg_box.setIcon(QMessageBox.Warning)
                 msg_box.setWindowTitle("Estorno inválido")
                 msg_box.setText(None,f"O produto '{produto}' tem quantidade 0 e não pode ser estornado.")
@@ -1707,7 +1707,7 @@ class EstoqueProduto(QWidget):
     def ordenar_historico(self):
         if getattr(self, "checkbox_selecionar",None) and self.checkbox_selecionar.isChecked():
             QMessageBox.warning(
-                None,
+                self,
                 "Aviso",
                 "Desmarque o checkbox antes de ordenar o histórico."
             )
@@ -1777,7 +1777,7 @@ class EstoqueProduto(QWidget):
     def filtrar_historico(self):
         if getattr(self,"checkbox_selecionar",None) and self.checkbox_selecionar.isChecked():
             QMessageBox.warning(
-                None,
+                self,
                 "Aviso",
                 "Desmarque o checkbox antes de filtrar o histórico."
             )
@@ -2455,14 +2455,14 @@ class EstoqueProduto(QWidget):
                 coluna_table_massa_produtos = ["Produto", "Quantidade", "Valor do Produto", "Desconto", "Data da Compra",
                                             "Código do Item", "Cliente", "Descrição do Produto"]
                 if df.shape[1] != len(coluna_table_massa_produtos):
-                    QMessageBox.warning(None, "Erro", "O número de colunas no arquivo Excel não corresponde ao número esperado.")
+                    QMessageBox.warning(self, "Erro", "O número de colunas no arquivo Excel não corresponde ao número esperado.")
                     self.line_edit_massa_produtos.clear()
                     # Zerando a barra de progresso
                     self.progress_massa_produtos.setValue(0)
                     self.progresso_massa = 0
                     return
                 if df.shape[0] == 0:
-                    QMessageBox.warning(None, "Erro", "O arquivo Excel está vazio.")
+                    QMessageBox.warning(self, "Erro", "O arquivo Excel está vazio.")
                     self.line_edit_massa_produtos.clear()
                     # Zerando a barra de progresso
                     self.progress_massa_produtos.setValue(0)
@@ -2492,9 +2492,9 @@ class EstoqueProduto(QWidget):
                     for column, value in enumerate(row):
                         item = self.formatar_texto_produtos_em_massa(str(value))
                         self.table_massa_produtos.setItem(row_position, column, item)
-                QMessageBox.information(None, "Sucesso", "Arquivo Excel importado com sucesso!")
+                QMessageBox.information(self, "Sucesso", "Arquivo Excel importado com sucesso!")
             except Exception as e:
-                QMessageBox.critical(None, "Erro", f"Erro ao importar o arquivo Excel: {e}")
+                QMessageBox.critical(self, "Erro", f"Erro ao importar o arquivo Excel: {e}")
             # Quando o arquivo for carregado, atualizar o texto da line_excel com o caminho do arquivo
             self.line_edit_massa_produtos.setText(self.nome_arquivo_excel_massa)
 
@@ -2514,7 +2514,7 @@ class EstoqueProduto(QWidget):
         try:
             total_linhas = self.table_massa_produtos.rowCount()
             if total_linhas == 0:
-                QMessageBox.warning(None, "Aviso", "Nenhum produto encontrado para cadastrar.")
+                QMessageBox.warning(self, "Aviso", "Nenhum produto encontrado para cadastrar.")
                 return
             for linha in range(total_linhas):
                 produto = self.table_massa_produtos.item(linha, 0).text()
@@ -2560,14 +2560,14 @@ class EstoqueProduto(QWidget):
                 descricao = f"Produto {produto} foi cadastrado com quantidade {quantidade} e valor {valor_produto}!"
                 self.main_window.registrar_historico("Cadastro em Massa", descricao)
 
-            QMessageBox.information(None, "Sucesso", "Produtos cadastrados com sucesso!")
+            QMessageBox.information(self, "Sucesso", "Produtos cadastrados com sucesso!")
             self.line_edit_massa_produtos.clear()
 
             # Limpar a tabela após a inserção
             self.table_massa_produtos.setRowCount(0)
 
         except Exception as e:
-            QMessageBox.critical(None, "Erro", f"Erro ao cadastrar produtos em massa:\n{e}")
+            QMessageBox.critical(self, "Erro", f"Erro ao cadastrar produtos em massa:\n{e}")
 
     
     

@@ -533,7 +533,7 @@ class Pagina_Configuracoes(QWidget):
             }
             QMessageBox {
                 background-color: #2b2b2b;   /* fundo escuro */
-                color: #f0f0f0;              /* texto claro */
+                color: #2b2b2b;              /* texto claro */
                 border: 2px solid #555555;
                 border-radius: 10px;
             }

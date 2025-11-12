@@ -3154,7 +3154,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if tema == "escuro":
             app.setStyleSheet("""
                 QWidget {
-                    background-color: #202124;
+                    background-color: #2b2b2b;
                     color: white;
                     font-size: 12px;
                 }           

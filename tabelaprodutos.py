@@ -161,8 +161,7 @@ class TabelaProdutos(QMainWindow):
                 QPushButton:pressed {
                     background-color: #555555;
                     border: 2px solid #888888;
-                }
-            """
+                }"""
             combobox_style = """
                 QComboBox {
                     color: #f0f0f0;
@@ -190,9 +189,31 @@ class TabelaProdutos(QMainWindow):
                 QComboBox QScrollBar::handle:vertical {
                     background: #555555;
                     border-radius: 6px;
+                }"""
+            messagebox_style = """
+                QMessageBox {
+                    background-color: #2b2b2b;   /* fundo escuro */
+                    color: #f0f0f0;              /* texto claro */
+                    border: 2px solid #555555;
+                    border-radius: 10px;
                 }
-                
-            """
+                QMessageBox QLabel {
+                    color: #f0f0f0;              /* cor do texto */
+                    font-size: 14px;
+                    background: transparent;
+                }
+                QMessageBox QDialogButtonBox QPushButton {
+                    background-color: #444444;
+                    color: #ffffff;
+                    border-radius: 6px;
+                    padding: 4px 10px;
+                }
+                QMessageBox QDialogButtonBox QPushButton:hover {
+                    background-color: #666666;
+                }
+                QMessageBox QDialogButtonBox QPushButton:pressed {
+                    background-color: #888888;
+                }"""
             
             scroll_style = """
             /* Scrollbar vertical */
@@ -240,6 +261,7 @@ class TabelaProdutos(QMainWindow):
                 border: 1px solid #aaaaaa;
                 padding: 1px;
             }
+            
 
             /* QTabWidget headers brancos */
             QTabWidget::pane {
@@ -368,6 +390,39 @@ class TabelaProdutos(QMainWindow):
                     border: 2px solid #aaaaaa;
                 }
             """
+            messagebox_style = """
+            QMessageBox {
+                background: qlineargradient(
+                    x1: 0, y1: 0,
+                    x2: 0, y2: 1,
+                    stop: 0 #ffffff,       /* branco puro no topo */
+                    stop: 0.2 #f5f5f5,     /* branco acinzentado na faixa */
+                    stop: 1 #c0c0c0       /* branco acinzentado no resto */
+                );
+                color: black;
+            }
+            QMessageBox QLabel{
+                background: transparent;
+                color: black
+            }
+            QMessageBox QPushButton {
+                background-color: #ffffff;
+                color: black;
+                border: 1px solid #0078d7;
+                padding: 2px 10px;
+                border-radius: 6px;
+                min-width: 40px;
+                min-height: 10px; 
+                font-size: 12px; 
+            }
+            
+            QMessageBox QPushButton:hover {
+                background-color: #e6f0fa;
+            }
+
+            QMessageBox QPushButton:pressed {
+                background-color: #c7d7f9;
+            }"""
             combobox_style = """
                 QComboBox {
                     background-color: white;
@@ -658,6 +713,41 @@ class TabelaProdutos(QMainWindow):
                     background-color: white;
                 }
             """
+            messagebox_style = """
+            QMessageBox {
+                    background: qlineargradient(
+                        x1: 0, y1: 0,
+                        x2: 0, y2: 1,
+                        stop: 0 #ffffff,       /* branco puro no topo */
+                        stop: 0.2 #f5f5f5,     /* branco acinzentado na faixa */
+                        stop: 1 #c0c0c0       /* branco acinzentado no resto */
+                    );
+                    color: black;
+                }
+                QMessageBox QLabel{
+                    background: transparent;
+                    color: black
+                }
+                QMessageBox QPushButton {
+                    background-color: #ffffff;
+                    color: black;
+                    border: 1px solid #0078d7;
+                    padding: 2px 10px;
+                    border-radius: 6px;
+                    min-width: 40px;
+                    min-height: 10px; 
+                    font-size: 12px; 
+                }
+                
+                QMessageBox QPushButton:hover {
+                    background-color: #e6f0fa;
+                }
+
+                QMessageBox QPushButton:pressed {
+                    background-color: #c7d7f9;
+                }
+                           
+            }"""
 
             lineedit_style = """
                 QLineEdit {
@@ -678,6 +768,7 @@ class TabelaProdutos(QMainWindow):
         {combobox_style}
         {table_view_style}
         {scroll_style}
+        {messagebox_style}
         """
         return estilo_completo
 
@@ -829,7 +920,7 @@ class TabelaProdutos(QMainWindow):
     def filtrar_produtos(self):
         if getattr(self, "checkbox_header_users", None) and self.checkbox_header_users.isChecked():
             QMessageBox.warning(
-                None,
+                self,
                 "Aviso",
                 "Desmarque o checkbox antes de filtrar os produtos."
             )
@@ -926,7 +1017,7 @@ class TabelaProdutos(QMainWindow):
 
         # Verificar se a tabela está vazia
         if self.table_widget.rowCount() == 0:
-            QMessageBox.warning(None, "Aviso", "Nenhum produto cadastrado para apagar.")
+            QMessageBox.warning(self, "Aviso", "Nenhum produto cadastrado para apagar.")
             return  # Se a tabela estiver vazia, encerra a função sem prosseguir
 
         # 1. Verificar checkboxes marcadas
@@ -952,7 +1043,7 @@ class TabelaProdutos(QMainWindow):
                                     produtos_para_remover.append((int(produto_id), nome_produto))
                                     linhas_para_remover.append(row)
                             else:
-                                QMessageBox.warning(None, "Erro", f"ID inválido para o produto na linha {row + 1}. Esperado um número.")
+                                QMessageBox.warning(self, "Erro", f"ID inválido para o produto na linha {row + 1}. Esperado um número.")
 
         # 2. Verificar linhas selecionadas utilizando selectedIndexes, se não houver seleção por checkbox
         if not produtos_para_remover:  # Só verificar `selectedIndexes()` se não houver produtos selecionados via checkbox
@@ -975,9 +1066,9 @@ class TabelaProdutos(QMainWindow):
                             produtos_para_remover.append((int(produto_id), nome_produto))
                             linhas_para_remover.append(row)
                         else:
-                            QMessageBox.warning(None, "Erro", f"ID inválido para o produto na linha {row + 1}: '{produto_id}'. Esperado um número.")
+                            QMessageBox.warning(self, "Erro", f"ID inválido para o produto na linha {row + 1}: '{produto_id}'. Esperado um número.")
                     else:
-                        QMessageBox.warning(None, "Erro", f"Produto na linha {row + 1} não tem dados válidos.")
+                        QMessageBox.warning(self, "Erro", f"Produto na linha {row + 1} não tem dados válidos.")
 
         # 3. Validar se há produtos para remover
         if produtos_para_remover:
@@ -985,7 +1076,7 @@ class TabelaProdutos(QMainWindow):
             mensagem = "Você tem certeza que deseja apagar o produto selecionado?" if num_produtos == 1 else "Você tem certeza que deseja apagar os produtos selecionados?"
 
             # Criar a caixa de confirmação
-            msgbox = QMessageBox()
+            msgbox = QMessageBox(self)
             msgbox.setWindowTitle("Confirmar")
             msgbox.setText(mensagem)
 
@@ -1015,12 +1106,12 @@ class TabelaProdutos(QMainWindow):
                         self.table_widget.removeRow(row)
 
                     # Sucesso
-                    QMessageBox.information(None, "Sucesso", "Produtos removidos com sucesso!")
+                    QMessageBox.information(self, "Sucesso", "Produtos removidos com sucesso!")
 
                 except Exception as e:
-                    QMessageBox.critical(None, "Erro", f"Erro ao remover os produtos: {str(e)}")
+                    QMessageBox.critical(self, "Erro", f"Erro ao remover os produtos: {str(e)}")
         else:
-            QMessageBox.warning(None, "Aviso", "Nenhum produto selecionado para apagar.")
+            QMessageBox.warning(self, "Aviso", "Nenhum produto selecionado para apagar.")
 
 #*******************************************************************************************************
     def editar_produto_tabela(self):
@@ -1028,7 +1119,7 @@ class TabelaProdutos(QMainWindow):
         
         # Verificar se a tabela está vazia
         if self.table_widget.rowCount() == 0:
-            QMessageBox.warning(None, "Aviso", "Nenhum produto cadastrado para atualizar.")
+            QMessageBox.warning(self, "Aviso", "Nenhum produto cadastrado para atualizar.")
             return  # Se a tabela estiver vazia, encerra a função sem prosseguir
 
         # Verifica se a coluna de checkboxes está ativa
@@ -1051,20 +1142,20 @@ class TabelaProdutos(QMainWindow):
                             continue
 
             if len(produtos_selecionados) > 1:
-                QMessageBox.warning(None, "Erro", "Somente um produto por vez poderá ser editado.")
+                QMessageBox.warning(self, "Erro", "Somente um produto por vez poderá ser editado.")
                 return
 
             if len(produtos_selecionados) == 1:
                 produto_id = produtos_selecionados[0]
             else:
-                QMessageBox.warning(None, "Erro", "Nenhum produto selecionado para editar.")
+                QMessageBox.warning(self, "Erro", "Nenhum produto selecionado para editar.")
                 return
         else:
             if self.table_widget.currentRow() >= 0:
                 row_index = self.table_widget.currentRow()
                 produto_id = int(self.table_widget.item(row_index, 0).text())
             else:
-                QMessageBox.warning(None, "Erro", "Nenhum produto selecionado para editar.")
+                QMessageBox.warning(self, "Erro", "Nenhum produto selecionado para editar.")
                 return
 
         imagem_data = self.recuperar_imagem_do_banco(produto_id)
@@ -1088,7 +1179,7 @@ class TabelaProdutos(QMainWindow):
                 linha_produto = row
                 break
         if linha_produto is None:
-            QMessageBox.warning(None, "Erro", f"Produto com ID {produto_id} não encontrado na tabela.")
+            QMessageBox.warning(self, "Erro", f"Produto com ID {produto_id} não encontrado na tabela.")
             return
         # ATIVAR MODO DE EDIÇÃO AQUI
         self.main_window.is_editing_produto = True
@@ -1185,7 +1276,7 @@ class TabelaProdutos(QMainWindow):
                     pixmap.loadFromData(imagem_data)
 
                     if pixmap.isNull():
-                        QMessageBox.warning(None, "Aviso", "Não foi possível carregar a imagem.")
+                        QMessageBox.warning(self, "Aviso", "Não foi possível carregar a imagem.")
                         return
                     else:
                         print("Pixmap carregado com sucesso.")
@@ -1258,7 +1349,7 @@ class TabelaProdutos(QMainWindow):
     # Função para adicionar checkboxes selecionar_individual na tabela de histórico
     def selecionar_individual(self):
         if self.table_widget.rowCount() == 0:
-            QMessageBox.warning(None, "Aviso", "Nenhum histórico para selecionar.")
+            QMessageBox.warning(self, "Aviso", "Nenhum histórico para selecionar.")
             # Desmarca o checkbox visualmente
             if hasattr(self, "checkbox_selecionar_produtos") and isinstance(self.checkbox_selecionar_produtos, QCheckBox):
                 QTimer.singleShot(0, lambda: self.checkbox_selecionar_produtos.setChecked(False))
@@ -1362,7 +1453,7 @@ class TabelaProdutos(QMainWindow):
     def ordenar_historico_produtos(self):
         if getattr(self, "checkbox_header_produtos",None) and self.checkbox_header_produtos.isChecked():
             QMessageBox.warning(
-                None,
+                self,
                 "Aviso",
                 "Desmarque o checkbox antes de ordenar o histórico."
             )
@@ -1412,11 +1503,11 @@ class TabelaProdutos(QMainWindow):
         
             
             if not selecionados:
-                QMessageBox.warning(None, "Aviso", "Nenhum produto selecionado para visualizar a imagem.")
+                QMessageBox.warning(self, "Aviso", "Nenhum produto selecionado para visualizar a imagem.")
                 return
             
             if len(selecionados) > 1:
-                QMessageBox.warning(None, "Aviso", "Só é possível visualizar a imagem de um produto por vez.")
+                QMessageBox.warning(self, "Aviso", "Só é possível visualizar a imagem de um produto por vez.")
                 return
             
             row_index = selecionados[0]
@@ -1424,7 +1515,7 @@ class TabelaProdutos(QMainWindow):
         else:
             row_index = self.table_widget.currentRow()
             if row_index < 0:
-                QMessageBox.warning(None, "Aviso", "Selecione um produto para visualizar a imagem.")
+                QMessageBox.warning(self, "Aviso", "Selecione um produto para visualizar a imagem.")
                 return
             
         # Pega o ID da coluna correta (0 se não tiver coluna de checkbox, 1 se tiver)
@@ -1432,12 +1523,12 @@ class TabelaProdutos(QMainWindow):
         item = self.table_widget.item(row_index, coluna_id)
 
         if item is None:
-            QMessageBox.warning(None, "Erro", "Não foi possível identificar o ID do produto.")
+            QMessageBox.warning(self, "Erro", "Não foi possível identificar o ID do produto.")
             return
         try:
             produto_id = int(item.text())
         except ValueError:
-            QMessageBox.warning(None, "Erro", "ID de produto inválido.")
+            QMessageBox.warning(self, "Erro", "ID de produto inválido.")
             return
 
         imagem_data = self.recuperar_imagem_do_banco(produto_id)
@@ -1451,7 +1542,7 @@ class TabelaProdutos(QMainWindow):
                 
                 if pixmap.isNull():
                     print("Aviso: pixmap é nulo")
-                    QMessageBox.warning(None, "Aviso", "Não foi possível carregar a imagem.")
+                    QMessageBox.warning(self, "Aviso", "Não foi possível carregar a imagem.")
                     return
                 else:
                     print("Pixmap carregado com sucesso para visualização.")
@@ -1472,7 +1563,7 @@ class TabelaProdutos(QMainWindow):
             except Exception as e:
                 print(f"Erro ao processar imagem: {str(e)}")
         else:
-            QMessageBox.warning(None, "Aviso", "Imagem não encontrada.")
+            QMessageBox.warning(self, "Aviso", "Imagem não encontrada.")
 #*******************************************************************************************************
     def get_label_imagem(self):
         label_imagem = None
@@ -1549,7 +1640,7 @@ class TabelaProdutos(QMainWindow):
 
 
     def atualizar_tabela_products(self):
-        QMessageBox.information(None, "Sucesso", "Dados carregados com sucesso!")
+        QMessageBox.information(self, "Sucesso", "Dados carregados com sucesso!")
         self.carregar_tabela_produtos()
 
     def gerar_arquivo_excel(self):
@@ -1559,7 +1650,7 @@ class TabelaProdutos(QMainWindow):
 
         # Verificar se a tabela está vazia
         if self.table_widget.rowCount() == 0:
-            QMessageBox.warning(None, "Aviso", "Nenhum produto cadastrado para gerar arquivo excel.")
+            QMessageBox.warning(self, "Aviso", "Nenhum produto cadastrado para gerar arquivo excel.")
             return  # Se a tabela estiver vazia, encerra a função sem prosseguir
 
         # Extrai os dados da tabela para uma lista de listas
@@ -1581,12 +1672,12 @@ class TabelaProdutos(QMainWindow):
         df = pd.DataFrame(dados, columns=cabecalhos)
 
         # Abre um diálogo para salvar o arquivo
-        caminho_arquivo, _ = QFileDialog.getSaveFileName(None, "Salvar Arquivo Excel", "Tabela Produtos", "Arquivo Excel (*.xlsx)")
+        caminho_arquivo, _ = QFileDialog.getSaveFileName(self, "Salvar Arquivo Excel", "Tabela Produtos", "Arquivo Excel (*.xlsx)")
         
         if caminho_arquivo:
             # Salva o DataFrame como um arquivo Excel
             df.to_excel(caminho_arquivo, index=False)
-            QMessageBox.information(None,"Aviso","Arquivo excel gerado com sucesso")
+            QMessageBox.information(self,"Aviso","Arquivo excel gerado com sucesso")
 
     def duplicar_produto(self):
         # Verificar se há uma linha selecionada
@@ -1594,12 +1685,12 @@ class TabelaProdutos(QMainWindow):
 
         # Verificar se a tabela está vazia
         if self.table_widget.rowCount() == 0:
-            QMessageBox.warning(None, "Aviso", "Nenhum produto cadastrado para duplicar.")
+            QMessageBox.warning(self, "Aviso", "Nenhum produto cadastrado para duplicar.")
             return  # Se a tabela estiver vazia, encerra a função sem prosseguir
         
         if linha_selecionada == -1:
             # Se nenhuma linha estiver selecionada, mostrar um aviso
-            QMessageBox.warning(None, "Aviso", "Nenhum produto selecionado para duplicar.")
+            QMessageBox.warning(self, "Aviso", "Nenhum produto selecionado para duplicar.")
             return
 
         # Obter os dados da linha selecionada
@@ -1635,10 +1726,10 @@ class TabelaProdutos(QMainWindow):
                         valor_total,codigo_item, cliente, descricao_produto, imagem)
 
             # Exibir uma mensagem de sucesso
-            QMessageBox.information(None, "Sucesso", "Produto duplicado e cadastrado com sucesso.")
+            QMessageBox.information(self, "Sucesso", "Produto duplicado e cadastrado com sucesso.")
         
         except Exception as e:
-            QMessageBox.critical(None, "Erro", f"Falha ao cadastrar o produto: {str(e)}")
+            QMessageBox.critical(self, "Erro", f"Falha ao cadastrar o produto: {str(e)}")
 
 
 

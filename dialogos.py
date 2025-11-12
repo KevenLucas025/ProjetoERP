@@ -107,7 +107,7 @@ class DialogoEstilizado(QDialog):
                 color: white;
                 font-size: 12px;
             }
-        """
+            """
             lineedit_style = f"""
                 QLineEdit {{
                     background-color: {lineedit_bg};
