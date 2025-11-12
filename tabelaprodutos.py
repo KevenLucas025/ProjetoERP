@@ -65,6 +65,8 @@ class TabelaProdutos(QMainWindow):
         
         self.table_widget.horizontalHeader().setSectionResizeMode(QHeaderView.Interactive)
         
+
+        
          # Widget central e layout principal vertical
         widget_central = QWidget()
         # Layout principal da janela
@@ -111,6 +113,9 @@ class TabelaProdutos(QMainWindow):
         self.setCentralWidget(widget_central)
 
         self.preencher_tabela_produtos()
+        
+        
+        
 
         botoes = [
             self.btn_apagar_produto,
@@ -261,8 +266,7 @@ class TabelaProdutos(QMainWindow):
                 border: 1px solid #aaaaaa;
                 padding: 1px;
             }
-            
-
+                
             /* QTabWidget headers brancos */
             QTabWidget::pane {
                 border: 1px solid #444444;
@@ -353,6 +357,9 @@ class TabelaProdutos(QMainWindow):
             /* Forçar cor do texto do QCheckBox */
             QCheckBox {
                 color: white;
+            }
+            QWidget {
+                background-color: #202124; /* fundo do widget do header inteiro */
             }
 
             """
@@ -1746,3 +1753,4 @@ class TabelaProdutos(QMainWindow):
 
         item.setForeground(QBrush(cor))
         return item   
+

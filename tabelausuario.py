@@ -305,6 +305,7 @@ class TabelaUsuario(QMainWindow):
                 QTableCornerButton::section {
                     background-color: #f0f0f0;
                     border: 1px solid #ccc;
+                    padding: 2px;
                 }
                 /* Forçar cor do texto do QCheckBox */
                 QCheckBox {

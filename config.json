@@ -8,13 +8,16 @@
     "nao_mostrar_mensagem_arquivo_excel_fisicos": true,
     "historico_autocompletes": {
         "txt_nome": [
-            "dsfdsfs"
+            "dsfdsfs",
+            "sdsd"
         ],
         "txt_usuario_cadastro": [
-            "sdfsd"
+            "sdfsd",
+            "sds"
         ],
         "txt_senha_cadastro": [
-            "python .\\main.py"
+            "python .\\main.py",
+            "1212!@fasdf"
         ],
         "txt_produto": [
             "Pizza"
@@ -42,6 +45,36 @@
         ],
         "line_clientes": [
             "dfsdfsd"
+        ],
+        "txt_confirmar_senha": [
+            "1212!@fasdf"
+        ],
+        "txt_cep": [
+            "13179905"
+        ],
+        "txt_telefone": [
+            "19982018869"
+        ],
+        "txt_email": [
+            "keven.lucas00@hotmail.com"
+        ],
+        "txt_endereco": [
+            "Rua José Vieira da Silva"
+        ],
+        "txt_data_nascimento": [
+            "26012000"
+        ],
+        "txt_rg": [
+            "529915595"
+        ],
+        "txt_cpf": [
+            "50679677810"
+        ],
+        "txt_cnpj": [
+            "00000000000000"
+        ],
+        "txt_complemento": [
+            "1215"
         ]
     },
     "tema": "escuro",
