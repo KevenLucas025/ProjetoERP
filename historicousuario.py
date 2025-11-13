@@ -126,7 +126,7 @@ class Pagina_Usuarios(QWidget):
         quantidade_selecionada = len(usuarios_selecionados)
         
         if total_usuarios_ativos - quantidade_selecionada <= 1:
-            QMessageBox.critical(None,"Erro","Não é possível gerar saída. O sistema deve ter pelo menos um usuário ativo")
+            QMessageBox.critical(self,"Erro","Não é possível gerar saída. O sistema deve ter pelo menos um usuário ativo")
             return
 
 
@@ -213,7 +213,7 @@ class Pagina_Usuarios(QWidget):
             self.main_window.registrar_historico_usuarios("Gerado Saída de Usuário", texto)
 
         if saida_usuarios:
-            msg_box = QMessageBox()
+            msg_box = QMessageBox(self)
             msg_box.setIcon(QMessageBox.Information)
             msg_box.setWindowTitle("Aviso")
             msg_box.setText("Saída do(s) usuário(s) gerada com sucesso!")
@@ -261,7 +261,7 @@ class Pagina_Usuarios(QWidget):
             pass
         else:
             # Cria a mensagem de aviso com o checkbox
-            msg_aviso_irreversivel = QMessageBox()
+            msg_aviso_irreversivel = QMessageBox(self)
             msg_aviso_irreversivel.setIcon(QMessageBox.Warning)  # Ícone de aviso
             msg_aviso_irreversivel.setWindowTitle("Aviso de Saída Irreversível")  # Título da janela
             msg_aviso_irreversivel.setText("A função de saída de usuário é irreversível.\n\nUsuários removidos não poderão ser restaurados.")  # Texto do aviso
@@ -342,7 +342,7 @@ class Pagina_Usuarios(QWidget):
                 self.gerar_saida_usuarios(usuarios_selecionados)
 
         else:
-            msg_box = QMessageBox()
+            msg_box = QMessageBox(self)
             msg_box.setIcon(QMessageBox.Information)
             msg_box.setWindowTitle("Aviso")
             msg_box.setText("Nenhum usuário selecionado para gerar saída")
@@ -372,7 +372,7 @@ class Pagina_Usuarios(QWidget):
             self.table_ativos.resizeRowsToContents()  # Ajusta as linhas automaticamente
 
             # Exibir uma mensagem de sucesso
-            msg_box = QMessageBox()
+            msg_box = QMessageBox(self)
             msg_box.setIcon(QMessageBox.Information)
             msg_box.setWindowTitle("Informação")
             msg_box.setText("Tabela ativos atualizada com sucesso!")       
@@ -404,7 +404,7 @@ class Pagina_Usuarios(QWidget):
                         item = self.formatar_texto(str(value))
                         self.table_inativos.setItem(row_position, column, item)
                         
-            msg_box = QMessageBox()
+            msg_box = QMessageBox(self)
             msg_box.setIcon(QMessageBox.Information)
             msg_box.setWindowTitle("Informação")
             msg_box.setText("Tabela inativos atualizada com sucesso!")       
@@ -426,7 +426,7 @@ class Pagina_Usuarios(QWidget):
     def limpar_tabelas(self):
         # Verifica se as tabelas estão vazias
         if self.table_inativos.rowCount() == 0 and self.table_ativos.rowCount() == 0:
-            msg = QMessageBox()
+            msg = QMessageBox(self)
             msg.setIcon(QMessageBox.Warning)
             msg.setWindowTitle("Aviso")
             msg.setText("As tabelas já estão vazias.")
@@ -440,7 +440,7 @@ class Pagina_Usuarios(QWidget):
         self.table_inativos.setRowCount(0)
 
         # Mensagem de confirmação após a limpeza
-        msg = QMessageBox()
+        msg = QMessageBox(self)
         msg.setIcon(QMessageBox.Information)
         msg.setWindowTitle("Limpeza Concluída")
         msg.setText("As tabelas foram limpas com sucesso.")
@@ -1113,7 +1113,7 @@ class Pagina_Usuarios(QWidget):
 
 
     def atualizar_historico_usuario(self):
-        QMessageBox.information(None, "Sucesso", "Dados carregados com sucesso!")
+        QMessageBox.information(self, "Sucesso", "Dados carregados com sucesso!")
         self.carregar_historico_usuario()
 
     def apagar_historico_usuario(self):
@@ -1129,7 +1129,7 @@ class Pagina_Usuarios(QWidget):
                     # Capturar a Data/Hora da célula correspondente (coluna 0)
                     coluna_data_hora = self.obter_indice_coluna("data/hora")
                     if coluna_data_hora == -1: 
-                        QMessageBox.warning(None, "Erro", "A coluna 'Data e Hora' não foi encontrada!")
+                        QMessageBox.warning(self, "Erro", "A coluna 'Data e Hora' não foi encontrada!")
                     item_data_widget = self.tabela_historico_usuarios.item(row, coluna_data_hora)  # Coluna de Data/Hora
                     if item_data_widget:
                         item_data_text = item_data_widget.text().strip()
@@ -1142,7 +1142,7 @@ class Pagina_Usuarios(QWidget):
                         print(f"Erro ao capturar Data/Hora na linha {row}")
 
             if not ids_para_remover:
-                QMessageBox.warning(None, "Erro", "Nenhum item válido foi selecionado para apagar!")
+                QMessageBox.warning(self, "Erro", "Nenhum item válido foi selecionado para apagar!")
                 return
 
             # Confirmar exclusão
@@ -1163,31 +1163,31 @@ class Pagina_Usuarios(QWidget):
                         cursor.execute("DELETE FROM historico_usuarios WHERE 'Data e Hora' = ?", (item_id,))
                     cn.commit()
                 except Exception as e:
-                    QMessageBox.critical(None, "Erro", f"Erro ao excluir do banco de dados: {e}")
+                    QMessageBox.critical(self, "Erro", f"Erro ao excluir do banco de dados: {e}")
                     return
 
             # Remover as linhas na interface
             for row in sorted(linhas_para_remover, reverse=True):
                 self.tabela_historico_usuarios.removeRow(row)
 
-            QMessageBox.information(None, "Sucesso", "Itens removidos com sucesso!")
+            QMessageBox.information(self, "Sucesso", "Itens removidos com sucesso!")
 
         # Caso sem checkboxes (seleção manual)
         else:
             linha_selecionada = self.tabela_historico_usuarios.currentRow()
 
             if linha_selecionada < 0:
-                QMessageBox.warning(None, "Erro", "Nenhum item foi selecionado para apagar!")
+                QMessageBox.warning(self, "Erro", "Nenhum item foi selecionado para apagar!")
                 return
 
             # Capturar a Data/Hora da célula correspondente (coluna 0)
             coluna_data_hora = self.obter_indice_coluna("data/hora")
             if coluna_data_hora == -1: 
-                QMessageBox.warning(None, "Erro", "A coluna 'Data e Hora' não foi encontrada!")
+                QMessageBox.warning(self, "Erro", "A coluna 'Data e Hora' não foi encontrada!")
                 
             item_data_widget = self.tabela_historico_usuarios.item(linha_selecionada, coluna_data_hora)  # Coluna de Data/Hora
             if not item_data_widget:
-                QMessageBox.warning(None, "Erro", "Não foi possível identificar a Data/Hora do item a ser apagado!")
+                QMessageBox.warning(self, "Erro", "Não foi possível identificar a Data/Hora do item a ser apagado!")
                 return
 
             item_data_text = item_data_widget.text().strip()
@@ -1203,11 +1203,11 @@ class Pagina_Usuarios(QWidget):
                     if resultado:
                         item_id = resultado[0]  # Pegamos o ID encontrado
                     else:
-                        QMessageBox.warning(None, "Erro", f"Não foi encontrado um item para a Data/Hora: {item_data_text}")
+                        QMessageBox.warning(self, "Erro", f"Não foi encontrado um item para a Data/Hora: {item_data_text}")
                         return
 
                 except Exception as e:
-                    QMessageBox.critical(None, "Erro", f"Erro ao buscar ID: {e}")
+                    QMessageBox.critical(self, "Erro", f"Erro ao buscar ID: {e}")
                     return
 
             # Confirmar exclusão
@@ -1224,13 +1224,13 @@ class Pagina_Usuarios(QWidget):
                     print(f"Item removido do banco de dados: ID {item_id}")
                     cn.commit()
                 except Exception as e:
-                    QMessageBox.critical(None, "Erro", f"Erro ao excluir do banco de dados: {e}")
+                    QMessageBox.critical(self, "Erro", f"Erro ao excluir do banco de dados: {e}")
                     return
 
             # Remover a linha da interface
             self.tabela_historico_usuarios.removeRow(linha_selecionada)
 
-            QMessageBox.information(None, "Sucesso", "Item removido com sucesso!")
+            QMessageBox.information(self, "Sucesso", "Item removido com sucesso!")
     
     def obter_indice_coluna(self, nome_coluna):
         for col in range(self.tabela_historico_usuarios.columnCount()):
@@ -1265,7 +1265,7 @@ class Pagina_Usuarios(QWidget):
                 
     def selecionar_todos_usuarios(self):
         if not self.coluna_checkboxes_usuarios_adicionada:
-            QMessageBox.warning(None, "Aviso", "Ative a opção 'Selecionar Individualmente' antes.")
+            QMessageBox.warning(self, "Aviso", "Ative a opção 'Selecionar Individualmente' antes.")
             self.checkbox_header_usuarios.setChecked(False)
             return
 
@@ -1284,7 +1284,7 @@ class Pagina_Usuarios(QWidget):
     # Função para adicionar checkboxes selecionar_individual na tabela de histórico
     def selecionar_usuarios_individual(self):
         if self.tabela_historico_usuarios.rowCount() == 0:
-            QMessageBox.warning(None, "Aviso", "Nenhum histórico para selecionar.")
+            QMessageBox.warning(self, "Aviso", "Nenhum histórico para selecionar.")
             if hasattr(self, "checkbox_selecionar") and isinstance(self.checkbox_selecionar, QCheckBox):
                 QTimer.singleShot(0, lambda: self.checkbox_selecionar.setChecked(False))
             return
@@ -1419,7 +1419,7 @@ class Pagina_Usuarios(QWidget):
     def ordenar_historico_usuario(self):
         if getattr(self, "checkbox_selecionar", None) and self.checkbox_selecionar.isChecked():
             QMessageBox.warning(
-                None,
+                self,
                 "Aviso",
                 "Desmarque o checkbox antes de ordernar o histórico de usuários."
             )
@@ -1444,7 +1444,7 @@ class Pagina_Usuarios(QWidget):
         
         # Verificar se a coluna escolhida é válida
         if coluna not in colunas_para_indices:
-            QMessageBox.warning(None, "Erro", "Coluna inválida para ordenação!")
+            QMessageBox.warning(self, "Erro", "Coluna inválida para ordenação!")
             return
         
         # Obter o índice da coluna escolhida
@@ -1487,7 +1487,7 @@ class Pagina_Usuarios(QWidget):
     def filtrar_historico_usuarios(self):
         if getattr(self, "checkbox_selecionar") and self.checkbox_selecionar.isChecked():
             QMessageBox.warning(
-                None,
+                self,
                 "Aviso",
                 "Desmarque o checkbox antes de filtrar o histórico de usuários."
             )
@@ -1685,7 +1685,7 @@ class Pagina_Usuarios(QWidget):
                     query += " WHERE SUBSTR([Data e Hora], 1, 10) = ?"
                     params.append(data_formatada)
                 except ValueError:
-                    QMessageBox.warning(None, "Erro", "Data inválida. Use o formato DD/MM/AAAA.")
+                    QMessageBox.warning(self, "Erro", "Data inválida. Use o formato DD/MM/AAAA.")
                     return
 
             # Ordenar por hora, se aplicável
@@ -1708,7 +1708,7 @@ class Pagina_Usuarios(QWidget):
             self.tabela_historico_usuarios.setItem(i, 2, QTableWidgetItem(row[2]))  # Ação
             self.tabela_historico_usuarios.setItem(i, 3, QTableWidgetItem(row[3]))  # Descrição
 
-        QMessageBox.information(None, "Filtro Aplicado", f"{len(registros)} registro(s) encontrado(s)!")
+        QMessageBox.information(self, "Filtro Aplicado", f"{len(registros)} registro(s) encontrado(s)!")
 
     def formatar_data_usuarios(self, campo_data):
         # Obter o texto do campo de data
@@ -1718,7 +1718,7 @@ class Pagina_Usuarios(QWidget):
         # Verificar se há caracteres alfabéticos (letras)
         if any(char.isalpha() for char in texto_data):
             # Mostrar mensagem de erro caso haja letras
-            QMessageBox.warning(None, "Erro", "Somente números são permitidos.")
+            QMessageBox.warning(self, "Erro", "Somente números são permitidos.")
             campo_data.clear()
             return  # Não aplica a formatação se houver letras
 
@@ -1771,7 +1771,7 @@ class Pagina_Usuarios(QWidget):
             self.tabela_historico_usuarios.setItem(i, 2, QTableWidgetItem(row[2]))  # Ação
             self.tabela_historico_usuarios.setItem(i, 3, QTableWidgetItem(row[3]))  # Descrição
 
-        QMessageBox.information(None, "Filtro Aplicado", f"{len(resultados)} registro(s) encontrado(s)!")
+        QMessageBox.information(self, "Filtro Aplicado", f"{len(resultados)} registro(s) encontrado(s)!")
 
 
 
@@ -1781,7 +1781,7 @@ class Pagina_Usuarios(QWidget):
 
         # Verificar se a tabela está vazia
         if self.tabela_historico_usuarios.rowCount() == 0:
-            QMessageBox.warning(None, "Aviso", "Nenhum histórico encontrado para gerar arquivo CSV.")
+            QMessageBox.warning(self, "Aviso", "Nenhum histórico encontrado para gerar arquivo CSV.")
             return  # Se a tabela estiver vazia, encerra a função sem prosseguir
 
         nome_arquivo, _ = QFileDialog.getSaveFileName(
@@ -1813,10 +1813,10 @@ class Pagina_Usuarios(QWidget):
                     ]
                     escritor.writerow(dados_linhas)
 
-                    QMessageBox.information(None, "Sucesso", f"Arquivo CSV salvo com sucesso em:\n{nome_arquivo}")
+                    QMessageBox.information(self, "Sucesso", f"Arquivo CSV salvo com sucesso em:\n{nome_arquivo}")
 
         except Exception as e:
-            QMessageBox.critical(None, "Erro", f"Falha ao salvar o arquivo CSV:\n{str(e)}")
+            QMessageBox.critical(self, "Erro", f"Falha ao salvar o arquivo CSV:\n{str(e)}")
 
 
     def exportar_excel_usuarios(self):
@@ -1825,11 +1825,11 @@ class Pagina_Usuarios(QWidget):
 
         # Verificar se a tabela está vazia
         if self.tabela_historico_usuarios.rowCount() == 0:
-            QMessageBox.warning(None, "Aviso", "Nenhum histórico encontrado para gerar arquivo Excel.")
+            QMessageBox.warning(self, "Aviso", "Nenhum histórico encontrado para gerar arquivo Excel.")
             return  # Se a tabela estiver vazia, encerra a função sem prosseguir
         
         nome_arquivo, _ = QFileDialog.getSaveFileName(
-            None,
+            self,
             "Salvar Arquivo Excel",
             "historico_usuarios.xlsx",
             "Arquivos Excel (*.xlsx)"
@@ -1863,21 +1863,21 @@ class Pagina_Usuarios(QWidget):
 
             # Exportar para Excel
             df.to_excel(nome_arquivo, index=False,engine="openpyxl")
-            QMessageBox.information(None, "Sucesso",f"Arquivo Excel gerado com sucesso em: \n{nome_arquivo}")
+            QMessageBox.information(self, "Sucesso",f"Arquivo Excel gerado com sucesso em: \n{nome_arquivo}")
         except Exception as e:
-            QMessageBox.critical(None, "Erro",f"Erro ao salvar arquivo Excel: {str(e)}")
+            QMessageBox.critical(self, "Erro",f"Erro ao salvar arquivo Excel: {str(e)}")
 
     def exportar_pdf_usuarios(self):
-        num_linhas = self.tabela_historico.rowCount()
-        num_colunas = self.tabela_historico.columnCount()
+        num_linhas = self.tabela_historico_usuarios.rowCount()
+        num_colunas = self.tabela_historico_usuarios.columnCount()
 
         # Verificar se a tabela está vazia
-        if self.tabela_historico.rowCount() == 0:
-            QMessageBox.warning(None, "Aviso", "Nenhum histórico encontrado para gerar arquivo PDF.")
+        if self.tabela_historico_usuarios.rowCount() == 0:
+            QMessageBox.warning(self, "Aviso", "Nenhum histórico encontrado para gerar arquivo PDF.")
             return  # Se a tabela estiver vazia, encerra a função sem prosseguir
 
         nome_arquivo, _ = QFileDialog.getSaveFileName(
-            None,
+            self,
             "Salvar Arquivo PDF",
             "historico.pdf",
             "Arquivos PDF (*.pdf)"
@@ -1894,14 +1894,14 @@ class Pagina_Usuarios(QWidget):
         dados = []
 
         # Obter os cabeçalhos da tabela
-        cabecalhos = [self.tabela_historico.horizontalHeaderItem(coluna).text() for coluna in range(num_colunas)]
+        cabecalhos = [self.tabela_historico_usuarios.horizontalHeaderItem(coluna).text() for coluna in range(num_colunas)]
         dados.append(cabecalhos)  # Adicionar os cabeçalhos como a primeira linha do PDF
 
         # Adicionar os dados da tabela
         for linha in range(num_linhas):
             linha_dados = []
             for coluna in range(num_colunas):
-                item = self.tabela_historico.item(linha, coluna)
+                item = self.tabela_historico_usuarios.item(linha, coluna)
                 linha_dados.append(item.text() if item else "")  # Adicionar o texto ou vazio se o item for None
             dados.append(linha_dados)
 
@@ -1924,10 +1924,10 @@ class Pagina_Usuarios(QWidget):
 
             # Gerar o PDF
             pdf.build([tabela])
-            QMessageBox.information(None, "Sucesso", f"Arquivo PDF gerado com sucesso em: \n{nome_arquivo}")
+            QMessageBox.information(self, "Sucesso", f"Arquivo PDF gerado com sucesso em: \n{nome_arquivo}")
 
         except Exception as e:
-            QMessageBox.critical(None, "Erro", f"Erro ao salvar arquivo PDF: {str(e)}")
+            QMessageBox.critical(self, "Erro", f"Erro ao salvar arquivo PDF: {str(e)}")
 
     def pausar_historico_usuario(self):
         dialog = ConfirmacaoDialog("Pausar Histórico", "Deseja pausar o histórico?")
@@ -1941,19 +1941,19 @@ class Pagina_Usuarios(QWidget):
     def historico_ativo_usuario(self):
         # Atualiza o estado do histórico para ativo
         self.main_window.historico_usuario_pausado = True  # Atualiza a variável no MainWindow
-        QMessageBox.information(None, "Histórico", "O registro do histórico foi pausado.")
+        QMessageBox.information(self, "Histórico", "O registro do histórico foi pausado.")
 
 
     def historico_inativo_usuario(self):
         # Atualiza o estado do histórico para inativo (continua registrando)
         self.main_window.historico_usuario_pausado = False  # Atualiza a variável no MainWindow
-        QMessageBox.information(None, "Histórico", "O registro do histórico continua ativo.")
+        QMessageBox.information(self, "Histórico", "O registro do histórico continua ativo.")
 
 
 
     def abrir_planilha_usuarios(self):
         # Abrir o diálogo para selecionar o arquivo Excel
-        nome_arquivo, _ = QFileDialog.getOpenFileName(None, "Abrir Arquivo Excel", "", "Arquivos Excel (*.xlsx)")
+        nome_arquivo, _ = QFileDialog.getOpenFileName(self, "Abrir Arquivo Excel", "", "Arquivos Excel (*.xlsx)")
 
         if not nome_arquivo:
             return  # Se o usuário cancelar a seleção do arquivo
@@ -1993,13 +1993,13 @@ class Pagina_Usuarios(QWidget):
                 ]
 
                 if df.shape[1] != len(coluna_table_ativos):
-                    QMessageBox.warning(None, "Erro", "O número de colunas no arquivo Excel não corresponde ao número esperado.")
+                    QMessageBox.warning(self, "Erro", "O número de colunas no arquivo Excel não corresponde ao número esperado.")
                     self.line_excel_usuarios.clear()
                     self.resetar_progresso()
                     return
 
                 if df.empty:
-                    QMessageBox.warning(None, "Erro", "O arquivo Excel está vazio.")
+                    QMessageBox.warning(self, "Erro", "O arquivo Excel está vazio.")
                     self.line_excel_usuarios.clear()
                     self.resetar_progresso()
                     return
@@ -2013,10 +2013,10 @@ class Pagina_Usuarios(QWidget):
                         item = self.formatar_texto(str(value))
                         self.table_ativos.setItem(row_position, column, item)
 
-                QMessageBox.information(None, "Sucesso", "Arquivo Excel importado com sucesso!")
+                QMessageBox.information(self, "Sucesso", "Arquivo Excel importado com sucesso!")
 
             except Exception as e:
-                QMessageBox.critical(None, "Erro", f"Erro ao importar o arquivo Excel: {e}")
+                QMessageBox.critical(self, "Erro", f"Erro ao importar o arquivo Excel: {e}")
 
             self.line_excel_usuarios.setText(self.nome_arquivo_excel)
             self.resetar_progresso()
@@ -2030,11 +2030,11 @@ class Pagina_Usuarios(QWidget):
     
     def importar_usuario(self):
         if self.table_ativos.rowCount() == 0 and self.table_inativos.rowCount() == 0:
-            QMessageBox.warning(None, "Aviso", "Nenhum dado encontrado para gerar arquivo Excel.")
+            QMessageBox.warning(self, "Aviso", "Nenhum dado encontrado para gerar arquivo Excel.")
             return
 
         nome_arquivo, _ = QFileDialog.getSaveFileName(
-            None,
+            self,
             "Salvar Arquivo Excel",
             "relatório de usuários.xlsx",
             "Arquivos Excel (*.xlsx)"
@@ -2092,10 +2092,10 @@ class Pagina_Usuarios(QWidget):
 
             wb.save(nome_arquivo)
 
-            QMessageBox.information(None, "Sucesso", f"Arquivo Excel gerado com sucesso em:\n{nome_arquivo}")
+            QMessageBox.information(self, "Sucesso", f"Arquivo Excel gerado com sucesso em:\n{nome_arquivo}")
 
         except Exception as e:
-            QMessageBox.critical(None, "Erro", f"Erro ao salvar arquivo Excel: {str(e)}")
+            QMessageBox.critical(self, "Erro", f"Erro ao salvar arquivo Excel: {str(e)}")
 
     # Limpa a coluna selecionada clicando em qualquer lugar da tabela
     def eventFilter(self, source, event):
@@ -2149,7 +2149,7 @@ class Pagina_Usuarios(QWidget):
 
                 # Verificar se o DataFrame está vazio
                 if df.shape[1] != len(colunas_table_massa_usuarios):
-                    QMessageBox.warning(None, "Erro", "O número de colunas em massa no arquivo Excel não corresponde ao número esperado.")
+                    QMessageBox.warning(self, "Erro", "O número de colunas em massa no arquivo Excel não corresponde ao número esperado.")
                     self.line_edit_massa_usuarios.clear()
                     # Zerando a barra de progresso
                     self.progress_massa_usuarios.setValue(0)
@@ -2158,7 +2158,7 @@ class Pagina_Usuarios(QWidget):
                     
                     
                 if df.shape[0] == 0:
-                    QMessageBox.warning(None, "Erro", "O arquivo Excel está vazio.")
+                    QMessageBox.warning(self, "Erro", "O arquivo Excel está vazio.")
                     self.line_edit_massa_usuarios.clear()
                     # Zerando a barra de progresso
                     self.progress_massa_usuarios.setValue(0)
@@ -2174,10 +2174,10 @@ class Pagina_Usuarios(QWidget):
                     for column, value in enumerate(row):
                         item = self.formatar_texto_usuarios_em_massa(str(value))
                         self.table_massa_usuarios.setItem(row_position, column, item)
-                QMessageBox.information(None, "Sucesso", "Arquivo Excel importado com sucesso!")
+                QMessageBox.information(self, "Sucesso", "Arquivo Excel importado com sucesso!")
 
             except Exception as e:
-                QMessageBox.critical(None, "Erro", f"Erro ao importar o arquivo Excel: {e}")
+                QMessageBox.critical(self, "Erro", f"Erro ao importar o arquivo Excel: {e}")
              # Quando o arquivo for carregado, atualizar o texto da line_excel com o caminho do arquivo
             self.line_edit_massa_usuarios.setText(self.nome_arquivo_excel_massa)
             
@@ -2196,7 +2196,7 @@ class Pagina_Usuarios(QWidget):
         try:
             total_linhas = self.table_massa_usuarios.rowCount()
             if total_linhas == 0:
-                QMessageBox.warning(None, "Erro", "Nenhum usuário encontrado para cadastrar.")
+                QMessageBox.warning(self, "Erro", "Nenhum usuário encontrado para cadastrar.")
                 return
             with self.db.connecta() as conexao:
                 cursor = conexao.cursor()
@@ -2243,13 +2243,13 @@ class Pagina_Usuarios(QWidget):
             conexao.commit()
 
 
-            QMessageBox.information(None, "Sucesso", "Usuários cadastrados em massa com sucesso!")
+            QMessageBox.information(self, "Sucesso", "Usuários cadastrados em massa com sucesso!")
             self.line_edit_massa_usuarios.clear()
             # Limpar a tabela após a inserção
             self.table_massa_usuarios.setRowCount(0)
 
         except Exception as e:
-            QMessageBox.critical(None, "Erro", f"Erro ao cadastrar usuários em massa:\n{e}")
+            QMessageBox.critical(self, "Erro", f"Erro ao cadastrar usuários em massa:\n{e}")
 
                 
                 

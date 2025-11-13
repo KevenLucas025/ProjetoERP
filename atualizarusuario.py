@@ -37,6 +37,12 @@ class AtualizarUsuario(QDialog):
                     border: 2px solid #888888;
                 }
             """
+            dialog_style = """
+                QDialog {
+                    background-color: #2b2b2b;
+                    color: white;
+                }
+            """
         
         elif tema == "claro":  # claro
             button_style = """
@@ -59,6 +65,12 @@ class AtualizarUsuario(QDialog):
                     border: 2px solid #888888;
                 }
             """
+            dialog_style = """
+                QDialog {
+                    background-color: #f0f0f0;
+                    color: black;
+                }
+            """
         else: # clássico
             button_style = """
             QPushButton {
@@ -75,7 +87,8 @@ class AtualizarUsuario(QDialog):
             }
         """
 
-        
+        # Aplicar estilo do diálogo
+        self.setStyleSheet(dialog_style)
         
         # Botão para abrir a lista de produtos
         self.btn_mostrar_usuarios = QPushButton("Exibir Tabela de Usuários")

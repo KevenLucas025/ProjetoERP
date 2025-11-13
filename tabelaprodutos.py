@@ -159,6 +159,7 @@ class TabelaProdutos(QMainWindow):
                     );
                     font-size: 12px;
                     padding: 3px;
+                    color: white;
                 }
                 QPushButton:hover {
                     background-color: #444444;
@@ -266,6 +267,15 @@ class TabelaProdutos(QMainWindow):
                 border: 1px solid #aaaaaa;
                 padding: 1px;
             }
+            /* Cabeçalho vertical (a faixa da esquerda) */
+            QHeaderView:vertical {
+                background-color: #202124;  /* fundo da faixa */
+            }
+            QHeaderView::section:vertical {
+                background-color: #ffffff;  /* quadradinhos numerados */
+                color: black;
+                border: none;
+            }
                 
             /* QTabWidget headers brancos */
             QTabWidget::pane {
@@ -357,9 +367,6 @@ class TabelaProdutos(QMainWindow):
             /* Forçar cor do texto do QCheckBox */
             QCheckBox {
                 color: white;
-            }
-            QWidget {
-                background-color: #202124; /* fundo do widget do header inteiro */
             }
 
             """

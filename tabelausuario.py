@@ -145,9 +145,9 @@ class TabelaUsuario(QMainWindow):
     def aplicar_tema(self, tema: str) -> str:
         # Definições de tema
         if tema == "escuro":
-            bg_cor = "#202124"
+            bg_cor = "#2b2b2b"
             text_cor = "white"
-            lineedit_bg = "#303030"
+            lineedit_bg = "#2b2b2b"
 
             button_style = """
                 QPushButton {
@@ -159,6 +159,7 @@ class TabelaUsuario(QMainWindow):
                     );
                     font-size: 12px;
                     padding: 3px;
+                    color: white
                 }
                 QPushButton:hover {
                     background-color: #444444;
@@ -231,10 +232,10 @@ class TabelaUsuario(QMainWindow):
             """
             table_view_style = """
                 QTableView {
-                    background-color: white;
-                    color: black;
+                    background-color: #2b2b2b;
+                    color: white;
                     gridline-color: #ccc;
-                    selection-background-color: #e5f3ff;
+                    selection-background-color: #7a7a7a;
                     selection-color: black;
                 }
 
@@ -243,6 +244,15 @@ class TabelaUsuario(QMainWindow):
                     color: black;
                     border: 1px solid #ccc;
                     padding: 1px;
+                }
+                /* Cabeçalho vertical (a faixa da esquerda) */
+                QHeaderView:vertical {
+                    background-color: #2b2b2b;  /* fundo da faixa */
+                }
+                QHeaderView::section:vertical {
+                    background-color: #ffffff;  /* quadradinhos numerados */
+                    color: black;
+                    border: none;
                 }
 
                 QTabWidget::pane {

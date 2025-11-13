@@ -624,7 +624,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def boas_vindas(self):
         if self.config.nao_mostrar_mensagem_boas_vindas:
             return
-        msg = QMessageBox()
+        msg = QMessageBox(self)
         msg.setIcon(QMessageBox.Information)
         msg.setWindowTitle("Boas Vindas")
         msg.setText(f"{self.config.obter_usuario_logado()}, seja bem-vindo(a) ao sistema de gerenciamento.\n"
@@ -771,7 +771,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     
 
     def show_mensagem_sistema(self):
-        msg = QMessageBox()
+        msg = QMessageBox(self)
         msg.setIcon(QMessageBox.Information)
         msg.setWindowTitle("Informação")
         msg.setText("Versão do Sistema: 1.0.1\n"
@@ -818,7 +818,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.connection = self.db.connection 
 
         if not self.is_editing or not self.selected_user_id:
-            QMessageBox.warning(None, "Erro", "Nenhum usuário selecionado para atualizar")
+            QMessageBox.warning(self, "Erro", "Nenhum usuário selecionado para atualizar")
             return
 
         tem_imagem = (
@@ -828,7 +828,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         )
 
         if getattr(self, 'usuario_tem_imagem_salva', False) and tem_imagem and not self.imagem_removida_usuario:
-            QMessageBox.warning(None, "Remoção de Imagem",
+            QMessageBox.warning(self, "Remoção de Imagem",
                                 "Remova a imagem do usuário e inclua novamente para seguir com a atualização")
             return
 
@@ -885,27 +885,27 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         if campos_nao_preenchidos_usuarios:
             self.exibir_asteriscos_usuarios(campos_nao_preenchidos_usuarios)
-            QMessageBox.warning(None, "Aviso", "Todos os campos obrigatórios devem ser preenchidos!")
+            QMessageBox.warning(self, "Aviso", "Todos os campos obrigatórios devem ser preenchidos!")
             return
 
         if usuario_senha != usuario_confirmar_senha:
             self.exibir_asteriscos_usuarios(["senha", "confirmar_senha"])
-            QMessageBox.warning(None, "Aviso", "As senhas não coincidem!")
+            QMessageBox.warning(self, "Aviso", "As senhas não coincidem!")
             return
 
         if not self.validar_cpf(usuario_cpf):
             self.exibir_asteriscos_usuarios(["cpf"])
-            QMessageBox.warning(None, "Aviso", "CPF inválido!")
+            QMessageBox.warning(self, "Aviso", "CPF inválido!")
             return
 
         if not self.validar_email(usuario_email):
             self.exibir_asteriscos_usuarios(["email"])
-            QMessageBox.warning(None, "Aviso", "E-mail inválido!")
+            QMessageBox.warning(self, "Aviso", "E-mail inválido!")
             return
 
         if not self.validar_telefone(usuario_telefone):
             self.exibir_asteriscos_usuarios(["telefone"])
-            QMessageBox.warning(None, "Aviso", "Número de telefone inválido!")
+            QMessageBox.warning(self, "Aviso", "Número de telefone inválido!")
             return
 
         # Obter imagem, se houver
@@ -1097,7 +1097,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                     self.label_imagem_usuario.setPixmap(pixmap)
 
                 else:
-                    QMessageBox.warning(None, "Aviso", "Não foi possível carregar a imagem.")
+                    QMessageBox.warning(self, "Aviso", "Não foi possível carregar a imagem.")
 #*********************************************************************************************************************
     def avancar_pagina(self):
         # Armazenar a página atual no histórico de páginas
@@ -1131,7 +1131,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     
 #*********************************************************************************************************************
     def desconectarUsuario(self):   
-        msgBox = QMessageBox()
+        msgBox = QMessageBox(self)
         msgBox.setIcon(QMessageBox.Question)
         msgBox.setText("Tem certeza que deseja sair?")
         msgBox.setWindowTitle("Aviso")
@@ -1199,7 +1199,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.login_window.btn_manter_conectado.setChecked(self.config.mantem_conectado)
 #*********************************************************************************************************************
     def mostrar_detalhes_erro(self):
-        detalhes_msg = QMessageBox()
+        detalhes_msg = QMessageBox(self)
         detalhes_msg.setIcon(QMessageBox.Warning)
         detalhes_msg.setWindowTitle("Erro")
         detalhes_msg.setText("Não é possível incluir um valor menor que R$ 10,00.")
@@ -1214,7 +1214,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         detalhes_msg.exec()
 
         if detalhes_msg.clickedButton() == detalhes_btn:
-            detalhes_msg_detalhes = QMessageBox()
+            detalhes_msg_detalhes = QMessageBox(self)
             detalhes_msg_detalhes.setIcon(QMessageBox.Information)
             detalhes_msg_detalhes.setWindowTitle("Detalhes do Erro")
             detalhes_msg_detalhes.setText("O valor não pode ser menor que R$ 10,00. \n Por favor adicione um valor maior que R$ 10,00")
@@ -1235,7 +1235,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.txt_desconto_3.setText(valor_formatado)
 #*********************************************************************************************************************
     def mostrar_erro_desconto(self):
-        detalhes_msg = QMessageBox()
+        detalhes_msg = QMessageBox(self)
         detalhes_msg.setIcon(QMessageBox.Warning)
         detalhes_msg.setWindowTitle("Erro")
         detalhes_msg.setText("Por favor adicione um valor de desconto correto.")
@@ -1259,7 +1259,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def subscribe_user(self):
         # Verificar se está no modo de edição
         if self.is_editing:
-            QMessageBox.warning(None, "Modo de Edição Ativo", 
+            QMessageBox.warning(self, "Modo de Edição Ativo", 
                                 "Você está editando um usuário.\nAtualize o cadastro em vez de criar um novo.")
             return
 
@@ -1301,26 +1301,26 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
             if campos_vazios:
                 self.exibir_asteriscos_usuarios(campos_vazios)
-                QMessageBox.warning(None, "Erro", f"O campo {campos_vazios[0]} é obrigatório.")
+                QMessageBox.warning(self, "Erro", f"O campo {campos_vazios[0]} é obrigatório.")
                 return
 
             # Validação de senha
             if senha != confirmar_senha:
                 self.exibir_asteriscos_usuarios(["senha", "confirmar senha"])
-                QMessageBox.warning(None, "Erro", "As senhas não coincidem.")
+                QMessageBox.warning(self, "Erro", "As senhas não coincidem.")
                 return
             
             # Verifica se a senha é válida
             if not self.configuracoes_senha.validar_senha(senha,confirmar_senha):
                 self.exibir_asteriscos_usuarios(["senha", "confirmar senha"])
-                QMessageBox.warning(None, "Erro", "A senha deve conter pelo menos 8 caracteres, incluindo letras e números.")
+                QMessageBox.warning(self, "Erro", "A senha deve conter pelo menos 8 caracteres, incluindo letras e números.")
                 return
                 
 
             # Validação de e-mail
             if not self.email_valido(email):
                 self.exibir_asteriscos_usuarios(["email"])
-                QMessageBox.warning(None, "Erro", "E-mail inválido.")
+                QMessageBox.warning(self, "Erro", "E-mail inválido.")
                 return
             
 
@@ -1338,7 +1338,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 # Exibe o asterisco no campo duplicado
                 self.exibir_asteriscos_usuarios([campo_duplicado])
                 # Exibe a mensagem de erro
-                QMessageBox.warning(None, "Erro de Cadastro", mensagens[campo_duplicado])
+                QMessageBox.warning(self, "Erro de Cadastro", mensagens[campo_duplicado])
                 return
                 
 
@@ -1368,7 +1368,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             )
 
             self.registrar_historico_usuarios("Cadastro de Usuários", f"Usuário {usuario} cadastrado com sucesso.")
-            QMessageBox.information(None, "Cadastro de Usuário", "Cadastro realizado com sucesso.")
+            QMessageBox.information(self, "Cadastro de Usuário", "Cadastro realizado com sucesso.")
 
             '''db.update_dados_cliente_juridico_endereco(
                 nome_cliente=nome,
@@ -1405,13 +1405,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.label_imagem_usuario.clear()
 
         except Exception as e:
-            QMessageBox.critical(None, "Erro", f"Erro ao cadastrar usuário: {str(e)}")
+            QMessageBox.critical(self, "Erro", f"Erro ao cadastrar usuário: {str(e)}")
 
 
     def buscar_cep(self,cep:str):
         cep = cep.replace("-", "").strip()
         if len(cep) != 8 or not cep.isdigit():
-            QMessageBox.warning(None, "ERRO", "CEP inválido")
+            QMessageBox.warning(self, "ERRO", "CEP inválido")
             return
         try:
             url = f"https://viacep.com.br/ws/{cep}/json/"
@@ -1419,14 +1419,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             if resposta.status_code == 200:
                 dados = resposta.json()
                 if "erro"  in dados:
-                    QMessageBox.warning(None, "ERRO", "CEP não encontrado")
+                    QMessageBox.warning(self, "ERRO", "CEP não encontrado")
                     return None
                 return dados
             else:
-                QMessageBox.warning(None,"Erro de conexão","Não foi possível consultar o CEP")
+                QMessageBox.warning(self,"Erro de conexão","Não foi possível consultar o CEP")
                 return None
         except Exception as e:
-            QMessageBox.warning(None,"Erro ao consultar CEP",f"Erro: {str(e)}")
+            QMessageBox.warning(self,"Erro ao consultar CEP",f"Erro: {str(e)}")
             return None
 
     def preencher_campos_cep(self, dados):
@@ -1487,10 +1487,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                         print("Imagem do usuário removida com sucesso!!")
                        
             else:
-                QMessageBox.warning(None, "Erro","Não foi possível remover a imagem do usuário\n"
+                QMessageBox.warning(self, "Erro","Não foi possível remover a imagem do usuário\n"
                                                 "Tente remover pelo botão  remover imagem")
 
-        QMessageBox.information(None,"Sucesso","Todos os campos foram limpos com sucesso! ")
+        QMessageBox.information(self,"Sucesso","Todos os campos foram limpos com sucesso! ")
 #*********************************************************************************************************************
     def converter_imagem_usuario(self):
         # Verificar se há uma imagem carregada no QLabel
@@ -1799,14 +1799,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 #*********************************************************************************************************************
     def confirmar_produtos(self):
         if self.is_editing_produto:
-            QMessageBox.warning(None, "Modo de Edição Ativo",
+            QMessageBox.warning(self, "Modo de Edição Ativo",
                                 "Você está editando um produto.\nAtualize o produto em vez de criar um novo.")
             return
         # Verificar se há produtos pendentes para confirmar
         if (not hasattr(self, 'produtos_pendentes_por_cliente') or
             not any(self.produtos_pendentes_por_cliente.values())):
             
-            msg = QMessageBox()
+            msg = QMessageBox(self)
             msg.setIcon(QMessageBox.Warning)
             msg.setWindowTitle("Erro")  
             msg.setText("Não há produtos preenchidos para confirmar.")
@@ -2010,7 +2010,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
             # Verificar se houve alteração
             if produto_original and not self.verificar_alteracoes_produto(produto_original):
-                msg = QMessageBox()
+                msg = QMessageBox(self)
                 msg.setIcon(QMessageBox.Information)
                 msg.setWindowTitle("Informação")
                 msg.setText("Nenhuma alteração foi feita no produto.")
@@ -2031,7 +2031,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         if campos_nao_preenchidos:
             self.exibir_asteriscos_produtos(campos_nao_preenchidos)  # Mostrar os asteriscos nos campos obrigatórios
-            msg = QMessageBox()
+            msg = QMessageBox(self)
             msg.setIcon(QMessageBox.Warning)
             msg.setWindowTitle("Erro")
             msg.setText("Todos os campos obrigatórios precisam ser preenchidos.")
@@ -2042,7 +2042,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if re.match(r'^[\d\W]', self.txt_produto.text()):
             self.exibir_asteriscos_produtos(["produto"])  # Mostrar o asterisco ao lado do campo Produto
 
-            msg = QMessageBox()
+            msg = QMessageBox(self)
             msg.setIcon(QMessageBox.Warning)
             msg.setWindowTitle("Erro")
             msg.setText("O nome do produto não pode começar com um número ou caractere especial.")
@@ -2132,7 +2132,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         if not clientes_encontrados:
             QMessageBox.warning(
-                None,
+                self,
                 "Cliente não Encontrado",
                 f"O cliente {produto_info['cliente']} precisa estar cadastrado antes de adicionar um produto"
             )
@@ -2146,7 +2146,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 for i, (_, nome, tipo, doc) in enumerate(clientes_encontrados)]
             )
             escolha, ok = QInputDialog.getInt(
-                None,
+                self,
                 "Cliente duplicado encontrado",
                 f"Foram encontrados {len(clientes_encontrados)} clientes com o mesmo nome '{cliente_nome}':\n\n{nomes_formatados}\n\nDigite o número do cliente que deseja usar:",
                 1,  # valor inicial
@@ -2272,11 +2272,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                     widget.setPixmap(QPixmap())  # Definir um pixmap vazio ou padrão
                     widget.hide()  # Esconder o QLabel para garantir que não fique visível
                     print("Imagem removida com sucesso")
-                    msg_box = QMessageBox(QMessageBox.Information, "Sucesso", "Imagem removida com sucesso")
+                    msg_box = QMessageBox(self, "Sucesso", "Imagem removida com sucesso")
                     msg_box.exec()
                     return
         print("Não há imagem do produto para remover.")
-        msg_box = QMessageBox(QMessageBox.Warning, "Erro", "Não há imagem para remover")
+        msg_box = QMessageBox(self)
+        msg_box.setIcon(QMessageBox.Information)
+        msg_box.setWindowTitle("Aviso")
+        msg_box.setText("Não há imagem do produto para remover!")
         msg_box.exec()
 #*********************************************************************************************************************
     def retirar_imagem_usuario(self):
@@ -2289,11 +2292,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                     widget.hide()
                     self.imagem_removida_usuario = True
                     print("Imagem removida do usuário com sucesso")
-                    msg_box = QMessageBox(QMessageBox.Information, "Sucesso", "Imagem removida do usuário com sucesso")
+                    msg_box = QMessageBox(self, "Sucesso", "Imagem removida do usuário com sucesso")
                     msg_box.exec()
                     return
         print("Não há imagem do usuário para remover.")
-        msg_box = QMessageBox(QMessageBox.Warning, "Erro", "Não há imagem do usuário para remover")
+        msg_box = QMessageBox(self, "Erro", "Não há imagem do usuário para remover")
+        msg_box.setIcon(QMessageBox.Information)
+        msg_box.setWindowTitle("Aviso")
+        msg_box.setText("Não há imagem do usuário para remover")
         msg_box.exec()
 #*********************************************************************************************************************
     def carregar_imagem_produto(self):
@@ -2337,9 +2343,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 # Salvar a imagem carregada para o atributo nova_imagem
                 self.nova_imagem = fileName
             else:
-                QMessageBox.warning(None, "Aviso", "Não foi possível carregar a imagem.")
+                QMessageBox.warning(self, "Aviso", "Não foi possível carregar a imagem.")
         else:
-            QMessageBox.warning(None, "Aviso", "Nenhuma imagem foi selecionada.")
+            QMessageBox.warning(self, "Aviso", "Nenhuma imagem foi selecionada.")
 #*********************************************************************************************************************
     def limpar_imagem_produto(self):
         for widget in self.frame_imagem_produto_3.children():
@@ -2377,11 +2383,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 #*********************************************************************************************************************
     def atualizar_produto(self):
         if not self.is_editing_produto or not self.produto_id:
-            QMessageBox.warning(None, "Erro", "Nenhum produto selecionado para atualizar")
+            QMessageBox.warning(self, "Erro", "Nenhum produto selecionado para atualizar")
             return
 
         if not hasattr(self, 'produto_id') or not self.produto_id:
-            msgBox = QMessageBox()
+            msgBox = QMessageBox(self)
             msgBox.setIcon(QMessageBox.Critical)
             msgBox.setText("Não há produto selecionado para seguir.")
             msgBox.setWindowTitle("Aviso")
@@ -2392,9 +2398,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             if clicked_button == QMessageBox.Ok:
                 return
             elif msgBox.clickedButton() == detalhes_button:
-                detalhesMsgBox = QMessageBox()
+                detalhesMsgBox = QMessageBox(self)
                 detalhesMsgBox.setIcon(QMessageBox.Information)
-                detalhesMsgBox.setText("Para usar essa opção deverá ser necessário editar um produto")
+                detalhesMsgBox.setText("Para usar essa opção deverá ser necessário editar um produto!")
                 detalhesMsgBox.setWindowTitle("Detalhes")
                 detalhesMsgBox.exec()
                 return
@@ -2419,7 +2425,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         # Se nada foi alterado, exibir mensagem e retornar
         if not alteracao_campo and not imagem_alterada:
-            QMessageBox.information(None, "Aviso", "Nenhuma alteração foi feita no produto.")
+            QMessageBox.information(self, "Aviso", "Nenhuma alteração foi feita no produto.")
             return
 
         # Obter os dados dos campos
@@ -2442,7 +2448,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 produto_desconto, produto_data_cadastro,
                 produto_codigo_item, produto_cliente, produto_descricao, produto_imagem
             )
-            msgBox2 = QMessageBox(QMessageBox.Information, "Sucesso", "Produto atualizado com sucesso!")
+            msgBox2 = QMessageBox(self, "Sucesso", "Produto atualizado com sucesso!")
             msgBox2.exec()
             self.limpar_imagem_produto_após_atualizar()
             self.limpar_campos_produtos()
@@ -2451,7 +2457,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             if hasattr(self, 'produto_original'):
                 del self.produto_original
         except Exception as e:
-            QMessageBox.critical(None, "Erro", f"Erro ao atualizar o produto: {str(e)}")
+            QMessageBox.critical(self, "Erro", f"Erro ao atualizar o produto: {str(e)}")
 
 #*******************************************************************************************************
     def registrar_historico(self, acao, descricao):
@@ -2533,7 +2539,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         ]
         for campo in campos:
             if not campo:
-                msg = QMessageBox()
+                msg = QMessageBox(self)
                 msg.setIcon(QMessageBox.Warning)
                 msg.setWindowTitle("Erro")
                 msg.setText("Todos os campos precisam ser preenchidos.")
@@ -2542,7 +2548,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         return True
 #*********************************************************************************************************************
     def mostrar_mensagem_sucesso(self):
-        success_msg = QMessageBox()
+        success_msg = QMessageBox(self)
         success_msg.setIcon(QMessageBox.Information)
         success_msg.setWindowTitle("Sucesso")
         success_msg.setText("Produtos confirmados e cadastrados com sucesso.")
@@ -2622,7 +2628,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 valor = valor.replace("R$", "").replace(" ", "").replace(".", "").replace(",", ".")
                 valor_float = float(valor)
             except ValueError:
-                QMessageBox.warning(None, "Erro", "Valor inválido.")
+                QMessageBox.warning(self, "Erro", "Valor inválido.")
                 return
 
             # Regra: valor mínimo
@@ -2697,7 +2703,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             try:
                 datetime.strptime(text, "%d/%m/%Y")
             except ValueError:
-                QMessageBox.warning(None, "Data inválida", f"A data '{text}' é inválida.")
+                QMessageBox.warning(self, "Data inválida", f"A data '{text}' é inválida.")
                 widget.setText("")
                 widget.setFocus()
 #*********************************************************************************************************************
@@ -2729,7 +2735,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.atualizar_imagem()
 #*******************************************************************************************************
     def mostrar_erro_desconto(self):
-        detalhes_msg_detalhes = QMessageBox()
+        detalhes_msg_detalhes = QMessageBox(self)
         detalhes_msg_detalhes.setIcon(QMessageBox.Information)
         detalhes_msg_detalhes.setWindowTitle("Detalhes do Erro")
         detalhes_msg_detalhes.setText("Os campos obrigatórios precisam estar preenchidos.")
@@ -2773,7 +2779,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.apagar_imagem_produto_btn_apagar_campos()
 
             # Mensagem de sucesso
-            successMsgBox = QMessageBox()
+            successMsgBox = QMessageBox(self)
             successMsgBox.setIcon(QMessageBox.Information)
             successMsgBox.setText("Campos limpos com sucesso!")
             successMsgBox.setWindowTitle("Sucesso")
@@ -2817,11 +2823,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                     pixmap = pixmap.scaled(200, 200, Qt.KeepAspectRatio)
                     self.label_imagem_produto.setPixmap(pixmap)
                 else:
-                    QMessageBox.warning(None, "Aviso", "Não foi possível carregar a imagem.")
+                    QMessageBox.warning(self, "Aviso", "Não foi possível carregar a imagem.")
             else:
-                QMessageBox.warning(None, "Aviso", "Não foi possível encontrar o caminho da imagem.")
+                QMessageBox.warning(self, "Aviso", "Não foi possível encontrar o caminho da imagem.")
         else:
-            QMessageBox.warning(None, "Aviso", "Nenhuma imagem definida para o produto.")
+            QMessageBox.warning(self, "Aviso", "Nenhuma imagem definida para o produto.")
 #**************************************************************************************************************            
     def limpar_campos_após_atualizar_usuario(self):
         self.txt_nome.clear()
@@ -2944,7 +2950,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         df = pd.DataFrame(dados)
 
         file_path, _ = QFileDialog.getSaveFileName(
-            None,
+            self,
             "Salvar Planilha de Exemplo",
             nome_sugestao,
             "Excel Files (*.xlsx)"
@@ -2977,7 +2983,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         wb.save(file_path)
 
         QMessageBox.information(
-            None,
+            self,
             "Sucesso",
             f"Planilha '{escolha}' salva com sucesso em {file_path}!",
             QMessageBox.Ok
@@ -2997,7 +3003,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     # Sair do modo edição na página de cadastrar usuários
     def sair_modo_edicao_usuarios(self):
         if not self.is_editing:
-            QMessageBox.warning(None, "Aviso", "Você não está no modo de edição.")
+            QMessageBox.warning(self, "Aviso", "Você não está no modo de edição.")
             return
 
         self.is_editing = False
@@ -3024,18 +3030,18 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.label_imagem_usuario.clear()
 
         # Se quiser mostrar visualmente que saiu do modo edição (opcional)
-        QMessageBox.information(None, "Edição cancelada", "Você saiu do modo de edição.")
+        QMessageBox.information(self, "Edição cancelada", "Você saiu do modo de edição.")
 
     def sair_modo_edicao_produto(self):
         if not self.is_editing_produto:
-            QMessageBox.warning(None, "Aviso", "Você não está no modo de edição de produtos.")
+            QMessageBox.warning(self, "Aviso", "Você não está no modo de edição de produtos.")
             return
 
         self.is_editing_produto = False
         self.selected_produto_id = None
 
         # Se quiser mostrar visualmente que saiu do modo edição (opcional)
-        QMessageBox.information(None, "Edição cancelada", "Você saiu do modo de edição.")
+        QMessageBox.information(self, "Edição cancelada", "Você saiu do modo de edição.")
     
     def resource_path(relative_path):
         try:
@@ -3136,10 +3142,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         if pagina_atual == self.pg_clientes:
             if self.pagina_clientes_juridicos.table_clientes_juridicos.isVisible():
-                QMessageBox.information(None,"Aviso","Dados atualizados com sucesso!")
+                QMessageBox.information(self,"Aviso","Dados atualizados com sucesso!")
                 self.pagina_clientes_juridicos.carregar_clientes_juridicos()
             elif self.pagina_clientes_fisicos.table_clientes_fisicos.isVisible():
-                QMessageBox.information(None,"Aviso","Dados atualizados com sucesso!")
+                QMessageBox.information(self,"Aviso","Dados atualizados com sucesso!")
                 self.pagina_clientes_fisicos.carregar_clientes_fisicos()
             else:
                 print("⚠️ Nenhuma tabela de cliente visível")

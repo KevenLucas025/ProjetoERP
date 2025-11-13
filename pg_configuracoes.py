@@ -130,7 +130,7 @@ class Pagina_Configuracoes(QWidget):
         # Estilo geral dos botões (modo escuro)
         style_sheet = """
             QMainWindow, QStackedWidget, QWidget {
-                background-color: #202124;
+                background-color: #2b2b2b;
                 color: #ffffff;
             }
             /* Estiliza apenas o QTableView das tables abaixo */
@@ -399,7 +399,7 @@ class Pagina_Configuracoes(QWidget):
             QLineEdit#line_excel,
             QLineEdit#line_excel_usuarios{
               color: #ffffff; /* texto branco */
-                background-color: #202124; /* fundo escuro */
+                background-color: #2b2b2b; /* fundo escuro */
                 border: 3px solid #ffffff; /* branco */
                 border-radius: 13px; /* cantos arredondados */
                 padding: 3px;
@@ -408,7 +408,7 @@ class Pagina_Configuracoes(QWidget):
             }
             QLineEdit{
                 color: #ffffff; /* texto branco */
-                background-color: #202124; /* fundo escuro */
+                background-color: #2b2b2b; /* fundo escuro */
                 border: 2px solid #ffffff; /* branco */
                 border-radius: 6px; /* cantos arredondados */
                 padding: 3px;
@@ -619,7 +619,7 @@ class Pagina_Configuracoes(QWidget):
                 color: white;                        /* texto branco */
                 border: 3px solid #ffffff;           /* borda branca  */
                 border-radius: 13px;                 /* bordas arredondadas */
-                background-color: #202124;           /* fundo escuro */
+                background-color: #2b2b2b;           /* fundo escuro */
                 text-align: center;                   /* centraliza o texto do progresso */
             }
 

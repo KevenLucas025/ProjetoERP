@@ -31,7 +31,7 @@ class DialogoEstilizado(QDialog):
     def aplicar_estilo(self):
         # Estilos por tema
         if self.tema == "escuro":
-            bg_cor = "#202124"
+            bg_cor = "#2b2b2b"
             text_cor = "white"
             lineedit_bg = "#2b2b2b"  
             button_style = """
@@ -310,14 +310,19 @@ class DialogoEstilizado(QDialog):
             {combo_style}
             {scroll_style}
             {lineedit_style}
-            {dialog_style}
-            {bg_cor}
+
             QLabel {{
                 color: {text_cor};
+                font-weight: 500;
                 font-size: 12px;
                 background: transparent;
             }}
+
+            {dialog_style}
         """)
+
+
+
 
         
 

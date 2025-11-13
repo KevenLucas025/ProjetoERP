@@ -778,9 +778,9 @@ class EstoqueProduto(QWidget):
 
         # Definições de tema
         if tema == "escuro":
-            bg_cor = "#202124"
+            bg_cor = "#2b2b2b"
             text_cor = "white"
-            lineedit_bg = "#303030"
+            lineedit_bg = "#2b2b2b"
 
             button_style = """
                 QPushButton {
