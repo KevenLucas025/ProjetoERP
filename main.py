@@ -548,7 +548,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def verificar_atualizacao_automatica(self):
         try:
-            url = "https://drive.google.com/uc?export=download&id=1giHyPwHx2LdD_tVQTfXcnJAuW9FDu3Nd"
+            url = "https://drive.google.com/uc?export=download&id=1lnJo3PrwGCxUL5IGsDFtaU3O0FVh1Ot"
             response = requests.get(url, timeout=5)
             dados = response.json()
             versao_remota = dados.get("versao")
@@ -3152,8 +3152,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         else:
             print("⚠️ Página atual não tem método de atualização com F5.")
 
-
-    
 
     
     def aplicar_tema_global(self,app: QApplication, tema: str):
