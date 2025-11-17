@@ -72,6 +72,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.atalhos = {}  # dicionário com os atalhos definidos
         atexit.register(self.aplicar_atualizacao_automaticamente)
         
+        self.janela_config = None
+
+        
         
 
 
@@ -548,7 +551,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def verificar_atualizacao_automatica(self):
         try:
-            url = "https://drive.google.com/uc?export=download&id=1lnJo3PrwGCxUL5IGsDFtaU3O0FVh1Ot"
+            url = "https://drive.google.com/uc?export=download&id=1_xEgs849ldXi8y5OaO7kydtmqTZ8DtBv"
             response = requests.get(url, timeout=5)
             dados = response.json()
             versao_remota = dados.get("versao")
@@ -565,29 +568,51 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             pass
         
     def baixar_arquivo(self, url, destino):
-        response = requests.get(url, stream=True)
-        total = int(response.headers.get('content-length', 0))
+        session = requests.Session()
 
-        progresso = QProgressDialog("Baixando atualização...", "Cancelar", 0, total, self.janela_config)
+        response = session.get(url, stream=True, allow_redirects=True)
+        token = None
+
+        # Drive usa confirmações extras para arquivo grande
+        for key, value in response.cookies.items():
+            if key.startswith("download_warning"):
+                token = value
+                break
+
+        if token:
+            url_confirm = url + "&confirm=" + token
+            response = session.get(url_confirm, stream=True, allow_redirects=True)
+
+        total = int(response.headers.get('content-length', 0))
+        total = int(total) if total is not None else 0
+        
+          # SE NÃO TIVER TAMANHO, BARRA INDETERMINADA
+        if total == 0:
+            progresso = QProgressDialog("Baixando atualização...", "Cancelar", 0, 0, self.janela_config)
+        else:
+            progresso = QProgressDialog("Baixando atualização...", "Cancelar", 0, total, self.janela_config)
+
+
         progresso.setWindowTitle("Atualização")
         progresso.setWindowModality(Qt.WindowModal)
         progresso.show()
 
-        with open(destino, 'wb') as arquivo:
+        with open(destino, 'wb') as f:
             baixado = 0
-            for chunk in response.iter_content(chunk_size=8192):
+            for chunk in response.iter_content(32768):
                 if progresso.wasCanceled():
-                    response.close()
+                    f.close()
                     os.remove(destino)
                     return None
                 if chunk:
-                    arquivo.write(chunk)
+                    f.write(chunk)
                     baixado += len(chunk)
                     progresso.setValue(baixado)
                     QApplication.processEvents()
 
         progresso.setValue(total)
-        return destino
+        return True
+
 
             
     

@@ -74,7 +74,8 @@ class Pagina_Configuracoes(QWidget):
         
 
         # Criar a janela de configurações
-        self.janela_config = QMainWindow()
+        self.main_window.janela_config = QMainWindow()
+        self.janela_config = self.main_window.janela_config
         self.janela_config.setWindowTitle("Configurações")
         self.janela_config.setMinimumSize(600, 500)
         
@@ -1763,7 +1764,7 @@ class Pagina_Configuracoes(QWidget):
         menu_atualizacoes = QMenu(self.janela_config)
         menu_atualizacoes.addAction("Definir atualizações automaticamente")
         menu_atualizacoes.addAction("Não definir atualizações automáticas")
-        menu_atualizacoes.addAction("Verificar se há atualizações",self.verificar_atualizacoes)
+        menu_atualizacoes.addAction("Verificar se há atualizações",lambda: self.verificar_atualizacoes())
         menu_atualizacoes.addAction("Exibir histórico de atualizações")
         btn_atualizacoes.setMenu(menu_atualizacoes)
         self.layout.addWidget(btn_atualizacoes)
@@ -1823,7 +1824,7 @@ class Pagina_Configuracoes(QWidget):
         
     def verificar_atualizacoes(self):
         try:
-            url = "https://drive.google.com/uc?export=download&id=1lnJo3PrwGCxUL5IGsDFtaU3O0FVh1Ot"
+            url = "https://drive.google.com/uc?export=download&id=1_xEgs849ldXi8y5OaO7kydtmqTZ8DtBv"
 
             response = requests.get(url, timeout=5)
             if response.status_code != 200:
@@ -1845,9 +1846,10 @@ class Pagina_Configuracoes(QWidget):
                 if resposta == QMessageBox.Yes:
                     # Baixa como temporário para não bloquear o exe em uso
                     destino_temp = os.path.join(os.getenv('USERPROFILE'), 'Desktop', 'SistemadeGerenciamento_tmp.exe')
-                    arquivo_baixado = self.baixar_arquivo(link_download, destino_temp)
+                    
+                    arquivo_baixado = self.main_window.baixar_arquivo(link_download, destino_temp)
 
-                    if arquivo_baixado:
+                    if arquivo_baixado is True:
                         QMessageBox.information(
                             self.janela_config,
                             "Atualização",
