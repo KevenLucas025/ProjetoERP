@@ -551,7 +551,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def verificar_atualizacao_automatica(self):
         try:
-            url = "https://drive.google.com/uc?export=download&id=1_xEgs849ldXi8y5OaO7kydtmqTZ8DtBv"
+            url = "https://drive.google.com/uc?export=download&id=1VT20ptK52DMTj9zolhM7VW-9pz2bkVw"
             response = requests.get(url, timeout=5)
             dados = response.json()
             versao_remota = dados.get("versao")
@@ -568,50 +568,42 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             pass
         
     def baixar_arquivo(self, url, destino):
-        session = requests.Session()
+        try:
+            response = requests.get(url, stream=True)
+            response.raise_for_status()
 
-        response = session.get(url, stream=True, allow_redirects=True)
-        token = None
+            total = int(response.headers.get('content-length', 0))
 
-        # Drive usa confirmações extras para arquivo grande
-        for key, value in response.cookies.items():
-            if key.startswith("download_warning"):
-                token = value
-                break
+            progresso = QProgressDialog("Baixando atualização...", "Cancelar", 0, total if total > 0 else 0, self.janela_config)
+            progresso.setWindowTitle("Atualização")
+            progresso.setWindowModality(Qt.WindowModal)
+            progresso.show()
 
-        if token:
-            url_confirm = url + "&confirm=" + token
-            response = session.get(url_confirm, stream=True, allow_redirects=True)
+            with open(destino, "wb") as f:
+                baixado = 0
+                for chunk in response.iter_content(32768):
+                    if progresso.wasCanceled():
+                        f.close()
+                        os.remove(destino)
+                        return False
 
-        total = int(response.headers.get('content-length', 0))
-        total = int(total) if total is not None else 0
-        
-          # SE NÃO TIVER TAMANHO, BARRA INDETERMINADA
-        if total == 0:
-            progresso = QProgressDialog("Baixando atualização...", "Cancelar", 0, 0, self.janela_config)
-        else:
-            progresso = QProgressDialog("Baixando atualização...", "Cancelar", 0, total, self.janela_config)
+                    if chunk:
+                        f.write(chunk)
+                        baixado += len(chunk)
+
+                        if total > 0:
+                            progresso.setValue(baixado)
+
+                        QApplication.processEvents()
+
+            progresso.setValue(progresso.maximum())
+            return True
+
+        except Exception as e:
+            QMessageBox.warning(self.janela_config, "Erro", f"Erro ao baixar arquivo:\n{e}")
+            return False
 
 
-        progresso.setWindowTitle("Atualização")
-        progresso.setWindowModality(Qt.WindowModal)
-        progresso.show()
-
-        with open(destino, 'wb') as f:
-            baixado = 0
-            for chunk in response.iter_content(32768):
-                if progresso.wasCanceled():
-                    f.close()
-                    os.remove(destino)
-                    return None
-                if chunk:
-                    f.write(chunk)
-                    baixado += len(chunk)
-                    progresso.setValue(baixado)
-                    QApplication.processEvents()
-
-        progresso.setValue(total)
-        return True
 
 
             
@@ -799,7 +791,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         msg = QMessageBox(self)
         msg.setIcon(QMessageBox.Information)
         msg.setWindowTitle("Informação")
-        msg.setText("Versão do Sistema: 1.0.1\n"
+        msg.setText(f"Versão do Sistema: {VERSAO_ATUAL}\n"
                     "Desenvolvedor: Keven Lucas\n"
                     "Sistema liberado para uso privado e público\n"
                     "Sua versão é gratuita\n"

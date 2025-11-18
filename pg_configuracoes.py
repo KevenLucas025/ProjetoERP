@@ -1824,7 +1824,7 @@ class Pagina_Configuracoes(QWidget):
         
     def verificar_atualizacoes(self):
         try:
-            url = "https://drive.google.com/uc?export=download&id=1_xEgs849ldXi8y5OaO7kydtmqTZ8DtBv"
+            url = "https://drive.google.com/uc?export=download&id=1VT20ptK52DMTj9zolhM7VW-9pz2bkVw"
 
             response = requests.get(url, timeout=5)
             if response.status_code != 200:
