@@ -6,7 +6,7 @@ from PySide6 import QtCore
 from PySide6.QtWidgets import (QMainWindow, QMessageBox, QPushButton,
                                QLabel, QFileDialog, QVBoxLayout,
                                QMenu,QTableWidgetItem,QCheckBox,QApplication,QToolButton,QHeaderView,QCompleter,
-                               QComboBox,QInputDialog,QProgressDialog,QDialog,QLineEdit,QWidget,QHBoxLayout,QDialogButtonBox,QScrollArea)
+                               QComboBox,QInputDialog,QProgressDialog,QDialog,QLineEdit,QWidget,QHBoxLayout,QDialogButtonBox,QProgressBar)
 from PySide6.QtGui import (QDoubleValidator, QIcon, QColor, QPixmap,QBrush,
                            QAction,QMovie,QImage,QShortcut,QKeySequence,QPainter,QPageLayout,QPageSize,QTransform)
 from PySide6.QtPrintSupport import QPrintDialog,QPrinter,QPrintPreviewDialog
@@ -551,7 +551,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def verificar_atualizacao_automatica(self):
         try:
-            url = "https://drive.google.com/uc?export=download&id=1VT20ptK52DMTj9zolhM7VW-9pz2bkVw"
+            url = "https://github.com/KevenLucas025/Sistema-Atualizador/raw/refs/heads/main/versao.json"
             response = requests.get(url, timeout=5)
             dados = response.json()
             versao_remota = dados.get("versao")
@@ -567,6 +567,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         except:
             pass
         
+
     def baixar_arquivo(self, url, destino):
         try:
             response = requests.get(url, stream=True)
@@ -574,10 +575,28 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
             total = int(response.headers.get('content-length', 0))
 
-            progresso = QProgressDialog("Baixando atualização...", "Cancelar", 0, total if total > 0 else 0, self.janela_config)
+            progresso = QProgressDialog("Baixando atualização...", "Cancelar", 0, 100, self.janela_config)
             progresso.setWindowTitle("Atualização")
             progresso.setWindowModality(Qt.WindowModal)
             progresso.show()
+
+            barra = progresso.findChild(QProgressBar)
+            barra.setStyleSheet("""
+                QProgressBar {
+                    background-color: #2e2e2e;
+                    border-radius: 13px;
+                    height: 20px;
+                    text-align: center;
+                    padding: 4px;
+                }
+
+                QProgressBar::chunk {
+                    background-color: #5b8fd8;
+                    border-radius: 4px;
+                    margin: 0px;
+                    min-width: 7px;
+                }
+            """)
 
             with open(destino, "wb") as f:
                 baixado = 0
@@ -591,10 +610,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                         f.write(chunk)
                         baixado += len(chunk)
 
-                        if total > 0:
-                            progresso.setValue(baixado)
+                        percentual = int((baixado / total) * 100)
+                        progresso.setValue(percentual)
 
                         QApplication.processEvents()
+
 
             progresso.setValue(progresso.maximum())
             return True
@@ -602,6 +622,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         except Exception as e:
             QMessageBox.warning(self.janela_config, "Erro", f"Erro ao baixar arquivo:\n{e}")
             return False
+
 
 
 

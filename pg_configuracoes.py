@@ -1824,7 +1824,7 @@ class Pagina_Configuracoes(QWidget):
         
     def verificar_atualizacoes(self):
         try:
-            url = "https://drive.google.com/uc?export=download&id=1VT20ptK52DMTj9zolhM7VW-9pz2bkVw"
+            url = "https://github.com/KevenLucas025/Sistema-Atualizador/raw/refs/heads/main/versao.json"
 
             response = requests.get(url, timeout=5)
             if response.status_code != 200:
@@ -1847,6 +1847,7 @@ class Pagina_Configuracoes(QWidget):
                     # Baixa como temporário para não bloquear o exe em uso
                     destino_temp = os.path.join(os.getenv('USERPROFILE'), 'Desktop', 'SistemadeGerenciamento_tmp.exe')
                     
+                    print("DEBUG:", repr(destino_temp))
                     arquivo_baixado = self.main_window.baixar_arquivo(link_download, destino_temp)
 
                     if arquivo_baixado is True:
