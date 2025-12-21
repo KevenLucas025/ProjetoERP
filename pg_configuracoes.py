@@ -892,13 +892,13 @@ class Pagina_Configuracoes(QWidget):
             
             QPushButton#botao_lupa_juridicos,
             QPushButton#botao_lupa_fisicos {
-                qproperty-icon: url("imagens/botao_lupa.png");
+                qproperty-icon: url(":/imagens/botao_lupa.png");
                 qproperty-iconSize: 16px 16px;
                 background: transparent;
                 border: none;
             }
             QPushButton#btn_mostrar_senha{
-                qproperty-icon: url("imagens/olho_preto.png");
+                qproperty-icon: url(":/imagens/olho_preto.png");
                 qproperty-iconSize: 16px 16px;
                 background: transparent;
                 border: none;  
@@ -1274,13 +1274,13 @@ class Pagina_Configuracoes(QWidget):
 
             QPushButton#botao_lupa_juridicos,
             QPushButton#botao_lupa_fisicos {
-                qproperty-icon: url("imagens/botao_lupa.png");
+                qproperty-icon: url(":/imagens/botao_lupa.png");
                 qproperty-iconSize: 16px 16px;
                 background: transparent;
                 border: none;
             }
             QPushButton#btn_mostrar_senha{
-                qproperty-icon: url("imagens/olho_preto.png ");
+                qproperty-icon: url(":/imagens/olho_preto.png ");
                 qproperty-iconSize: 16px 16px;
                 background: transparent;
                 border: none;  
