@@ -12,6 +12,7 @@ from login import Login
 import sys
 from configuracoes import Configuracoes_Login
 from dialogos import ComboDialog,DialogoEstilizado
+from utils import caminho_recurso
 from mane_python import Ui_MainWindow
 from packaging import version
 import subprocess
@@ -129,7 +130,11 @@ class Pagina_Configuracoes(QWidget):
     def aplicar_tema_escuro(self):
         # Estilo geral dos botões (modo escuro)
         style_sheet = """
-            QMainWindow, QStackedWidget, QWidget {
+            QMainWindow, QStackedWidget {
+                background-color: #2b2b2b;
+                color: #ffffff;
+            }
+            QWidget{
                 background-color: #2b2b2b;
                 color: #ffffff;
             }
@@ -652,8 +657,8 @@ class Pagina_Configuracoes(QWidget):
         for widget in app.allWidgets():
             widget.setStyleSheet(style_sheet)
 
-        self.btn_opcoes.setIcon(QIcon("imagens/imagens_modo_escuro/seta direita preta.png")) #Esse botão é o botão de retroceder, nomenclatura errada
-        self.btn_retroceder.setIcon(QIcon("imagens/imagens_modo_escuro/seta esquerda preta.png")) # Esse botão é o botão avançar, nomenclatura errada
+        self.btn_opcoes.setIcon(QIcon(caminho_recurso("imagens/imagens_modo_escuro/seta_esquerda_preta.png"))) #Esse botão é o botão de retroceder, nomenclatura errada
+        self.btn_retroceder.setIcon(QIcon(caminho_recurso("imagens/imagens_modo_escuro/seta_direita_preta.png"))) # Esse botão é o botão avançar, nomenclatura errada
         
 
         self.btn_retroceder.setGeometry(40, 5, 30, 30)  # Define a geometria do botão 'btn_retroceder'
@@ -721,6 +726,9 @@ class Pagina_Configuracoes(QWidget):
             QMainWindow, QStackedWidget {
                 background-color: #ffffff;
                 color: #000000;
+            }
+            QWidget{
+                background-color: #ffffff;
             }
             /* QTableView com seleção diferenciada */
             QTableView {

@@ -75,7 +75,7 @@ class TabelaProdutos(QMainWindow):
         # Personalizar o estilo dos cabeçalhos de linha e coluna
         font = self.table_widget.horizontalHeader().font()
         self.table_widget.horizontalHeader().setFont(font)
-        self.table_widget.verticalHeader().setFont(font)
+        self.table_widget.verticalHeader().setVisible(False)
 
         # Botão para apagar produto, dentro da tabela produtos
         self.btn_apagar_produto = QPushButton("Apagar Produto")
@@ -145,7 +145,7 @@ class TabelaProdutos(QMainWindow):
     def aplicar_tema(self, tema: str) -> str:
         # Definições de tema
         if tema == "escuro":
-            bg_cor = "#202124"
+            bg_cor = "#2b2b2b"
             text_cor = "white"
             lineedit_bg = "#303030"
 
@@ -254,7 +254,7 @@ class TabelaProdutos(QMainWindow):
             table_view_style = """
              /* QTableView com seleção diferenciada */
             QTableView {
-                background-color: #202124;
+                background-color: #2b2b2b;
                 color: white;
                 gridline-color: #555555;
                 selection-background-color: #7a7a7a;
@@ -269,7 +269,7 @@ class TabelaProdutos(QMainWindow):
             }
             /* Cabeçalho vertical (a faixa da esquerda) */
             QHeaderView:vertical {
-                background-color: #202124;  /* fundo da faixa */
+                background-color: #2b2b2b;  /* fundo da faixa */
             }
             QHeaderView::section:vertical {
                 background-color: #ffffff;  /* quadradinhos numerados */
@@ -280,7 +280,7 @@ class TabelaProdutos(QMainWindow):
             /* QTabWidget headers brancos */
             QTabWidget::pane {
                 border: 1px solid #444444;
-                background-color: #202124;
+                background-color: #2b2b2b;
             }
             /* Estiliza a barra de rolagem horizontal */
             QTableView QScrollBar:horizontal {
@@ -812,11 +812,27 @@ class TabelaProdutos(QMainWindow):
             pass
 #*******************************************************************************************************
     def exibir_mensagem_sem_produtos(self):
+        if self.tema == "escuro":
+            text_cor = "white"
+        elif self.tema == "claro":
+            text_cor = "black"
+        else:
+            text_cor = "white"
+            
+        tamanho_font = "16px"
+        
+        style = f"""
+            QLabel {{
+                color: {text_cor};
+                font-size: {tamanho_font};
+            }}
+        """ 
+            
         # Verificar se a QLabel já existe
         if not hasattr(self, 'label_sem_produto'):
             self.label_sem_produto = QLabel("Produtos cadastrados serão exibidos aqui...")
             self.label_sem_produto.setAlignment(Qt.AlignCenter)
-            self.label_sem_produto.setStyleSheet("font-size: 16px; color: black;")
+            self.label_sem_produto.setStyleSheet(style)
             
             # Verificar se o widget tem um layout
             if not self.table_widget.layout():
@@ -1368,7 +1384,7 @@ class TabelaProdutos(QMainWindow):
 
             # Remove a coluna
             self.table_widget.removeColumn(0)
-            self.table_widget.verticalHeader().setVisible(True)
+            self.table_widget.verticalHeader().setVisible(False)
             self.coluna_checkboxes_produtos_adicionada = False
 
             # Remove o header checkbox

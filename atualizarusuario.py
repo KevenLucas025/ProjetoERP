@@ -67,7 +67,7 @@ class AtualizarUsuario(QDialog):
             """
             dialog_style = """
                 QDialog {
-                    background-color: #f0f0f0;
+                    background-color: #005079;
                     color: black;
                 }
             """
@@ -85,7 +85,15 @@ class AtualizarUsuario(QDialog):
                 background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */
                 color: black;
             }
-        """
+            
+            """
+            dialog_style = """
+                QDialog {
+                    background-color: #005079;
+                    color: white;
+                }
+            """
+        
 
         # Aplicar estilo do diálogo
         self.setStyleSheet(dialog_style)

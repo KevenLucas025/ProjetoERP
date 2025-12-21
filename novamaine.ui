@@ -6125,7 +6125,7 @@ QLineEdit::placeholderText {
               <enum>QTabWidget::Rounded</enum>
              </property>
              <property name="currentIndex">
-              <number>0</number>
+              <number>1</number>
              </property>
              <widget class="QWidget" name="tab_clientes">
               <property name="styleSheet">

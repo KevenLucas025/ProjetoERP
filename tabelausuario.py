@@ -60,6 +60,7 @@ class TabelaUsuario(QMainWindow):
         self.table_widget.setFocusPolicy(Qt.StrongFocus)
         self.table_widget.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
         self.table_widget.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+        self.table_widget.verticalHeader().setVisible(False)
 
 
          # Widget central e layout principal vertical
@@ -1082,7 +1083,7 @@ class TabelaUsuario(QMainWindow):
 
         if self.coluna_checkboxes_adicionada:
             self.table_widget.removeColumn(0)
-            self.table_widget.verticalHeader().setVisible(True)
+            self.table_widget.verticalHeader().setVisible(False)
             self.coluna_checkboxes_adicionada = False
 
             if hasattr(self, "checkbox_header_users"):

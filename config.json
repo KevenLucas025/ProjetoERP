@@ -32,16 +32,19 @@
         "txt_codigo_item": [
             "dsdsda",
             "dasdas",
-            "dss"
+            "dss",
+            "12"
         ],
         "txt_cliente_3": [
             "Keven Lucas",
-            "Keven Lucas da Silva Jesus"
+            "Keven Lucas da Silva Jesus",
+            "12"
         ],
         "txt_descricao_produto_3": [
             "sddasdas",
             "Alimentos",
-            "dsdsd"
+            "dsdsd",
+            "dsadasdas"
         ],
         "line_clientes": [
             "dfsdfsd"
@@ -77,7 +80,7 @@
             "1215"
         ]
     },
-    "tema": "claro",
+    "tema": "classico",
     "tamanho_fonte_percentual": 100,
     "atalhos": {
         "Pesquisar": "Ctrl+F",

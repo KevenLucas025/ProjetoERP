@@ -865,7 +865,7 @@ class EstoqueProduto(QWidget):
             table_view_style = """
             /* QTableView com seleção diferenciada */
             QTableView {
-                background-color: #202124;
+                background-color: #2b2b2b;
                 color: white;
                 gridline-color: #555555;
                 selection-background-color: #7a7a7a;
@@ -882,7 +882,7 @@ class EstoqueProduto(QWidget):
             /* QTabWidget headers brancos */
             QTabWidget::pane {
                 border: 1px solid #444444;
-                background-color: #202124;
+                background-color: #2b2b2b;
             }
             /* Estiliza a barra de rolagem horizontal */
             QTableView QScrollBar:horizontal {

@@ -1669,7 +1669,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             print("Imagem base64 vazia ou inválida.")
 #*********************************************************************************************************************
     def erros_frames_produtos(self):
-        print("Inicializando erros_frames_produtos")
         # Definir os campos obrigatórios e seus respectivos frames de erro
         self.campos_obrigatorios = {
             'produto': self.txt_produto,

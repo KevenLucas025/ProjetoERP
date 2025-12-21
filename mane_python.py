@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'novamaine.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.8.0
+## Created by: Qt User Interface Compiler version 6.10.1
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -4605,7 +4605,7 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
 
-        self.tab_clientes_todos.setCurrentIndex(0)
+        self.tab_clientes_todos.setCurrentIndex(1)
 
 
         QMetaObject.connectSlotsByName(MainWindow)
