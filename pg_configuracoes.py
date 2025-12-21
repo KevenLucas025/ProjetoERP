@@ -15,10 +15,6 @@ from dialogos import ComboDialog,DialogoEstilizado
 from mane_python import Ui_MainWindow
 from packaging import version
 import subprocess
-<<<<<<< HEAD
-=======
-from utils import caminho_recurso
->>>>>>> 23188880d99f6057682a4c038074c7ff69d7f8a2
 from utils import Temas
 import re
 import string
@@ -258,11 +254,7 @@ class Pagina_Configuracoes(QWidget):
             }
             QPushButton#botao_lupa_juridicos,
             QPushButton#botao_lupa_fisicos {
-<<<<<<< HEAD
                 qproperty-icon: url(":/imagens/botao_lupa_branco.png");
-=======
-                qproperty-icon: url("imagens/botao_lupa_branco.png");
->>>>>>> 23188880d99f6057682a4c038074c7ff69d7f8a2
                 qproperty-iconSize: 16px 16px;
                 background: transparent;
                 border: none;
@@ -900,21 +892,13 @@ class Pagina_Configuracoes(QWidget):
             
             QPushButton#botao_lupa_juridicos,
             QPushButton#botao_lupa_fisicos {
-<<<<<<< HEAD
                 qproperty-icon: url(":/imagens/botao_lupa.png");
-=======
-                qproperty-icon: url("imagens/botao_lupa.png");
->>>>>>> 23188880d99f6057682a4c038074c7ff69d7f8a2
                 qproperty-iconSize: 16px 16px;
                 background: transparent;
                 border: none;
             }
             QPushButton#btn_mostrar_senha{
-<<<<<<< HEAD
                 qproperty-icon: url(":/imagens/olho_preto.png");
-=======
-                qproperty-icon: url("imagens/olho_preto.png");
->>>>>>> 23188880d99f6057682a4c038074c7ff69d7f8a2
                 qproperty-iconSize: 16px 16px;
                 background: transparent;
                 border: none;  
@@ -1290,21 +1274,13 @@ class Pagina_Configuracoes(QWidget):
 
             QPushButton#botao_lupa_juridicos,
             QPushButton#botao_lupa_fisicos {
-<<<<<<< HEAD
                 qproperty-icon: url(":/imagens/botao_lupa.png");
-=======
-                qproperty-icon: url("imagens/botao_lupa.png");
->>>>>>> 23188880d99f6057682a4c038074c7ff69d7f8a2
                 qproperty-iconSize: 16px 16px;
                 background: transparent;
                 border: none;
             }
             QPushButton#btn_mostrar_senha{
-<<<<<<< HEAD
                 qproperty-icon: url(":/imagens/olho_preto.png ");
-=======
-                qproperty-icon: url("imagens/olho_preto.png ");
->>>>>>> 23188880d99f6057682a4c038074c7ff69d7f8a2
                 qproperty-iconSize: 16px 16px;
                 background: transparent;
                 border: none;  
