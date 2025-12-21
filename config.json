@@ -1,0 +1,89 @@
+{
+    "usuario": "Keven",
+    "senha": "123",
+    "mantem_conectado": false,
+    "nao_mostrar_mensagem_boas_vindas": true,
+    "nao_mostrar_aviso_irreversivel": true,
+    "nao_mostrar_mensagem_arquivo_excel": true,
+    "nao_mostrar_mensagem_arquivo_excel_fisicos": true,
+    "historico_autocompletes": {
+        "txt_nome": [
+            "dsfdsfs",
+            "sdsd"
+        ],
+        "txt_usuario_cadastro": [
+            "sdfsd",
+            "sds"
+        ],
+        "txt_senha_cadastro": [
+            "python .\\main.py",
+            "1212!@fasdf"
+        ],
+        "txt_produto": [
+            "Pizza"
+        ],
+        "txt_quantidade": [
+            "12"
+        ],
+        "txt_valor_produto_3": [
+            "12",
+            "2323"
+        ],
+        "txt_codigo_item": [
+            "dsdsda",
+            "dasdas",
+            "dss"
+        ],
+        "txt_cliente_3": [
+            "Keven Lucas",
+            "Keven Lucas da Silva Jesus"
+        ],
+        "txt_descricao_produto_3": [
+            "sddasdas",
+            "Alimentos",
+            "dsdsd"
+        ],
+        "line_clientes": [
+            "dfsdfsd"
+        ],
+        "txt_confirmar_senha": [
+            "1212!@fasdf"
+        ],
+        "txt_cep": [
+            "13179905"
+        ],
+        "txt_telefone": [
+            "19982018869"
+        ],
+        "txt_email": [
+            "keven.lucas00@hotmail.com"
+        ],
+        "txt_endereco": [
+            "Rua José Vieira da Silva"
+        ],
+        "txt_data_nascimento": [
+            "26012000"
+        ],
+        "txt_rg": [
+            "529915595"
+        ],
+        "txt_cpf": [
+            "50679677810"
+        ],
+        "txt_cnpj": [
+            "00000000000000"
+        ],
+        "txt_complemento": [
+            "1215"
+        ]
+    },
+    "tema": "claro",
+    "tamanho_fonte_percentual": 100,
+    "atalhos": {
+        "Pesquisar": "Ctrl+F",
+        "Abrir Mais Opções": "Ctrl+I",
+        "Abrir Configurações": "Ctrl+L",
+        "Abrir Página Inicial": "Ctrl+H"
+    },
+    "atualizacoes_automaticas": false
+}

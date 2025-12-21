@@ -1,0 +1,13 @@
+PySide6
+fpdf
+reportlab
+pandas
+requests
+openpyxl
+plyer
+qrcode
+pyotp
+pyupdater
+packaging
+pyinstaller
+matplotlib
