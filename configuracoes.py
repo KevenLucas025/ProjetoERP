@@ -14,6 +14,7 @@ class Configuracoes_Login:
         self.nao_mostrar_aviso_irreversivel = False
         self.nao_mostrar_mensagem_arquivo_excel = False
         self.nao_mostrar_mensagem_arquivo_excel_fisicos = False
+        self.nao_mostrar_aviso_atualizacoes = False
         self.atualizacoes_automaticas = False
         self.historico_autocompletes = {}
         self.tema = "classico"
@@ -71,9 +72,11 @@ class Configuracoes_Login:
                 self.nao_mostrar_aviso_irreversivel = config.get("nao_mostrar_aviso_irreversivel", False)
                 self.nao_mostrar_mensagem_arquivo_excel = config.get("nao_mostrar_mensagem_arquivo_excel", False)
                 self.nao_mostrar_mensagem_arquivo_excel_fisicos = config.get("nao_mostrar_mensagem_arquivo_excel_fisicos", False)
+                self.nao_mostrar_aviso_atualizacoes = config.get("nao_mostrar_aviso_atualizacoes", False)
                 self.historico_autocompletes = config.get("historico_autocompletes", {})
                 self.atalhos = config.get("atalhos", {})
                 self.atualizacoes_automaticas = config.get("atualizacoes_automaticas",False)
+                
 
                 # Tema
                 self.tema = config.get("tema", "classico")
@@ -109,6 +112,7 @@ class Configuracoes_Login:
             "nao_mostrar_aviso_irreversivel": self.nao_mostrar_aviso_irreversivel,
             "nao_mostrar_mensagem_arquivo_excel": self.nao_mostrar_mensagem_arquivo_excel,
             "nao_mostrar_mensagem_arquivo_excel_fisicos": self.nao_mostrar_mensagem_arquivo_excel_fisicos,
+            "nao_mostrar_aviso_atualizacoes": self.nao_mostrar_aviso_atualizacoes,
             "historico_autocompletes": self.historico_autocompletes,
             "tema": self.tema,
             "tamanho_fonte_percentual": self.tamanho_fonte_percentual,
@@ -138,7 +142,7 @@ class Configuracoes_Login:
         self.usuario = usuario
         self.senha = senha
         self.mantem_conectado = mantem_conectado
-        print(f"Salvando configurações: {usuario}, {mantem_conectado}")
+        print(f"Salvando configurações: Usuário - {usuario}, Senha - {senha}")
         self.salvar(usuario, senha, mantem_conectado)
 
     def salvar_percentual_fonte(self, percentual):
@@ -151,6 +155,7 @@ class Configuracoes_Login:
         self.nao_mostrar_aviso_irreversivel = False
         self.nao_mostrar_mensagem_arquivo_excel = False
         self.nao_mostrar_mensagem_arquivo_excel_fisicos = False
+        self.nao_mostrar_aviso_atualizacoes = False
         self.salvar(None, None, False)
         self.usuario = ""
         self.senha = None

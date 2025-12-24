@@ -6,6 +6,7 @@
     "nao_mostrar_aviso_irreversivel": true,
     "nao_mostrar_mensagem_arquivo_excel": true,
     "nao_mostrar_mensagem_arquivo_excel_fisicos": true,
+    "nao_mostrar_aviso_atualizacoes": true,
     "historico_autocompletes": {
         "txt_nome": [
             "dsfdsfs",

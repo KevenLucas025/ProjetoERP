@@ -1807,10 +1807,11 @@ class Pagina_Configuracoes(QWidget):
         btn_notificacoes.setFixedHeight(38)
         menu_notificacoes = QMenu(self.janela_config)
         menu_notificacoes.addAction("Definir todas as notificações",self.definir_todas_as_notificacoes)
-        menu_notificacoes.addAction("Definir notificação de boas-vindas",self.definir_notificacao_boas_vindas)
-        menu_notificacoes.addAction("Definir notificação de aviso irreversível",self.definir_aviso_irreversilvel)
-        menu_notificacoes.addAction("Definir notificação de aviso Excel para clientes jurídicos",self.definir_nao_mostrar_mensagem_arquivo_excel)
-        menu_notificacoes.addAction("Definir notificação de aviso Excel para clientes físicos",self.definir_nao_mostrar_mensagem_arquivo_excel_fisicos)
+        menu_notificacoes.addAction("Configurar notificação de boas-vindas",self.definir_notificacao_boas_vindas)
+        menu_notificacoes.addAction("Configurar notificação de aviso irreversível",self.definir_aviso_irreversilvel)
+        menu_notificacoes.addAction("Configurar notificação de aviso Excel para clientes jurídicos",self.definir_nao_mostrar_mensagem_arquivo_excel)
+        menu_notificacoes.addAction("Configurar notificação de aviso Excel para clientes físicos",self.definir_nao_mostrar_mensagem_arquivo_excel_fisicos)
+        menu_notificacoes.addAction("Configurar notificação de aviso sobre atualizações",self.definir_notificacao_atualizacoes)
         btn_notificacoes.setMenu(menu_notificacoes)
         self.layout.addWidget(btn_notificacoes)
 
@@ -1921,41 +1922,137 @@ class Pagina_Configuracoes(QWidget):
             "O sistema ainda avisará quando houver nova versão,\n"
             "mas não irá baixar automaticamente."
         )
+    def configurar_notificacao(self, nome_notificacao, attr_config):
+        desativada = getattr(self.config, attr_config)
+        
+        msg_box = QMessageBox(self)
+        msg_box.setIcon(QMessageBox.Question)
+        msg_box.setWindowTitle("Configurar Notificação")
+        
+        if desativada:
+            msg_box.setText(
+                f"A notificação {nome_notificacao} está ATIVADA.\n\n",
+                "Deseja DESATIVAR essa notificação?"
+            )
+        msg_box.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
+        msg_box.button(QMessageBox.Yes).setText("Sim")
+        msg_box.button(QMessageBox.No).setText("Não")
+
+        resposta = msg_box.exec()
+
+        if resposta == QMessageBox.Yes:
+            setattr(self.config, attr_config, not desativada)
+            self.config.salvar()
+
+            mensagem = (
+                f"Notificação {nome_notificacao} ATIVADA com sucesso!"
+                if desativada
+                else
+                f"Notificação {nome_notificacao} DESATIVADA com sucesso!"
+            )
+
+            QMessageBox.information(self, "Configuração Salva", mensagem)
   
     def definir_todas_as_notificacoes(self):
-        # Ativa todas as notificações
-        self.config.nao_mostrar_mensagem_boas_vindas = False
-        self.config.nao_mostrar_aviso_irreversivel = False
-        self.config.nao_mostrar_mensagem_arquivo_excel = False
-        self.config.nao_mostrar_mensagem_arquivo_excel_fisicos = False
-        
-        # Salva todas as alterações de uma vez
+        estados = [
+            self.config.nao_mostrar_mensagem_boas_vindas,
+            self.config.nao_mostrar_aviso_irreversivel,
+            self.config.nao_mostrar_mensagem_arquivo_excel,
+            self.config.nao_mostrar_mensagem_arquivo_excel_fisicos,
+            self.config.nao_mostrar_aviso_atualizacoes
+        ]
+
+        todas_desativadas = all(estados)
+        todas_ativadas = not any(estados)
+        estado_misto = not todas_desativadas and not todas_ativadas
+
+        msg_box = QMessageBox(self)
+        msg_box.setIcon(QMessageBox.Question)
+        msg_box.setWindowTitle("Configurar Notificações")
+
+        if estado_misto:
+            msg_box.setText(
+                "Algumas notificações estão ATIVADAS e outras DESATIVADAS.\n\n"
+                "O que você deseja fazer com TODAS as notificações?"
+            )
+        elif todas_desativadas:
+            msg_box.setText(
+                "Todas as notificações estão DESATIVADAS.\n\n"
+                "Deseja ATIVAR TODAS as notificações?"
+            )
+        else:
+            msg_box.setText(
+                "Todas as notificações estão ATIVADAS.\n\n"
+                "Deseja DESATIVAR TODAS as notificações?"
+            )
+
+        # Botões conforme estado
+        botao_ativar = None
+        botao_desativar = None
+
+        if estado_misto:
+            botao_ativar = msg_box.addButton("Ativar todas", QMessageBox.AcceptRole)
+            botao_desativar = msg_box.addButton("Desativar todas", QMessageBox.DestructiveRole)
+        elif todas_desativadas:
+            botao_ativar = msg_box.addButton("Ativar todas", QMessageBox.AcceptRole)
+        else:
+            botao_desativar = msg_box.addButton("Desativar todas", QMessageBox.DestructiveRole)
+
+        msg_box.addButton("Cancelar", QMessageBox.RejectRole)
+
+        msg_box.exec()
+        botao_clicado = msg_box.clickedButton()
+
+        if botao_clicado == botao_ativar:
+            novo_estado = False
+            mensagem = "Todas as notificações foram ATIVADAS com sucesso!"
+        elif botao_clicado == botao_desativar:
+            novo_estado = True
+            mensagem = "Todas as notificações foram DESATIVADAS com sucesso!"
+        else:
+            return  # Cancelado
+
+        self.config.nao_mostrar_mensagem_boas_vindas = novo_estado
+        self.config.nao_mostrar_aviso_irreversivel = novo_estado
+        self.config.nao_mostrar_mensagem_arquivo_excel = novo_estado
+        self.config.nao_mostrar_mensagem_arquivo_excel_fisicos = novo_estado
+        self.config.nao_mostrar_aviso_atualizacoes = novo_estado
+
         self.config.salvar()
-        
-        # Mostra aviso único
-        QMessageBox.information(self, "Aviso", "Todas as notificações foram ativadas!")
+
+        QMessageBox.information(self, "Configuração Salva", mensagem)
 
     def definir_nao_mostrar_mensagem_arquivo_excel(self):
-        self.config.nao_mostrar_mensagem_arquivo_excel = False
-        self.config.salvar()
-        QMessageBox.information(self, "Aviso", "Notificação de aviso Excel para clientes jurídicos ativada!")
+        self.configurar_notificacao(
+        "de aviso Excel para clientes jurídicos",
+        "nao_mostrar_mensagem_arquivo_excel"
+        )
 
     def definir_nao_mostrar_mensagem_arquivo_excel_fisicos(self):
-        self.config.nao_mostrar_mensagem_arquivo_excel_fisicos = False
-        self.config.salvar()
-        QMessageBox.information(self, "Aviso", "Notificação de aviso Excel para clientes físicos ativada!")
+        self.configurar_notificacao(
+            "de aviso Excel para clientes físicos",
+            "nao_mostrar_mensagem_arquivo_excel_fisicos"
+        )
+
 
     def definir_aviso_irreversilvel(self):
-        self.config.nao_mostrar_aviso_irreversivel = False
-        self.config.salvar()
-        QMessageBox.information(self, "Aviso", "Notificação de aviso irreversível ativada!")
+        self.configurar_notificacao(
+            "de aviso irreversível",
+            "nao_mostrar_aviso_irreversivel"
+        )
+
 
     def definir_notificacao_boas_vindas(self):
-        # Ativa a notificação para ser exibida
-        self.config.nao_mostrar_mensagem_boas_vindas = False
-        self.config.salvar()
-        QMessageBox.information(self, "Aviso", "Notificação de boas-vindas ativada!")
+        self.configurar_notificacao(
+            "de boas-vindas",
+            "nao_mostrar_mensagem_boas_vindas"
+        )
 
+    def definir_notificacao_atualizacoes(self):
+        self.configurar_notificacao(
+            "de aviso atualização disponível",
+            "nao_mostrar_aviso_atualizacoes"
+        )
 
 
     def limpar_layout(self, layout):

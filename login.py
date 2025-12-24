@@ -104,7 +104,8 @@ class Login(QMainWindow, Ui_Mainwindow_Login):
         if tipo_usuario:
             manter_conectado = self.btn_manter_conectado.isChecked()
             self.config.salvar_configuracoes(usuario_ou_email,senha, manter_conectado)
-            print(f"Usuário salvo: {self.config.usuario}")  # ADICIONE ISSO
+            print(f"Usuário salvo: {self.config.usuario}")  # DEBUG
+            print(f"Senha salva: {self.config.senha}") # DEBUG
 
             self.config.carregar()
             self.hide()

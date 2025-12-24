@@ -609,13 +609,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             if version.parse(versao_remota) > version.parse(versao_local):
 
                 if not self.config.atualizacoes_automaticas:
-                    QMessageBox.information(
-                        self,
-                        "Atualização disponível",
-                        f"Uma nova versão ({versao_remota}) está disponível!\n\n"
-                        "Vá em Configurações > Verificar atualizações."
-                    )
+                    if not self.config.nao_mostrar_aviso_atualizacoes:
+                        QMessageBox.information(
+                            self,
+                            "Atualização disponível",
+                            f"Uma nova versão ({versao_remota}) está disponível!\n\n"
+                            "Vá em Configurações > Verificar atualizações."
+                        )
                     return
+
 
                 # Download automático = agora via thread
                 self.baixar_atualizacao(versao_remota, link_download, automatico=True)
