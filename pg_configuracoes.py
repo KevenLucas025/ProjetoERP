@@ -1876,8 +1876,11 @@ class Pagina_Configuracoes(QWidget):
             )
             
     def exibir_historico_atualizacoes(self):
-        caminho = os.path.join(self.main_window.pasta_do_sistema(),"historico_atualizacoes.log")
-        
+        caminho = os.path.join(
+            self.main_window.pasta_do_sistema(),
+            "historico_atualizacoes.log"
+        )
+
         if not os.path.exists(caminho):
             QMessageBox.information(
                 self.janela_config,
@@ -1885,20 +1888,102 @@ class Pagina_Configuracoes(QWidget):
                 "Nenhuma atualização foi registrada até o momento"
             )
             return
+
         try:
-            with open(caminho,"r",encoding="utf-8") as f:
-                conteudo = f.read().strip()
+            with open(caminho, "r", encoding="utf-8") as f:
+                linhas = [l.strip() for l in f if l.strip()]
         except:
-            conteudo = ""
-            
-        if conteudo == "":
-            conteudo = "Nenhuma atualização disponível no histórico"
-        
-        QMessageBox.information(
-            self.janela_config,
-            "Histórico de Atualizações",
-            conteudo
+            linhas = []
+
+        if not linhas:
+            QMessageBox.information(
+                self.janela_config,
+                "Histórico de Atualizações",
+                "Nenhuma atualização disponível no histórico"
+            )
+            return
+
+        padrao = re.compile(
+            r"\[(\d{2}/\d{2}/\d{4}) (\d{2}:\d{2}:\d{2})\]\s*(.*?)"
+            r"(?:\s*\|\s*STATUS=(\w+))?$",
+            re.IGNORECASE
         )
+
+
+        registros = []
+
+        for linha in linhas:
+            match = padrao.search(linha)
+            if match:
+                data, hora, descricao, status = match.groups()
+                if not status:
+                    status = "DESCONHECIDO"
+                registros.append((data, hora, descricao, status))
+
+
+
+
+        if not registros:
+            QMessageBox.information(
+                self.janela_config,
+                "Histórico de Atualizações",
+                "Nenhuma atualização válida encontrada no histórico"
+            )
+            return
+
+        # =========================
+        # QMainWindow
+        # =========================
+        janela = QMainWindow(self.janela_config)
+        janela.setWindowTitle("Histórico de Atualizações")
+        janela.resize(700, 350)
+
+        # 🔑 CENTRAL WIDGET
+        central = QWidget()
+        janela.setCentralWidget(central)
+
+        layout = QVBoxLayout(central)
+
+        # =========================
+        # Tabela
+        # =========================
+        tabela = QTableWidget()
+        tabela.setColumnCount(4)
+        tabela.setHorizontalHeaderLabels([
+            "Data", "Hora", "Versão da Atualização", "Status"
+        ])
+
+        tabela.setRowCount(len(registros))
+        tabela.setEditTriggers(QTableWidget.NoEditTriggers)
+        tabela.setSelectionBehavior(QTableWidget.SelectRows)
+        tabela.horizontalHeader().setStretchLastSection(True)
+
+        for row, (data, hora, descricao, status) in enumerate(registros):
+            tabela.setItem(row, 0, QTableWidgetItem(data))
+            tabela.setItem(row, 1, QTableWidgetItem(hora))
+            tabela.setItem(row, 2, QTableWidgetItem(descricao))
+            tabela.setItem(row, 3, QTableWidgetItem(status.capitalize()))
+
+            for col in range(4):
+                tabela.item(row, col).setTextAlignment(Qt.AlignCenter)
+
+
+        tabela.resizeColumnsToContents()
+        tabela.resizeRowsToContents()
+
+        layout.addWidget(tabela)
+
+        # =========================
+        # Botão Fechar
+        # =========================
+        btn_fechar = QPushButton("Fechar")
+        btn_fechar.clicked.connect(janela.close)
+
+        layout.addWidget(btn_fechar, alignment=Qt.AlignRight)
+
+        janela.show()
+
+        
     def definir_atualizacoes_automaticamente(self):
         self.config.atualizacoes_automaticas = True
         self.config.salvar()
@@ -1931,9 +2016,11 @@ class Pagina_Configuracoes(QWidget):
         
         if desativada:
             msg_box.setText(
-                f"A notificação {nome_notificacao} está ATIVADA.\n\n",
+                f"A notificação {nome_notificacao} está ATIVADA.\n\n"
                 "Deseja DESATIVAR essa notificação?"
             )
+            
+            
         msg_box.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
         msg_box.button(QMessageBox.Yes).setText("Sim")
         msg_box.button(QMessageBox.No).setText("Não")

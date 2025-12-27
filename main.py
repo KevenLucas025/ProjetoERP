@@ -1,15 +1,14 @@
 #*********************************************************************************************************************
 import re
 from PySide6.QtCore import (Qt, QTimer, QDate, QBuffer, QByteArray, QIODevice, Signal,
-                            QEvent,QPoint,QThread)
+                            QEvent,QProcess)
 from PySide6 import QtCore
 from PySide6.QtWidgets import (QMainWindow, QMessageBox, QPushButton,
                                QLabel, QFileDialog, QVBoxLayout,
                                QMenu,QTableWidgetItem,QCheckBox,QApplication,QToolButton,QHeaderView,QCompleter,
-                               QComboBox,QInputDialog,QProgressDialog,QDialog,QLineEdit,QWidget,QHBoxLayout,QDialogButtonBox,QProgressBar)
+                               QComboBox,QInputDialog,QProgressDialog,QDialog,QLineEdit,QWidget,QHBoxLayout,QProgressBar)
 from PySide6.QtGui import (QDoubleValidator, QIcon, QColor, QPixmap,QBrush,
-                           QAction,QMovie,QImage,QShortcut,QKeySequence,QPainter,QPageLayout,QPageSize,QTransform)
-from PySide6.QtPrintSupport import QPrintDialog,QPrinter,QPrintPreviewDialog
+                           QAction,QMovie,QImage,QShortcut,QKeySequence)
 from login import Login
 from mane_python import Ui_MainWindow
 from database import DataBase
@@ -38,9 +37,6 @@ from datetime import datetime
 import base64
 import random
 import string
-import time
-import socket
-from  plyer import notification
 import subprocess
 import pandas as pd
 from openpyxl.utils import get_column_letter
@@ -48,13 +44,28 @@ from openpyxl.styles import Alignment
 from openpyxl import load_workbook
 import requests
 from packaging import version  # Para comparar versões
-import tempfile  # Para salvar o download
 import shutil
 import atexit
 
 VERSAO_ATUAL = "1.1.1"  # O arquivo versao.json precisa ser maior que essa para chegar a atualização
 
-
+TEMAS_PROGRESSO = {
+            "escuro": {
+                "texto": "#FFFFFF",
+                "fundo": "#2E2E2E",
+                "chunk": "#0078D4",
+            },
+            "claro": {
+                "texto": "#000000",
+                "fundo": "#E6E6E6",
+                "chunk": "#00C853",
+            },
+            "classico": {
+                "texto": "#000000",
+                "fundo": "#D6D6D6",
+                "chunk": "#0063B1",
+            }
+        }
 
 class MainWindow(QMainWindow, Ui_MainWindow):
     fechar_janela_login_signal = Signal(str)
@@ -92,16 +103,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         calendario = self.dateEdit_3.calendarWidget()  # pega o QCalendarWidget do QDateEdit
         calendario.setFixedSize(220, 200)           # define tamanho menor do popup
         
-
-        caminho_estado = self.pasta_estado()
-
-        open(os.path.join(caminho_estado, "update_pending.flag"), "a").close()
-
-        if not os.path.exists(os.path.join(caminho_estado, "versao_instalada.txt")):
-            with open(os.path.join(caminho_estado, "versao_instalada.txt"), "w") as f:
-                f.write(VERSAO_ATUAL)
-
-        
         
         self.login_window = login_window
         # Se já vier uma conexão, usa ela. Caso contrário, cria uma nova
@@ -128,13 +129,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.db.create_table_historico_juridico()
 
         
+
     
         # Carregar tema do sistema ou  configuração
         config = self.temas.carregar_config_arquivo()  # função de config do JSON
-        tema_atual = config.get("tema", "claro")
+        self.tema_atual = config.get("tema", "claro")
 
         if app is not None:
-            self.aplicar_tema_global(app, tema_atual)
+            self.aplicar_tema_global(app, self.tema_atual)
 
         
 
@@ -536,9 +538,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.txt_cep.editingFinished.connect(self.on_cep_editing_finished)
 
     
-        if tema_atual == "escuro":
+        if self.tema_atual == "escuro":
             self.pagina_configuracoes.aplicar_tema_escuro()
-        elif tema_atual == "claro":
+        elif self.tema_atual == "claro":
             self.pagina_configuracoes.aplicar_tema_claro()
         else:
             self.pagina_configuracoes.aplicar_tema_classico()
@@ -577,13 +579,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             # ESCRITO COM SUCESSO
             with open(os.path.join(caminho_estado, "versao_instalada.txt"), "w") as f:
                 f.write(versao_remota)
-                
+            
             try:
                 log_path = os.path.join(caminho_sistema,"historico_atualizacoes.log")
                 agora = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
                 
                 with open(log_path, "a",encoding="utf-8") as log:
-                    log.write(f"[{agora}] Atualizado para a versão {versao_remota}\n")
+                    log.write(f"[{agora}] Atualizado para a versão {versao_remota} | STATUS=SUCESSO\n")
             except:
                 pass
 
@@ -592,6 +594,17 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         except Exception as e:
             print(f"Erro ao aplicar atualização automática: {e}")
+            try:
+                caminho_sistema = self.pasta_do_sistema()
+                log_path = os.path.join(caminho_sistema, "historico_atualizacoes.log")
+                agora = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+
+                with open(log_path, "a", encoding="utf-8") as log:
+                    log.write(
+                        f"[{agora}] Falha ao aplicar atualização | STATUS=ERRO | {str(e)}\n"
+                    )
+            except:
+                pass
 
     def verificar_atualizacao_automatica(self):
         try:
@@ -625,7 +638,40 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         except Exception as e:
             print(f"Erro ao verificar atualização automática: {e}")
 
+    def aplicar_tema_progress(self,progress: QProgressDialog,tema:str):
+        cores = TEMAS_PROGRESSO.get(tema,TEMAS_PROGRESSO["claro"])
         
+        barra = progress.findChild(QProgressBar)
+        label = progress.findChild(QLabel)
+        
+        if barra:
+                barra.setStyleSheet(f"""
+                    QProgressBar {{
+                        background-color: {cores["fundo"]};
+                        border-radius: 13px;
+                        height: 20px;
+                        text-align: center;
+                        padding: 4px;
+                    }}
+
+                    QProgressBar::chunk {{
+                        background-color: {cores["chunk"]};
+                        border-radius: 4px;
+                        margin: 0px;
+                        min-width: 7px;
+                    }}
+                """)
+        if label:
+            label.setStyleSheet(f"""
+                QLabel {{
+                background: transparent;
+                color: {cores["texto"]};
+                }}
+            
+            """)
+            
+    
+    
     def baixar_atualizacao(self, versao_remota, link_download, automatico=False):
         caminho = self.pasta_do_sistema()
         destino_temp = os.path.join(caminho, "SistemadeGerenciamento_tmp.exe")
@@ -640,27 +686,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.progress.setWindowTitle("Atualização")
             self.progress.setWindowModality(Qt.WindowModal)
             self.progress.show()
-
-            # <<< AQUI PEGAMOS A BARRA >>>
-            barra = self.progress.findChild(QProgressBar)
-
-            if barra:
-                barra.setStyleSheet("""
-                    QProgressBar {
-                        background-color: #2e2e2e;
-                        border-radius: 13px;
-                        height: 20px;
-                        text-align: center;
-                        padding: 4px;
-                    }
-
-                    QProgressBar::chunk {
-                        background-color: #0000FF;
-                        border-radius: 4px;
-                        margin: 0px;
-                        min-width: 7px;
-                    }
-                """)
+            self.aplicar_tema_progress(self.progress, self.tema_atual)
 
             # Conectar progresso → dialog
             self.download_thread.progresso.connect(self.progress.setValue)
@@ -704,18 +730,31 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         
     def versao_instalada_local(self):
-        caminho = os.path.join(self.pasta_do_sistema(), "versao_instalada.txt")
+         # ==========================
+        # MODO PYTHON / VSCODE
+        # ==========================
+        if not getattr(sys, "frozen",False):
+            return VERSAO_ATUAL
+        
+         # ==========================
+        # MODO EXE (PyInstaller)
+        # ==========================
+        caminho = os.path.join(
+            self.pasta_estado(),
+            "versao_instalada.txt"
+        )
 
         if os.path.exists(caminho):
             try:
-                versao = open(caminho, "r").read().strip()
-                if versao not in ("", None):
+                versao = open(caminho, "r", encoding="utf-8").read().strip()
+                if versao:
                     return versao
             except:
                 pass
 
         # fallback seguro
         return VERSAO_ATUAL
+
     
     def iniciar_atualizador_se_necessario(self):
         if self.atualizador_ja_iniciado:
@@ -2993,24 +3032,36 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
 
     def reiniciar_sistema(self):
-        caminho = self.pasta_do_sistema()
-        flag = os.path.join(caminho, "update_pending.flag")
+        caminho_estado = self.pasta_estado()
+        flag = os.path.join(caminho_estado, "update_pending.flag")
 
-        # Se há atualização → NÃO reinicia aqui
+        # ==========================
+        # HÁ ATUALIZAÇÃO PENDENTE
+        # ==========================
         if os.path.exists(flag):
             self.iniciar_atualizador_se_necessario()
-            QApplication.quit()
-            sys.exit()
+            QTimer.singleShot(100, QApplication.quit)
+            return
 
-        # Reinício normal (sem atualização)
-        python = sys.executable
-        script = os.path.abspath(sys.argv[0])
+        # ==========================
+        # REINÍCIO UNIVERSAL
+        # ==========================
+        if getattr(sys, "frozen", False):
+            # EXE (PyInstaller / cx_Freeze)
+            cmd = [sys.argv[0]]
+        else:
+            # Python normal
+            cmd = [sys.executable, os.path.abspath(sys.argv[0])] + sys.argv[1:]
 
-        QApplication.quit()
-        subprocess.Popen([python, script] + sys.argv[1:])
-        sys.exit()
+        subprocess.Popen(
+            cmd,
+            cwd=os.getcwd(),
+            close_fds=True,
+            creationflags=subprocess.DETACHED_PROCESS if os.name == "nt" else 0
+        )
 
-
+        # Fecha o app atual com segurança
+        QTimer.singleShot(100, QApplication.quit)
 
 
 
@@ -3355,7 +3406,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 color: black;
             }
             QMessageBox QLabel {
-                color: white;              /* cor do texto */
+                color: black;              /* cor do texto */
                 font-size: 14px;
                 background-color: transparent;
                 }
@@ -3390,9 +3441,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             app.setStyleSheet("""
                 QWidget {
                     background-color: rgb(0,80,121);
-                    color: white;
+                    color: black;
                     font-size: 12px;
-                }                       
+                }                      
                 QMessageBox {
                     background: qlineargradient(
                         x1: 0, y1: 0,
