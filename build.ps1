@@ -17,7 +17,7 @@ pyinstaller --noconfirm --clean --onedir --windowed `
 # ------------------------------
 # Build do ATUALIZADOR
 # ------------------------------
-pyinstaller --noconfirm --clean --onefile `
+pyinstaller --noconfirm --clean --onefile --noconsole `
   --name "Atualizador" `
   --distpath $distPath `
   atualizador.py

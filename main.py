@@ -575,9 +575,20 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             # Troca o executável
             if os.path.exists(destino_temp):
                 shutil.move(destino_temp, destino_final)
+                
+            if getattr(sys,"frozen",False):
+                versao_path = os.path.join(
+                    caminho_estado,
+                    "versao_instalada.txt"
+                )
+            else:
+                versao_path = os.path.join(
+                    caminho_sistema,
+                    "versao_instalada.txt"
+                )
 
             # ESCRITO COM SUCESSO
-            with open(os.path.join(caminho_estado, "versao_instalada.txt"), "w") as f:
+            with open(versao_path,"w", encoding="utf-8") as f:
                 f.write(versao_remota)
             
             try:
@@ -730,47 +741,96 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         
     def versao_instalada_local(self):
-         # ==========================
-        # MODO PYTHON / VSCODE
         # ==========================
-        if not getattr(sys, "frozen",False):
+        # MODO EXE → SOMENTE APPDATA
+        # ==========================
+        if getattr(sys, "frozen", False):
+            caminho_appdata = os.path.join(
+                self.pasta_estado(),
+                "versao_instalada.txt"
+            )
+
+            if os.path.exists(caminho_appdata):
+                try:
+                    versao = open(caminho_appdata, "r", encoding="utf-8").read().strip()
+                    if versao:
+                        return versao
+                except:
+                    pass
+
             return VERSAO_ATUAL
-        
-         # ==========================
-        # MODO EXE (PyInstaller)
+
         # ==========================
-        caminho = os.path.join(
-            self.pasta_estado(),
+        # MODO PYTHON → SOMENTE PROJETO
+        # ==========================
+        caminho_local = os.path.join(
+            self.pasta_do_sistema(),
             "versao_instalada.txt"
         )
 
-        if os.path.exists(caminho):
+        if os.path.exists(caminho_local):
             try:
-                versao = open(caminho, "r", encoding="utf-8").read().strip()
+                versao = open(caminho_local, "r", encoding="utf-8").read().strip()
                 if versao:
                     return versao
             except:
                 pass
 
-        # fallback seguro
         return VERSAO_ATUAL
 
-    
+
+        
+        
+
+    def obter_atualizador(self):
+        caminho_sistema = self.pasta_do_sistema()
+
+        if getattr(sys, "frozen", False):
+            atualizador = os.path.join(caminho_sistema, "Atualizador.exe")
+            cwd = caminho_sistema
+        else:
+            atualizador = os.path.join(caminho_sistema, "dist", "Atualizador.exe")
+            cwd = os.path.join(caminho_sistema, "dist")
+
+        return atualizador, cwd
+
     def iniciar_atualizador_se_necessario(self):
         if self.atualizador_ja_iniciado:
             return
-        
+
         caminho_estado = self.pasta_estado()
         caminho_sistema = self.pasta_do_sistema()
-        flag = os.path.join(caminho_estado, "update_pending.flag")
-        atualizador = os.path.join(caminho_sistema, "Atualizador.exe")
 
+        flag = os.path.join(caminho_estado, "update_pending.flag")
+        tmp_exe = os.path.join(caminho_sistema, "SistemadeGerenciamento_tmp.exe")
+
+        # ==========================
+        # NÃO EXISTE UPDATE REAL
+        # ==========================
+        if not os.path.exists(tmp_exe):
+            if os.path.exists(flag):
+                os.remove(flag)
+            return
+
+        # ==========================
+        # OBTÉM ATUALIZADOR (PY / EXE)
+        # ==========================
+        atualizador, cwd = self.obter_atualizador()
+
+        # ==========================
+        # CHAMA ATUALIZADOR
+        # ==========================
         if os.path.exists(flag) and os.path.exists(atualizador):
             try:
-                os.startfile(atualizador)
+                subprocess.Popen(
+                    [atualizador],
+                    cwd=cwd,
+                    creationflags=subprocess.CREATE_NO_WINDOW
+                )
                 self.atualizador_ja_iniciado = True
             except Exception as e:
                 print(f"Erro ao iniciar atualizador: {e}")
+
 
 
     def carregar_config_padrao(self):
@@ -3033,35 +3093,48 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def reiniciar_sistema(self):
         caminho_estado = self.pasta_estado()
-        flag = os.path.join(caminho_estado, "update_pending.flag")
+        caminho_sistema = self.pasta_do_sistema()
 
-        # ==========================
-        # HÁ ATUALIZAÇÃO PENDENTE
-        # ==========================
-        if os.path.exists(flag):
+        flag = os.path.join(caminho_estado, "update_pending.flag")
+        tmp_exe = os.path.join(caminho_sistema, "SistemadeGerenciamento_tmp.exe")
+
+        # =====================================
+        # MODO PYTHON → NUNCA USA ATUALIZADOR
+        # =====================================
+        if not getattr(sys, "frozen", False):
+            python = sys.executable
+            script = os.path.abspath(sys.argv[0])
+
+            subprocess.Popen(
+                [python, script] + sys.argv[1:],
+                cwd=caminho_sistema
+            )
+
+            QTimer.singleShot(100, QApplication.quit)
+            return
+
+        # =====================================
+        # MODO EXE COM UPDATE
+        # =====================================
+        if os.path.exists(flag) and os.path.exists(tmp_exe):
             self.iniciar_atualizador_se_necessario()
             QTimer.singleShot(100, QApplication.quit)
             return
 
-        # ==========================
-        # REINÍCIO UNIVERSAL
-        # ==========================
-        if getattr(sys, "frozen", False):
-            # EXE (PyInstaller / cx_Freeze)
-            cmd = [sys.argv[0]]
-        else:
-            # Python normal
-            cmd = [sys.executable, os.path.abspath(sys.argv[0])] + sys.argv[1:]
-
+        # =====================================
+        # MODO EXE SEM UPDATE
+        # =====================================
         subprocess.Popen(
-            cmd,
-            cwd=os.getcwd(),
-            close_fds=True,
-            creationflags=subprocess.DETACHED_PROCESS if os.name == "nt" else 0
+            [sys.argv[0]],
+            cwd=caminho_sistema,
+            creationflags=subprocess.DETACHED_PROCESS
         )
 
-        # Fecha o app atual com segurança
         QTimer.singleShot(100, QApplication.quit)
+
+
+
+
 
 
 

@@ -4,15 +4,17 @@ import shutil
 import psutil
 import sys
 
-def esperar_processar_morrer(caminho_exe):
+def esperar_processo_morrer(caminho_exe):
     caminho_exe = caminho_exe.lower()
 
     while True:
         ativo = False
         for proc in psutil.process_iter(['exe']):
             try:
-                if proc.info['exe'] and proc.info['exe'].lower() == caminho_exe:
+                exe = proc.info.get('exe')
+                if exe and exe.lower() == caminho_exe:
                     ativo = True
+                    break
             except:
                 pass
 
@@ -23,25 +25,41 @@ def esperar_processar_morrer(caminho_exe):
 
 
 def main():
-    # Pasta onde o atualizador está sendo executado
+    # =====================================
+    # ATUALIZADOR SEMPRE RODA COMO EXE
+    # =====================================
     pasta_sistema = os.path.dirname(sys.executable)
 
-    origem_temp = os.path.join(pasta_sistema, "SistemadeGerenciamento_tmp.exe")
-    destino_final = os.path.join(pasta_sistema, "SistemadeGerenciamento.exe")
+    exe_final = os.path.join(pasta_sistema, "SistemadeGerenciamento.exe")
+    exe_tmp = os.path.join(pasta_sistema, "SistemadeGerenciamento_tmp.exe")
 
-    # Espera o EXE principal fechar
-    esperar_processar_morrer(destino_final)
+    # =====================================
+    # AGUARDA O SISTEMA FECHAR
+    # =====================================
+    if os.path.exists(exe_final):
+        esperar_processo_morrer(exe_final)
 
-    # Apaga o antigo
-    if os.path.exists(destino_final):
-        os.remove(destino_final)
+    # =====================================
+    # SUBSTITUI O EXECUTÁVEL
+    # =====================================
+    if os.path.exists(exe_tmp):
+        if os.path.exists(exe_final):
+            for _ in range(5):  # tolerância ao Windows
+                try:
+                    os.remove(exe_final)
+                    break
+                except:
+                    time.sleep(0.5)
 
-    # Move/renomeia o novo
-    if os.path.exists(origem_temp):
-        shutil.move(origem_temp, destino_final)
+        shutil.move(exe_tmp, exe_final)
 
-    # Executa o EXE atualizado
-    os.startfile(destino_final)
+    # =====================================
+    # REINICIA O SISTEMA
+    # =====================================
+    if os.path.exists(exe_final):
+        os.startfile(exe_final)
+
+    sys.exit(0)
 
 
 if __name__ == "__main__":

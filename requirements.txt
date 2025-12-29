@@ -11,3 +11,4 @@ pyupdater
 packaging
 pyinstaller
 matplotlib
+psutil
