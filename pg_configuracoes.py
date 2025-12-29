@@ -70,6 +70,7 @@ class Pagina_Configuracoes(QWidget):
         self.frame_valor_do_desconto = frame_valor_do_desconto
         self.frame_valor_desconto = frame_valor_desconto
         self.frame_quantidade = frame_quantidade
+        self.historico_erros = {}
         
         
 
@@ -1904,10 +1905,12 @@ class Pagina_Configuracoes(QWidget):
             return
 
         padrao = re.compile(
-            r"\[(\d{2}/\d{2}/\d{4}) (\d{2}:\d{2}:\d{2})\]\s*(.*?)"
-            r"(?:\s*\|\s*STATUS=(\w+))?$",
+            r"\[(\d{2}/\d{2}/\d{4}) (\d{2}:\d{2}:\d{2})\]\s*"
+            r"(.*?)(?:\s*\|\s*STATUS=(\w+))"
+            r"(?:\s*\|\s*(.*))?$",
             re.IGNORECASE
         )
+
 
 
         registros = []
@@ -1915,10 +1918,19 @@ class Pagina_Configuracoes(QWidget):
         for linha in linhas:
             match = padrao.search(linha)
             if match:
-                data, hora, descricao, status = match.groups()
-                if not status:
-                    status = "DESCONHECIDO"
+                data, hora, descricao, status, erro = match.groups()
+                
+                chave = f"{data} {hora}"
+
+                if status.upper() == "ERRO":
+                    descricao = "Falha ao aplicar atualização"
+                    status = "Falha na atualização"
+                    self.historico_erros[chave] = erro or "Motivo não informado"
+                else:
+                    status = "Sucesso"
+
                 registros.append((data, hora, descricao, status))
+
 
 
 
@@ -1957,6 +1969,12 @@ class Pagina_Configuracoes(QWidget):
         tabela.setEditTriggers(QTableWidget.NoEditTriggers)
         tabela.setSelectionBehavior(QTableWidget.SelectRows)
         tabela.horizontalHeader().setStretchLastSection(True)
+        
+        tabela.setContextMenuPolicy(Qt.CustomContextMenu)
+        tabela.customContextMenuRequested.connect(
+            lambda pos: self.abrir_menu_contexto_historico(pos, tabela)
+        )
+
 
         for row, (data, hora, descricao, status) in enumerate(registros):
             tabela.setItem(row, 0, QTableWidgetItem(data))
@@ -1983,6 +2001,44 @@ class Pagina_Configuracoes(QWidget):
 
         janela.show()
 
+    def abrir_menu_contexto_historico(self, pos,tabela: QTableWidget):
+        index = tabela.indexAt(pos)
+        if not index.isValid():
+            return
+        
+        linha = index.row()
+        
+        data = tabela.item(linha, 0).text()
+        hora = tabela.item(linha, 1).text()
+        status = tabela.item(linha, 3).text()
+        
+        chave = f"{data} {hora}"
+        
+        menu = QMenu(tabela)
+        
+        detalhes_action = menu.addAction("Detalhes")
+        
+        # Só habilita detalhes se for erro
+        if status.lower() != "falha na atualização":
+            detalhes_action.setEnabled(False)
+
+        action = menu.exec(tabela.viewport().mapToGlobal(pos))
+
+        if action == detalhes_action:
+            self.mostrar_detalhes_erro(chave)
+        
+        
+        
+    def mostrar_detalhes_erro(self, chave):
+        erro = self.historico_erros.get(chave, "Detalhes não disponíveis.")
+
+        QMessageBox.information(
+            self.janela_config,
+            "Detalhes da Falha na Atualização",
+            f"Motivo do erro:\n\n{erro}"
+        )
+
+        
         
     def definir_atualizacoes_automaticamente(self):
         self.config.atualizacoes_automaticas = True
