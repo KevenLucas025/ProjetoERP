@@ -12,3 +12,6 @@ packaging
 pyinstaller
 matplotlib
 psutil
+pygetwindow
+pytest
+numba

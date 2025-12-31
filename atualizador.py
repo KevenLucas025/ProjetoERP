@@ -3,6 +3,7 @@ import time
 import shutil
 import psutil
 import sys
+import subprocess
 
 def esperar_processo_morrer(caminho_exe):
     caminho_exe = caminho_exe.lower()
@@ -57,7 +58,11 @@ def main():
     # REINICIA O SISTEMA
     # =====================================
     if os.path.exists(exe_final):
-        os.startfile(exe_final)
+        subprocess.Popen(
+        [exe_final],
+        cwd=pasta_sistema,
+        creationflags=subprocess.DETACHED_PROCESS
+    )
 
     sys.exit(0)
 

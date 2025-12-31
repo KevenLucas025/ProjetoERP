@@ -1875,10 +1875,19 @@ class Pagina_Configuracoes(QWidget):
         config = self.tema.carregar_config_arquivo()
         self.tema  = config.get("tema","claro")
         
-        caminho = os.path.join(
-            self.main_window.pasta_do_sistema(),
-            "historico_atualizacoes.log"
-        )
+        if getattr(sys, "frozen",False):
+            # EXE → histórico no APPDATA
+            caminho = os.path.join(
+                self.main_window.pasta_estado(),
+                "historico_atualizacoes.log"
+            )
+        else:
+            # Python / VSCode → histórico no projeto
+            caminho = os.path.join(
+                self.main_window.pasta_do_sistema(),
+                "historico_atualizacoes.log"
+            )
+            
 
         if not os.path.exists(caminho):
             QMessageBox.information(
@@ -1891,8 +1900,16 @@ class Pagina_Configuracoes(QWidget):
         try:
             with open(caminho, "r", encoding="utf-8") as f:
                 linhas = [l.strip() for l in f if l.strip()]
-        except:
+
+        except Exception as e:
             linhas = []
+            QMessageBox.critical(
+                self.janela_config,
+                "Erro ao abrir histórico",
+                "Não foi possível abrir o histórico de atualizações.\n\n"
+                f"Motivo:\n{str(e)}"
+            )
+            return
 
         if not linhas:
             QMessageBox.information(
@@ -1939,13 +1956,13 @@ class Pagina_Configuracoes(QWidget):
         # =========================
         # QMainWindow
         # =========================
-        janela = QMainWindow(self.janela_config)
-        janela.setWindowTitle("Histórico de Atualizações")
-        janela.resize(700, 350)
+        self.janela = QMainWindow(self.janela_config)
+        self.janela.setWindowTitle("Histórico de Atualizações")
+        self.janela.resize(700, 350)
 
         # 🔑 CENTRAL WIDGET
         central = QWidget()
-        janela.setCentralWidget(central)
+        self.janela.setCentralWidget(central)
 
         layout = QVBoxLayout(central)
         
@@ -2311,11 +2328,11 @@ class Pagina_Configuracoes(QWidget):
         # Botão Fechar
         # =========================
         btn_fechar = QPushButton("Fechar")
-        btn_fechar.clicked.connect(janela.close)
+        btn_fechar.clicked.connect(self.janela.close)
 
         layout.addWidget(btn_fechar, alignment=Qt.AlignRight)
-        janela.setStyleSheet(estilo_completo)
-        janela.show()
+        self.janela.setStyleSheet(estilo_completo)
+        self.janela.show()
 
     def abrir_menu_contexto_historico(self, pos,tabela: QTableWidget):
         index = tabela.indexAt(pos)

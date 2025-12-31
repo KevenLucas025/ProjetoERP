@@ -310,6 +310,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.action_em_massa_produtos = QAction("Cadastrar produtos em massa", self)
         self.action_em_massa_usuarios = QAction("Cadastrar usuários em massa", self)
         self.action_informacoes_sistema = QAction("Informações do sistema", self)
+        self.action_sugestoes = QAction("Feedback",self)
         self.action_limpar_cache = QAction("Limpar Cache", self)
         
 
@@ -322,6 +323,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.menu_opcoes.addAction(self.action_em_massa_produtos)
         self.menu_opcoes.addAction(self.action_em_massa_usuarios)
         self.menu_opcoes.addAction(self.action_informacoes_sistema)
+        self.menu_opcoes.addAction(self.action_sugestoes)
         self.menu_opcoes.addAction(self.action_limpar_cache)
         
 
@@ -391,6 +393,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.action_em_massa_produtos.triggered.connect(self.pagina_cadastro_em_massa_produtos)
         self.action_em_massa_usuarios.triggered.connect(self.pagina_cadastro_em_massa_usuarios)
         self.action_informacoes_sistema.triggered.connect(self.show_mensagem_sistema)
+        self.action_sugestoes.triggered.connect(self.mostrar_sugestao)
         self.action_limpar_cache.triggered.connect(self.limpar_cache_sistema)
 
         self.fechar_janela_login_signal.connect(self.fechar_janela_login)
@@ -1011,6 +1014,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.table_clientes_fisicos.resizeColumnsToContents()
         self.table_clientes_fisicos.resizeRowsToContents()
     
+    def mostrar_sugestao(self):
+        janela = QMainWindow(self)
+        janela.setWindowTitle("Sugestão de melhorias")
+        janela.resize(500,300)
+        janela.show()
+        
     
 
     def show_mensagem_sistema(self):
@@ -3100,7 +3109,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         tmp_exe = os.path.join(caminho_sistema, "SistemadeGerenciamento_tmp.exe")
 
         # =====================================
-        # MODO PYTHON → NUNCA USA ATUALIZADOR
+        # MODO PYTHON → reinício simples
         # =====================================
         if not getattr(sys, "frozen", False):
             python = sys.executable
@@ -3110,7 +3119,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 [python, script] + sys.argv[1:],
                 cwd=caminho_sistema
             )
-
             QTimer.singleShot(100, QApplication.quit)
             return
 
@@ -3118,7 +3126,17 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # MODO EXE COM UPDATE
         # =====================================
         if os.path.exists(flag) and os.path.exists(tmp_exe):
-            self.iniciar_atualizador_se_necessario()
+            # 🔑 apenas dispara o atualizador
+            atualizador, cwd = self.obter_atualizador()
+
+            if os.path.exists(atualizador):
+                subprocess.Popen(
+                    [atualizador],
+                    cwd=cwd,
+                    creationflags=subprocess.CREATE_NO_WINDOW
+                )
+
+            # 🔑 fecha o app SEM tentar esperar nada
             QTimer.singleShot(100, QApplication.quit)
             return
 
@@ -3132,10 +3150,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         )
 
         QTimer.singleShot(100, QApplication.quit)
-
-
-
-
 
 
 
