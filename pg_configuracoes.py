@@ -3,12 +3,10 @@ from PySide6.QtWidgets import (QWidget,QMenu, QVBoxLayout,
                                QToolButton,QMainWindow,QPushButton,QLabel,
                                QLineEdit,QTableWidget,QTextEdit,QAbstractItemView,
                                QStyledItemDelegate,QStyleOptionViewItem,QTableWidgetItem,QAbstractScrollArea,QScrollArea)
-from PySide6.QtCore import Qt, QTimer,QRect,QThread,Signal
+from PySide6.QtCore import Qt, QTimer,QRect
 from PySide6.QtGui import (QIcon,QKeySequence,QColor,
                            QTextDocument,QPainter,QFontMetrics,QTextCursor,QTextCharFormat,QPalette)
 import os
-import json
-from login import Login
 import sys
 from configuracoes import Configuracoes_Login
 from dialogos import ComboDialog,DialogoEstilizado
@@ -19,11 +17,8 @@ import subprocess
 from utils import Temas
 import re
 import string
-import tempfile
 import requests
-from pathlib import Path
-import shutil
-import webbrowser
+
 
 
 
@@ -1877,6 +1872,9 @@ class Pagina_Configuracoes(QWidget):
             )
             
     def exibir_historico_atualizacoes(self):
+        config = self.tema.carregar_config_arquivo()
+        self.tema  = config.get("tema","claro")
+        
         caminho = os.path.join(
             self.main_window.pasta_do_sistema(),
             "historico_atualizacoes.log"
@@ -1911,8 +1909,6 @@ class Pagina_Configuracoes(QWidget):
             re.IGNORECASE
         )
 
-
-
         registros = []
 
         for linha in linhas:
@@ -1930,9 +1926,6 @@ class Pagina_Configuracoes(QWidget):
                     status = "Sucesso"
 
                 registros.append((data, hora, descricao, status))
-
-
-
 
 
         if not registros:
@@ -1955,6 +1948,327 @@ class Pagina_Configuracoes(QWidget):
         janela.setCentralWidget(central)
 
         layout = QVBoxLayout(central)
+        
+        if self.tema == "escuro":
+            bg_color = "#2b2b2b"
+            text_color = "white";
+            
+            table_view_style = """
+                /* QTableView com seleção diferenciada */
+                QTableView {
+                    background-color: #ffffff;
+                    color: black;
+                    gridline-color: #555555;
+                    selection-background-color: #7a7a7a;
+                    selection-color: white;
+                }
+                /* Coluna dos cabeçalhos */
+                QHeaderView::section {
+                    background-color: #ffffff;
+                    color: black;
+                    border: 1px solid #aaaaaa;
+                    padding: 1px;
+                }
+
+                /* QTabWidget headers brancos */
+                QTabWidget::pane {
+                    border: 1px solid #444444;
+                    background-color: #202124;
+                }
+                /* Estiliza a barra de rolagem horizontal */
+                QTableView QScrollBar:horizontal {
+                    border: none;
+                    background-color: #ffffff;
+                    height: 12px;
+                    margin: 0px;
+                    border-radius: 5px;
+                }
+
+                /* Estiliza a barra de rolagem vertical */
+                QTableView QScrollBar:vertical {
+                    border: none;
+                    background-color: #ffffff;  
+                    width: 12px;
+                    margin: 0px;
+                    border-radius: 5px;
+                }
+                
+                /* Parte que você arrasta */
+                QTableView QScrollBar::handle:vertical {
+                    background-color: #777777;  /* cinza médio */
+                    min-height: 22px;
+                    border-radius: 5px;
+                }
+
+                QTableView QScrollBar::handle:horizontal {
+                    background-color: #777777;
+                    min-width: 22px;
+                    border-radius: 5px;
+                }
+
+                /* Groove horizontal */
+                QTableView QScrollBar::groove:horizontal {
+                    background-color: #3a3a3a;  /* faixa mais clara */
+                    border-radius: 5px;
+                    height: 15px;
+                    margin: 0px 10px 0px 10px;
+                }
+
+                /* Groove vertical */
+                QTableView QScrollBar::groove:vertical {
+                    background-color: #3a3a3a;
+                    border-radius: 5px;
+                    width: 25px;
+                    margin: 10px 0px 10px 10px;
+                }
+
+                /* Estilo para item selecionado */
+                QTableWidget::item:selected {
+                    background-color: #555555;  /* cinza de seleção */
+                    color: white;
+                }
+                QTabWidget#tab_clientes_todos::pane {
+                    border: none;
+                } 
+            """
+            scroll_style = """
+            /* Scrollbar vertical */
+            QScrollBar:vertical {
+                background: #ffffff;   /* fundo do track */
+                width: 12px;
+                margin: 0px;
+                border-radius: 6px;
+            }
+
+            QScrollBar::handle:vertical {
+                background: #555555;   /* cor do handle */
+                border-radius: 6px;
+                min-height: 20px;
+            }
+
+            QScrollBar::handle:vertical:hover {
+                background: #777777;   /* hover no handle */
+            }
+
+            QScrollBar::add-line:vertical,
+            QScrollBar::sub-line:vertical {
+                background: none;
+                height: 0px;
+            }
+
+            QScrollBar::add-page:vertical,
+            QScrollBar::sub-page:vertical {
+                background: none;
+            }
+            """
+        elif self.tema == "claro":
+            bg_color = "white"
+            text_cor = "black"
+            
+            scroll_style = """
+                /* Scrollbar vertical */
+                QScrollBar:vertical {
+                    background: #f0f0f0;  /* trilho claro */
+                    width: 12px;
+                    margin: 0px;
+                    border-radius: 6px;
+                }
+
+                QScrollBar::handle:vertical {
+                    background: #b0b0b0;  /* cor do handle */
+                    border-radius: 6px;
+                    min-height: 20px;
+                }
+
+                QScrollBar::handle:vertical:hover {
+                    background: #a0a0a0;  /* hover no handle */
+                }
+
+                QScrollBar::add-line:vertical,
+                QScrollBar::sub-line:vertical {
+                    background: none;
+                    height: 0px;
+                }
+
+                QScrollBar::add-page:vertical,
+                QScrollBar::sub-page:vertical {
+                    background: none;
+                }
+                """
+            table_view_style = """
+                /* QTableView com seleção diferenciada */
+                QTableView {
+                    background-color: white;
+                    color: black;
+                    gridline-color: #cccccc;
+                    selection-background-color: #d0e7ff;  /* azul claro */
+                    selection-color: black;
+                }
+                QHeaderView:vertical {
+                    background-color: white; 
+                    border: none;              
+                }
+
+
+                /* Cabeçalhos da tabela */
+                QHeaderView::section {
+                    background-color: #eaeaea;
+                    color: black;
+                    border: 1px solid #cccccc;
+                    padding: 2px;
+                }
+
+                /* QTabWidget */
+                QTabWidget::pane {
+                    border: 1px solid #cccccc;
+                    background-color: white;
+                }
+
+                /* Scrollbars horizontais e verticais */
+                QTableView QScrollBar:horizontal,
+                QTableView QScrollBar:vertical {
+                    background-color: #f0f0f0;
+                    border: none;
+                    height: 12px;
+                    width: 12px;
+                    margin: 0px;
+                    border-radius: 5px;
+                }
+
+                /* Handle */
+                QTableView QScrollBar::handle:vertical,
+                QTableView QScrollBar::handle:horizontal {
+                    background-color: #b0b0b0;
+                    border-radius: 5px;
+                    min-height: 22px;
+                    min-width: 22px;
+                }
+
+                /* Groove */
+                QTableView QScrollBar::groove:vertical {
+                    background-color: transparent;
+                    border-radius: 5px;
+                    width: 25px;
+                    margin: 10px 0px 10px 10px;
+                }
+
+                QTableView QScrollBar::groove:horizontal {
+                    background-color: transparent;
+                    border-radius: 5px;
+                    height: 15px;
+                    margin: 0px 10px 0px 10px;
+                }
+
+                /* Estilo para item selecionado */
+                QTableWidget::item:selected {
+                    background-color: #cce5ff;  /* azul leve */
+                    color: black;
+                }
+                """
+        else: # clássico
+            bg_color = "rgb(0,80,121)"
+            text_cor = "white"
+            
+             #  Scroll geral (scroll_style)
+            scroll_style = """
+                QScrollBar:vertical {
+                    border: none;
+                    background-color: rgb(255, 255, 255); /* branco */
+                    width: 30px;
+                    margin: 0px 10px 0px 10px;
+                }
+                QScrollBar::handle:vertical {
+                    background-color: rgb(180, 180,180);  /* cinza */
+                    min-height: 30px;
+                    border-radius: 5px;
+                }
+            """
+            #  Estilo específico para QTableView (table_view_style)
+            table_view_style = """
+                QTableView {
+                    background-color: rgb(0,80,121);
+                    color: white;
+                    gridline-color: black;
+                    border: 1px solid white;
+                    selection-background-color: #007acc;
+                    selection-color: white;
+                }
+
+                QHeaderView::section {
+                    background-color: white;
+                    color: black;
+                    border: 1px solid #eeeeee;  /* Borda branco-acinzentada */
+                    padding: 1px;
+                }
+
+                QTabWidget::pane {
+                    border: 1px solid #004466;
+                    background-color: #003355;
+                }
+
+                /* Scrollbars da QTableView - vertical */
+                QTableView QScrollBar:vertical{
+                    border: none;
+                    background-color: rgb(255, 255, 255); /* fundo do track */
+                    border-radius: 5px;
+                    width: 10px; /* largura da barra vertical */
+                    margin: 0px;
+                
+                }
+                /* Scrollbars da QTableView - horizontal */
+                QTableView QScrollBar:horizontal {
+                    height: 11px;
+                    background-color: rgb(255, 255, 255);
+                    margin: 0px;
+                }
+
+                /* Handle dos scrolls (a parte que você arrasta) */
+                QTableView QScrollBar::handle:vertical {
+                    background-color: rgb(180, 180, 150);  /* cor do handle */
+                    min-height: 10px;
+                    min-width: 10px;
+                    border-radius: 5px;
+                
+                }
+                /* Handle dos scrolls (a parte que você arrasta) */
+                QTableView QScrollBar::handle:horizontal {
+                    background-color: rgb(180, 180, 150);
+                    min-width: 20px;
+                    border-radius: 5px;
+                }
+
+                /* Groove vertical */
+                QTableView QScrollBar::groove:vertical {
+                    background-color: rgb(100, 240, 240);  /* faixa visível no vertical */
+                    border-radius: 2px;
+                    width: 10px;
+                    margin: 0px 10px 0px 10px;
+                }
+
+                /* Groove horizontal (faixa por onde o handle desliza) */
+                QTableView QScrollBar::groove:horizontal {
+                    background-color: rgb(220, 220, 220);
+                    border-radius: 5px;
+                    height: 10px;
+                }
+
+                QTableWidget::item:selected {
+                    background-color: rgb(0, 120, 215);
+                    color: white;
+                }
+
+                QTableCornerButton::section {
+                    background-color: white;
+                }
+            """
+            estilo_completo = f"""
+            QMainWindow {{
+                background-color: {bg_color};
+            }}
+            {table_view_style}
+            {scroll_style}
+            """
+            return estilo_completo
 
         # =========================
         # Tabela
@@ -1964,6 +2278,8 @@ class Pagina_Configuracoes(QWidget):
         tabela.setHorizontalHeaderLabels([
             "Data", "Hora", "Versão da Atualização", "Status"
         ])
+        
+        
 
         tabela.setRowCount(len(registros))
         tabela.setEditTriggers(QTableWidget.NoEditTriggers)
@@ -1998,7 +2314,7 @@ class Pagina_Configuracoes(QWidget):
         btn_fechar.clicked.connect(janela.close)
 
         layout.addWidget(btn_fechar, alignment=Qt.AlignRight)
-
+        janela.setStyleSheet(estilo_completo)
         janela.show()
 
     def abrir_menu_contexto_historico(self, pos,tabela: QTableWidget):
@@ -2018,10 +2334,7 @@ class Pagina_Configuracoes(QWidget):
         
         detalhes_action = menu.addAction("Detalhes")
         
-        # Só habilita detalhes se for erro
-        if status.lower() != "falha na atualização":
-            detalhes_action.setEnabled(False)
-
+        
         action = menu.exec(tabela.viewport().mapToGlobal(pos))
 
         if action == detalhes_action:
@@ -2030,13 +2343,29 @@ class Pagina_Configuracoes(QWidget):
         
         
     def mostrar_detalhes_erro(self, chave):
-        erro = self.historico_erros.get(chave, "Detalhes não disponíveis.")
-
-        QMessageBox.information(
-            self.janela_config,
-            "Detalhes da Falha na Atualização",
-            f"Motivo do erro:\n\n{erro}"
-        )
+        if chave in self.historico_erros:
+            erro = self.historico_erros.get(chave, "Motivo não informado")
+            
+            msg = QMessageBox(self)
+            msg.setIcon(QMessageBox.Critical)
+            msg.setWindowTitle("Falha na Atualização")
+            msg.setText("Não foi possível aplicar a atualização")
+            msg.setInformativeText(f"{erro}")
+            msg.setStandardButtons(QMessageBox.Ok)
+            
+            copiar_btn = msg.addButton("Copiar erro",QMessageBox.ActionRole)
+            msg.exec()
+            
+            
+            if msg.clickedButton() == copiar_btn:
+                QApplication.clipboard().setText(erro)
+        else:
+            msg = QMessageBox(self.janela_config)
+            msg.setIcon(QMessageBox.Information)
+            msg.setWindowTitle("Atualização concluída")
+            msg.setText("A atualização foi aplicada com sucesso.")
+            msg.setStandardButtons(QMessageBox.Ok)
+            msg.exec()
 
         
         

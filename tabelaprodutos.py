@@ -9,12 +9,10 @@ from database import DataBase, sqlite3
 import base64
 import locale
 import pandas as pd
-import openpyxl
 import os
 from dialogos import ComboDialog,FiltroProdutoDialog
 from datetime import datetime
 from utils import Temas
-import json
 
 
 class TabelaProdutos(QMainWindow):

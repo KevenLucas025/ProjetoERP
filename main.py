@@ -47,7 +47,7 @@ from packaging import version  # Para comparar versões
 import shutil
 import atexit
 
-VERSAO_ATUAL = "1.1.1"  # O arquivo versao.json precisa ser maior que essa para chegar a atualização
+VERSAO_ATUAL = "1.1.11"  # O arquivo versao.json precisa ser maior que essa para chegar a atualização
 
 TEMAS_PROGRESSO = {
             "escuro": {
@@ -84,6 +84,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.temas = Temas()
         self.atalhos = {}  # dicionário com os atalhos definidos
         atexit.register(self.aplicar_atualizacao_automatica)
+        
+        self.limpar_pycache_pendente()
+
         
         self.janela_config = None
 
@@ -127,8 +130,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.db.create_table_clientes_fisicos()
         self.db.create_table_historico_fisico()
         self.db.create_table_historico_juridico()
-
-        
 
     
         # Carregar tema do sistema ou  configuração
@@ -3321,13 +3322,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # Se quiser mostrar visualmente que saiu do modo edição (opcional)
         QMessageBox.information(self, "Edição cancelada", "Você saiu do modo de edição.")
     
-    def resource_path(relative_path):
-        try:
-            base_path = sys._MEIPASS  # PyInstaller cria essa pasta temporária
-        except Exception:
-            base_path = os.path.abspath(".")
-        return os.path.join(base_path, relative_path)
-    
     
     def formatar_tamanho(self,bytes_tamanho):
         for unidade in ['B', 'KB', 'MB', 'GB']:
@@ -3340,79 +3334,99 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def limpar_cache_sistema(self):
         pasta_cache = "imagens_temporarias"
 
-        if not os.path.exists(pasta_cache):
-            QMessageBox.information(self, "Limpeza de Cache", "Nenhum cache encontrado para limpar.")
-            return
-
-        # Calcular tamanho total antes de apagar
         tamanho_total = 0
-        # Remover arquivos individualmente
-        for root, dirs, files in os.walk(pasta_cache):
-            for file in files:
-                caminho = os.path.join(root, file)
-                try:
-                    os.remove(caminho)
-                except PermissionError:
-                    print(f"Arquivo em uso ou protegido: {caminho}")
-                except Exception as e:
-                    print(f"Erro ao remover {caminho}: {e}")
+        erros = []
 
-        tamanho_formatado = self.formatar_tamanho(tamanho_total)
-
-        # Criar progress dialog
-        progresso = QProgressDialog("Limpando cache do sistema...", "Cancelar", 0, 0, self)
+        progresso = QProgressDialog(
+            "Limpando cache do sistema...",
+            None,
+            0,
+            0,
+            self
+        )
         progresso.setWindowTitle("Limpeza de Cache")
         progresso.setWindowModality(Qt.ApplicationModal)
+        progresso.setMinimumDuration(0)
         progresso.show()
-        QApplication.processEvents()  # Atualiza a interface imediatamente
+        progresso.repaint()
+        QApplication.processEvents()
 
-        try:
-            shutil.rmtree(pasta_cache)  # Remove a pasta inteira
-            os.makedirs(pasta_cache)    # Recria a pasta limpa
-        except Exception as e:
-            QMessageBox.critical(self, "Erro", f"Erro ao limpar cache: {str(e)}")
-            progresso.close()
-            return
+        if os.path.exists(pasta_cache):
+            for item in os.listdir(pasta_cache):
+                caminho = os.path.join(pasta_cache, item)
+                try:
+                    if os.path.isfile(caminho) or os.path.islink(caminho):
+                        tamanho_total += os.path.getsize(caminho)
+                        os.remove(caminho)
+
+                    elif os.path.isdir(caminho):
+                        for root, _, files in os.walk(caminho):
+                            for file in files:
+                                try:
+                                    tamanho_total += os.path.getsize(
+                                        os.path.join(root, file)
+                                    )
+                                except OSError:
+                                    pass
+                        shutil.rmtree(caminho)
+
+                except Exception as e:
+                    erros.append(f"{caminho}: {e}")
+
+                QApplication.processEvents()
 
         progresso.close()
 
-        QMessageBox.information(
-            self,
-            "Limpeza concluída",
-            f"Cache do sistema limpo com sucesso.\nEspaço liberado: {tamanho_formatado}\n\nReinicie o sistema para garantir que tudo funcione corretamente."
+        #  Marca limpeza de __pycache__ no próximo start
+        self.marcar_limpeza_pycache()
+
+        mensagem = (
+            f"Cache do sistema limpo com sucesso.\n"
+            f"Espaço liberado: {self.formatar_tamanho(tamanho_total)}"
         )
 
-    def mostrar_menu_limpeza(self):
-        msg_box = QMessageBox(self)
-        msg_box.setWindowTitle("Limpar Cache")
-        msg_box.setText("Selecione o que deseja limpar:")
-        msg_box.setIcon(QMessageBox.Question)
+        if erros:
+            mensagem += "\n\nAlguns itens não puderam ser removidos:\n"
+            mensagem += "\n".join(erros[:5])
+            if len(erros) > 5:
+                mensagem += "\n..."
 
-        btn_limpar_cache = msg_box.addButton("Cache (imagens temporárias)", QMessageBox.ActionRole)
-        btn_resetar_config = msg_box.addButton("Resetar configurações (config.json)", QMessageBox.ActionRole)
-        btn_cancelar = msg_box.addButton("Cancelar", QMessageBox.RejectRole)
+        QMessageBox.information(self, "Limpeza concluída", mensagem)
+        
+    def limpar_pycache_pendente(self):
+        caminho_estado = self.pasta_estado()
+        flag = os.path.join(caminho_estado, "limpar_pycache.flag")
 
-        msg_box.exec()
+        if not os.path.exists(flag):
+            return
 
-        if msg_box.clickedButton() == btn_limpar_cache:
-            self.limpar_cache_sistema()
-        elif msg_box.clickedButton() == btn_resetar_config:
-            self.resetar_configuracoes()
+        #  __pycache__ só existe em modo Python
+        if getattr(sys, "frozen", False):
+            os.remove(flag)
+            return
 
-    def resetar_configuracoes(self):    
-        config_padrao = {
-            "tema": "claro",
-            "tamanho_janela": [800, 600],
-            "idioma": "pt-BR"
-            # ... outros padrões
-        }
+        base = self.pasta_do_sistema()  # 👈 caminho correto do projeto
 
-        try:
-            with open("config.json", "w", encoding="utf-8") as f:
-                json.dump(config_padrao, f, indent=4, ensure_ascii=False)
-            QMessageBox.information(self, "Configurações", "As configurações foram redefinidas com sucesso.")
-        except Exception as e:
-            QMessageBox.critical(self, "Erro", f"Erro ao resetar configurações: {str(e)}")
+        for root, dirs, _ in os.walk(base):
+            if "__pycache__" in dirs:
+                try:
+                    shutil.rmtree(os.path.join(root, "__pycache__"))
+                except Exception:
+                    pass
+
+        os.remove(flag)
+
+
+
+    def marcar_limpeza_pycache(self):
+        caminho_estado = self.pasta_estado()
+        os.makedirs(caminho_estado, exist_ok=True)
+
+        flag = os.path.join(caminho_estado, "limpar_pycache.flag")
+        with open(flag, "w", encoding="utf-8") as f:
+            f.write("1")
+
+
 
     def tratar_f5_global(self):
         pagina_atual = self.paginas_sistemas.currentWidget()
