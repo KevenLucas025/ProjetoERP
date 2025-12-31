@@ -1872,6 +1872,16 @@ class Pagina_Configuracoes(QWidget):
             )
             
     def exibir_historico_atualizacoes(self):
+        if hasattr(self, "janela_historico"):
+            try:
+                if self.janela_historico.isVisible():
+                    self.janela_historico.raise_()
+                    self.janela_historico.activateWindow()
+                    return
+            except RuntimeError:
+                del self.janela_historico
+
+    
         config = self.tema.carregar_config_arquivo()
         self.tema  = config.get("tema","claro")
         
@@ -1888,7 +1898,12 @@ class Pagina_Configuracoes(QWidget):
                 "historico_atualizacoes.log"
             )
             
+        if getattr(sys, "frozen", False):
+            os.makedirs(os.path.dirname(caminho), exist_ok=True)
+            if not os.path.exists(caminho):
+                open(caminho, "a", encoding="utf-8").close()
 
+        
         if not os.path.exists(caminho):
             QMessageBox.information(
                 self.janela_config,
@@ -1956,19 +1971,23 @@ class Pagina_Configuracoes(QWidget):
         # =========================
         # QMainWindow
         # =========================
-        self.janela = QMainWindow(self.janela_config)
-        self.janela.setWindowTitle("Histórico de Atualizações")
-        self.janela.resize(700, 350)
+        self.janela_historico = QMainWindow(self.janela_config)
+        self.janela_historico.setWindowTitle("Histórico de Atualizações")
+        self.janela_historico.resize(700, 350)
+        
+        self.janela_historico.destroyed.connect(
+            lambda: hasattr(self, "janela_historico") and delattr(self, "janela_historico")
+        )
 
-        # 🔑 CENTRAL WIDGET
+        #  CENTRAL WIDGET
         central = QWidget()
-        self.janela.setCentralWidget(central)
+        self.janela_historico.setCentralWidget(central)
 
         layout = QVBoxLayout(central)
         
         if self.tema == "escuro":
             bg_color = "#2b2b2b"
-            text_color = "white";
+            text_color = "white"
             
             table_view_style = """
                 /* QTableView com seleção diferenciada */
@@ -2080,7 +2099,7 @@ class Pagina_Configuracoes(QWidget):
             """
         elif self.tema == "claro":
             bg_color = "white"
-            text_cor = "black"
+            text_color = "black"
             
             scroll_style = """
                 /* Scrollbar vertical */
@@ -2184,7 +2203,7 @@ class Pagina_Configuracoes(QWidget):
                 """
         else: # clássico
             bg_color = "rgb(0,80,121)"
-            text_cor = "white"
+            text_color = "white"
             
              #  Scroll geral (scroll_style)
             scroll_style = """
@@ -2278,14 +2297,13 @@ class Pagina_Configuracoes(QWidget):
                     background-color: white;
                 }
             """
-            estilo_completo = f"""
-            QMainWindow {{
-                background-color: {bg_color};
-            }}
-            {table_view_style}
-            {scroll_style}
-            """
-            return estilo_completo
+        estilo_completo = f"""
+        QMainWindow {{
+            background-color: {bg_color};
+        }}
+        {table_view_style}
+        {scroll_style}
+        """
 
         # =========================
         # Tabela
@@ -2328,11 +2346,17 @@ class Pagina_Configuracoes(QWidget):
         # Botão Fechar
         # =========================
         btn_fechar = QPushButton("Fechar")
-        btn_fechar.clicked.connect(self.janela.close)
+        def fechar_janela():
+            self.janela_historico.close()
+            self.janela_historico.deleteLater()
+            del self.janela_historico
+
+        btn_fechar.clicked.connect(fechar_janela)
+
 
         layout.addWidget(btn_fechar, alignment=Qt.AlignRight)
-        self.janela.setStyleSheet(estilo_completo)
-        self.janela.show()
+        self.janela_historico.setStyleSheet(estilo_completo)
+        self.janela_historico.show()
 
     def abrir_menu_contexto_historico(self, pos,tabela: QTableWidget):
         index = tabela.indexAt(pos)

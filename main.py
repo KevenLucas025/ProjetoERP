@@ -3109,14 +3109,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         tmp_exe = os.path.join(caminho_sistema, "SistemadeGerenciamento_tmp.exe")
 
         # =====================================
-        # MODO PYTHON → reinício simples
+        # MODO PYTHON
         # =====================================
         if not getattr(sys, "frozen", False):
-            python = sys.executable
-            script = os.path.abspath(sys.argv[0])
-
             subprocess.Popen(
-                [python, script] + sys.argv[1:],
+                [sys.executable, os.path.abspath(sys.argv[0])],
                 cwd=caminho_sistema
             )
             QTimer.singleShot(100, QApplication.quit)
@@ -3126,7 +3123,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # MODO EXE COM UPDATE
         # =====================================
         if os.path.exists(flag) and os.path.exists(tmp_exe):
-            # 🔑 apenas dispara o atualizador
             atualizador, cwd = self.obter_atualizador()
 
             if os.path.exists(atualizador):
@@ -3136,7 +3132,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                     creationflags=subprocess.CREATE_NO_WINDOW
                 )
 
-            # 🔑 fecha o app SEM tentar esperar nada
+            # 🔑 IMPORTANTE: NÃO REINICIA AQUI
             QTimer.singleShot(100, QApplication.quit)
             return
 
@@ -3150,6 +3146,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         )
 
         QTimer.singleShot(100, QApplication.quit)
+
 
 
 
