@@ -36,7 +36,8 @@ class Pagina_Configuracoes(QWidget):
         self.resultados_encontrados = []
         self.ultimo_texto_pesquisado = ""
         self.indice_atual = -1
-        self.tema = Temas()
+        self.tema_obj = Temas()
+        self.tema = self.tema_obj.config.get("tema", "claro")
         self.main_window = main_window
         self.paginas_sistemas = paginas_sistemas
         self.frame_botoes_navegacoes = frame_botoes_navegacoes
@@ -1882,7 +1883,7 @@ class Pagina_Configuracoes(QWidget):
                 del self.janela_historico
 
     
-        config = self.tema.carregar_config_arquivo()
+        config = self.tema_obj.carregar_config_arquivo()
         self.tema  = config.get("tema","claro")
         
         if getattr(sys, "frozen",False):
@@ -2681,7 +2682,7 @@ class Pagina_Configuracoes(QWidget):
 
 
         # --- DEFINE CORES BASEADAS NO TEMA ATUAL ---
-        config = self.tema.carregar_config_arquivo()
+        config = self.tema_obj.carregar_config_arquivo()
         tema  = config.get("tema","claro")
 
         if tema == "escuro":

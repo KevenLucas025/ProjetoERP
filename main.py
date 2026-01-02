@@ -1,12 +1,12 @@
 #*********************************************************************************************************************
 import re
 from PySide6.QtCore import (Qt, QTimer, QDate, QBuffer, QByteArray, QIODevice, Signal,
-                            QEvent,QProcess)
+                            QEvent)
 from PySide6 import QtCore
 from PySide6.QtWidgets import (QMainWindow, QMessageBox, QPushButton,
                                QLabel, QFileDialog, QVBoxLayout,
                                QMenu,QTableWidgetItem,QCheckBox,QApplication,QToolButton,QHeaderView,QCompleter,
-                               QComboBox,QInputDialog,QProgressDialog,QDialog,QLineEdit,QWidget,QHBoxLayout,QProgressBar)
+                               QComboBox,QInputDialog,QProgressDialog,QDialog,QLineEdit,QWidget,QHBoxLayout,QProgressBar,QFormLayout,QTextEdit)
 from PySide6.QtGui import (QDoubleValidator, QIcon, QColor, QPixmap,QBrush,
                            QAction,QMovie,QImage,QShortcut,QKeySequence)
 from login import Login
@@ -28,7 +28,10 @@ from utils import Temas
 from clientes_juridicos import Clientes_Juridicos
 from clientes_fisicos import Clientes_Fisicos
 from dialogos import EscolherPlanilhaDialog
+from dotenv import load_dotenv
 from download_thread import DownloadThread
+import smtplib
+from email.message import EmailMessage
 import json
 import sqlite3
 import os
@@ -66,6 +69,30 @@ TEMAS_PROGRESSO = {
                 "chunk": "#0063B1",
             }
         }
+
+ASSUNTOS_CONFIG = {
+    "Sugestão de melhoria": {
+        "label": "Descreva sua sugestão de melhoria (máx. 500 caracteres):",
+        "email_titulo": "Nova sugestão de melhoria recebida pelo Sistema de Gerenciamento"
+    },
+    "Inclusão de funcionalidade": {
+        "label": "Descreva qual funcionalidade você deseja sugerir (máx. 500 caracteres):",
+        "email_titulo": "Nova sugestão de inclusão de funcionalidade recebida pelo Sistema de Gerenciamento"
+    },
+    "Relatar bug": {
+        "label": "Descreva o bug encontrado (máx. 500 caracteres):",
+        "email_titulo": "Novo relato de bug recebido pelo Sistema de Gerenciamento"
+    },
+    "Dúvida": {
+        "label": "Descreva sua dúvida (máx. 500 caracteres):",
+        "email_titulo": "Nova dúvida recebida pelo Sistema de Gerenciamento"
+    },
+    "Outro": {
+        "label": "Descreva sua mensagem (máx. 500 caracteres):",
+        "email_titulo": "Nova mensagem recebida pelo Sistema de Gerenciamento"
+    }
+}
+
 
 class MainWindow(QMainWindow, Ui_MainWindow):
     fechar_janela_login_signal = Signal(str)
@@ -118,6 +145,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.exibir_senha = MostrarSenha(self,self.txt_senha_cadastro)
         self.exibir_senha_usuario = MostrarSenha(self,self.txt_confirmar_senha)
+        
+        self.carregar_env()
 
         #Cria as tabelas no banco de dados sempre que executar o sistema em um novo ambiente
         self.db.create_table_products()
@@ -549,7 +578,29 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         else:
             self.pagina_configuracoes.aplicar_tema_classico()
             
-    
+    def carregar_env(self):
+        if getattr(sys, "frozen", False):
+            # MODO EXE → mesma pasta do .exe
+            base_path = os.path.dirname(sys.executable)
+        else:
+            # MODO PYTHON → raiz do projeto
+            base_path = os.getcwd()
+
+        env_path = os.path.join(base_path, ".env")
+        load_dotenv(env_path)
+            
+    def caminho_historico_atualizacoes(self):
+        if getattr(sys, "frozen", False):
+            return os.path.join(
+                self.pasta_estado(),
+                "historico_atualizacoes.log"
+            )
+        else:
+            return os.path.join(
+                self.pasta_do_sistema(),
+                "historico_atualizacoes.log"
+            )
+
     
     def pasta_do_sistema(self):
         return os.path.dirname(sys.executable) if getattr(sys, 'frozen', False) else os.getcwd()
@@ -562,7 +613,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def aplicar_atualizacao_automatica(self):
         try:
-            caminho_sistema = self.pasta_do_sistema()
             caminho_estado = self.pasta_estado()
             flag_path = os.path.join(caminho_estado, "update_pending.flag")
 
@@ -571,47 +621,45 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 return
 
             # Lê a versão remota salva
-            versao_remota = open(flag_path, "r").read().strip()
+            with open(flag_path, "r", encoding="utf-8") as f:
+                versao_remota = f.read().strip()
 
-            destino_temp = os.path.join(caminho_sistema, "SistemadeGerenciamento_tmp.exe")
-            destino_final = os.path.join(caminho_sistema, "SistemadeGerenciamento.exe")
-
-            # Troca o executável
-            if os.path.exists(destino_temp):
-                shutil.move(destino_temp, destino_final)
-                
-            if getattr(sys,"frozen",False):
-                versao_path = os.path.join(
-                    caminho_estado,
-                    "versao_instalada.txt"
-                )
+            # =========================
+            # SALVA VERSÃO INSTALADA
+            # =========================
+            if getattr(sys, "frozen", False):
+                versao_path = os.path.join(caminho_estado, "versao_instalada.txt")
             else:
-                versao_path = os.path.join(
-                    caminho_sistema,
-                    "versao_instalada.txt"
-                )
+                versao_path = os.path.join(self.pasta_do_sistema(), "versao_instalada.txt")
 
-            # ESCRITO COM SUCESSO
-            with open(versao_path,"w", encoding="utf-8") as f:
+            with open(versao_path, "w", encoding="utf-8") as f:
                 f.write(versao_remota)
-            
-            try:
-                log_path = os.path.join(caminho_sistema,"historico_atualizacoes.log")
-                agora = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
-                
-                with open(log_path, "a",encoding="utf-8") as log:
-                    log.write(f"[{agora}] Atualizado para a versão {versao_remota} | STATUS=SUCESSO\n")
-            except:
-                pass
 
-            # Remove flag
+            # =========================
+            # REGISTRA HISTÓRICO
+            # =========================
+            try:
+                log_path = self.caminho_historico_atualizacoes()
+                os.makedirs(os.path.dirname(log_path), exist_ok=True)
+
+                agora = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+                with open(log_path, "a", encoding="utf-8") as log:
+                    log.write(
+                        f"[{agora}] Atualizado para a versão {versao_remota} | STATUS=SUCESSO\n"
+                    )
+            except Exception as e:
+                print(f"Erro ao gravar histórico: {e}")
+
+            # =========================
+            # REMOVE FLAG
+            # =========================
             os.remove(flag_path)
 
         except Exception as e:
             print(f"Erro ao aplicar atualização automática: {e}")
+
             try:
-                caminho_sistema = self.pasta_do_sistema()
-                log_path = os.path.join(caminho_sistema, "historico_atualizacoes.log")
+                log_path = self.caminho_historico_atualizacoes()
                 agora = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
 
                 with open(log_path, "a", encoding="utf-8") as log:
@@ -620,6 +668,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                     )
             except:
                 pass
+
 
     def verificar_atualizacao_automatica(self):
         try:
@@ -780,11 +829,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             except:
                 pass
 
-        return VERSAO_ATUAL
-
-
-        
-        
+        return VERSAO_ATUAL 
 
     def obter_atualizador(self):
         caminho_sistema = self.pasta_do_sistema()
@@ -1013,12 +1058,356 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.table_clientes_juridicos.resizeRowsToContents()
         self.table_clientes_fisicos.resizeColumnsToContents()
         self.table_clientes_fisicos.resizeRowsToContents()
-    
+        
+    def enviar_sugestao_email(self, nome, email_usuario, assunto, mensagem):
+        EMAIL_SISTEMA = os.getenv("EMAIL_SISTEMA")
+        SENHA_APP = os.getenv("EMAIL_APP_SENHA")
+
+        if not EMAIL_SISTEMA or not SENHA_APP:
+            raise Exception("Credenciais de e-mail não configuradas.")
+
+        # Configuração baseada no assunto
+        config = ASSUNTOS_CONFIG.get(assunto, {})
+
+        titulo_email = config.get(
+            "email_titulo",
+            "Nova mensagem recebida pelo Sistema de Gerenciamento"
+        )
+
+        msg = EmailMessage()
+        msg["From"] = EMAIL_SISTEMA
+        msg["To"] = EMAIL_SISTEMA
+        msg["Reply-To"] = email_usuario
+        msg["Subject"] = f"[Sistema] {assunto}"
+
+        # =========================
+        # TEXTO SIMPLES (fallback)
+        # =========================
+        msg.set_content(
+            f"Nova mensagem recebida.\n\n"
+            f"Nome: {nome}\n"
+            f"E-mail: {email_usuario}\n"
+            f"Assunto: {assunto}\n\n"
+            f"Mensagem:\n{mensagem}"
+        )
+
+        # =========================
+        # HTML BONITO
+        # =========================
+        html = f"""
+        <!DOCTYPE html>
+        <html>
+        <head>
+        <meta charset="UTF-8">
+        </head>
+        <body style="font-family: Arial, sans-serif; background-color: #f4f6f8; padding: 20px;">
+
+        <div style="
+            max-width: 600px;
+            margin: auto;
+            background: #ffffff;
+            border-radius: 8px;
+            padding: 24px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        ">
+
+            <h2 style="color: #2c3e50; margin-top: 0;">
+            {titulo_email}
+            </h2>
+
+            <hr style="border: none; border-top: 1px solid #ddd; margin: 16px 0;">
+
+            <p><strong>👤 Nome:</strong><br>{nome}</p>
+
+            <p><strong>📧 E-mail para contato:</strong><br>{email_usuario}</p>
+
+            <p><strong>📌 Assunto:</strong><br>{assunto}</p>
+
+            <p><strong>📝 Mensagem:</strong></p>
+
+            <div style="
+                border: 1px solid #ddd;
+                border-radius: 4px;
+                padding: 12px;
+                background: #fafafa;
+                white-space: pre-wrap;
+            ">
+            {mensagem}
+            </div>
+
+            <hr style="border: none; border-top: 1px solid #ddd; margin: 24px 0;">
+
+            <p style="font-size: 12px; color: #777;">
+            Mensagem enviada automaticamente pelo Sistema de Gerenciamento.
+            </p>
+
+        </div>
+
+        </body>
+        </html>
+        """
+
+        msg.add_alternative(html, subtype="html")
+
+        with smtplib.SMTP_SSL("smtp.gmail.com", 465) as smtp:
+            smtp.login(EMAIL_SISTEMA, SENHA_APP)
+            smtp.send_message(msg)
+
+        
     def mostrar_sugestao(self):
         janela = QMainWindow(self)
-        janela.setWindowTitle("Sugestão de melhorias")
-        janela.resize(500,300)
+        janela.setWindowTitle("Feedback")
+        janela.resize(500, 350)
+
+        central_widget = QWidget()
+        layout_principal = QVBoxLayout(central_widget)
+        
+        if self.tema_atual == "escuro":
+            combobox_style = """
+                QComboBox {
+                    color: #f0f0f0;
+                    border: 2px solid #ffffff;
+                    border-radius: 6px;
+                    padding: 4px 10px;
+                    background-color: #2b2b2b;
+                }
+                QComboBox QAbstractItemView {
+                    background-color: #2b2b2b;
+                    color: #f0f0f0;
+                    selection-background-color: #696969;
+                    border: 1px solid #555555;
+                }
+
+                QComboBox QAbstractItemView::item:hover {
+                    background-color: #444444;
+                    color: #f0f0f0;
+                }
+                QComboBox QAbstractItemView::item:selected {
+                    background-color: #696969;
+                    color: #f0f0f0;
+                }
+                QComboBox QScrollBar:vertical {
+                    background: #ffffff;
+                    width: 12px;
+                    border-radius: 6px;
+                }
+                QComboBox QScrollBar::handle:vertical {
+                    background: #555555;
+                    border-radius: 6px;
+                } 
+            """ 
+        elif self.tema_atual == "claro":
+            combobox_style = """
+                QComboBox {
+                    background-color: white;
+                    border: 2px solid rgb(50,150,250);
+                    border-radius: 5px;
+                    color: black;
+                    padding: 5px;
+                }
+                QComboBox QAbstractItemView {
+                    background-color: white;
+                    color: black;
+                    border: 1px solid #ccc;
+                    selection-background-color: #e5e5e5;
+                    selection-color: black;
+                }
+                QComboBox QScrollBar:vertical {
+                    background: #f5f5f5;
+                    width: 12px;
+                    border: none;
+                }
+                QComboBox QScrollBar::handle:vertical {
+                    background: #cccccc;
+                    min-height: 20px;
+                    border-radius: 5px;
+                }
+            """
+        else:
+            combobox_style = """
+            QComboBox {
+                background-color: white;
+                border: 3px solid rgb(50,150,250);
+                border-radius: 5px;
+                color: black;
+                padding: 5px;
+            }
+
+            QComboBox QAbstractItemView {
+                background-color: white;
+                color: black;
+                border: 3px solid white;
+                selection-background-color: rgb(120,120,120);
+                selection-color: black;
+            }
+
+            /* Scrollbar vertical */
+            QComboBox QScrollBar:vertical {
+                background-color: rgb(240,240,240);  /* Trilha visível */
+                width: 10px;
+                margin: 1px;
+                border: 1px solid white;
+                border-radius: 5px;
+            }
+
+            /* Alça (handle) da scrollbar */
+            QComboBox QScrollBar::handle:vertical {
+                background: rgb(120,120,120);  /* Cor da barra frontal,sobe e desce*/
+                min-height: 30px;
+                border-radius: 5px;
+            }
+
+            /* Trilha atrás do handle — essa parte faz toda a diferença */
+            QComboBox QScrollBar::add-page:vertical,
+            QComboBox QScrollBar::sub-page:vertical {
+                background: transparent;  /* barra atrás do scroll */
+            }
+
+            /* Esconde setas */
+            QComboBox QScrollBar::add-line:vertical,
+            QComboBox QScrollBar::sub-line:vertical {
+                height: 0px;
+                background: none;
+                border: none;
+            }
+            """
+            
+
+        # =========================
+        # FORMULÁRIO (Nome / Assunto)
+        # =========================
+        form = QFormLayout()
+
+        line_nome = QLineEdit()
+        line_nome.setPlaceholderText("Digite seu nome")
+        
+        line_email = QLineEdit()
+        line_email.setPlaceholderText("Digite seu e-mail")
+
+
+        assunto = QComboBox()
+        assunto.addItems([
+            "Selecione um assunto",
+            "Sugestão de melhoria",
+            "Inclusão de funcionalidade",
+            "Relatar bug",
+            "Dúvida",
+            "Outro"
+        ])
+        assunto.setCurrentIndex(0)
+        assunto.setObjectName("combobox_assunto")
+        assunto.setStyleSheet(combobox_style)
+
+        form.addRow("Nome:", line_nome)
+        form.addRow("E-mail",line_email)
+        form.addRow("Assunto:", assunto)
+        
+
+        layout_principal.addLayout(form)
+        
+        label_msg = QLabel("Descreva sua sugestão (máx. 500 caracteres):")
+
+        # =========================
+        # CAMPO DE TEXTO (500 chars)
+        # =========================
+        def atualizar_label_assunto():
+            assunto_sel = assunto.currentText()
+
+            config = ASSUNTOS_CONFIG.get(assunto_sel)
+            if config:
+                label_msg.setText(config["label"])
+            else:
+                label_msg.setText("Descreva sua mensagem (máx. 500 caracteres):")
+
+        assunto.currentIndexChanged.connect(atualizar_label_assunto)
+
+
+        texto = QTextEdit()
+        texto.setPlaceholderText("Digite aqui sua sugestão...")
+        texto.setMaximumHeight(120)
+
+        # "Quadrado" (borda)
+        texto.setStyleSheet("""
+            QTextEdit {
+                border: 1px solid #999;
+                border-radius: 4px;
+                padding: 6px;
+            }
+        """)
+
+        contador = QLabel("0 / 500 caracteres")
+
+        def atualizar_contador():
+            conteudo = texto.toPlainText()
+            if len(conteudo) > 500:
+                texto.blockSignals(True)
+                texto.setPlainText(conteudo[:500])
+                texto.blockSignals(False)
+                cursor = texto.textCursor()
+                cursor.movePosition(cursor.End)
+                texto.setTextCursor(cursor)
+
+            contador.setText(f"{len(texto.toPlainText())} / 500 caracteres")
+
+        texto.textChanged.connect(atualizar_contador)
+
+        layout_principal.addWidget(label_msg)
+        layout_principal.addWidget(texto)
+        layout_principal.addWidget(contador)
+
+        # =========================
+        # BOTÃO ENVIAR
+        # =========================
+        botao_enviar = QPushButton("Enviar Sugestão")
+
+        def enviar():
+            nome = line_nome.text().strip()
+            email = line_email.text().strip()
+            assunto_sel = assunto.currentText()
+            mensagem = texto.toPlainText().strip()
+            
+            if not self.email_valido(email):
+                QMessageBox.warning(janela, "Atenção", "E-mail inválido.")
+                return
+
+
+            if not nome or not email:
+                QMessageBox.warning(janela, "Atenção", "Preencha nome e e-mail.")
+                return
+
+            if assunto.currentIndex() == 0:
+                QMessageBox.warning(janela, "Atenção", "Selecione um assunto.")
+                return
+
+            if not mensagem:
+                QMessageBox.warning(janela, "Atenção", "Digite sua sugestão.")
+                return
+
+            try:
+                self.enviar_sugestao_email(nome, email, assunto_sel, mensagem)
+                QMessageBox.information(
+                    janela,
+                    "Obrigado!",
+                    "Sua sugestão foi enviada com sucesso 😊"
+                )
+                janela.close()
+
+            except Exception as e:
+                QMessageBox.critical(
+                    janela,
+                    "Erro",
+                    f"Erro ao enviar sugestão:\n{str(e)}"
+                )
+
+
+        botao_enviar.clicked.connect(enviar)
+
+        layout_principal.addStretch()
+        layout_principal.addWidget(botao_enviar, alignment=Qt.AlignRight)
+
+        janela.setCentralWidget(central_widget)
         janela.show()
+
         
     
 
@@ -3124,17 +3513,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # =====================================
         if os.path.exists(flag) and os.path.exists(tmp_exe):
             atualizador, cwd = self.obter_atualizador()
-
-            if os.path.exists(atualizador):
-                subprocess.Popen(
-                    [atualizador],
-                    cwd=cwd,
-                    creationflags=subprocess.CREATE_NO_WINDOW
-                )
-
-            # 🔑 IMPORTANTE: NÃO REINICIA AQUI
+            subprocess.Popen([atualizador], cwd=cwd, creationflags=subprocess.CREATE_NO_WINDOW)
             QTimer.singleShot(100, QApplication.quit)
-            return
+            return  # 🚫 NÃO reinicia aqui
+
 
         # =====================================
         # MODO EXE SEM UPDATE
@@ -3464,7 +3846,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                     background-color: #2b2b2b;
                     color: white;
                     font-size: 12px;
-                }           
+                }   
+                   
 
                 QMessageBox {
                     background-color: #2b2b2b;   /* fundo escuro */
@@ -3579,7 +3962,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             """)
             
     def closeEvent(self, event):
-        self.iniciar_atualizador_se_necessario()
         event.accept()
         
 

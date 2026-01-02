@@ -2,3 +2,4 @@
 instalador.iss
 __pycache__
 SistemaGerenciamento
+.env
