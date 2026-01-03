@@ -1,12 +1,12 @@
 {
-    "usuario": "Keven",
-    "senha": "123",
+    "usuario": "",
+    "senha": "",
     "mantem_conectado": false,
     "nao_mostrar_mensagem_boas_vindas": true,
     "nao_mostrar_aviso_irreversivel": true,
     "nao_mostrar_mensagem_arquivo_excel": true,
     "nao_mostrar_mensagem_arquivo_excel_fisicos": true,
-    "nao_mostrar_aviso_atualizacoes": true,
+    "nao_mostrar_aviso_atualizacoes": false,
     "historico_autocompletes": {
         "txt_nome": [
             "dsfdsfs",
@@ -81,7 +81,7 @@
             "1215"
         ]
     },
-    "tema": "escuro",
+    "tema": "claro",
     "tamanho_fonte_percentual": 100,
     "atalhos": {
         "Pesquisar": "Ctrl+F",
@@ -89,5 +89,5 @@
         "Abrir Configurações": "Ctrl+L",
         "Abrir Página Inicial": "Ctrl+H"
     },
-    "atualizacoes_automaticas": false
+    "atualizacoes_automaticas": true
 }

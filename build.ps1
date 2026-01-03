@@ -9,6 +9,7 @@ pyinstaller --noconfirm --clean --onedir --windowed `
   --collect-all pandas `
   --collect-all numpy `
   --add-data "imagens;imagens" `
+  --add-data ".env;." `
   --icon "imagens/favicon.ico" `
   --name "SistemadeGerenciamento" `
   --distpath $distPath `

@@ -339,7 +339,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.action_em_massa_produtos = QAction("Cadastrar produtos em massa", self)
         self.action_em_massa_usuarios = QAction("Cadastrar usuários em massa", self)
         self.action_informacoes_sistema = QAction("Informações do sistema", self)
-        self.action_sugestoes = QAction("Feedback",self)
         self.action_limpar_cache = QAction("Limpar Cache", self)
         
 
@@ -352,7 +351,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.menu_opcoes.addAction(self.action_em_massa_produtos)
         self.menu_opcoes.addAction(self.action_em_massa_usuarios)
         self.menu_opcoes.addAction(self.action_informacoes_sistema)
-        self.menu_opcoes.addAction(self.action_sugestoes)
         self.menu_opcoes.addAction(self.action_limpar_cache)
         
 
@@ -422,7 +420,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.action_em_massa_produtos.triggered.connect(self.pagina_cadastro_em_massa_produtos)
         self.action_em_massa_usuarios.triggered.connect(self.pagina_cadastro_em_massa_usuarios)
         self.action_informacoes_sistema.triggered.connect(self.show_mensagem_sistema)
-        self.action_sugestoes.triggered.connect(self.mostrar_sugestao)
         self.action_limpar_cache.triggered.connect(self.limpar_cache_sistema)
 
         self.fechar_janela_login_signal.connect(self.fechar_janela_login)
@@ -1163,7 +1160,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         layout_principal = QVBoxLayout(central_widget)
         
         if self.tema_atual == "escuro":
+            lineedit_bg = "#303030"
             combobox_style = """
+            
                 QComboBox {
                     color: #f0f0f0;
                     border: 2px solid #ffffff;
@@ -1196,7 +1195,16 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                     border-radius: 6px;
                 } 
             """ 
+            lineedit_style = f"""
+                QLineEdit {{
+                    background-color: {lineedit_bg};
+                    border: 2px solid white;
+                    border-radius: 6px;
+                    padding: 3px;
+                }}
+            """
         elif self.tema_atual == "claro":
+            lineedit_bg = "white"
             combobox_style = """
                 QComboBox {
                     background-color: white;
@@ -1223,7 +1231,17 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                     border-radius: 5px;
                 }
             """
+            lineedit_style = """
+                QLineEdit {
+                    background-color: white;
+                    color: black;
+                    border: 2px solid rgb(50,150,250);
+                    border-radius: 6px;
+                    padding: 3px;
+                }
+            """
         else:
+            lineedit_bg = "white"
             combobox_style = """
             QComboBox {
                 background-color: white;
@@ -1271,6 +1289,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 border: none;
             }
             """
+            lineedit_style = """
+                QLineEdit {
+                    background-color: white;
+                    color: black;
+                    border: 2px solid rgb(50,150,250);
+                    border-radius: 6px;
+                    padding: 3px;
+                }
+            """
             
 
         # =========================
@@ -1283,7 +1310,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         
         line_email = QLineEdit()
         line_email.setPlaceholderText("Digite seu e-mail")
-
+        
+        line_nome.setStyleSheet(lineedit_style)
+        line_email.setStyleSheet(lineedit_style)
 
         assunto = QComboBox()
         assunto.addItems([
@@ -1297,6 +1326,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         assunto.setCurrentIndex(0)
         assunto.setObjectName("combobox_assunto")
         assunto.setStyleSheet(combobox_style)
+        
 
         form.addRow("Nome:", line_nome)
         form.addRow("E-mail",line_email)

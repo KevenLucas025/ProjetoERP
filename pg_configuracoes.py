@@ -5,11 +5,12 @@ from PySide6.QtWidgets import (QWidget,QMenu, QVBoxLayout,
                                QStyledItemDelegate,QStyleOptionViewItem,QTableWidgetItem,QAbstractScrollArea,QScrollArea)
 from PySide6.QtCore import Qt, QTimer,QRect
 from PySide6.QtGui import (QIcon,QKeySequence,QColor,
-                           QTextDocument,QPainter,QFontMetrics,QTextCursor,QTextCharFormat,QPalette)
+                           QTextDocument,QPainter,QFontMetrics,QTextCursor,QTextCharFormat,QPalette,QPixmap)
 import os
 import sys
 from configuracoes import Configuracoes_Login
 from dialogos import ComboDialog,DialogoEstilizado
+from ui_login_4 import Ui_Mainwindow_Login
 from utils import caminho_recurso
 from mane_python import Ui_MainWindow
 from packaging import version
@@ -36,6 +37,7 @@ class Pagina_Configuracoes(QWidget):
         self.resultados_encontrados = []
         self.ultimo_texto_pesquisado = ""
         self.indice_atual = -1
+        self.main_window_login = Ui_Mainwindow_Login()
         self.tema_obj = Temas()
         self.tema = self.tema_obj.config.get("tema", "claro")
         self.main_window = main_window
@@ -68,7 +70,7 @@ class Pagina_Configuracoes(QWidget):
         self.frame_quantidade = frame_quantidade
         self.historico_erros = {}
         
-        
+        self.main_window_login.label_foto_sistema.setPixmap(QPixmap("imagens/Imagem2.png"))
 
         # Criar a janela de configurações
         self.main_window.janela_config = QMainWindow()
@@ -636,9 +638,6 @@ class Pagina_Configuracoes(QWidget):
             QFrame#frame_8{
                 border: 2px solid white;
             }
-            QLabel#label_foto_sistema{
-                border: none;
-            }
             QFrame#frame_2 {
                 border-radius: 12px;
                 border: 2px solid qlineargradient(
@@ -1102,9 +1101,6 @@ class Pagina_Configuracoes(QWidget):
             QFrame#frame_8{
                 border: 2px solid #eaeaea;
             }      
-            QLabel#label_foto_sistema{
-                border: none;
-            }
             QFrame#frame_2 {
                 border-radius: 12px;
                 border: 2px solid qlineargradient(
@@ -1716,10 +1712,6 @@ class Pagina_Configuracoes(QWidget):
             QFrame#frame_8{
                 border: 2px solid white;
             }  
-            QLabel#label_foto_sistema{
-                border: none;
-                background: transparent;
-            }
             QFrame#frame_2 {
                 border-radius: 12px;
                 border: 2px solid qlineargradient(
@@ -1746,16 +1738,17 @@ class Pagina_Configuracoes(QWidget):
         self.limpar_layout(self.layout)
         # ------------------- MENU TEMA -------------------
         btn_tema = QToolButton(self.janela_config)
-        btn_tema.setText("Tema do Sistema")
+        btn_tema.setText("Sistema")
         btn_tema.setPopupMode(QToolButton.InstantPopup)
         btn_tema.setToolButtonStyle(Qt.ToolButtonTextOnly)
         btn_tema.setCursor(Qt.PointingHandCursor)
         btn_tema.setObjectName("btn_classe_tema") 
         btn_tema.setFixedHeight(38)
         menu_tema = QMenu(self.janela_config)
-        menu_tema.addAction("Modo escuro", self.aplicar_modo_escuro)
-        menu_tema.addAction("Modo claro", self.aplicar_modo_claro)
-        menu_tema.addAction("Modo clássico", self.aplicar_modo_classico)
+        menu_tema.addAction("Alterar para o modo escuro", self.aplicar_modo_escuro)
+        menu_tema.addAction("Alterar para o modo claro", self.aplicar_modo_claro)
+        menu_tema.addAction("Alterar para o modo clássico", self.aplicar_modo_classico)
+        menu_tema.addAction("Feedback",self.main_window.mostrar_sugestao)
         btn_tema.setMenu(menu_tema)
         self.layout.addWidget(btn_tema)
 
