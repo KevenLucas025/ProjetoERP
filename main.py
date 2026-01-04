@@ -289,7 +289,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                                                          self.btn_abrir_planilha,self.btn_importar,self.btn_gerar_saida,
                                                          self.line_excel,self.btn_gerar_estorno,
                                                          self.label_cadastramento,self.label_cadastramento_produtos,self.frame_valor_total_produtos,
-                                                         self.frame_valor_do_desconto,self.frame_valor_com_desconto1,self.frame_quantidade)
+                                                         self.frame_valor_do_desconto,self.frame_valor_com_desconto1,self.frame_quantidade,self.login_window)
 
         
 

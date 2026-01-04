@@ -31,7 +31,7 @@ class Pagina_Configuracoes(QWidget):
                  btn_cadastrar_produto, btn_cadastro_usuario, btn_clientes,
                  btn_importar, btn_gerar_saida, btn_estorno, btn_abrir_planilha, line_excel,
                  label_cadastramento, label_cadastramento_produtos,frame_valor_total_produtos,
-                 frame_valor_do_desconto, frame_valor_desconto,frame_quantidade,parent=None):
+                 frame_valor_do_desconto, frame_valor_desconto,frame_quantidade,login_window,parent=None):
         super().__init__(parent)
         self.atalhos = {}  # dicionário para guardar atalhos
         self.resultados_encontrados = []
@@ -69,8 +69,9 @@ class Pagina_Configuracoes(QWidget):
         self.frame_valor_desconto = frame_valor_desconto
         self.frame_quantidade = frame_quantidade
         self.historico_erros = {}
+        self.login_window = login_window
         
-        self.main_window_login.label_foto_sistema.setPixmap(QPixmap("imagens/Imagem2.png"))
+        self.login_window.label_foto_sistema.setPixmap(QPixmap(caminho_recurso("imagens/Imagem2.png")))
 
         # Criar a janela de configurações
         self.main_window.janela_config = QMainWindow()
@@ -87,8 +88,6 @@ class Pagina_Configuracoes(QWidget):
        
         self.estilo_original_classico = Ui_MainWindow()
         self.config = Configuracoes_Login(main_window=main_window)
-        
-        
         
         
         if self.config.tema == "escuro":
@@ -519,6 +518,10 @@ class Pagina_Configuracoes(QWidget):
                 border: 1px solid #444444;
                 border-radius: 10px;
             }
+            QLabel#label_foto_sistema{
+                border: none;
+                background: transparent;
+            }
             QLabel#label_titulo,
             QLabel#label_valor{
                 font-size: 14px; color: white; 
@@ -931,6 +934,10 @@ class Pagina_Configuracoes(QWidget):
             QLineEdit:focus {
                 border: 2px solid #005a9e; /* Azul mais escuro ao focar */
                 background-color: #f0f8ff; /* Leve destaque no fundo */
+            }
+            QLabel#label_foto_sistema{
+                border: none;
+                background: transparent;
             }
             QLabel#label_estoque,
             QLabel#label_saida,
@@ -1614,6 +1621,10 @@ class Pagina_Configuracoes(QWidget):
             QFrame#frame_quantidade{
                 background-color: rgb(100, 200, 100); 
                 border-radius: 10px;
+            }
+            QLabel#label_foto_sistema{
+                border: none;
+                background: transparent;
             }
             QLabel#label_titulo,
             QLabel#label_valor{
