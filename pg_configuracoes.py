@@ -652,9 +652,7 @@ class Pagina_Configuracoes(QWidget):
             }
             
         """
-        app = QApplication.instance()
-        for widget in app.allWidgets():
-            widget.setStyleSheet(style_sheet)
+        QApplication.instance().setStyleSheet(style_sheet)
 
         self.btn_opcoes.setIcon(QIcon(caminho_recurso("imagens/imagens_modo_escuro/seta_esquerda_preta.png"))) #Esse botão é o botão de retroceder, nomenclatura errada
         self.btn_retroceder.setIcon(QIcon(caminho_recurso("imagens/imagens_modo_escuro/seta_direita_preta.png"))) # Esse botão é o botão avançar, nomenclatura errada
@@ -1121,9 +1119,7 @@ class Pagina_Configuracoes(QWidget):
             
         """
         # Iterar sobre todos os widgets da aplicação e aplicar o estilo
-        app = QApplication.instance()
-        for widget in app.allWidgets():
-            widget.setStyleSheet(style_sheet)
+        QApplication.instance().setStyleSheet(style_sheet)
         
         # Salvar no JSON que o tema agora é claro
         self.config.tema = "claro"
@@ -1735,9 +1731,7 @@ class Pagina_Configuracoes(QWidget):
             
         """
         # Iterar sobre todos os widgets da aplicação e aplicar o estilo
-        app = QApplication.instance()
-        for widget in app.allWidgets():
-            widget.setStyleSheet(style_sheet)
+        QApplication.instance().setStyleSheet(style_sheet)
         
         # Salvar no JSON que o tema agora é clássico
         self.config.tema = "classico"

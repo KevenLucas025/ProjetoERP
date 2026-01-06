@@ -1,0 +1,9 @@
+<RCC>
+    <qresource prefix="/">
+        <file>imagens/editar.png</file>
+        <file>imagens/pngwing.com.png</file>
+        <file>imagens/sair.png</file>
+        <file>imagens/toppng.com-update-512x512.png</file>
+        <file>imagens/Delete-Button-PNG-Download-Image.png</file>
+    </qresource>
+</RCC>

@@ -34,7 +34,7 @@ class Ui_MainWindow(object):
         MainWindow.setSizePolicy(sizePolicy)
         MainWindow.setMinimumSize(QSize(800, 820))
         MainWindow.setAutoFillBackground(False)
-        MainWindow.setStyleSheet(u"background-color: rgb(0, 80, 121);")
+        MainWindow.setStyleSheet(u"")
         MainWindow.setUnifiedTitleAndToolBarOnMac(False)
         self.centralwidget = QWidget(MainWindow)
         self.centralwidget.setObjectName(u"centralwidget")
@@ -42,7 +42,7 @@ class Ui_MainWindow(object):
         self.centralwidget.setSizePolicy(sizePolicy)
         self.centralwidget.setMinimumSize(QSize(0, 0))
         self.centralwidget.setFocusPolicy(Qt.StrongFocus)
-        self.centralwidget.setStyleSheet(u"background-color: rgb(0, 80, 121);")
+        self.centralwidget.setStyleSheet(u"")
         self.gridLayout_2 = QGridLayout(self.centralwidget)
         self.gridLayout_2.setObjectName(u"gridLayout_2")
         self.frame_botoes_navegacoes = QFrame(self.centralwidget)
@@ -51,6 +51,7 @@ class Ui_MainWindow(object):
         self.frame_botoes_navegacoes.setSizePolicy(sizePolicy)
         self.frame_botoes_navegacoes.setMaximumSize(QSize(162, 16777215))
         self.frame_botoes_navegacoes.setAutoFillBackground(False)
+        self.frame_botoes_navegacoes.setStyleSheet(u"")
         self.frame_botoes_navegacoes.setFrameShape(QFrame.NoFrame)
         self.frame_botoes_navegacoes.setFrameShadow(QFrame.Plain)
         self.gridLayout = QGridLayout(self.frame_botoes_navegacoes)
@@ -61,18 +62,7 @@ class Ui_MainWindow(object):
         self.btn_verificar_usuarios.setSizePolicy(sizePolicy)
         self.btn_verificar_usuarios.setMaximumSize(QSize(145, 27))
         self.btn_verificar_usuarios.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
-        self.btn_verificar_usuarios.setStyleSheet(u"QPushButton {\n"
-"    color: rgb(255, 255, 255);\n"
-"    border-radius: 8px;\n"
-"    font-size: 16px;\n"
-"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */\n"
-"    border: 4px solid transparent;\n"
-"}\n"
-"\n"
-"QPushButton:hover {\n"
-"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */\n"
-"    color: black;\n"
-"}")
+        self.btn_verificar_usuarios.setStyleSheet(u"")
 
         self.gridLayout.addWidget(self.btn_verificar_usuarios, 2, 0, 1, 1)
 
@@ -82,18 +72,7 @@ class Ui_MainWindow(object):
         self.btn_clientes.setSizePolicy(sizePolicy)
         self.btn_clientes.setMaximumSize(QSize(145, 27))
         self.btn_clientes.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
-        self.btn_clientes.setStyleSheet(u"QPushButton {\n"
-"    color: rgb(255, 255, 255);\n"
-"    border-radius: 8px;\n"
-"    font-size: 16px;\n"
-"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */\n"
-"    border: 4px solid transparent;\n"
-"}\n"
-"\n"
-"QPushButton:hover {\n"
-"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */\n"
-"    color: black;\n"
-"}")
+        self.btn_clientes.setStyleSheet(u"")
 
         self.gridLayout.addWidget(self.btn_clientes, 5, 0, 1, 1)
 
@@ -104,18 +83,7 @@ class Ui_MainWindow(object):
         self.btn_home.setMaximumSize(QSize(145, 27))
         self.btn_home.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.btn_home.setAutoFillBackground(False)
-        self.btn_home.setStyleSheet(u"QPushButton {\n"
-"    color: rgb(255, 255, 255);\n"
-"    border-radius: 8px;\n"
-"    font-size: 16px;\n"
-"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */\n"
-"    border: 4px solid transparent;\n"
-"}\n"
-"\n"
-"QPushButton:hover {\n"
-"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */\n"
-"    color: black;\n"
-"}")
+        self.btn_home.setStyleSheet(u"")
 
         self.gridLayout.addWidget(self.btn_home, 0, 0, 1, 1)
 
@@ -126,18 +94,7 @@ class Ui_MainWindow(object):
         self.btn_verificar_estoque.setMaximumSize(QSize(145, 27))
         self.btn_verificar_estoque.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.btn_verificar_estoque.setAutoFillBackground(False)
-        self.btn_verificar_estoque.setStyleSheet(u"QPushButton {\n"
-"    color: rgb(255, 255, 255);\n"
-"    border-radius: 8px;\n"
-"    font-size: 16px;\n"
-"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */\n"
-"    border: 4px solid transparent;\n"
-"}\n"
-"\n"
-"QPushButton:hover {\n"
-"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */\n"
-"    color: black;\n"
-"}")
+        self.btn_verificar_estoque.setStyleSheet(u"")
 
         self.gridLayout.addWidget(self.btn_verificar_estoque, 1, 0, 1, 1)
 
@@ -147,18 +104,7 @@ class Ui_MainWindow(object):
         self.btn_cadastrar_produto.setSizePolicy(sizePolicy)
         self.btn_cadastrar_produto.setMaximumSize(QSize(145, 27))
         self.btn_cadastrar_produto.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
-        self.btn_cadastrar_produto.setStyleSheet(u"QPushButton {\n"
-"    color: rgb(255, 255, 255);\n"
-"    border-radius: 8px;\n"
-"    font-size: 16px;\n"
-"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */\n"
-"    border: 4px solid transparent;\n"
-"}\n"
-"\n"
-"QPushButton:hover {\n"
-"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */\n"
-"    color: black;\n"
-"}")
+        self.btn_cadastrar_produto.setStyleSheet(u"")
 
         self.gridLayout.addWidget(self.btn_cadastrar_produto, 3, 0, 1, 1)
 
@@ -168,18 +114,7 @@ class Ui_MainWindow(object):
         self.btn_cadastrar_usuarios.setSizePolicy(sizePolicy)
         self.btn_cadastrar_usuarios.setMaximumSize(QSize(145, 27))
         self.btn_cadastrar_usuarios.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
-        self.btn_cadastrar_usuarios.setStyleSheet(u"QPushButton {\n"
-"    color: rgb(255, 255, 255);\n"
-"    border-radius: 8px;\n"
-"    font-size: 16px;\n"
-"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */\n"
-"    border: 4px solid transparent;\n"
-"}\n"
-"\n"
-"QPushButton:hover {\n"
-"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */\n"
-"    color: black;\n"
-"}")
+        self.btn_cadastrar_usuarios.setStyleSheet(u"")
 
         self.gridLayout.addWidget(self.btn_cadastrar_usuarios, 4, 0, 1, 1)
 
@@ -200,20 +135,7 @@ class Ui_MainWindow(object):
         font.setPointSize(11)
         self.btn_mais_opcoes.setFont(font)
         self.btn_mais_opcoes.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
-        self.btn_mais_opcoes.setStyleSheet(u"QToolButton {\n"
-"    background-color: rgb(50, 150, 250);\n"
-"    color: white;\n"
-"    border-radius: 5px;\n"
-"    border: 2px solid rgb(50, 150, 250);\n"
-"    padding: 5px 10px;\n"
-"}\n"
-"\n"
-"QToolButton:hover {\n"
-"    background-color: rgb(100, 180, 255);\n"
-"    border: 2px solid rgb(100, 180, 255);\n"
-"}\n"
-"\n"
-"")
+        self.btn_mais_opcoes.setStyleSheet(u"")
         self.btn_mais_opcoes.setPopupMode(QToolButton.MenuButtonPopup)
         self.btn_mais_opcoes.setToolButtonStyle(Qt.ToolButtonTextOnly)
 
@@ -283,6 +205,7 @@ class Ui_MainWindow(object):
         sizePolicy.setHeightForWidth(self.label_bem_vindo.sizePolicy().hasHeightForWidth())
         self.label_bem_vindo.setSizePolicy(sizePolicy)
         self.label_bem_vindo.setMaximumSize(QSize(502, 234))
+        self.label_bem_vindo.setStyleSheet(u"")
         self.label_bem_vindo.setAlignment(Qt.AlignCenter)
 
         self.gridLayout_4.addWidget(self.label_bem_vindo, 0, 0, 1, 1)
@@ -333,18 +256,7 @@ class Ui_MainWindow(object):
         self.btn_gerar_estorno.setSizePolicy(sizePolicy)
         self.btn_gerar_estorno.setMaximumSize(QSize(130, 30))
         self.btn_gerar_estorno.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
-        self.btn_gerar_estorno.setStyleSheet(u"QPushButton {\n"
-"    color: rgb(255, 255, 255);\n"
-"    border-radius: 8px;\n"
-"    font-size: 16px;\n"
-"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */\n"
-"    border: 4px solid transparent;\n"
-"}\n"
-"\n"
-"QPushButton:hover {\n"
-"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */\n"
-"    color: black;\n"
-"}")
+        self.btn_gerar_estorno.setStyleSheet(u"")
 
         self.gridLayout_6.addWidget(self.btn_gerar_estorno, 3, 1, 1, 1)
 
@@ -362,18 +274,7 @@ class Ui_MainWindow(object):
         sizePolicy.setHeightForWidth(self.btn_abrir_planilha.sizePolicy().hasHeightForWidth())
         self.btn_abrir_planilha.setSizePolicy(sizePolicy)
         self.btn_abrir_planilha.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
-        self.btn_abrir_planilha.setStyleSheet(u"QPushButton {\n"
-"    color: rgb(255, 255, 255);\n"
-"    border-radius: 8px;\n"
-"    font-size: 16px;\n"
-"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */\n"
-"    border: 4px solid transparent;\n"
-"}\n"
-"\n"
-"QPushButton:hover {\n"
-"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */\n"
-"    color: black;\n"
-"}")
+        self.btn_abrir_planilha.setStyleSheet(u"")
 
         self.verticalLayout_2.addWidget(self.btn_abrir_planilha)
 
@@ -381,19 +282,7 @@ class Ui_MainWindow(object):
         self.line_excel.setObjectName(u"line_excel")
         sizePolicy.setHeightForWidth(self.line_excel.sizePolicy().hasHeightForWidth())
         self.line_excel.setSizePolicy(sizePolicy)
-        self.line_excel.setStyleSheet(u"QLineEdit {\n"
-"	color: black;\n"
-"    background-color: rgb(240, 240, 240); /* Cor de fundo cinza claro */\n"
-"    border: 3px solid rgb(50, 150,250); /* Borda azul */\n"
-"    border-radius: 12px; /* Cantos arredondados */\n"
-"    padding: 3px; /* Espa\u00e7amento interno */\n"
-"}\n"
-"\n"
-"QLineEdit::placeholderText {\n"
-"    color: black; /* Cor do texto do placeholder */\n"
-"}\n"
-"\n"
-"")
+        self.line_excel.setStyleSheet(u"")
         self.line_excel.setAlignment(Qt.AlignCenter)
         self.line_excel.setReadOnly(True)
 
@@ -403,18 +292,7 @@ class Ui_MainWindow(object):
         self.progress_excel.setObjectName(u"progress_excel")
         sizePolicy.setHeightForWidth(self.progress_excel.sizePolicy().hasHeightForWidth())
         self.progress_excel.setSizePolicy(sizePolicy)
-        self.progress_excel.setStyleSheet(u"QProgressBar {\n"
-"	color: black;\n"
-"    border: 3px solid rgb(50,150,250);\n"
-"    border-radius: 13px;  /* Aumentei o valor para deixar a borda mais redonda */\n"
-"    background-color: #f0f0f0;  /* Cor cinza claro */\n"
-"}\n"
-"\n"
-"QProgressBar::chunk {\n"
-"    background-color: #4682b4;  /* Cor do progresso preenchido (azul) */\n"
-"    border-radius: 12px;  /* Faz com que o progresso tamb\u00e9m tenha bordas arredondadas */\n"
-"}\n"
-"")
+        self.progress_excel.setStyleSheet(u"")
         self.progress_excel.setValue(0)
         self.progress_excel.setAlignment(Qt.AlignCenter)
 
@@ -429,18 +307,7 @@ class Ui_MainWindow(object):
         self.btn_importar.setSizePolicy(sizePolicy)
         self.btn_importar.setMaximumSize(QSize(130, 30))
         self.btn_importar.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
-        self.btn_importar.setStyleSheet(u"QPushButton {\n"
-"    color: rgb(255, 255, 255);\n"
-"    border-radius: 8px;\n"
-"    font-size: 16px;\n"
-"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */\n"
-"    border: 4px solid transparent;\n"
-"}\n"
-"\n"
-"QPushButton:hover {\n"
-"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */\n"
-"    color: black;\n"
-"}")
+        self.btn_importar.setStyleSheet(u"")
 
         self.gridLayout_6.addWidget(self.btn_importar, 3, 4, 1, 1)
 
@@ -449,12 +316,7 @@ class Ui_MainWindow(object):
         sizePolicy.setHeightForWidth(self.label_saida.sizePolicy().hasHeightForWidth())
         self.label_saida.setSizePolicy(sizePolicy)
         self.label_saida.setMaximumSize(QSize(110, 40))
-        self.label_saida.setStyleSheet(u"QLabel {\n"
-"    color: white;\n"
-"    text-align: center; /* Centraliza o texto horizontalmente */\n"
-"    vertical-align: middle; /* Centraliza o texto verticalmente */\n"
-"	border: 3px solid white;\n"
-"}")
+        self.label_saida.setStyleSheet(u"")
 
         self.gridLayout_6.addWidget(self.label_saida, 3, 0, 1, 1)
 
@@ -463,12 +325,7 @@ class Ui_MainWindow(object):
         sizePolicy.setHeightForWidth(self.label_estoque.sizePolicy().hasHeightForWidth())
         self.label_estoque.setSizePolicy(sizePolicy)
         self.label_estoque.setMaximumSize(QSize(130, 40))
-        self.label_estoque.setStyleSheet(u"QLabel {\n"
-"    color: white;\n"
-"    text-align: center; /* Centraliza o texto horizontalmente */\n"
-"    vertical-align: middle; /* Centraliza o texto verticalmente */\n"
-"	border: 3px solid white;\n"
-"}")
+        self.label_estoque.setStyleSheet(u"")
 
         self.gridLayout_6.addWidget(self.label_estoque, 1, 0, 1, 2)
 
@@ -486,18 +343,7 @@ class Ui_MainWindow(object):
         self.btn_novo_produto.setSizePolicy(sizePolicy)
         self.btn_novo_produto.setMaximumSize(QSize(163, 30))
         self.btn_novo_produto.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
-        self.btn_novo_produto.setStyleSheet(u"QPushButton {\n"
-"    color: rgb(255, 255, 255);\n"
-"    border-radius: 8px;\n"
-"    font-size: 16px;\n"
-"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */\n"
-"    border: 4px solid transparent;\n"
-"}\n"
-"\n"
-"QPushButton:hover {\n"
-"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */\n"
-"    color: black;\n"
-"}")
+        self.btn_novo_produto.setStyleSheet(u"")
 
         self.verticalLayout.addWidget(self.btn_novo_produto)
 
@@ -507,18 +353,7 @@ class Ui_MainWindow(object):
         self.btn_atualizar_saida.setSizePolicy(sizePolicy)
         self.btn_atualizar_saida.setMaximumSize(QSize(163, 30))
         self.btn_atualizar_saida.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
-        self.btn_atualizar_saida.setStyleSheet(u"QPushButton {\n"
-"    color: rgb(255, 255, 255);\n"
-"    border-radius: 8px;\n"
-"    font-size: 16px;\n"
-"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */\n"
-"    border: 4px solid transparent;\n"
-"}\n"
-"\n"
-"QPushButton:hover {\n"
-"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */\n"
-"    color: black;\n"
-"}")
+        self.btn_atualizar_saida.setStyleSheet(u"")
 
         self.verticalLayout.addWidget(self.btn_atualizar_saida)
 
@@ -528,18 +363,7 @@ class Ui_MainWindow(object):
         self.btn_atualizar_estoque.setSizePolicy(sizePolicy)
         self.btn_atualizar_estoque.setMaximumSize(QSize(163, 30))
         self.btn_atualizar_estoque.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
-        self.btn_atualizar_estoque.setStyleSheet(u"QPushButton {\n"
-"    color: rgb(255, 255, 255);\n"
-"    border-radius: 8px;\n"
-"    font-size: 16px;\n"
-"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */\n"
-"    border: 4px solid transparent;\n"
-"}\n"
-"\n"
-"QPushButton:hover {\n"
-"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */\n"
-"    color: black;\n"
-"}")
+        self.btn_atualizar_estoque.setStyleSheet(u"")
 
         self.verticalLayout.addWidget(self.btn_atualizar_estoque)
 
@@ -549,18 +373,7 @@ class Ui_MainWindow(object):
         self.btn_historico.setSizePolicy(sizePolicy)
         self.btn_historico.setMaximumSize(QSize(163, 30))
         self.btn_historico.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
-        self.btn_historico.setStyleSheet(u"QPushButton {\n"
-"    color: rgb(255, 255, 255);\n"
-"    border-radius: 8px;\n"
-"    font-size: 16px;\n"
-"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */\n"
-"    border: 4px solid transparent;\n"
-"}\n"
-"\n"
-"QPushButton:hover {\n"
-"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */\n"
-"    color: black;\n"
-"}")
+        self.btn_historico.setStyleSheet(u"")
 
         self.verticalLayout.addWidget(self.btn_historico)
 
@@ -570,18 +383,7 @@ class Ui_MainWindow(object):
         self.btn_gerar_pdf.setSizePolicy(sizePolicy)
         self.btn_gerar_pdf.setMaximumSize(QSize(163, 30))
         self.btn_gerar_pdf.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
-        self.btn_gerar_pdf.setStyleSheet(u"QPushButton {\n"
-"    color: rgb(255, 255, 255);\n"
-"    border-radius: 8px;\n"
-"    font-size: 16px;\n"
-"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */\n"
-"    border: 4px solid transparent;\n"
-"}\n"
-"\n"
-"QPushButton:hover {\n"
-"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */\n"
-"    color: black;\n"
-"}")
+        self.btn_gerar_pdf.setStyleSheet(u"")
 
         self.verticalLayout.addWidget(self.btn_gerar_pdf)
 
@@ -591,18 +393,7 @@ class Ui_MainWindow(object):
         self.btn_limpar_tabelas.setSizePolicy(sizePolicy)
         self.btn_limpar_tabelas.setMaximumSize(QSize(163, 30))
         self.btn_limpar_tabelas.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
-        self.btn_limpar_tabelas.setStyleSheet(u"QPushButton {\n"
-"    color: rgb(255, 255, 255);\n"
-"    border-radius: 8px;\n"
-"    font-size: 16px;\n"
-"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */\n"
-"    border: 4px solid transparent;\n"
-"}\n"
-"\n"
-"QPushButton:hover {\n"
-"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */\n"
-"    color: black;\n"
-"}")
+        self.btn_limpar_tabelas.setStyleSheet(u"")
 
         self.verticalLayout.addWidget(self.btn_limpar_tabelas)
 
@@ -612,18 +403,7 @@ class Ui_MainWindow(object):
         self.btn_incluir_produto_sistema.setSizePolicy(sizePolicy)
         self.btn_incluir_produto_sistema.setMaximumSize(QSize(163, 30))
         self.btn_incluir_produto_sistema.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
-        self.btn_incluir_produto_sistema.setStyleSheet(u"QPushButton {\n"
-"    color: rgb(255, 255, 255);\n"
-"    border-radius: 8px;\n"
-"    font-size: 16px;\n"
-"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */\n"
-"    border: 4px solid transparent;\n"
-"}\n"
-"\n"
-"QPushButton:hover {\n"
-"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */\n"
-"    color: black;\n"
-"}")
+        self.btn_incluir_produto_sistema.setStyleSheet(u"")
 
         self.verticalLayout.addWidget(self.btn_incluir_produto_sistema)
 
@@ -636,18 +416,7 @@ class Ui_MainWindow(object):
         self.btn_gerar_saida.setSizePolicy(sizePolicy)
         self.btn_gerar_saida.setMaximumSize(QSize(130, 30))
         self.btn_gerar_saida.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
-        self.btn_gerar_saida.setStyleSheet(u"QPushButton {\n"
-"    color: rgb(255, 255, 255);\n"
-"    border-radius: 8px;\n"
-"    font-size: 16px;\n"
-"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */\n"
-"    border: 4px solid transparent;\n"
-"}\n"
-"\n"
-"QPushButton:hover {\n"
-"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */\n"
-"    color: black;\n"
-"}")
+        self.btn_gerar_saida.setStyleSheet(u"")
 
         self.gridLayout_6.addWidget(self.btn_gerar_saida, 3, 7, 1, 1)
 
@@ -677,65 +446,7 @@ class Ui_MainWindow(object):
         __qtablewidgetitem10 = QTableWidgetItem()
         self.table_base.setHorizontalHeaderItem(10, __qtablewidgetitem10)
         self.table_base.setObjectName(u"table_base")
-        self.table_base.setStyleSheet(u"/* Estiliza apenas o QTableView com objectName \"table_ativos\" */\n"
-"QTableView {\n"
-"    gridline-color: black;\n"
-"    border: 1px solid white;\n"
-"    color: black;\n"
-"    selection-color: white;\n"
-"}\n"
-"\n"
-"/* Estiliza a barra de rolagem horizontal */\n"
-"QTableView QScrollBar:horizontal {\n"
-"    border: none;\n"
-"    background-color: rgb(255, 255, 255);\n"
-"    height: 15px;\n"
-"    margin: 0px 10px 0px 10px;\n"
-"}\n"
-"\n"
-"/* Estiliza a barra de rolagem vertical */\n"
-"QTableView QScrollBar:vertical {\n"
-"    border: none;\n"
-"    background-color: rgb(255, 255, 255); /* branco */\n"
-"    width: 35px;\n"
-"    margin: 0px 10px 0px 10px;\n"
-"}\n"
-"\n"
-"/* Parte que voc\u00ea arrasta */\n"
-"QTableView QScrollBar::handle:vertical {\n"
-"    background-color: rgb(180, 180,150);  /* cinza */\n"
-"    min-height: 30px;\n"
-"	border-radius: 5px;\n"
-"}\n"
-"\n"
-"QTableView QScrollBar::handle:horizontal{\n"
-"	background-color: rgb(180,180,150);\n"
-"	min-height: 30px;\n"
-"	border-radius: 5px;\n"
-"}\n"
-"\n"
-"/* "
-                        "Remove os bot\u00f5es */\n"
-"QTableView QScrollBar::add-line:vertical,\n"
-"QTableView QScrollBar::sub-line:vertical {\n"
-"    height: 0px;\n"
-"    width: 0px;\n"
-"    border: none;\n"
-"    background: none;\n"
-"}\n"
-"\n"
-"QTableView QScrollBar::groove:horizontal{\n"
-"	background-color: rgb(100,240,240);\n"
-"	border-radius: 2px;\n"
-"	height: 15px;\n"
-"	margin: 0px 10px 0px 10px;\n"
-"}\n"
-"\n"
-"/* Estilo para item selecionado */\n"
-"QTableWidget::item:selected {\n"
-"    background-color: rgb(0, 120, 215);\n"
-"    color: white;\n"
-"}")
+        self.table_base.setStyleSheet(u"")
         self.table_base.setFrameShape(QFrame.NoFrame)
         self.table_base.setCornerButtonEnabled(True)
 
@@ -785,65 +496,7 @@ class Ui_MainWindow(object):
         __qtablewidgetitem22 = QTableWidgetItem()
         self.table_saida.setHorizontalHeaderItem(11, __qtablewidgetitem22)
         self.table_saida.setObjectName(u"table_saida")
-        self.table_saida.setStyleSheet(u"/* Estiliza apenas o QTableView com objectName \"table_ativos\" */\n"
-"QTableView {\n"
-"    gridline-color: black;\n"
-"    border: 1px solid white;\n"
-"    color: black;\n"
-"    selection-color: white;\n"
-"}\n"
-"\n"
-"/* Estiliza a barra de rolagem horizontal */\n"
-"QTableView QScrollBar:horizontal {\n"
-"    border: none;\n"
-"    background-color: rgb(255, 255, 255);\n"
-"    height: 15px;\n"
-"    margin: 0px 10px 0px 10px;\n"
-"}\n"
-"\n"
-"/* Estiliza a barra de rolagem vertical */\n"
-"QTableView QScrollBar:vertical {\n"
-"    border: none;\n"
-"    background-color: rgb(255, 255, 255); /* branco */\n"
-"    width: 35px;\n"
-"    margin: 0px 10px 0px 10px;\n"
-"}\n"
-"\n"
-"/* Parte que voc\u00ea arrasta */\n"
-"QTableView QScrollBar::handle:vertical {\n"
-"    background-color: rgb(180, 180,150);  /* cinza */\n"
-"    min-height: 30px;\n"
-"	border-radius: 5px;\n"
-"}\n"
-"\n"
-"QTableView QScrollBar::handle:horizontal{\n"
-"	background-color: rgb(180,180,150);\n"
-"	min-height: 30px;\n"
-"	border-radius: 5px;\n"
-"}\n"
-"\n"
-"/* "
-                        "Remove os bot\u00f5es */\n"
-"QTableView QScrollBar::add-line:vertical,\n"
-"QTableView QScrollBar::sub-line:vertical {\n"
-"    height: 0px;\n"
-"    width: 0px;\n"
-"    border: none;\n"
-"    background: none;\n"
-"}\n"
-"\n"
-"QTableView QScrollBar::groove:horizontal{\n"
-"	background-color: rgb(100,240,240);\n"
-"	border-radius: 2px;\n"
-"	height: 15px;\n"
-"	margin: 0px 10px 0px 10px;\n"
-"}\n"
-"\n"
-"/* Estilo para item selecionado */\n"
-"QTableWidget::item:selected {\n"
-"    background-color: rgb(0, 120, 215);\n"
-"    color: white;\n"
-"}")
+        self.table_saida.setStyleSheet(u"")
         self.table_saida.setFrameShape(QFrame.NoFrame)
         self.table_saida.setCornerButtonEnabled(True)
 
@@ -920,65 +573,7 @@ class Ui_MainWindow(object):
         __qtablewidgetitem46 = QTableWidgetItem()
         self.table_inativos.setHorizontalHeaderItem(23, __qtablewidgetitem46)
         self.table_inativos.setObjectName(u"table_inativos")
-        self.table_inativos.setStyleSheet(u"/* Estiliza apenas o QTableView com objectName \"table_ativos\" */\n"
-"QTableView {\n"
-"    gridline-color: black;\n"
-"    border: 1px solid white;\n"
-"    color: black;\n"
-"    selection-color: white;\n"
-"}\n"
-"\n"
-"/* Estiliza a barra de rolagem horizontal */\n"
-"QTableView QScrollBar:horizontal {\n"
-"    border: none;\n"
-"    background-color: rgb(255, 255, 255);\n"
-"    height: 15px;\n"
-"    margin: 0px 10px 0px 10px;\n"
-"}\n"
-"\n"
-"/* Estiliza a barra de rolagem vertical */\n"
-"QTableView QScrollBar:vertical {\n"
-"    border: none;\n"
-"    background-color: rgb(255, 255, 255); /* branco */\n"
-"    width: 35px;\n"
-"    margin: 0px 10px 0px 10px;\n"
-"}\n"
-"\n"
-"/* Parte que voc\u00ea arrasta */\n"
-"QTableView QScrollBar::handle:vertical {\n"
-"    background-color: rgb(180, 180,150);  /* cinza */\n"
-"    min-height: 30px;\n"
-"	border-radius: 5px;\n"
-"}\n"
-"\n"
-"QTableView QScrollBar::handle:horizontal{\n"
-"	background-color: rgb(180,180,150);\n"
-"	min-height: 30px;\n"
-"	border-radius: 5px;\n"
-"}\n"
-"\n"
-"/* "
-                        "Remove os bot\u00f5es */\n"
-"QTableView QScrollBar::add-line:vertical,\n"
-"QTableView QScrollBar::sub-line:vertical {\n"
-"    height: 0px;\n"
-"    width: 0px;\n"
-"    border: none;\n"
-"    background: none;\n"
-"}\n"
-"\n"
-"QTableView QScrollBar::groove:horizontal{\n"
-"	background-color: rgb(100,240,240);\n"
-"	border-radius: 2px;\n"
-"	height: 15px;\n"
-"	margin: 0px 10px 0px 10px;\n"
-"}\n"
-"\n"
-"/* Estilo para item selecionado */\n"
-"QTableWidget::item:selected {\n"
-"    background-color: rgb(0, 120, 215);\n"
-"    color: white;\n"
-"}")
+        self.table_inativos.setStyleSheet(u"")
         self.table_inativos.setFrameShape(QFrame.NoFrame)
         self.table_inativos.setFrameShadow(QFrame.Sunken)
         self.table_inativos.setEditTriggers(QAbstractItemView.NoEditTriggers)
@@ -996,18 +591,7 @@ class Ui_MainWindow(object):
         self.btn_gerar_saida_usuarios.setMinimumSize(QSize(140, 0))
         self.btn_gerar_saida_usuarios.setMaximumSize(QSize(16777215, 30))
         self.btn_gerar_saida_usuarios.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
-        self.btn_gerar_saida_usuarios.setStyleSheet(u"QPushButton {\n"
-"    color: rgb(255, 255, 255);\n"
-"    border-radius: 8px;\n"
-"    font-size: 16px;\n"
-"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */\n"
-"    border: 4px solid transparent;\n"
-"}\n"
-"\n"
-"QPushButton:hover {\n"
-"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */\n"
-"    color: black;\n"
-"}")
+        self.btn_gerar_saida_usuarios.setStyleSheet(u"")
 
         self.gridLayout_21.addWidget(self.btn_gerar_saida_usuarios, 3, 4, 1, 1)
 
@@ -1028,13 +612,7 @@ class Ui_MainWindow(object):
         sizePolicy.setHeightForWidth(self.label_ativos.sizePolicy().hasHeightForWidth())
         self.label_ativos.setSizePolicy(sizePolicy)
         self.label_ativos.setMaximumSize(QSize(135, 40))
-        self.label_ativos.setStyleSheet(u"QLabel {\n"
-"    color: white;\n"
-"    text-align: center; /* Centraliza o texto horizontalmente */\n"
-"    vertical-align: middle; /* Centraliza o texto verticalmente */\n"
-"	border: 3px solid white;\n"
-"}\n"
-"")
+        self.label_ativos.setStyleSheet(u"")
 
         self.gridLayout_21.addWidget(self.label_ativos, 1, 0, 1, 1)
 
@@ -1045,18 +623,7 @@ class Ui_MainWindow(object):
         self.btn_importar_usuarios.setMinimumSize(QSize(140, 0))
         self.btn_importar_usuarios.setMaximumSize(QSize(16777215, 30))
         self.btn_importar_usuarios.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
-        self.btn_importar_usuarios.setStyleSheet(u"QPushButton {\n"
-"    color: rgb(255, 255, 255);\n"
-"    border-radius: 8px;\n"
-"    font-size: 16px;\n"
-"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */\n"
-"    border: 4px solid transparent;\n"
-"}\n"
-"\n"
-"QPushButton:hover {\n"
-"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */\n"
-"    color: black;\n"
-"}")
+        self.btn_importar_usuarios.setStyleSheet(u"")
 
         self.gridLayout_21.addWidget(self.btn_importar_usuarios, 3, 2, 1, 1)
 
@@ -1075,18 +642,7 @@ class Ui_MainWindow(object):
         self.btn_historico_usuarios.setSizePolicy(sizePolicy)
         self.btn_historico_usuarios.setMaximumSize(QSize(185, 30))
         self.btn_historico_usuarios.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
-        self.btn_historico_usuarios.setStyleSheet(u"QPushButton {\n"
-"    color: rgb(255, 255, 255);\n"
-"    border-radius: 8px;\n"
-"    font-size: 16px;\n"
-"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */\n"
-"    border: 4px solid transparent;\n"
-"}\n"
-"\n"
-"QPushButton:hover {\n"
-"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */\n"
-"    color: black;\n"
-"}")
+        self.btn_historico_usuarios.setStyleSheet(u"")
 
         self.gridLayout_9.addWidget(self.btn_historico_usuarios, 2, 0, 1, 1)
 
@@ -1097,18 +653,7 @@ class Ui_MainWindow(object):
         self.btn_cadastrar_novo_usuario.setMinimumSize(QSize(0, 0))
         self.btn_cadastrar_novo_usuario.setMaximumSize(QSize(185, 30))
         self.btn_cadastrar_novo_usuario.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
-        self.btn_cadastrar_novo_usuario.setStyleSheet(u"QPushButton {\n"
-"    color: rgb(255, 255, 255);\n"
-"    border-radius: 8px;\n"
-"    font-size: 16px;\n"
-"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */\n"
-"    border: 4px solid transparent;\n"
-"}\n"
-"\n"
-"QPushButton:hover {\n"
-"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */\n"
-"    color: black;\n"
-"}")
+        self.btn_cadastrar_novo_usuario.setStyleSheet(u"")
 
         self.gridLayout_9.addWidget(self.btn_cadastrar_novo_usuario, 0, 0, 1, 1)
 
@@ -1118,18 +663,7 @@ class Ui_MainWindow(object):
         self.btn_limpar_tabelas_usuarios.setSizePolicy(sizePolicy)
         self.btn_limpar_tabelas_usuarios.setMaximumSize(QSize(185, 30))
         self.btn_limpar_tabelas_usuarios.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
-        self.btn_limpar_tabelas_usuarios.setStyleSheet(u"QPushButton {\n"
-"    color: rgb(255, 255, 255);\n"
-"    border-radius: 8px;\n"
-"    font-size: 16px;\n"
-"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */\n"
-"    border: 4px solid transparent;\n"
-"}\n"
-"\n"
-"QPushButton:hover {\n"
-"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */\n"
-"    color: black;\n"
-"}")
+        self.btn_limpar_tabelas_usuarios.setStyleSheet(u"")
 
         self.gridLayout_9.addWidget(self.btn_limpar_tabelas_usuarios, 4, 0, 1, 1)
 
@@ -1139,18 +673,7 @@ class Ui_MainWindow(object):
         self.btn_atualizar_ativos.setSizePolicy(sizePolicy)
         self.btn_atualizar_ativos.setMaximumSize(QSize(185, 30))
         self.btn_atualizar_ativos.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
-        self.btn_atualizar_ativos.setStyleSheet(u"QPushButton {\n"
-"    color: rgb(255, 255, 255);\n"
-"    border-radius: 8px;\n"
-"    font-size: 16px;\n"
-"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */\n"
-"    border: 4px solid transparent;\n"
-"}\n"
-"\n"
-"QPushButton:hover {\n"
-"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */\n"
-"    color: black;\n"
-"}")
+        self.btn_atualizar_ativos.setStyleSheet(u"")
 
         self.gridLayout_9.addWidget(self.btn_atualizar_ativos, 1, 0, 1, 1)
 
@@ -1160,18 +683,7 @@ class Ui_MainWindow(object):
         self.btn_atualizar_inativos.setSizePolicy(sizePolicy)
         self.btn_atualizar_inativos.setMaximumSize(QSize(185, 30))
         self.btn_atualizar_inativos.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
-        self.btn_atualizar_inativos.setStyleSheet(u"QPushButton {\n"
-"    color: rgb(255, 255, 255);\n"
-"    border-radius: 8px;\n"
-"    font-size: 16px;\n"
-"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */\n"
-"    border: 4px solid transparent;\n"
-"}\n"
-"\n"
-"QPushButton:hover {\n"
-"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */\n"
-"    color: black;\n"
-"}")
+        self.btn_atualizar_inativos.setStyleSheet(u"")
 
         self.gridLayout_9.addWidget(self.btn_atualizar_inativos, 3, 0, 1, 1)
 
@@ -1230,65 +742,7 @@ class Ui_MainWindow(object):
         self.table_ativos.setObjectName(u"table_ativos")
         self.table_ativos.setMinimumSize(QSize(0, 0))
         self.table_ativos.setMaximumSize(QSize(16777215, 16777215))
-        self.table_ativos.setStyleSheet(u"/* Estiliza apenas o QTableView com objectName \"table_ativos\" */\n"
-"QTableView {\n"
-"    gridline-color: black;\n"
-"    border: 1px solid white;\n"
-"    color: black;\n"
-"    selection-color: white;\n"
-"}\n"
-"\n"
-"/* Estiliza a barra de rolagem horizontal */\n"
-"QTableView QScrollBar:horizontal {\n"
-"    border: none;\n"
-"    background-color: rgb(255, 255, 255);\n"
-"    height: 15px;\n"
-"    margin: 0px 10px 0px 10px;\n"
-"}\n"
-"\n"
-"/* Estiliza a barra de rolagem vertical */\n"
-"QTableView QScrollBar:vertical {\n"
-"    border: none;\n"
-"    background-color: rgb(255, 255, 255); /* branco */\n"
-"    width: 35px;\n"
-"    margin: 0px 10px 0px 10px;\n"
-"}\n"
-"\n"
-"/* Parte que voc\u00ea arrasta */\n"
-"QTableView QScrollBar::handle:vertical {\n"
-"    background-color: rgb(180, 180,150);  /* cinza */\n"
-"    min-height: 30px;\n"
-"	border-radius: 5px;\n"
-"}\n"
-"\n"
-"QTableView QScrollBar::handle:horizontal{\n"
-"	background-color: rgb(180,180,150);\n"
-"	min-height: 30px;\n"
-"	border-radius: 5px;\n"
-"}\n"
-"\n"
-"/* "
-                        "Remove os bot\u00f5es */\n"
-"QTableView QScrollBar::add-line:vertical,\n"
-"QTableView QScrollBar::sub-line:vertical {\n"
-"    height: 0px;\n"
-"    width: 0px;\n"
-"    border: none;\n"
-"    background: none;\n"
-"}\n"
-"\n"
-"QTableView QScrollBar::groove:horizontal{\n"
-"	background-color: rgb(100,240,240);\n"
-"	border-radius: 2px;\n"
-"	height: 15px;\n"
-"	margin: 0px 10px 0px 10px;\n"
-"}\n"
-"\n"
-"/* Estilo para item selecionado */\n"
-"QTableWidget::item:selected {\n"
-"    background-color: rgb(0, 120, 215);\n"
-"    color: white;\n"
-"}")
+        self.table_ativos.setStyleSheet(u"")
         self.table_ativos.setFrameShape(QFrame.NoFrame)
         self.table_ativos.setEditTriggers(QAbstractItemView.NoEditTriggers)
         self.table_ativos.setSelectionMode(QAbstractItemView.ExtendedSelection)
@@ -1310,13 +764,7 @@ class Ui_MainWindow(object):
         self.label_inativos.setSizePolicy(sizePolicy)
         self.label_inativos.setMinimumSize(QSize(0, 0))
         self.label_inativos.setMaximumSize(QSize(143, 40))
-        self.label_inativos.setStyleSheet(u"QLabel {\n"
-"    color: white;\n"
-"    text-align: center; /* Centraliza o texto horizontalmente */\n"
-"    vertical-align: middle; /* Centraliza o texto verticalmente */\n"
-"	border: 3px solid white;\n"
-"}\n"
-"")
+        self.label_inativos.setStyleSheet(u"")
         self.label_inativos.setScaledContents(False)
 
         self.gridLayout_21.addWidget(self.label_inativos, 3, 0, 1, 1)
@@ -1338,18 +786,7 @@ class Ui_MainWindow(object):
         self.btn_abrir_planilha_usuarios.setSizePolicy(sizePolicy)
         self.btn_abrir_planilha_usuarios.setMaximumSize(QSize(16777215, 16777215))
         self.btn_abrir_planilha_usuarios.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
-        self.btn_abrir_planilha_usuarios.setStyleSheet(u"QPushButton {\n"
-"    color: rgb(255, 255, 255);\n"
-"    border-radius: 8px;\n"
-"    font-size: 16px;\n"
-"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */\n"
-"    border: 4px solid transparent;\n"
-"}\n"
-"\n"
-"QPushButton:hover {\n"
-"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */\n"
-"    color: black;\n"
-"}")
+        self.btn_abrir_planilha_usuarios.setStyleSheet(u"")
 
         self.verticalLayout_19.addWidget(self.btn_abrir_planilha_usuarios)
 
@@ -1357,19 +794,7 @@ class Ui_MainWindow(object):
         self.line_excel_usuarios.setObjectName(u"line_excel_usuarios")
         sizePolicy.setHeightForWidth(self.line_excel_usuarios.sizePolicy().hasHeightForWidth())
         self.line_excel_usuarios.setSizePolicy(sizePolicy)
-        self.line_excel_usuarios.setStyleSheet(u"QLineEdit {\n"
-"	color: black;\n"
-"    background-color: rgb(240, 240, 240); /* Cor de fundo cinza claro */\n"
-"    border: 3px solid rgb(50, 150,250); /* Borda azul */\n"
-"    border-radius: 12px; /* Cantos arredondados */\n"
-"    padding: 3px; /* Espa\u00e7amento interno */\n"
-"}\n"
-"\n"
-"QLineEdit::placeholderText {\n"
-"    color: black; /* Cor do texto do placeholder */\n"
-"}\n"
-"\n"
-"")
+        self.line_excel_usuarios.setStyleSheet(u"")
         self.line_excel_usuarios.setAlignment(Qt.AlignCenter)
         self.line_excel_usuarios.setReadOnly(True)
 
@@ -1379,18 +804,7 @@ class Ui_MainWindow(object):
         self.progress_excel_usuarios.setObjectName(u"progress_excel_usuarios")
         sizePolicy.setHeightForWidth(self.progress_excel_usuarios.sizePolicy().hasHeightForWidth())
         self.progress_excel_usuarios.setSizePolicy(sizePolicy)
-        self.progress_excel_usuarios.setStyleSheet(u"QProgressBar {\n"
-"	color: black;\n"
-"    border: 3px solid rgb(50,150,250);\n"
-"    border-radius: 13px;  /* Aumentei o valor para deixar a borda mais redonda */\n"
-"    background-color: #f0f0f0;  /* Cor cinza claro */\n"
-"}\n"
-"\n"
-"QProgressBar::chunk {\n"
-"    background-color: #4682b4;  /* Cor do progresso preenchido (azul) */\n"
-"    border-radius: 12px;  /* Faz com que o progresso tamb\u00e9m tenha bordas arredondadas */\n"
-"}\n"
-"")
+        self.progress_excel_usuarios.setStyleSheet(u"")
         self.progress_excel_usuarios.setValue(0)
         self.progress_excel_usuarios.setAlignment(Qt.AlignCenter)
         self.progress_excel_usuarios.setTextVisible(True)
@@ -1412,153 +826,127 @@ class Ui_MainWindow(object):
         self.pg_cadastrar_produto.setObjectName(u"pg_cadastrar_produto")
         sizePolicy.setHeightForWidth(self.pg_cadastrar_produto.sizePolicy().hasHeightForWidth())
         self.pg_cadastrar_produto.setSizePolicy(sizePolicy)
-        self.pg_cadastrar_produto.setStyleSheet(u"background-color: rgb(0, 80, 121);")
+        self.pg_cadastrar_produto.setStyleSheet(u"")
         self.gridLayout_10 = QGridLayout(self.pg_cadastrar_produto)
         self.gridLayout_10.setObjectName(u"gridLayout_10")
         self.frame_cadastrar_produto = QFrame(self.pg_cadastrar_produto)
         self.frame_cadastrar_produto.setObjectName(u"frame_cadastrar_produto")
         sizePolicy.setHeightForWidth(self.frame_cadastrar_produto.sizePolicy().hasHeightForWidth())
         self.frame_cadastrar_produto.setSizePolicy(sizePolicy)
-        self.frame_cadastrar_produto.setStyleSheet(u"background-color: rgb(0, 80, 121);")
+        self.frame_cadastrar_produto.setStyleSheet(u"")
         self.frame_cadastrar_produto.setFrameShape(QFrame.NoFrame)
         self.frame_cadastrar_produto.setFrameShadow(QFrame.Raised)
         self.gridLayout_11 = QGridLayout(self.frame_cadastrar_produto)
         self.gridLayout_11.setObjectName(u"gridLayout_11")
-        self.frame_botoes_a_e_a_a = QFrame(self.frame_cadastrar_produto)
-        self.frame_botoes_a_e_a_a.setObjectName(u"frame_botoes_a_e_a_a")
-        sizePolicy.setHeightForWidth(self.frame_botoes_a_e_a_a.sizePolicy().hasHeightForWidth())
-        self.frame_botoes_a_e_a_a.setSizePolicy(sizePolicy)
-        self.frame_botoes_a_e_a_a.setMinimumSize(QSize(0, 0))
-        self.frame_botoes_a_e_a_a.setMaximumSize(QSize(218, 190))
-        self.frame_botoes_a_e_a_a.setFrameShape(QFrame.NoFrame)
-        self.frame_botoes_a_e_a_a.setFrameShadow(QFrame.Raised)
-        self.verticalLayout_12 = QVBoxLayout(self.frame_botoes_a_e_a_a)
-        self.verticalLayout_12.setObjectName(u"verticalLayout_12")
-        self.btn_adicionar_produto = QPushButton(self.frame_botoes_a_e_a_a)
-        self.btn_adicionar_produto.setObjectName(u"btn_adicionar_produto")
-        sizePolicy.setHeightForWidth(self.btn_adicionar_produto.sizePolicy().hasHeightForWidth())
-        self.btn_adicionar_produto.setSizePolicy(sizePolicy)
-        self.btn_adicionar_produto.setMaximumSize(QSize(16777215, 30))
-        self.btn_adicionar_produto.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
-        self.btn_adicionar_produto.setStyleSheet(u"QPushButton {\n"
-"    color: rgb(255, 255, 255);\n"
-"    border-radius: 8px;\n"
-"    font-size: 16px;\n"
-"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */\n"
-"    border: 4px solid transparent;\n"
-"}\n"
-"\n"
-"QPushButton:hover {\n"
-"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */\n"
-"    color: black;\n"
-"}")
+        self.frame_imagem_produto_3 = QFrame(self.frame_cadastrar_produto)
+        self.frame_imagem_produto_3.setObjectName(u"frame_imagem_produto_3")
+        sizePolicy.setHeightForWidth(self.frame_imagem_produto_3.sizePolicy().hasHeightForWidth())
+        self.frame_imagem_produto_3.setSizePolicy(sizePolicy)
+        self.frame_imagem_produto_3.setMinimumSize(QSize(302, 321))
+        self.frame_imagem_produto_3.setMaximumSize(QSize(283, 309))
+        self.frame_imagem_produto_3.setFrameShape(QFrame.NoFrame)
+        self.frame_imagem_produto_3.setFrameShadow(QFrame.Raised)
+
+        self.gridLayout_11.addWidget(self.frame_imagem_produto_3, 2, 3, 3, 1)
+
+        self.frame_6 = QFrame(self.frame_cadastrar_produto)
+        self.frame_6.setObjectName(u"frame_6")
+        sizePolicy.setHeightForWidth(self.frame_6.sizePolicy().hasHeightForWidth())
+        self.frame_6.setSizePolicy(sizePolicy)
+        self.frame_6.setMaximumSize(QSize(350, 16777215))
+        self.frame_6.setFrameShape(QFrame.NoFrame)
+        self.frame_6.setFrameShadow(QFrame.Raised)
+        self.gridLayout_16 = QGridLayout(self.frame_6)
+        self.gridLayout_16.setObjectName(u"gridLayout_16")
+        self.frame_valor_total_produtos = QFrame(self.frame_6)
+        self.frame_valor_total_produtos.setObjectName(u"frame_valor_total_produtos")
+        sizePolicy.setHeightForWidth(self.frame_valor_total_produtos.sizePolicy().hasHeightForWidth())
+        self.frame_valor_total_produtos.setSizePolicy(sizePolicy)
+        self.frame_valor_total_produtos.setMinimumSize(QSize(321, 102))
+        self.frame_valor_total_produtos.setMaximumSize(QSize(321, 102))
+        self.frame_valor_total_produtos.setStyleSheet(u"")
+        self.frame_valor_total_produtos.setFrameShape(QFrame.StyledPanel)
+        self.frame_valor_total_produtos.setFrameShadow(QFrame.Raised)
+
+        self.gridLayout_16.addWidget(self.frame_valor_total_produtos, 0, 0, 1, 1)
+
+        self.frame_valor_do_desconto = QFrame(self.frame_6)
+        self.frame_valor_do_desconto.setObjectName(u"frame_valor_do_desconto")
+        sizePolicy.setHeightForWidth(self.frame_valor_do_desconto.sizePolicy().hasHeightForWidth())
+        self.frame_valor_do_desconto.setSizePolicy(sizePolicy)
+        self.frame_valor_do_desconto.setMinimumSize(QSize(0, 102))
+        self.frame_valor_do_desconto.setMaximumSize(QSize(321, 102))
+        self.frame_valor_do_desconto.setStyleSheet(u"")
+        self.frame_valor_do_desconto.setFrameShape(QFrame.StyledPanel)
+        self.frame_valor_do_desconto.setFrameShadow(QFrame.Raised)
+
+        self.gridLayout_16.addWidget(self.frame_valor_do_desconto, 1, 0, 1, 1)
+
+        self.frame_valor_com_desconto1 = QFrame(self.frame_6)
+        self.frame_valor_com_desconto1.setObjectName(u"frame_valor_com_desconto1")
+        sizePolicy.setHeightForWidth(self.frame_valor_com_desconto1.sizePolicy().hasHeightForWidth())
+        self.frame_valor_com_desconto1.setSizePolicy(sizePolicy)
+        self.frame_valor_com_desconto1.setMinimumSize(QSize(0, 102))
+        self.frame_valor_com_desconto1.setMaximumSize(QSize(321, 102))
+        self.frame_valor_com_desconto1.setStyleSheet(u"")
+        self.frame_valor_com_desconto1.setFrameShape(QFrame.StyledPanel)
+        self.frame_valor_com_desconto1.setFrameShadow(QFrame.Raised)
+
+        self.gridLayout_16.addWidget(self.frame_valor_com_desconto1, 2, 0, 1, 1)
+
+        self.frame_quantidade = QFrame(self.frame_6)
+        self.frame_quantidade.setObjectName(u"frame_quantidade")
+        sizePolicy.setHeightForWidth(self.frame_quantidade.sizePolicy().hasHeightForWidth())
+        self.frame_quantidade.setSizePolicy(sizePolicy)
+        self.frame_quantidade.setMinimumSize(QSize(0, 102))
+        self.frame_quantidade.setMaximumSize(QSize(321, 102))
+        self.frame_quantidade.setStyleSheet(u"")
+        self.frame_quantidade.setFrameShape(QFrame.StyledPanel)
+        self.frame_quantidade.setFrameShadow(QFrame.Raised)
+
+        self.gridLayout_16.addWidget(self.frame_quantidade, 3, 0, 1, 1)
+
+
+        self.gridLayout_11.addWidget(self.frame_6, 2, 2, 3, 1)
+
+        self.frame_remover_e_carregar_imagem = QFrame(self.frame_cadastrar_produto)
+        self.frame_remover_e_carregar_imagem.setObjectName(u"frame_remover_e_carregar_imagem")
+        sizePolicy.setHeightForWidth(self.frame_remover_e_carregar_imagem.sizePolicy().hasHeightForWidth())
+        self.frame_remover_e_carregar_imagem.setSizePolicy(sizePolicy)
+        self.frame_remover_e_carregar_imagem.setMaximumSize(QSize(200, 89))
+        self.frame_remover_e_carregar_imagem.setFrameShape(QFrame.NoFrame)
+        self.frame_remover_e_carregar_imagem.setFrameShadow(QFrame.Raised)
+        self.verticalLayout_13 = QVBoxLayout(self.frame_remover_e_carregar_imagem)
+        self.verticalLayout_13.setObjectName(u"verticalLayout_13")
+        self.btn_remover_imagem = QPushButton(self.frame_remover_e_carregar_imagem)
+        self.btn_remover_imagem.setObjectName(u"btn_remover_imagem")
+        sizePolicy.setHeightForWidth(self.btn_remover_imagem.sizePolicy().hasHeightForWidth())
+        self.btn_remover_imagem.setSizePolicy(sizePolicy)
+        self.btn_remover_imagem.setMaximumSize(QSize(180, 30))
+        self.btn_remover_imagem.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
+        self.btn_remover_imagem.setStyleSheet(u"")
         icon = QIcon()
-        icon.addFile(u"imagens/pngwing.com.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
-        self.btn_adicionar_produto.setIcon(icon)
+        icon.addFile(u"imagens/icons8-remover-imagem-16.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        self.btn_remover_imagem.setIcon(icon)
 
-        self.verticalLayout_12.addWidget(self.btn_adicionar_produto)
+        self.verticalLayout_13.addWidget(self.btn_remover_imagem)
 
-        self.btn_editar = QPushButton(self.frame_botoes_a_e_a_a)
-        self.btn_editar.setObjectName(u"btn_editar")
-        sizePolicy.setHeightForWidth(self.btn_editar.sizePolicy().hasHeightForWidth())
-        self.btn_editar.setSizePolicy(sizePolicy)
-        self.btn_editar.setMaximumSize(QSize(16777215, 30))
-        self.btn_editar.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
-        self.btn_editar.setStyleSheet(u"QPushButton {\n"
-"    color: rgb(255, 255, 255);\n"
-"    border-radius: 8px;\n"
-"    font-size: 16px;\n"
-"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */\n"
-"    border: 4px solid transparent;\n"
-"}\n"
-"\n"
-"QPushButton:hover {\n"
-"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */\n"
-"    color: black;\n"
-"}")
+        self.btn_carregar_imagem = QPushButton(self.frame_remover_e_carregar_imagem)
+        self.btn_carregar_imagem.setObjectName(u"btn_carregar_imagem")
+        sizePolicy.setHeightForWidth(self.btn_carregar_imagem.sizePolicy().hasHeightForWidth())
+        self.btn_carregar_imagem.setSizePolicy(sizePolicy)
+        self.btn_carregar_imagem.setMinimumSize(QSize(153, 0))
+        self.btn_carregar_imagem.setMaximumSize(QSize(180, 30))
+        self.btn_carregar_imagem.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
+        self.btn_carregar_imagem.setStyleSheet(u"")
         icon1 = QIcon()
-        icon1.addFile(u"imagens/editar.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
-        self.btn_editar.setIcon(icon1)
+        icon1.addFile(u"imagens/014upload2_99941.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        self.btn_carregar_imagem.setIcon(icon1)
 
-        self.verticalLayout_12.addWidget(self.btn_editar)
-
-        self.btn_sair_modo_edicao_produtos = QPushButton(self.frame_botoes_a_e_a_a)
-        self.btn_sair_modo_edicao_produtos.setObjectName(u"btn_sair_modo_edicao_produtos")
-        sizePolicy.setHeightForWidth(self.btn_sair_modo_edicao_produtos.sizePolicy().hasHeightForWidth())
-        self.btn_sair_modo_edicao_produtos.setSizePolicy(sizePolicy)
-        self.btn_sair_modo_edicao_produtos.setMaximumSize(QSize(16777215, 30))
-        self.btn_sair_modo_edicao_produtos.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
-        self.btn_sair_modo_edicao_produtos.setStyleSheet(u"QPushButton {\n"
-"    color: rgb(255, 255, 255);\n"
-"    border-radius: 8px;\n"
-"    font-size: 14px;\n"
-"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */\n"
-"    border: 4px solid transparent;\n"
-"}\n"
-"\n"
-"QPushButton:hover {\n"
-"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */\n"
-"    color: black;\n"
-"}")
-        icon2 = QIcon()
-        icon2.addFile(u"imagens/sair.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
-        self.btn_sair_modo_edicao_produtos.setIcon(icon2)
-        self.btn_sair_modo_edicao_produtos.setIconSize(QSize(16, 16))
-
-        self.verticalLayout_12.addWidget(self.btn_sair_modo_edicao_produtos)
-
-        self.btn_atualizar_produto = QPushButton(self.frame_botoes_a_e_a_a)
-        self.btn_atualizar_produto.setObjectName(u"btn_atualizar_produto")
-        sizePolicy.setHeightForWidth(self.btn_atualizar_produto.sizePolicy().hasHeightForWidth())
-        self.btn_atualizar_produto.setSizePolicy(sizePolicy)
-        self.btn_atualizar_produto.setMaximumSize(QSize(16777215, 30))
-        self.btn_atualizar_produto.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
-        self.btn_atualizar_produto.setStyleSheet(u"QPushButton {\n"
-"    color: rgb(255, 255, 255);\n"
-"    border-radius: 8px;\n"
-"    font-size: 16px;\n"
-"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */\n"
-"    border: 4px solid transparent;\n"
-"}\n"
-"\n"
-"QPushButton:hover {\n"
-"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */\n"
-"    color: black;\n"
-"}")
-        icon3 = QIcon()
-        icon3.addFile(u"imagens/toppng.com-update-512x512.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
-        self.btn_atualizar_produto.setIcon(icon3)
-
-        self.verticalLayout_12.addWidget(self.btn_atualizar_produto)
-
-        self.btn_limpar_campos = QPushButton(self.frame_botoes_a_e_a_a)
-        self.btn_limpar_campos.setObjectName(u"btn_limpar_campos")
-        sizePolicy.setHeightForWidth(self.btn_limpar_campos.sizePolicy().hasHeightForWidth())
-        self.btn_limpar_campos.setSizePolicy(sizePolicy)
-        self.btn_limpar_campos.setMaximumSize(QSize(16777215, 30))
-        self.btn_limpar_campos.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
-        self.btn_limpar_campos.setStyleSheet(u"QPushButton {\n"
-"    color: rgb(255, 255, 255);\n"
-"    border-radius: 8px;\n"
-"    font-size: 16px;\n"
-"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */\n"
-"    border: 4px solid transparent;\n"
-"}\n"
-"\n"
-"QPushButton:hover {\n"
-"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */\n"
-"    color: black;\n"
-"}")
-        icon4 = QIcon()
-        icon4.addFile(u"imagens/Delete-Button-PNG-Download-Image.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
-        self.btn_limpar_campos.setIcon(icon4)
-        self.btn_limpar_campos.setIconSize(QSize(27, 29))
-        self.btn_limpar_campos.setCheckable(False)
-
-        self.verticalLayout_12.addWidget(self.btn_limpar_campos)
+        self.verticalLayout_13.addWidget(self.btn_carregar_imagem)
 
 
-        self.gridLayout_11.addWidget(self.frame_botoes_a_e_a_a, 2, 1, 1, 1)
+        self.gridLayout_11.addWidget(self.frame_remover_e_carregar_imagem, 3, 1, 1, 1)
 
         self.frame_line_cadastro_produtos = QFrame(self.frame_cadastrar_produto)
         self.frame_line_cadastro_produtos.setObjectName(u"frame_line_cadastro_produtos")
@@ -1566,7 +954,7 @@ class Ui_MainWindow(object):
         self.frame_line_cadastro_produtos.setSizePolicy(sizePolicy)
         self.frame_line_cadastro_produtos.setMinimumSize(QSize(340, 0))
         self.frame_line_cadastro_produtos.setMaximumSize(QSize(331, 16777215))
-        self.frame_line_cadastro_produtos.setStyleSheet(u"background-color: rgb(0, 80, 121);")
+        self.frame_line_cadastro_produtos.setStyleSheet(u"")
         self.frame_line_cadastro_produtos.setFrameShape(QFrame.NoFrame)
         self.frame_line_cadastro_produtos.setFrameShadow(QFrame.Raised)
         self.verticalLayout_11 = QVBoxLayout(self.frame_line_cadastro_produtos)
@@ -1582,12 +970,7 @@ class Ui_MainWindow(object):
         self.horizontalLayout.setObjectName(u"horizontalLayout")
         self.label_produto = QLabel(self.frame_produto)
         self.label_produto.setObjectName(u"label_produto")
-        self.label_produto.setStyleSheet(u"QLabel {\n"
-"    color: black;\n"
-"    text-align: center; /* Centraliza o texto horizontalmente */\n"
-"    vertical-align: middle; /* Centraliza o texto verticalmente */\n"
-"}\n"
-"")
+        self.label_produto.setStyleSheet(u"")
 
         self.horizontalLayout.addWidget(self.label_produto)
 
@@ -1597,18 +980,7 @@ class Ui_MainWindow(object):
         self.txt_produto.setSizePolicy(sizePolicy)
         self.txt_produto.setMinimumSize(QSize(0, 0))
         self.txt_produto.setMaximumSize(QSize(150, 16777215))
-        self.txt_produto.setStyleSheet(u"QLineEdit {\n"
-"	color: black;\n"
-"    background-color: rgb(240, 240, 240); /* Cor de fundo cinza claro */\n"
-"    border: 2px solid rgb(50, 150,250); /* Borda azul */\n"
-"    border-radius: 6px; /* Cantos arredondados */\n"
-"    padding: 3px; /* Espa\u00e7amento interno */\n"
-"}\n"
-"\n"
-"QLineEdit::placeholderText {\n"
-"    color: black; /* Cor do texto do placeholder */\n"
-"}\n"
-"")
+        self.txt_produto.setStyleSheet(u"")
 
         self.horizontalLayout.addWidget(self.txt_produto)
 
@@ -1637,12 +1009,7 @@ class Ui_MainWindow(object):
         self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
         self.label_quantidade = QLabel(self.frame_quantidade_2)
         self.label_quantidade.setObjectName(u"label_quantidade")
-        self.label_quantidade.setStyleSheet(u"QLabel {\n"
-"    color: black;\n"
-"    text-align: center; /* Centraliza o texto horizontalmente */\n"
-"    vertical-align: middle; /* Centraliza o texto verticalmente */\n"
-"}\n"
-"")
+        self.label_quantidade.setStyleSheet(u"")
 
         self.horizontalLayout_2.addWidget(self.label_quantidade)
 
@@ -1652,18 +1019,7 @@ class Ui_MainWindow(object):
         self.txt_quantidade.setSizePolicy(sizePolicy)
         self.txt_quantidade.setMinimumSize(QSize(0, 0))
         self.txt_quantidade.setMaximumSize(QSize(150, 16777215))
-        self.txt_quantidade.setStyleSheet(u"QLineEdit {\n"
-"	color: black;\n"
-"    background-color: rgb(240, 240, 240); /* Cor de fundo cinza claro */\n"
-"    border: 2px solid rgb(50, 150,250); /* Borda azul */\n"
-"    border-radius: 6px; /* Cantos arredondados */\n"
-"    padding: 3px; /* Espa\u00e7amento interno */\n"
-"}\n"
-"\n"
-"QLineEdit::placeholderText {\n"
-"    color: black; /* Cor do texto do placeholder */\n"
-"}\n"
-"")
+        self.txt_quantidade.setStyleSheet(u"")
 
         self.horizontalLayout_2.addWidget(self.txt_quantidade)
 
@@ -1684,7 +1040,7 @@ class Ui_MainWindow(object):
         self.frame_valor_produto = QFrame(self.frame_line_cadastro_produtos)
         self.frame_valor_produto.setObjectName(u"frame_valor_produto")
         self.frame_valor_produto.setMaximumSize(QSize(328, 50))
-        self.frame_valor_produto.setStyleSheet(u"background-color: rgb(0, 80, 121);")
+        self.frame_valor_produto.setStyleSheet(u"")
         self.frame_valor_produto.setFrameShape(QFrame.NoFrame)
         self.frame_valor_produto.setFrameShadow(QFrame.Raised)
         self.verticalLayout_5 = QVBoxLayout(self.frame_valor_produto)
@@ -1693,12 +1049,7 @@ class Ui_MainWindow(object):
         self.horizontalLayout_3.setObjectName(u"horizontalLayout_3")
         self.label_valor_produto_3 = QLabel(self.frame_valor_produto)
         self.label_valor_produto_3.setObjectName(u"label_valor_produto_3")
-        self.label_valor_produto_3.setStyleSheet(u"QLabel {\n"
-"    color: black;\n"
-"    text-align: center; /* Centraliza o texto horizontalmente */\n"
-"    vertical-align: middle; /* Centraliza o texto verticalmente */\n"
-"}\n"
-"")
+        self.label_valor_produto_3.setStyleSheet(u"")
 
         self.horizontalLayout_3.addWidget(self.label_valor_produto_3)
 
@@ -1708,18 +1059,7 @@ class Ui_MainWindow(object):
         self.txt_valor_produto_3.setSizePolicy(sizePolicy)
         self.txt_valor_produto_3.setMinimumSize(QSize(0, 0))
         self.txt_valor_produto_3.setMaximumSize(QSize(150, 16777215))
-        self.txt_valor_produto_3.setStyleSheet(u"QLineEdit {\n"
-"	color: black;\n"
-"    background-color: rgb(240, 240, 240); /* Cor de fundo cinza claro */\n"
-"    border: 2px solid rgb(50, 150,250); /* Borda azul */\n"
-"    border-radius: 6px; /* Cantos arredondados */\n"
-"    padding: 3px; /* Espa\u00e7amento interno */\n"
-"}\n"
-"\n"
-"QLineEdit::placeholderText {\n"
-"    color: black; /* Cor do texto do placeholder */\n"
-"}\n"
-"")
+        self.txt_valor_produto_3.setStyleSheet(u"")
 
         self.horizontalLayout_3.addWidget(self.txt_valor_produto_3)
 
@@ -1740,7 +1080,7 @@ class Ui_MainWindow(object):
         self.frame_desconto = QFrame(self.frame_line_cadastro_produtos)
         self.frame_desconto.setObjectName(u"frame_desconto")
         self.frame_desconto.setMaximumSize(QSize(328, 50))
-        self.frame_desconto.setStyleSheet(u"background-color: rgb(0, 80, 121);")
+        self.frame_desconto.setStyleSheet(u"")
         self.frame_desconto.setFrameShape(QFrame.NoFrame)
         self.frame_desconto.setFrameShadow(QFrame.Raised)
         self.verticalLayout_6 = QVBoxLayout(self.frame_desconto)
@@ -1749,12 +1089,7 @@ class Ui_MainWindow(object):
         self.horizontalLayout_4.setObjectName(u"horizontalLayout_4")
         self.label_desconto_3 = QLabel(self.frame_desconto)
         self.label_desconto_3.setObjectName(u"label_desconto_3")
-        self.label_desconto_3.setStyleSheet(u"QLabel {\n"
-"    color: black;\n"
-"    text-align: center; /* Centraliza o texto horizontalmente */\n"
-"    vertical-align: middle; /* Centraliza o texto verticalmente */\n"
-"}\n"
-"")
+        self.label_desconto_3.setStyleSheet(u"")
 
         self.horizontalLayout_4.addWidget(self.label_desconto_3)
 
@@ -1764,18 +1099,7 @@ class Ui_MainWindow(object):
         self.txt_desconto_3.setSizePolicy(sizePolicy)
         self.txt_desconto_3.setMinimumSize(QSize(0, 0))
         self.txt_desconto_3.setMaximumSize(QSize(150, 16777215))
-        self.txt_desconto_3.setStyleSheet(u"QLineEdit {\n"
-"	color: black;\n"
-"    background-color: rgb(240, 240, 240); /* Cor de fundo cinza claro */\n"
-"    border: 2px solid rgb(50, 150,250); /* Borda azul */\n"
-"    border-radius: 6px; /* Cantos arredondados */\n"
-"    padding: 3px; /* Espa\u00e7amento interno */\n"
-"}\n"
-"\n"
-"QLineEdit::placeholderText {\n"
-"    color: black; /* Cor do texto do placeholder */\n"
-"}\n"
-"")
+        self.txt_desconto_3.setStyleSheet(u"")
 
         self.horizontalLayout_4.addWidget(self.txt_desconto_3)
 
@@ -1788,7 +1112,7 @@ class Ui_MainWindow(object):
         self.frame_data_compra = QFrame(self.frame_line_cadastro_produtos)
         self.frame_data_compra.setObjectName(u"frame_data_compra")
         self.frame_data_compra.setMaximumSize(QSize(328, 50))
-        self.frame_data_compra.setStyleSheet(u"background-color: rgb(0, 80, 121);")
+        self.frame_data_compra.setStyleSheet(u"")
         self.frame_data_compra.setFrameShape(QFrame.NoFrame)
         self.frame_data_compra.setFrameShadow(QFrame.Raised)
         self.verticalLayout_10 = QVBoxLayout(self.frame_data_compra)
@@ -1797,12 +1121,7 @@ class Ui_MainWindow(object):
         self.horizontalLayout_5.setObjectName(u"horizontalLayout_5")
         self.label_data_cadastro = QLabel(self.frame_data_compra)
         self.label_data_cadastro.setObjectName(u"label_data_cadastro")
-        self.label_data_cadastro.setStyleSheet(u"QLabel {\n"
-"    color: black;\n"
-"    text-align: center; /* Centraliza o texto horizontalmente */\n"
-"    vertical-align: middle; /* Centraliza o texto verticalmente */\n"
-"}\n"
-"")
+        self.label_data_cadastro.setStyleSheet(u"")
 
         self.horizontalLayout_5.addWidget(self.label_data_cadastro)
 
@@ -1812,13 +1131,7 @@ class Ui_MainWindow(object):
         self.dateEdit_3.setSizePolicy(sizePolicy)
         self.dateEdit_3.setMinimumSize(QSize(150, 0))
         self.dateEdit_3.setMaximumSize(QSize(150, 16777215))
-        self.dateEdit_3.setStyleSheet(u"QDateEdit {\n"
-"    color: black; /* Cor do texto */\n"
-"    background-color: white; /* Cor de fundo */\n"
-"	 border: 2px solid rgb(50, 150,250); /* Borda azul */\n"
-"	border-radius: 6px; /* Cantos arredondados */\n"
-"}\n"
-"")
+        self.dateEdit_3.setStyleSheet(u"")
         self.dateEdit_3.setReadOnly(False)
         self.dateEdit_3.setProperty(u"showGroupSeparator", True)
         self.dateEdit_3.setTime(QTime(3, 0, 0))
@@ -1851,12 +1164,7 @@ class Ui_MainWindow(object):
         self.horizontalLayout_6.setObjectName(u"horizontalLayout_6")
         self.label_codigo_item_3 = QLabel(self.frame_codigo_item)
         self.label_codigo_item_3.setObjectName(u"label_codigo_item_3")
-        self.label_codigo_item_3.setStyleSheet(u"QLabel {\n"
-"    color: black;\n"
-"    text-align: center; /* Centraliza o texto horizontalmente */\n"
-"    vertical-align: middle; /* Centraliza o texto verticalmente */\n"
-"}\n"
-"")
+        self.label_codigo_item_3.setStyleSheet(u"")
 
         self.horizontalLayout_6.addWidget(self.label_codigo_item_3)
 
@@ -1865,18 +1173,7 @@ class Ui_MainWindow(object):
         sizePolicy.setHeightForWidth(self.txt_codigo_item.sizePolicy().hasHeightForWidth())
         self.txt_codigo_item.setSizePolicy(sizePolicy)
         self.txt_codigo_item.setMaximumSize(QSize(150, 16777215))
-        self.txt_codigo_item.setStyleSheet(u"QLineEdit {\n"
-"	color: black;\n"
-"    background-color: rgb(240, 240, 240); /* Cor de fundo cinza claro */\n"
-"    border: 2px solid rgb(50, 150,250); /* Borda azul */\n"
-"    border-radius: 6px; /* Cantos arredondados */\n"
-"    padding: 3px; /* Espa\u00e7amento interno */\n"
-"}\n"
-"\n"
-"QLineEdit::placeholderText {\n"
-"    color: black; /* Cor do texto do placeholder */\n"
-"}\n"
-"")
+        self.txt_codigo_item.setStyleSheet(u"")
 
         self.horizontalLayout_6.addWidget(self.txt_codigo_item)
 
@@ -1897,12 +1194,7 @@ class Ui_MainWindow(object):
         self.horizontalLayout_7.setObjectName(u"horizontalLayout_7")
         self.label_cliente_4 = QLabel(self.frame_cliente)
         self.label_cliente_4.setObjectName(u"label_cliente_4")
-        self.label_cliente_4.setStyleSheet(u"QLabel {\n"
-"    color: black;\n"
-"    text-align: center; /* Centraliza o texto horizontalmente */\n"
-"    vertical-align: middle; /* Centraliza o texto verticalmente */\n"
-"}\n"
-"")
+        self.label_cliente_4.setStyleSheet(u"")
 
         self.horizontalLayout_7.addWidget(self.label_cliente_4)
 
@@ -1911,18 +1203,7 @@ class Ui_MainWindow(object):
         sizePolicy.setHeightForWidth(self.txt_cliente_3.sizePolicy().hasHeightForWidth())
         self.txt_cliente_3.setSizePolicy(sizePolicy)
         self.txt_cliente_3.setMaximumSize(QSize(150, 16777215))
-        self.txt_cliente_3.setStyleSheet(u"QLineEdit {\n"
-"	color: black;\n"
-"    background-color: rgb(240, 240, 240); /* Cor de fundo cinza claro */\n"
-"    border: 2px solid rgb(50, 150,250); /* Borda azul */\n"
-"    border-radius: 6px; /* Cantos arredondados */\n"
-"    padding: 3px; /* Espa\u00e7amento interno */\n"
-"}\n"
-"\n"
-"QLineEdit::placeholderText {\n"
-"    color: black; /* Cor do texto do placeholder */\n"
-"}\n"
-"")
+        self.txt_cliente_3.setStyleSheet(u"")
 
         self.horizontalLayout_7.addWidget(self.txt_cliente_3)
 
@@ -1951,12 +1232,7 @@ class Ui_MainWindow(object):
         self.horizontalLayout_8.setObjectName(u"horizontalLayout_8")
         self.label_descricao_produto_3 = QLabel(self.frame_descricao_produto)
         self.label_descricao_produto_3.setObjectName(u"label_descricao_produto_3")
-        self.label_descricao_produto_3.setStyleSheet(u"QLabel {\n"
-"    color: black;\n"
-"    text-align: center; /* Centraliza o texto horizontalmente */\n"
-"    vertical-align: middle; /* Centraliza o texto verticalmente */\n"
-"}\n"
-"")
+        self.label_descricao_produto_3.setStyleSheet(u"")
 
         self.horizontalLayout_8.addWidget(self.label_descricao_produto_3)
 
@@ -1966,18 +1242,7 @@ class Ui_MainWindow(object):
         self.txt_descricao_produto_3.setSizePolicy(sizePolicy)
         self.txt_descricao_produto_3.setMinimumSize(QSize(0, 0))
         self.txt_descricao_produto_3.setMaximumSize(QSize(150, 16777215))
-        self.txt_descricao_produto_3.setStyleSheet(u"QLineEdit {\n"
-"	color: black;\n"
-"    background-color: rgb(240, 240, 240); /* Cor de fundo cinza claro */\n"
-"    border: 2px solid rgb(50, 150,250); /* Borda azul */\n"
-"    border-radius: 6px; /* Cantos arredondados */\n"
-"    padding: 3px; /* Espa\u00e7amento interno */\n"
-"}\n"
-"\n"
-"QLineEdit::placeholderText {\n"
-"    color: black; /* Cor do texto do placeholder */\n"
-"}\n"
-"")
+        self.txt_descricao_produto_3.setStyleSheet(u"")
 
         self.horizontalLayout_8.addWidget(self.txt_descricao_produto_3)
 
@@ -2012,156 +1277,6 @@ class Ui_MainWindow(object):
 
         self.gridLayout_11.addWidget(self.label_cadastramento_produtos, 0, 1, 1, 2)
 
-        self.frame_imagem_produto_3 = QFrame(self.frame_cadastrar_produto)
-        self.frame_imagem_produto_3.setObjectName(u"frame_imagem_produto_3")
-        sizePolicy.setHeightForWidth(self.frame_imagem_produto_3.sizePolicy().hasHeightForWidth())
-        self.frame_imagem_produto_3.setSizePolicy(sizePolicy)
-        self.frame_imagem_produto_3.setMinimumSize(QSize(302, 321))
-        self.frame_imagem_produto_3.setMaximumSize(QSize(283, 309))
-        self.frame_imagem_produto_3.setFrameShape(QFrame.NoFrame)
-        self.frame_imagem_produto_3.setFrameShadow(QFrame.Raised)
-
-        self.gridLayout_11.addWidget(self.frame_imagem_produto_3, 2, 3, 3, 1)
-
-        self.frame_remover_e_carregar_imagem = QFrame(self.frame_cadastrar_produto)
-        self.frame_remover_e_carregar_imagem.setObjectName(u"frame_remover_e_carregar_imagem")
-        sizePolicy.setHeightForWidth(self.frame_remover_e_carregar_imagem.sizePolicy().hasHeightForWidth())
-        self.frame_remover_e_carregar_imagem.setSizePolicy(sizePolicy)
-        self.frame_remover_e_carregar_imagem.setMaximumSize(QSize(200, 89))
-        self.frame_remover_e_carregar_imagem.setFrameShape(QFrame.NoFrame)
-        self.frame_remover_e_carregar_imagem.setFrameShadow(QFrame.Raised)
-        self.verticalLayout_13 = QVBoxLayout(self.frame_remover_e_carregar_imagem)
-        self.verticalLayout_13.setObjectName(u"verticalLayout_13")
-        self.btn_remover_imagem = QPushButton(self.frame_remover_e_carregar_imagem)
-        self.btn_remover_imagem.setObjectName(u"btn_remover_imagem")
-        sizePolicy.setHeightForWidth(self.btn_remover_imagem.sizePolicy().hasHeightForWidth())
-        self.btn_remover_imagem.setSizePolicy(sizePolicy)
-        self.btn_remover_imagem.setMaximumSize(QSize(180, 30))
-        self.btn_remover_imagem.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
-        self.btn_remover_imagem.setStyleSheet(u"QPushButton {\n"
-"    color: rgb(255, 255, 255);\n"
-"    border-radius: 8px;\n"
-"    font-size: 16px;\n"
-"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */\n"
-"    border: 4px solid transparent;\n"
-"}\n"
-"\n"
-"QPushButton:hover {\n"
-"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */\n"
-"    color: black;\n"
-"}")
-        icon5 = QIcon()
-        icon5.addFile(u"imagens/icons8-remover-imagem-16.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
-        self.btn_remover_imagem.setIcon(icon5)
-
-        self.verticalLayout_13.addWidget(self.btn_remover_imagem)
-
-        self.btn_carregar_imagem = QPushButton(self.frame_remover_e_carregar_imagem)
-        self.btn_carregar_imagem.setObjectName(u"btn_carregar_imagem")
-        sizePolicy.setHeightForWidth(self.btn_carregar_imagem.sizePolicy().hasHeightForWidth())
-        self.btn_carregar_imagem.setSizePolicy(sizePolicy)
-        self.btn_carregar_imagem.setMinimumSize(QSize(153, 0))
-        self.btn_carregar_imagem.setMaximumSize(QSize(180, 30))
-        self.btn_carregar_imagem.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
-        self.btn_carregar_imagem.setStyleSheet(u"QPushButton {\n"
-"    color: rgb(255, 255, 255);\n"
-"    border-radius: 8px;\n"
-"    font-size: 16px;\n"
-"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */\n"
-"    border: 4px solid transparent;\n"
-"}\n"
-"\n"
-"QPushButton:hover {\n"
-"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */\n"
-"    color: black;\n"
-"}")
-        icon6 = QIcon()
-        icon6.addFile(u"imagens/014upload2_99941.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
-        self.btn_carregar_imagem.setIcon(icon6)
-
-        self.verticalLayout_13.addWidget(self.btn_carregar_imagem)
-
-
-        self.gridLayout_11.addWidget(self.frame_remover_e_carregar_imagem, 3, 1, 1, 1)
-
-        self.frame_6 = QFrame(self.frame_cadastrar_produto)
-        self.frame_6.setObjectName(u"frame_6")
-        sizePolicy.setHeightForWidth(self.frame_6.sizePolicy().hasHeightForWidth())
-        self.frame_6.setSizePolicy(sizePolicy)
-        self.frame_6.setMaximumSize(QSize(350, 16777215))
-        self.frame_6.setFrameShape(QFrame.NoFrame)
-        self.frame_6.setFrameShadow(QFrame.Raised)
-        self.gridLayout_16 = QGridLayout(self.frame_6)
-        self.gridLayout_16.setObjectName(u"gridLayout_16")
-        self.frame_valor_total_produtos = QFrame(self.frame_6)
-        self.frame_valor_total_produtos.setObjectName(u"frame_valor_total_produtos")
-        sizePolicy.setHeightForWidth(self.frame_valor_total_produtos.sizePolicy().hasHeightForWidth())
-        self.frame_valor_total_produtos.setSizePolicy(sizePolicy)
-        self.frame_valor_total_produtos.setMinimumSize(QSize(321, 102))
-        self.frame_valor_total_produtos.setMaximumSize(QSize(321, 102))
-        self.frame_valor_total_produtos.setStyleSheet(u"QFrame {\n"
-"    background-color: rgb(100, 200, 100); /* Verde claro */\n"
-"    border-radius: 15px; /* Ajuste o valor para a curvatura desejada */\n"
-"}\n"
-"\n"
-"")
-        self.frame_valor_total_produtos.setFrameShape(QFrame.StyledPanel)
-        self.frame_valor_total_produtos.setFrameShadow(QFrame.Raised)
-
-        self.gridLayout_16.addWidget(self.frame_valor_total_produtos, 0, 0, 1, 1)
-
-        self.frame_valor_do_desconto = QFrame(self.frame_6)
-        self.frame_valor_do_desconto.setObjectName(u"frame_valor_do_desconto")
-        sizePolicy.setHeightForWidth(self.frame_valor_do_desconto.sizePolicy().hasHeightForWidth())
-        self.frame_valor_do_desconto.setSizePolicy(sizePolicy)
-        self.frame_valor_do_desconto.setMinimumSize(QSize(0, 102))
-        self.frame_valor_do_desconto.setMaximumSize(QSize(321, 102))
-        self.frame_valor_do_desconto.setStyleSheet(u"QFrame {\n"
-"    background-color: rgb(100, 200, 100); /* Verde claro */\n"
-"    border-radius: 15px; /* Ajuste o valor para a curvatura desejada */\n"
-"}\n"
-"")
-        self.frame_valor_do_desconto.setFrameShape(QFrame.StyledPanel)
-        self.frame_valor_do_desconto.setFrameShadow(QFrame.Raised)
-
-        self.gridLayout_16.addWidget(self.frame_valor_do_desconto, 1, 0, 1, 1)
-
-        self.frame_valor_com_desconto1 = QFrame(self.frame_6)
-        self.frame_valor_com_desconto1.setObjectName(u"frame_valor_com_desconto1")
-        sizePolicy.setHeightForWidth(self.frame_valor_com_desconto1.sizePolicy().hasHeightForWidth())
-        self.frame_valor_com_desconto1.setSizePolicy(sizePolicy)
-        self.frame_valor_com_desconto1.setMinimumSize(QSize(0, 102))
-        self.frame_valor_com_desconto1.setMaximumSize(QSize(321, 102))
-        self.frame_valor_com_desconto1.setStyleSheet(u"QFrame {\n"
-"    background-color: rgb(100, 200, 100); /* Verde claro */\n"
-"    border-radius: 15px; /* Ajuste o valor para a curvatura desejada */\n"
-"}\n"
-"")
-        self.frame_valor_com_desconto1.setFrameShape(QFrame.StyledPanel)
-        self.frame_valor_com_desconto1.setFrameShadow(QFrame.Raised)
-
-        self.gridLayout_16.addWidget(self.frame_valor_com_desconto1, 2, 0, 1, 1)
-
-        self.frame_quantidade = QFrame(self.frame_6)
-        self.frame_quantidade.setObjectName(u"frame_quantidade")
-        sizePolicy.setHeightForWidth(self.frame_quantidade.sizePolicy().hasHeightForWidth())
-        self.frame_quantidade.setSizePolicy(sizePolicy)
-        self.frame_quantidade.setMinimumSize(QSize(0, 102))
-        self.frame_quantidade.setMaximumSize(QSize(321, 102))
-        self.frame_quantidade.setStyleSheet(u"QFrame {\n"
-"    background-color: rgb(100, 200, 100); /* Verde claro */\n"
-"    border-radius: 15px; /* Ajuste o valor para a curvatura desejada */\n"
-"}\n"
-"\n"
-"")
-        self.frame_quantidade.setFrameShape(QFrame.StyledPanel)
-        self.frame_quantidade.setFrameShadow(QFrame.Raised)
-
-        self.gridLayout_16.addWidget(self.frame_quantidade, 3, 0, 1, 1)
-
-
-        self.gridLayout_11.addWidget(self.frame_6, 2, 2, 3, 1)
-
         self.frame_confirmar_ver_produto = QFrame(self.frame_cadastrar_produto)
         self.frame_confirmar_ver_produto.setObjectName(u"frame_confirmar_ver_produto")
         sizePolicy.setHeightForWidth(self.frame_confirmar_ver_produto.sizePolicy().hasHeightForWidth())
@@ -2178,22 +1293,10 @@ class Ui_MainWindow(object):
         self.btn_confirmar.setMinimumSize(QSize(0, 0))
         self.btn_confirmar.setMaximumSize(QSize(177, 30))
         self.btn_confirmar.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
-        self.btn_confirmar.setStyleSheet(u"QPushButton {\n"
-"    color: rgb(255, 255, 255); /* Cor do texto (branco) */\n"
-"    border-radius: 10px;\n"
-"    font-size: 16px;\n"
-"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 200, 100), stop:1 rgb(150, 255, 150)); /* Gradiente de verde claro para verde mais claro */\n"
-"    border: 3px solid transparent;\n"
-"}\n"
-"\n"
-"QPushButton:hover {\n"
-"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(150, 255, 150), stop:1 rgb(200, 255, 200)); /* Gradiente de verde mais claro para verde ainda mais claro */\n"
-"    color: rgb(0, 0, 0); /* Cor do texto (preto) */\n"
-"}\n"
-"")
-        icon7 = QIcon()
-        icon7.addFile(u"imagens/confirmacao.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
-        self.btn_confirmar.setIcon(icon7)
+        self.btn_confirmar.setStyleSheet(u"")
+        icon2 = QIcon()
+        icon2.addFile(u"imagens/confirmacao.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        self.btn_confirmar.setIcon(icon2)
 
         self.verticalLayout_20.addWidget(self.btn_confirmar)
 
@@ -2203,21 +1306,10 @@ class Ui_MainWindow(object):
         self.btn_ver_clientes_juridicos.setSizePolicy(sizePolicy)
         self.btn_ver_clientes_juridicos.setMaximumSize(QSize(16777215, 30))
         self.btn_ver_clientes_juridicos.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
-        self.btn_ver_clientes_juridicos.setStyleSheet(u"QPushButton {\n"
-"    color: rgb(255, 255, 255);\n"
-"    border-radius: 8px;\n"
-"    font-size: 16px;\n"
-"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */\n"
-"    border: 4px solid transparent;\n"
-"}\n"
-"\n"
-"QPushButton:hover {\n"
-"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */\n"
-"    color: black;\n"
-"}")
-        icon8 = QIcon()
-        icon8.addFile(u"imagens/74472.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
-        self.btn_ver_clientes_juridicos.setIcon(icon8)
+        self.btn_ver_clientes_juridicos.setStyleSheet(u"")
+        icon3 = QIcon()
+        icon3.addFile(u"imagens/74472.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        self.btn_ver_clientes_juridicos.setIcon(icon3)
         self.btn_ver_clientes_juridicos.setIconSize(QSize(21, 25))
 
         self.verticalLayout_20.addWidget(self.btn_ver_clientes_juridicos)
@@ -2229,26 +1321,96 @@ class Ui_MainWindow(object):
         self.btn_ver_item.setMinimumSize(QSize(0, 0))
         self.btn_ver_item.setMaximumSize(QSize(177, 30))
         self.btn_ver_item.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
-        self.btn_ver_item.setStyleSheet(u"QPushButton {\n"
-"    color: rgb(255, 255, 255);\n"
-"    border-radius: 8px;\n"
-"    font-size: 16px;\n"
-"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */\n"
-"    border: 4px solid transparent;\n"
-"}\n"
-"\n"
-"QPushButton:hover {\n"
-"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */\n"
-"    color: black;\n"
-"}")
-        icon9 = QIcon()
-        icon9.addFile(u"imagens/pasta.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
-        self.btn_ver_item.setIcon(icon9)
+        self.btn_ver_item.setStyleSheet(u"")
+        icon4 = QIcon()
+        icon4.addFile(u"imagens/pasta.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        self.btn_ver_item.setIcon(icon4)
 
         self.verticalLayout_20.addWidget(self.btn_ver_item)
 
 
         self.gridLayout_11.addWidget(self.frame_confirmar_ver_produto, 4, 1, 1, 1)
+
+        self.frame_botoes_a_e_a_a = QFrame(self.frame_cadastrar_produto)
+        self.frame_botoes_a_e_a_a.setObjectName(u"frame_botoes_a_e_a_a")
+        sizePolicy.setHeightForWidth(self.frame_botoes_a_e_a_a.sizePolicy().hasHeightForWidth())
+        self.frame_botoes_a_e_a_a.setSizePolicy(sizePolicy)
+        self.frame_botoes_a_e_a_a.setMinimumSize(QSize(0, 0))
+        self.frame_botoes_a_e_a_a.setMaximumSize(QSize(218, 190))
+        self.frame_botoes_a_e_a_a.setFrameShape(QFrame.NoFrame)
+        self.frame_botoes_a_e_a_a.setFrameShadow(QFrame.Raised)
+        self.verticalLayout_12 = QVBoxLayout(self.frame_botoes_a_e_a_a)
+        self.verticalLayout_12.setObjectName(u"verticalLayout_12")
+        self.btn_adicionar_produto = QPushButton(self.frame_botoes_a_e_a_a)
+        self.btn_adicionar_produto.setObjectName(u"btn_adicionar_produto")
+        sizePolicy.setHeightForWidth(self.btn_adicionar_produto.sizePolicy().hasHeightForWidth())
+        self.btn_adicionar_produto.setSizePolicy(sizePolicy)
+        self.btn_adicionar_produto.setMaximumSize(QSize(16777215, 30))
+        self.btn_adicionar_produto.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
+        self.btn_adicionar_produto.setStyleSheet(u"")
+        icon5 = QIcon()
+        icon5.addFile(u"imagens/pngwing.com.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        self.btn_adicionar_produto.setIcon(icon5)
+
+        self.verticalLayout_12.addWidget(self.btn_adicionar_produto)
+
+        self.btn_editar = QPushButton(self.frame_botoes_a_e_a_a)
+        self.btn_editar.setObjectName(u"btn_editar")
+        sizePolicy.setHeightForWidth(self.btn_editar.sizePolicy().hasHeightForWidth())
+        self.btn_editar.setSizePolicy(sizePolicy)
+        self.btn_editar.setMaximumSize(QSize(16777215, 30))
+        self.btn_editar.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
+        self.btn_editar.setStyleSheet(u"")
+        icon6 = QIcon()
+        icon6.addFile(u"imagens/editar.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        self.btn_editar.setIcon(icon6)
+
+        self.verticalLayout_12.addWidget(self.btn_editar)
+
+        self.btn_sair_modo_edicao_produtos = QPushButton(self.frame_botoes_a_e_a_a)
+        self.btn_sair_modo_edicao_produtos.setObjectName(u"btn_sair_modo_edicao_produtos")
+        sizePolicy.setHeightForWidth(self.btn_sair_modo_edicao_produtos.sizePolicy().hasHeightForWidth())
+        self.btn_sair_modo_edicao_produtos.setSizePolicy(sizePolicy)
+        self.btn_sair_modo_edicao_produtos.setMaximumSize(QSize(16777215, 30))
+        self.btn_sair_modo_edicao_produtos.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
+        self.btn_sair_modo_edicao_produtos.setStyleSheet(u"")
+        icon7 = QIcon()
+        icon7.addFile(u"imagens/sair.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        self.btn_sair_modo_edicao_produtos.setIcon(icon7)
+        self.btn_sair_modo_edicao_produtos.setIconSize(QSize(16, 16))
+
+        self.verticalLayout_12.addWidget(self.btn_sair_modo_edicao_produtos)
+
+        self.btn_atualizar_produto = QPushButton(self.frame_botoes_a_e_a_a)
+        self.btn_atualizar_produto.setObjectName(u"btn_atualizar_produto")
+        sizePolicy.setHeightForWidth(self.btn_atualizar_produto.sizePolicy().hasHeightForWidth())
+        self.btn_atualizar_produto.setSizePolicy(sizePolicy)
+        self.btn_atualizar_produto.setMaximumSize(QSize(16777215, 30))
+        self.btn_atualizar_produto.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
+        self.btn_atualizar_produto.setStyleSheet(u"")
+        icon8 = QIcon()
+        icon8.addFile(u"imagens/toppng.com-update-512x512.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        self.btn_atualizar_produto.setIcon(icon8)
+
+        self.verticalLayout_12.addWidget(self.btn_atualizar_produto)
+
+        self.btn_limpar_campos = QPushButton(self.frame_botoes_a_e_a_a)
+        self.btn_limpar_campos.setObjectName(u"btn_limpar_campos")
+        sizePolicy.setHeightForWidth(self.btn_limpar_campos.sizePolicy().hasHeightForWidth())
+        self.btn_limpar_campos.setSizePolicy(sizePolicy)
+        self.btn_limpar_campos.setMaximumSize(QSize(16777215, 30))
+        self.btn_limpar_campos.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
+        self.btn_limpar_campos.setStyleSheet(u"")
+        icon9 = QIcon()
+        icon9.addFile(u"imagens/Delete-Button-PNG-Download-Image.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
+        self.btn_limpar_campos.setIcon(icon9)
+        self.btn_limpar_campos.setIconSize(QSize(27, 29))
+        self.btn_limpar_campos.setCheckable(False)
+
+        self.verticalLayout_12.addWidget(self.btn_limpar_campos)
+
+
+        self.gridLayout_11.addWidget(self.frame_botoes_a_e_a_a, 2, 1, 1, 1)
 
 
         self.gridLayout_10.addWidget(self.frame_cadastrar_produto, 0, 0, 1, 1)
@@ -2311,7 +1473,7 @@ class Ui_MainWindow(object):
 "    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */\n"
 "    color: black;\n"
 "}")
-        self.btn_editar_cadastro.setIcon(icon1)
+        self.btn_editar_cadastro.setIcon(icon6)
         self.btn_editar_cadastro.setIconSize(QSize(20, 20))
 
         self.verticalLayout_16.addWidget(self.btn_editar_cadastro)
@@ -2335,7 +1497,7 @@ class Ui_MainWindow(object):
 "    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */\n"
 "    color: black;\n"
 "}")
-        self.btn_sair_modo_edicao.setIcon(icon2)
+        self.btn_sair_modo_edicao.setIcon(icon7)
         self.btn_sair_modo_edicao.setIconSize(QSize(20, 20))
 
         self.verticalLayout_16.addWidget(self.btn_sair_modo_edicao)
@@ -2359,7 +1521,7 @@ class Ui_MainWindow(object):
 "    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */\n"
 "    color: black;\n"
 "}")
-        self.btn_atualizar_cadastro.setIcon(icon3)
+        self.btn_atualizar_cadastro.setIcon(icon8)
         self.btn_atualizar_cadastro.setIconSize(QSize(20, 20))
 
         self.verticalLayout_16.addWidget(self.btn_atualizar_cadastro)
@@ -2383,7 +1545,7 @@ class Ui_MainWindow(object):
 "    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */\n"
 "    color: black;\n"
 "}")
-        self.btn_apagar_cadastro.setIcon(icon4)
+        self.btn_apagar_cadastro.setIcon(icon9)
         self.btn_apagar_cadastro.setIconSize(QSize(20, 31))
 
         self.verticalLayout_16.addWidget(self.btn_apagar_cadastro)
@@ -2407,7 +1569,7 @@ class Ui_MainWindow(object):
 "    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */\n"
 "    color: black;\n"
 "}")
-        self.btn_carregar_imagem_4.setIcon(icon6)
+        self.btn_carregar_imagem_4.setIcon(icon1)
         self.btn_carregar_imagem_4.setIconSize(QSize(20, 20))
 
         self.verticalLayout_16.addWidget(self.btn_carregar_imagem_4)
@@ -2431,7 +1593,7 @@ class Ui_MainWindow(object):
 "    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */\n"
 "    color: black;\n"
 "}")
-        self.btn_remover_imagem_usuario.setIcon(icon5)
+        self.btn_remover_imagem_usuario.setIcon(icon)
         self.btn_remover_imagem_usuario.setIconSize(QSize(24, 31))
 
         self.verticalLayout_16.addWidget(self.btn_remover_imagem_usuario)
@@ -2455,7 +1617,7 @@ class Ui_MainWindow(object):
 "    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */\n"
 "    color: black;\n"
 "}")
-        self.btn_fazer_cadastro.setIcon(icon7)
+        self.btn_fazer_cadastro.setIcon(icon2)
         self.btn_fazer_cadastro.setIconSize(QSize(20, 20))
 
         self.verticalLayout_16.addWidget(self.btn_fazer_cadastro)
@@ -2479,7 +1641,7 @@ class Ui_MainWindow(object):
 "    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */\n"
 "    color: black;\n"
 "}")
-        self.btn_ver_usuario.setIcon(icon8)
+        self.btn_ver_usuario.setIcon(icon3)
         self.btn_ver_usuario.setIconSize(QSize(20, 28))
 
         self.verticalLayout_16.addWidget(self.btn_ver_usuario)
@@ -4605,7 +3767,7 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
 
-        self.tab_clientes_todos.setCurrentIndex(1)
+        self.tab_clientes_todos.setCurrentIndex(0)
 
 
         QMetaObject.connectSlotsByName(MainWindow)
@@ -4814,11 +3976,8 @@ class Ui_MainWindow(object):
         self.label_inativos.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p><span style=\" font-size:18pt; font-weight:600; font-style:italic;\">INATIVOS</span></p></body></html>", None))
         self.btn_abrir_planilha_usuarios.setText(QCoreApplication.translate("MainWindow", u"Abrir Planilha", None))
         self.line_excel_usuarios.setPlaceholderText(QCoreApplication.translate("MainWindow", u"Arquivo em excel aparecer\u00e1 aqui", None))
-        self.btn_adicionar_produto.setText(QCoreApplication.translate("MainWindow", u"ADICIONAR", None))
-        self.btn_editar.setText(QCoreApplication.translate("MainWindow", u"EDITAR ", None))
-        self.btn_sair_modo_edicao_produtos.setText(QCoreApplication.translate("MainWindow", u"SAIR DO MODO EDI\u00c7\u00c3O", None))
-        self.btn_atualizar_produto.setText(QCoreApplication.translate("MainWindow", u"ATUALIZAR", None))
-        self.btn_limpar_campos.setText(QCoreApplication.translate("MainWindow", u"APAGAR", None))
+        self.btn_remover_imagem.setText(QCoreApplication.translate("MainWindow", u"REMOVER IMAGEM", None))
+        self.btn_carregar_imagem.setText(QCoreApplication.translate("MainWindow", u"CARREGAR IMAGEM", None))
         self.label_produto.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p><span style=\" font-weight:600;\">Produto</span></p></body></html>", None))
         self.label_quantidade.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p><span style=\" font-weight:600;\">Quantidade</span></p></body></html>", None))
         self.label_valor_produto_3.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p><span style=\" font-weight:600;\">Valor do produto</span></p></body></html>", None))
@@ -4829,11 +3988,14 @@ class Ui_MainWindow(object):
         self.label_cliente_4.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p><span style=\" font-weight:600;\">Cliente</span></p></body></html>", None))
         self.label_descricao_produto_3.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p><span style=\" font-weight:600;\">Descri\u00e7\u00e3o do Produto</span></p></body></html>", None))
         self.label_cadastramento_produtos.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p align=\"center\"><span style=\" font-size:18pt; font-weight:600; font-style:italic;\">Cadastramento de Produtos</span></p></body></html>", None))
-        self.btn_remover_imagem.setText(QCoreApplication.translate("MainWindow", u"REMOVER IMAGEM", None))
-        self.btn_carregar_imagem.setText(QCoreApplication.translate("MainWindow", u"CARREGAR IMAGEM", None))
         self.btn_confirmar.setText(QCoreApplication.translate("MainWindow", u"CONFIRMAR", None))
         self.btn_ver_clientes_juridicos.setText(QCoreApplication.translate("MainWindow", u"VER CLIENTES", None))
         self.btn_ver_item.setText(QCoreApplication.translate("MainWindow", u"VER PRODUTOS", None))
+        self.btn_adicionar_produto.setText(QCoreApplication.translate("MainWindow", u"ADICIONAR", None))
+        self.btn_editar.setText(QCoreApplication.translate("MainWindow", u"EDITAR ", None))
+        self.btn_sair_modo_edicao_produtos.setText(QCoreApplication.translate("MainWindow", u"SAIR DO MODO EDI\u00c7\u00c3O", None))
+        self.btn_atualizar_produto.setText(QCoreApplication.translate("MainWindow", u"ATUALIZAR", None))
+        self.btn_limpar_campos.setText(QCoreApplication.translate("MainWindow", u"APAGAR", None))
         self.label_cadastramento.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p align=\"center\"><span style=\" font-size:14pt; font-weight:600; font-style:italic;\">CADASTRAMENTO DE USU\u00c1RIO</span></p></body></html>", None))
         self.btn_editar_cadastro.setText(QCoreApplication.translate("MainWindow", u"EDITAR", None))
         self.btn_sair_modo_edicao.setText(QCoreApplication.translate("MainWindow", u"SAIR DO MODO EDI\u00c7\u00c3O", None))

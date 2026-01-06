@@ -29,7 +29,7 @@
    <bool>false</bool>
   </property>
   <property name="styleSheet">
-   <string notr="true">background-color: rgb(0, 80, 121);</string>
+   <string notr="true"/>
   </property>
   <property name="unifiedTitleAndToolBarOnMac">
    <bool>false</bool>
@@ -51,7 +51,7 @@
     <enum>Qt::StrongFocus</enum>
    </property>
    <property name="styleSheet">
-    <string notr="true">background-color: rgb(0, 80, 121);</string>
+    <string notr="true"/>
    </property>
    <layout class="QGridLayout" name="gridLayout_2">
     <item row="0" column="0" rowspan="2">
@@ -70,6 +70,9 @@
       </property>
       <property name="autoFillBackground">
        <bool>false</bool>
+      </property>
+      <property name="styleSheet">
+       <string notr="true"/>
       </property>
       <property name="frameShape">
        <enum>QFrame::NoFrame</enum>
@@ -99,18 +102,7 @@
           <string>Verifica os usuários</string>
          </property>
          <property name="styleSheet">
-          <string notr="true">QPushButton {
-    color: rgb(255, 255, 255);
-    border-radius: 8px;
-    font-size: 16px;
-    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */
-    border: 4px solid transparent;
-}
-
-QPushButton:hover {
-    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */
-    color: black;
-}</string>
+          <string notr="true"/>
          </property>
          <property name="text">
           <string>Verificar Usuários</string>
@@ -138,18 +130,7 @@ QPushButton:hover {
           <string>Base dos clientes</string>
          </property>
          <property name="styleSheet">
-          <string notr="true">QPushButton {
-    color: rgb(255, 255, 255);
-    border-radius: 8px;
-    font-size: 16px;
-    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */
-    border: 4px solid transparent;
-}
-
-QPushButton:hover {
-    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */
-    color: black;
-}</string>
+          <string notr="true"/>
          </property>
          <property name="text">
           <string>Clientes</string>
@@ -180,18 +161,7 @@ QPushButton:hover {
           <bool>false</bool>
          </property>
          <property name="styleSheet">
-          <string notr="true">QPushButton {
-    color: rgb(255, 255, 255);
-    border-radius: 8px;
-    font-size: 16px;
-    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */
-    border: 4px solid transparent;
-}
-
-QPushButton:hover {
-    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */
-    color: black;
-}</string>
+          <string notr="true"/>
          </property>
          <property name="text">
           <string>Home</string>
@@ -222,18 +192,7 @@ QPushButton:hover {
           <bool>false</bool>
          </property>
          <property name="styleSheet">
-          <string notr="true">QPushButton {
-    color: rgb(255, 255, 255);
-    border-radius: 8px;
-    font-size: 16px;
-    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */
-    border: 4px solid transparent;
-}
-
-QPushButton:hover {
-    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */
-    color: black;
-}</string>
+          <string notr="true"/>
          </property>
          <property name="text">
           <string>Verificar Estoque</string>
@@ -261,18 +220,7 @@ QPushButton:hover {
           <string>Cadastro dos Produtos</string>
          </property>
          <property name="styleSheet">
-          <string notr="true">QPushButton {
-    color: rgb(255, 255, 255);
-    border-radius: 8px;
-    font-size: 16px;
-    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */
-    border: 4px solid transparent;
-}
-
-QPushButton:hover {
-    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */
-    color: black;
-}</string>
+          <string notr="true"/>
          </property>
          <property name="text">
           <string>Cadastrar Produto</string>
@@ -300,18 +248,7 @@ QPushButton:hover {
           <string>Cadastro dos Usuários</string>
          </property>
          <property name="styleSheet">
-          <string notr="true">QPushButton {
-    color: rgb(255, 255, 255);
-    border-radius: 8px;
-    font-size: 16px;
-    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */
-    border: 4px solid transparent;
-}
-
-QPushButton:hover {
-    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */
-    color: black;
-}</string>
+          <string notr="true"/>
          </property>
          <property name="text">
           <string>Cadastrar Usuário</string>
@@ -361,18 +298,7 @@ QPushButton:hover {
        <string>Opções adicionais</string>
       </property>
       <property name="styleSheet">
-       <string notr="true">QToolButton {
-    background-color: rgb(50, 150, 250);
-    color: white;
-    border-radius: 5px;
-    border: 2px solid rgb(50, 150, 250);
-    padding: 5px 10px;
-}
-
-QToolButton:hover {
-    background-color: rgb(100, 180, 255);
-    border: 2px solid rgb(100, 180, 255);
-}
+       <string notr="true">
 
 </string>
       </property>
@@ -548,6 +474,9 @@ QToolButton:hover {
                   <height>234</height>
                  </size>
                 </property>
+                <property name="styleSheet">
+                 <string notr="true"/>
+                </property>
                 <property name="text">
                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:24pt; font-weight:600; font-style:italic;&quot;&gt;Bem vindo(a) ao&lt;/span&gt;&lt;/p&gt;&lt;p align=&quot;center&quot;&gt;&lt;br/&gt;&lt;/p&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:24pt; font-weight:600; font-style:italic;&quot;&gt;Sistema de Gerenciamento do &lt;/span&gt;&lt;/p&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:24pt; font-weight:600; font-style:italic;&quot;&gt;controle de Estoque&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                 </property>
@@ -680,18 +609,7 @@ QToolButton:hover {
               <cursorShape>PointingHandCursor</cursorShape>
              </property>
              <property name="styleSheet">
-              <string notr="true">QPushButton {
-    color: rgb(255, 255, 255);
-    border-radius: 8px;
-    font-size: 16px;
-    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */
-    border: 4px solid transparent;
-}
-
-QPushButton:hover {
-    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */
-    color: black;
-}</string>
+              <string notr="true"/>
              </property>
              <property name="text">
               <string>Gerar estorno</string>
@@ -731,18 +649,7 @@ QPushButton:hover {
                  <cursorShape>PointingHandCursor</cursorShape>
                 </property>
                 <property name="styleSheet">
-                 <string notr="true">QPushButton {
-    color: rgb(255, 255, 255);
-    border-radius: 8px;
-    font-size: 16px;
-    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */
-    border: 4px solid transparent;
-}
-
-QPushButton:hover {
-    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */
-    color: black;
-}</string>
+                 <string notr="true"/>
                 </property>
                 <property name="text">
                  <string>Abrir Planilha</string>
@@ -758,19 +665,7 @@ QPushButton:hover {
                  </sizepolicy>
                 </property>
                 <property name="styleSheet">
-                 <string notr="true">QLineEdit {
-	color: black;
-    background-color: rgb(240, 240, 240); /* Cor de fundo cinza claro */
-    border: 3px solid rgb(50, 150,250); /* Borda azul */
-    border-radius: 12px; /* Cantos arredondados */
-    padding: 3px; /* Espaçamento interno */
-}
-
-QLineEdit::placeholderText {
-    color: black; /* Cor do texto do placeholder */
-}
-
-</string>
+                 <string notr="true"/>
                 </property>
                 <property name="alignment">
                  <set>Qt::AlignCenter</set>
@@ -792,17 +687,7 @@ QLineEdit::placeholderText {
                  </sizepolicy>
                 </property>
                 <property name="styleSheet">
-                 <string notr="true">QProgressBar {
-	color: black;
-    border: 3px solid rgb(50,150,250);
-    border-radius: 13px;  /* Aumentei o valor para deixar a borda mais redonda */
-    background-color: #f0f0f0;  /* Cor cinza claro */
-}
-
-QProgressBar::chunk {
-    background-color: #4682b4;  /* Cor do progresso preenchido (azul) */
-    border-radius: 12px;  /* Faz com que o progresso também tenha bordas arredondadas */
-}
+                 <string notr="true">
 </string>
                 </property>
                 <property name="value">
@@ -834,18 +719,7 @@ QProgressBar::chunk {
               <cursorShape>PointingHandCursor</cursorShape>
              </property>
              <property name="styleSheet">
-              <string notr="true">QPushButton {
-    color: rgb(255, 255, 255);
-    border-radius: 8px;
-    font-size: 16px;
-    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */
-    border: 4px solid transparent;
-}
-
-QPushButton:hover {
-    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */
-    color: black;
-}</string>
+              <string notr="true"/>
              </property>
              <property name="text">
               <string>Importar</string>
@@ -867,12 +741,7 @@ QPushButton:hover {
               </size>
              </property>
              <property name="styleSheet">
-              <string notr="true">QLabel {
-    color: white;
-    text-align: center; /* Centraliza o texto horizontalmente */
-    vertical-align: middle; /* Centraliza o texto verticalmente */
-	border: 3px solid white;
-}</string>
+              <string notr="true"/>
              </property>
              <property name="text">
               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:16pt; font-weight:600; font-style:italic;&quot;&gt;SAÍDA&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -894,12 +763,7 @@ QPushButton:hover {
               </size>
              </property>
              <property name="styleSheet">
-              <string notr="true">QLabel {
-    color: white;
-    text-align: center; /* Centraliza o texto horizontalmente */
-    vertical-align: middle; /* Centraliza o texto verticalmente */
-	border: 3px solid white;
-}</string>
+              <string notr="true"/>
              </property>
              <property name="text">
               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:16pt; font-weight:600; font-style:italic;&quot;&gt;ESTOQUE&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -939,18 +803,7 @@ QPushButton:hover {
                  <cursorShape>PointingHandCursor</cursorShape>
                 </property>
                 <property name="styleSheet">
-                 <string notr="true">QPushButton {
-    color: rgb(255, 255, 255);
-    border-radius: 8px;
-    font-size: 16px;
-    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */
-    border: 4px solid transparent;
-}
-
-QPushButton:hover {
-    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */
-    color: black;
-}</string>
+                 <string notr="true"/>
                 </property>
                 <property name="text">
                  <string>Novo Produto</string>
@@ -975,18 +828,7 @@ QPushButton:hover {
                  <cursorShape>PointingHandCursor</cursorShape>
                 </property>
                 <property name="styleSheet">
-                 <string notr="true">QPushButton {
-    color: rgb(255, 255, 255);
-    border-radius: 8px;
-    font-size: 16px;
-    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */
-    border: 4px solid transparent;
-}
-
-QPushButton:hover {
-    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */
-    color: black;
-}</string>
+                 <string notr="true"/>
                 </property>
                 <property name="text">
                  <string>Atualizar saída</string>
@@ -1011,18 +853,7 @@ QPushButton:hover {
                  <cursorShape>PointingHandCursor</cursorShape>
                 </property>
                 <property name="styleSheet">
-                 <string notr="true">QPushButton {
-    color: rgb(255, 255, 255);
-    border-radius: 8px;
-    font-size: 16px;
-    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */
-    border: 4px solid transparent;
-}
-
-QPushButton:hover {
-    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */
-    color: black;
-}</string>
+                 <string notr="true"/>
                 </property>
                 <property name="text">
                  <string>Atualizar estoque</string>
@@ -1047,18 +878,7 @@ QPushButton:hover {
                  <cursorShape>PointingHandCursor</cursorShape>
                 </property>
                 <property name="styleSheet">
-                 <string notr="true">QPushButton {
-    color: rgb(255, 255, 255);
-    border-radius: 8px;
-    font-size: 16px;
-    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */
-    border: 4px solid transparent;
-}
-
-QPushButton:hover {
-    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */
-    color: black;
-}</string>
+                 <string notr="true"/>
                 </property>
                 <property name="text">
                  <string>Histórico</string>
@@ -1083,18 +903,7 @@ QPushButton:hover {
                  <cursorShape>PointingHandCursor</cursorShape>
                 </property>
                 <property name="styleSheet">
-                 <string notr="true">QPushButton {
-    color: rgb(255, 255, 255);
-    border-radius: 8px;
-    font-size: 16px;
-    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */
-    border: 4px solid transparent;
-}
-
-QPushButton:hover {
-    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */
-    color: black;
-}</string>
+                 <string notr="true"/>
                 </property>
                 <property name="text">
                  <string>Gerar PDF</string>
@@ -1119,18 +928,7 @@ QPushButton:hover {
                  <cursorShape>PointingHandCursor</cursorShape>
                 </property>
                 <property name="styleSheet">
-                 <string notr="true">QPushButton {
-    color: rgb(255, 255, 255);
-    border-radius: 8px;
-    font-size: 16px;
-    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */
-    border: 4px solid transparent;
-}
-
-QPushButton:hover {
-    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */
-    color: black;
-}</string>
+                 <string notr="true"/>
                 </property>
                 <property name="text">
                  <string>Limpar Tabelas</string>
@@ -1155,18 +953,7 @@ QPushButton:hover {
                  <cursorShape>PointingHandCursor</cursorShape>
                 </property>
                 <property name="styleSheet">
-                 <string notr="true">QPushButton {
-    color: rgb(255, 255, 255);
-    border-radius: 8px;
-    font-size: 16px;
-    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */
-    border: 4px solid transparent;
-}
-
-QPushButton:hover {
-    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */
-    color: black;
-}</string>
+                 <string notr="true"/>
                 </property>
                 <property name="text">
                  <string>Incluir produto no sistema</string>
@@ -1194,18 +981,7 @@ QPushButton:hover {
               <cursorShape>PointingHandCursor</cursorShape>
              </property>
              <property name="styleSheet">
-              <string notr="true">QPushButton {
-    color: rgb(255, 255, 255);
-    border-radius: 8px;
-    font-size: 16px;
-    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */
-    border: 4px solid transparent;
-}
-
-QPushButton:hover {
-    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */
-    color: black;
-}</string>
+              <string notr="true"/>
              </property>
              <property name="text">
               <string>Gerar saída</string>
@@ -1215,64 +991,7 @@ QPushButton:hover {
            <item row="2" column="0" colspan="8">
             <widget class="QTableWidget" name="table_base">
              <property name="styleSheet">
-              <string notr="true">/* Estiliza apenas o QTableView com objectName &quot;table_ativos&quot; */
-QTableView {
-    gridline-color: black;
-    border: 1px solid white;
-    color: black;
-    selection-color: white;
-}
-
-/* Estiliza a barra de rolagem horizontal */
-QTableView QScrollBar:horizontal {
-    border: none;
-    background-color: rgb(255, 255, 255);
-    height: 15px;
-    margin: 0px 10px 0px 10px;
-}
-
-/* Estiliza a barra de rolagem vertical */
-QTableView QScrollBar:vertical {
-    border: none;
-    background-color: rgb(255, 255, 255); /* branco */
-    width: 35px;
-    margin: 0px 10px 0px 10px;
-}
-
-/* Parte que você arrasta */
-QTableView QScrollBar::handle:vertical {
-    background-color: rgb(180, 180,150);  /* cinza */
-    min-height: 30px;
-	border-radius: 5px;
-}
-
-QTableView QScrollBar::handle:horizontal{
-	background-color: rgb(180,180,150);
-	min-height: 30px;
-	border-radius: 5px;
-}
-
-/* Remove os botões */
-QTableView QScrollBar::add-line:vertical,
-QTableView QScrollBar::sub-line:vertical {
-    height: 0px;
-    width: 0px;
-    border: none;
-    background: none;
-}
-
-QTableView QScrollBar::groove:horizontal{
-	background-color: rgb(100,240,240);
-	border-radius: 2px;
-	height: 15px;
-	margin: 0px 10px 0px 10px;
-}
-
-/* Estilo para item selecionado */
-QTableWidget::item:selected {
-    background-color: rgb(0, 120, 215);
-    color: white;
-}</string>
+              <string notr="true"/>
              </property>
              <property name="frameShape">
               <enum>QFrame::NoFrame</enum>
@@ -1392,64 +1111,7 @@ QTableWidget::item:selected {
            <item row="4" column="0" colspan="8">
             <widget class="QTableWidget" name="table_saida">
              <property name="styleSheet">
-              <string notr="true">/* Estiliza apenas o QTableView com objectName &quot;table_ativos&quot; */
-QTableView {
-    gridline-color: black;
-    border: 1px solid white;
-    color: black;
-    selection-color: white;
-}
-
-/* Estiliza a barra de rolagem horizontal */
-QTableView QScrollBar:horizontal {
-    border: none;
-    background-color: rgb(255, 255, 255);
-    height: 15px;
-    margin: 0px 10px 0px 10px;
-}
-
-/* Estiliza a barra de rolagem vertical */
-QTableView QScrollBar:vertical {
-    border: none;
-    background-color: rgb(255, 255, 255); /* branco */
-    width: 35px;
-    margin: 0px 10px 0px 10px;
-}
-
-/* Parte que você arrasta */
-QTableView QScrollBar::handle:vertical {
-    background-color: rgb(180, 180,150);  /* cinza */
-    min-height: 30px;
-	border-radius: 5px;
-}
-
-QTableView QScrollBar::handle:horizontal{
-	background-color: rgb(180,180,150);
-	min-height: 30px;
-	border-radius: 5px;
-}
-
-/* Remove os botões */
-QTableView QScrollBar::add-line:vertical,
-QTableView QScrollBar::sub-line:vertical {
-    height: 0px;
-    width: 0px;
-    border: none;
-    background: none;
-}
-
-QTableView QScrollBar::groove:horizontal{
-	background-color: rgb(100,240,240);
-	border-radius: 2px;
-	height: 15px;
-	margin: 0px 10px 0px 10px;
-}
-
-/* Estilo para item selecionado */
-QTableWidget::item:selected {
-    background-color: rgb(0, 120, 215);
-    color: white;
-}</string>
+              <string notr="true"/>
              </property>
              <property name="frameShape">
               <enum>QFrame::NoFrame</enum>
@@ -1556,64 +1218,7 @@ QTableWidget::item:selected {
            <item row="5" column="0" colspan="6">
             <widget class="QTableWidget" name="table_inativos">
              <property name="styleSheet">
-              <string notr="true">/* Estiliza apenas o QTableView com objectName &quot;table_ativos&quot; */
-QTableView {
-    gridline-color: black;
-    border: 1px solid white;
-    color: black;
-    selection-color: white;
-}
-
-/* Estiliza a barra de rolagem horizontal */
-QTableView QScrollBar:horizontal {
-    border: none;
-    background-color: rgb(255, 255, 255);
-    height: 15px;
-    margin: 0px 10px 0px 10px;
-}
-
-/* Estiliza a barra de rolagem vertical */
-QTableView QScrollBar:vertical {
-    border: none;
-    background-color: rgb(255, 255, 255); /* branco */
-    width: 35px;
-    margin: 0px 10px 0px 10px;
-}
-
-/* Parte que você arrasta */
-QTableView QScrollBar::handle:vertical {
-    background-color: rgb(180, 180,150);  /* cinza */
-    min-height: 30px;
-	border-radius: 5px;
-}
-
-QTableView QScrollBar::handle:horizontal{
-	background-color: rgb(180,180,150);
-	min-height: 30px;
-	border-radius: 5px;
-}
-
-/* Remove os botões */
-QTableView QScrollBar::add-line:vertical,
-QTableView QScrollBar::sub-line:vertical {
-    height: 0px;
-    width: 0px;
-    border: none;
-    background: none;
-}
-
-QTableView QScrollBar::groove:horizontal{
-	background-color: rgb(100,240,240);
-	border-radius: 2px;
-	height: 15px;
-	margin: 0px 10px 0px 10px;
-}
-
-/* Estilo para item selecionado */
-QTableWidget::item:selected {
-    background-color: rgb(0, 120, 215);
-    color: white;
-}</string>
+              <string notr="true"/>
              </property>
              <property name="frameShape">
               <enum>QFrame::NoFrame</enum>
@@ -1782,18 +1387,7 @@ QTableWidget::item:selected {
               <cursorShape>PointingHandCursor</cursorShape>
              </property>
              <property name="styleSheet">
-              <string notr="true">QPushButton {
-    color: rgb(255, 255, 255);
-    border-radius: 8px;
-    font-size: 16px;
-    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */
-    border: 4px solid transparent;
-}
-
-QPushButton:hover {
-    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */
-    color: black;
-}</string>
+              <string notr="true"/>
              </property>
              <property name="text">
               <string>Gerar Saída</string>
@@ -1857,13 +1451,7 @@ QPushButton:hover {
               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:18pt; font-weight:600; font-style:italic;&quot;&gt;ESTOQUE&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
              </property>
              <property name="styleSheet">
-              <string notr="true">QLabel {
-    color: white;
-    text-align: center; /* Centraliza o texto horizontalmente */
-    vertical-align: middle; /* Centraliza o texto verticalmente */
-	border: 3px solid white;
-}
-</string>
+              <string notr="true"/>
              </property>
              <property name="text">
               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:18pt; font-weight:600; font-style:italic;&quot;&gt;ATIVOS&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -1894,18 +1482,7 @@ QPushButton:hover {
               <cursorShape>PointingHandCursor</cursorShape>
              </property>
              <property name="styleSheet">
-              <string notr="true">QPushButton {
-    color: rgb(255, 255, 255);
-    border-radius: 8px;
-    font-size: 16px;
-    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */
-    border: 4px solid transparent;
-}
-
-QPushButton:hover {
-    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */
-    color: black;
-}</string>
+              <string notr="true"/>
              </property>
              <property name="text">
               <string>Importar</string>
@@ -1954,18 +1531,7 @@ QPushButton:hover {
                  <cursorShape>PointingHandCursor</cursorShape>
                 </property>
                 <property name="styleSheet">
-                 <string notr="true">QPushButton {
-    color: rgb(255, 255, 255);
-    border-radius: 8px;
-    font-size: 16px;
-    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */
-    border: 4px solid transparent;
-}
-
-QPushButton:hover {
-    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */
-    color: black;
-}</string>
+                 <string notr="true"/>
                 </property>
                 <property name="text">
                  <string>Histórico</string>
@@ -1996,18 +1562,7 @@ QPushButton:hover {
                  <cursorShape>PointingHandCursor</cursorShape>
                 </property>
                 <property name="styleSheet">
-                 <string notr="true">QPushButton {
-    color: rgb(255, 255, 255);
-    border-radius: 8px;
-    font-size: 16px;
-    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */
-    border: 4px solid transparent;
-}
-
-QPushButton:hover {
-    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */
-    color: black;
-}</string>
+                 <string notr="true"/>
                 </property>
                 <property name="text">
                  <string>Nova Usuário</string>
@@ -2032,18 +1587,7 @@ QPushButton:hover {
                  <cursorShape>PointingHandCursor</cursorShape>
                 </property>
                 <property name="styleSheet">
-                 <string notr="true">QPushButton {
-    color: rgb(255, 255, 255);
-    border-radius: 8px;
-    font-size: 16px;
-    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */
-    border: 4px solid transparent;
-}
-
-QPushButton:hover {
-    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */
-    color: black;
-}</string>
+                 <string notr="true"/>
                 </property>
                 <property name="text">
                  <string>Limpar Tabelas</string>
@@ -2068,18 +1612,7 @@ QPushButton:hover {
                  <cursorShape>PointingHandCursor</cursorShape>
                 </property>
                 <property name="styleSheet">
-                 <string notr="true">QPushButton {
-    color: rgb(255, 255, 255);
-    border-radius: 8px;
-    font-size: 16px;
-    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */
-    border: 4px solid transparent;
-}
-
-QPushButton:hover {
-    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */
-    color: black;
-}</string>
+                 <string notr="true"/>
                 </property>
                 <property name="text">
                  <string>Atualizar Ativos</string>
@@ -2104,18 +1637,7 @@ QPushButton:hover {
                  <cursorShape>PointingHandCursor</cursorShape>
                 </property>
                 <property name="styleSheet">
-                 <string notr="true">QPushButton {
-    color: rgb(255, 255, 255);
-    border-radius: 8px;
-    font-size: 16px;
-    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */
-    border: 4px solid transparent;
-}
-
-QPushButton:hover {
-    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */
-    color: black;
-}</string>
+                 <string notr="true"/>
                 </property>
                 <property name="text">
                  <string>Atualizar Inativos</string>
@@ -2140,64 +1662,7 @@ QPushButton:hover {
               </size>
              </property>
              <property name="styleSheet">
-              <string notr="true">/* Estiliza apenas o QTableView com objectName &quot;table_ativos&quot; */
-QTableView {
-    gridline-color: black;
-    border: 1px solid white;
-    color: black;
-    selection-color: white;
-}
-
-/* Estiliza a barra de rolagem horizontal */
-QTableView QScrollBar:horizontal {
-    border: none;
-    background-color: rgb(255, 255, 255);
-    height: 15px;
-    margin: 0px 10px 0px 10px;
-}
-
-/* Estiliza a barra de rolagem vertical */
-QTableView QScrollBar:vertical {
-    border: none;
-    background-color: rgb(255, 255, 255); /* branco */
-    width: 35px;
-    margin: 0px 10px 0px 10px;
-}
-
-/* Parte que você arrasta */
-QTableView QScrollBar::handle:vertical {
-    background-color: rgb(180, 180,150);  /* cinza */
-    min-height: 30px;
-	border-radius: 5px;
-}
-
-QTableView QScrollBar::handle:horizontal{
-	background-color: rgb(180,180,150);
-	min-height: 30px;
-	border-radius: 5px;
-}
-
-/* Remove os botões */
-QTableView QScrollBar::add-line:vertical,
-QTableView QScrollBar::sub-line:vertical {
-    height: 0px;
-    width: 0px;
-    border: none;
-    background: none;
-}
-
-QTableView QScrollBar::groove:horizontal{
-	background-color: rgb(100,240,240);
-	border-radius: 2px;
-	height: 15px;
-	margin: 0px 10px 0px 10px;
-}
-
-/* Estilo para item selecionado */
-QTableWidget::item:selected {
-    background-color: rgb(0, 120, 215);
-    color: white;
-}</string>
+              <string notr="true"/>
              </property>
              <property name="frameShape">
               <enum>QFrame::NoFrame</enum>
@@ -2376,13 +1841,7 @@ QTableWidget::item:selected {
               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:18pt; font-weight:600; font-style:italic;&quot;&gt;ESTOQUE&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
              </property>
              <property name="styleSheet">
-              <string notr="true">QLabel {
-    color: white;
-    text-align: center; /* Centraliza o texto horizontalmente */
-    vertical-align: middle; /* Centraliza o texto verticalmente */
-	border: 3px solid white;
-}
-</string>
+              <string notr="true"/>
              </property>
              <property name="text">
               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:18pt; font-weight:600; font-style:italic;&quot;&gt;INATIVOS&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -2436,18 +1895,7 @@ QTableWidget::item:selected {
                    <cursorShape>PointingHandCursor</cursorShape>
                   </property>
                   <property name="styleSheet">
-                   <string notr="true">QPushButton {
-    color: rgb(255, 255, 255);
-    border-radius: 8px;
-    font-size: 16px;
-    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */
-    border: 4px solid transparent;
-}
-
-QPushButton:hover {
-    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */
-    color: black;
-}</string>
+                   <string notr="true"/>
                   </property>
                   <property name="text">
                    <string>Abrir Planilha</string>
@@ -2463,18 +1911,7 @@ QPushButton:hover {
                    </sizepolicy>
                   </property>
                   <property name="styleSheet">
-                   <string notr="true">QLineEdit {
-	color: black;
-    background-color: rgb(240, 240, 240); /* Cor de fundo cinza claro */
-    border: 3px solid rgb(50, 150,250); /* Borda azul */
-    border-radius: 12px; /* Cantos arredondados */
-    padding: 3px; /* Espaçamento interno */
-}
-
-QLineEdit::placeholderText {
-    color: black; /* Cor do texto do placeholder */
-}
-
+                   <string notr="true">
 </string>
                   </property>
                   <property name="alignment">
@@ -2497,18 +1934,7 @@ QLineEdit::placeholderText {
                    </sizepolicy>
                   </property>
                   <property name="styleSheet">
-                   <string notr="true">QProgressBar {
-	color: black;
-    border: 3px solid rgb(50,150,250);
-    border-radius: 13px;  /* Aumentei o valor para deixar a borda mais redonda */
-    background-color: #f0f0f0;  /* Cor cinza claro */
-}
-
-QProgressBar::chunk {
-    background-color: #4682b4;  /* Cor do progresso preenchido (azul) */
-    border-radius: 12px;  /* Faz com que o progresso também tenha bordas arredondadas */
-}
-</string>
+                   <string notr="true"/>
                   </property>
                   <property name="value">
                    <number>0</number>
@@ -2542,7 +1968,7 @@ QProgressBar::chunk {
         </sizepolicy>
        </property>
        <property name="styleSheet">
-        <string notr="true">background-color: rgb(0, 80, 121);</string>
+        <string notr="true"/>
        </property>
        <layout class="QGridLayout" name="gridLayout_10">
         <item row="0" column="0">
@@ -2554,7 +1980,7 @@ QProgressBar::chunk {
            </sizepolicy>
           </property>
           <property name="styleSheet">
-           <string notr="true">background-color: rgb(0, 80, 121);</string>
+           <string notr="true"/>
           </property>
           <property name="frameShape">
            <enum>QFrame::NoFrame</enum>
@@ -2563,8 +1989,8 @@ QProgressBar::chunk {
            <enum>QFrame::Raised</enum>
           </property>
           <layout class="QGridLayout" name="gridLayout_11">
-           <item row="2" column="1">
-            <widget class="QFrame" name="frame_botoes_a_e_a_a">
+           <item row="2" column="3" rowspan="3">
+            <widget class="QFrame" name="frame_imagem_produto_3">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
                <horstretch>0</horstretch>
@@ -2573,14 +1999,14 @@ QProgressBar::chunk {
              </property>
              <property name="minimumSize">
               <size>
-               <width>0</width>
-               <height>0</height>
+               <width>302</width>
+               <height>321</height>
               </size>
              </property>
              <property name="maximumSize">
               <size>
-               <width>218</width>
-               <height>190</height>
+               <width>283</width>
+               <height>309</height>
               </size>
              </property>
              <property name="frameShape">
@@ -2589,9 +2015,180 @@ QProgressBar::chunk {
              <property name="frameShadow">
               <enum>QFrame::Raised</enum>
              </property>
-             <layout class="QVBoxLayout" name="verticalLayout_12">
+            </widget>
+           </item>
+           <item row="2" column="2" rowspan="3">
+            <widget class="QFrame" name="frame_6">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>350</width>
+               <height>16777215</height>
+              </size>
+             </property>
+             <property name="frameShape">
+              <enum>QFrame::NoFrame</enum>
+             </property>
+             <property name="frameShadow">
+              <enum>QFrame::Raised</enum>
+             </property>
+             <layout class="QGridLayout" name="gridLayout_16">
+              <item row="0" column="0">
+               <widget class="QFrame" name="frame_valor_total_produtos">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>321</width>
+                  <height>102</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>321</width>
+                  <height>102</height>
+                 </size>
+                </property>
+                <property name="styleSheet">
+                 <string notr="true"/>
+                </property>
+                <property name="frameShape">
+                 <enum>QFrame::StyledPanel</enum>
+                </property>
+                <property name="frameShadow">
+                 <enum>QFrame::Raised</enum>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="0">
+               <widget class="QFrame" name="frame_valor_do_desconto">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>0</width>
+                  <height>102</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>321</width>
+                  <height>102</height>
+                 </size>
+                </property>
+                <property name="styleSheet">
+                 <string notr="true"/>
+                </property>
+                <property name="frameShape">
+                 <enum>QFrame::StyledPanel</enum>
+                </property>
+                <property name="frameShadow">
+                 <enum>QFrame::Raised</enum>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="0">
+               <widget class="QFrame" name="frame_valor_com_desconto1">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>0</width>
+                  <height>102</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>321</width>
+                  <height>102</height>
+                 </size>
+                </property>
+                <property name="styleSheet">
+                 <string notr="true"/>
+                </property>
+                <property name="frameShape">
+                 <enum>QFrame::StyledPanel</enum>
+                </property>
+                <property name="frameShadow">
+                 <enum>QFrame::Raised</enum>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="0">
+               <widget class="QFrame" name="frame_quantidade">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>0</width>
+                  <height>102</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>321</width>
+                  <height>102</height>
+                 </size>
+                </property>
+                <property name="styleSheet">
+                 <string notr="true">
+</string>
+                </property>
+                <property name="frameShape">
+                 <enum>QFrame::StyledPanel</enum>
+                </property>
+                <property name="frameShadow">
+                 <enum>QFrame::Raised</enum>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item row="3" column="1">
+            <widget class="QFrame" name="frame_remover_e_carregar_imagem">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>200</width>
+               <height>89</height>
+              </size>
+             </property>
+             <property name="frameShape">
+              <enum>QFrame::NoFrame</enum>
+             </property>
+             <property name="frameShadow">
+              <enum>QFrame::Raised</enum>
+             </property>
+             <layout class="QVBoxLayout" name="verticalLayout_13">
               <item>
-               <widget class="QPushButton" name="btn_adicionar_produto">
+               <widget class="QPushButton" name="btn_remover_imagem">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
                   <horstretch>0</horstretch>
@@ -2600,7 +2197,7 @@ QProgressBar::chunk {
                 </property>
                 <property name="maximumSize">
                  <size>
-                  <width>16777215</width>
+                  <width>180</width>
                   <height>30</height>
                  </size>
                 </property>
@@ -2608,39 +2205,34 @@ QProgressBar::chunk {
                  <cursorShape>PointingHandCursor</cursorShape>
                 </property>
                 <property name="styleSheet">
-                 <string notr="true">QPushButton {
-    color: rgb(255, 255, 255);
-    border-radius: 8px;
-    font-size: 16px;
-    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */
-    border: 4px solid transparent;
-}
-
-QPushButton:hover {
-    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */
-    color: black;
-}</string>
+                 <string notr="true"/>
                 </property>
                 <property name="text">
-                 <string>ADICIONAR</string>
+                 <string>REMOVER IMAGEM</string>
                 </property>
                 <property name="icon">
                  <iconset>
-                  <normaloff>imagens/pngwing.com.png</normaloff>imagens/pngwing.com.png</iconset>
+                  <normaloff>imagens/icons8-remover-imagem-16.png</normaloff>imagens/icons8-remover-imagem-16.png</iconset>
                 </property>
                </widget>
               </item>
               <item>
-               <widget class="QPushButton" name="btn_editar">
+               <widget class="QPushButton" name="btn_carregar_imagem">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
                   <horstretch>0</horstretch>
                   <verstretch>0</verstretch>
                  </sizepolicy>
                 </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>153</width>
+                  <height>0</height>
+                 </size>
+                </property>
                 <property name="maximumSize">
                  <size>
-                  <width>16777215</width>
+                  <width>180</width>
                   <height>30</height>
                  </size>
                 </property>
@@ -2648,160 +2240,14 @@ QPushButton:hover {
                  <cursorShape>PointingHandCursor</cursorShape>
                 </property>
                 <property name="styleSheet">
-                 <string notr="true">QPushButton {
-    color: rgb(255, 255, 255);
-    border-radius: 8px;
-    font-size: 16px;
-    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */
-    border: 4px solid transparent;
-}
-
-QPushButton:hover {
-    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */
-    color: black;
-}</string>
+                 <string notr="true"/>
                 </property>
                 <property name="text">
-                 <string>EDITAR </string>
+                 <string>CARREGAR IMAGEM</string>
                 </property>
                 <property name="icon">
                  <iconset>
-                  <normaloff>imagens/editar.png</normaloff>imagens/editar.png</iconset>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QPushButton" name="btn_sair_modo_edicao_produtos">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="maximumSize">
-                 <size>
-                  <width>16777215</width>
-                  <height>30</height>
-                 </size>
-                </property>
-                <property name="cursor">
-                 <cursorShape>PointingHandCursor</cursorShape>
-                </property>
-                <property name="styleSheet">
-                 <string notr="true">QPushButton {
-    color: rgb(255, 255, 255);
-    border-radius: 8px;
-    font-size: 14px;
-    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */
-    border: 4px solid transparent;
-}
-
-QPushButton:hover {
-    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */
-    color: black;
-}</string>
-                </property>
-                <property name="text">
-                 <string>SAIR DO MODO EDIÇÃO</string>
-                </property>
-                <property name="icon">
-                 <iconset>
-                  <normaloff>imagens/sair.png</normaloff>imagens/sair.png</iconset>
-                </property>
-                <property name="iconSize">
-                 <size>
-                  <width>16</width>
-                  <height>16</height>
-                 </size>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QPushButton" name="btn_atualizar_produto">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="maximumSize">
-                 <size>
-                  <width>16777215</width>
-                  <height>30</height>
-                 </size>
-                </property>
-                <property name="cursor">
-                 <cursorShape>PointingHandCursor</cursorShape>
-                </property>
-                <property name="styleSheet">
-                 <string notr="true">QPushButton {
-    color: rgb(255, 255, 255);
-    border-radius: 8px;
-    font-size: 16px;
-    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */
-    border: 4px solid transparent;
-}
-
-QPushButton:hover {
-    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */
-    color: black;
-}</string>
-                </property>
-                <property name="text">
-                 <string>ATUALIZAR</string>
-                </property>
-                <property name="icon">
-                 <iconset>
-                  <normaloff>imagens/toppng.com-update-512x512.png</normaloff>imagens/toppng.com-update-512x512.png</iconset>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QPushButton" name="btn_limpar_campos">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="maximumSize">
-                 <size>
-                  <width>16777215</width>
-                  <height>30</height>
-                 </size>
-                </property>
-                <property name="cursor">
-                 <cursorShape>PointingHandCursor</cursorShape>
-                </property>
-                <property name="styleSheet">
-                 <string notr="true">QPushButton {
-    color: rgb(255, 255, 255);
-    border-radius: 8px;
-    font-size: 16px;
-    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */
-    border: 4px solid transparent;
-}
-
-QPushButton:hover {
-    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */
-    color: black;
-}</string>
-                </property>
-                <property name="text">
-                 <string>APAGAR</string>
-                </property>
-                <property name="icon">
-                 <iconset>
-                  <normaloff>imagens/Delete-Button-PNG-Download-Image.png</normaloff>imagens/Delete-Button-PNG-Download-Image.png</iconset>
-                </property>
-                <property name="iconSize">
-                 <size>
-                  <width>27</width>
-                  <height>29</height>
-                 </size>
-                </property>
-                <property name="checkable">
-                 <bool>false</bool>
+                  <normaloff>imagens/014upload2_99941.png</normaloff>imagens/014upload2_99941.png</iconset>
                 </property>
                </widget>
               </item>
@@ -2829,7 +2275,7 @@ QPushButton:hover {
               </size>
              </property>
              <property name="styleSheet">
-              <string notr="true">background-color: rgb(0, 80, 121);</string>
+              <string notr="true"/>
              </property>
              <property name="frameShape">
               <enum>QFrame::NoFrame</enum>
@@ -2858,12 +2304,7 @@ QPushButton:hover {
                    <item>
                     <widget class="QLabel" name="label_produto">
                      <property name="styleSheet">
-                      <string notr="true">QLabel {
-    color: black;
-    text-align: center; /* Centraliza o texto horizontalmente */
-    vertical-align: middle; /* Centraliza o texto verticalmente */
-}
-</string>
+                      <string notr="true"/>
                      </property>
                      <property name="text">
                       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Produto&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -2891,17 +2332,7 @@ QPushButton:hover {
                       </size>
                      </property>
                      <property name="styleSheet">
-                      <string notr="true">QLineEdit {
-	color: black;
-    background-color: rgb(240, 240, 240); /* Cor de fundo cinza claro */
-    border: 2px solid rgb(50, 150,250); /* Borda azul */
-    border-radius: 6px; /* Cantos arredondados */
-    padding: 3px; /* Espaçamento interno */
-}
-
-QLineEdit::placeholderText {
-    color: black; /* Cor do texto do placeholder */
-}
+                      <string notr="true">
 </string>
                      </property>
                     </widget>
@@ -2947,11 +2378,7 @@ QLineEdit::placeholderText {
                    <item>
                     <widget class="QLabel" name="label_quantidade">
                      <property name="styleSheet">
-                      <string notr="true">QLabel {
-    color: black;
-    text-align: center; /* Centraliza o texto horizontalmente */
-    vertical-align: middle; /* Centraliza o texto verticalmente */
-}
+                      <string notr="true">
 </string>
                      </property>
                      <property name="text">
@@ -2980,18 +2407,7 @@ QLineEdit::placeholderText {
                       </size>
                      </property>
                      <property name="styleSheet">
-                      <string notr="true">QLineEdit {
-	color: black;
-    background-color: rgb(240, 240, 240); /* Cor de fundo cinza claro */
-    border: 2px solid rgb(50, 150,250); /* Borda azul */
-    border-radius: 6px; /* Cantos arredondados */
-    padding: 3px; /* Espaçamento interno */
-}
-
-QLineEdit::placeholderText {
-    color: black; /* Cor do texto do placeholder */
-}
-</string>
+                      <string notr="true"/>
                      </property>
                     </widget>
                    </item>
@@ -3025,7 +2441,7 @@ QLineEdit::placeholderText {
                  </size>
                 </property>
                 <property name="styleSheet">
-                 <string notr="true">background-color: rgb(0, 80, 121);</string>
+                 <string notr="true"/>
                 </property>
                 <property name="frameShape">
                  <enum>QFrame::NoFrame</enum>
@@ -3039,12 +2455,7 @@ QLineEdit::placeholderText {
                    <item>
                     <widget class="QLabel" name="label_valor_produto_3">
                      <property name="styleSheet">
-                      <string notr="true">QLabel {
-    color: black;
-    text-align: center; /* Centraliza o texto horizontalmente */
-    vertical-align: middle; /* Centraliza o texto verticalmente */
-}
-</string>
+                      <string notr="true"/>
                      </property>
                      <property name="text">
                       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Valor do produto&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -3072,18 +2483,7 @@ QLineEdit::placeholderText {
                       </size>
                      </property>
                      <property name="styleSheet">
-                      <string notr="true">QLineEdit {
-	color: black;
-    background-color: rgb(240, 240, 240); /* Cor de fundo cinza claro */
-    border: 2px solid rgb(50, 150,250); /* Borda azul */
-    border-radius: 6px; /* Cantos arredondados */
-    padding: 3px; /* Espaçamento interno */
-}
-
-QLineEdit::placeholderText {
-    color: black; /* Cor do texto do placeholder */
-}
-</string>
+                      <string notr="true"/>
                      </property>
                     </widget>
                    </item>
@@ -3117,7 +2517,7 @@ QLineEdit::placeholderText {
                  </size>
                 </property>
                 <property name="styleSheet">
-                 <string notr="true">background-color: rgb(0, 80, 121);</string>
+                 <string notr="true"/>
                 </property>
                 <property name="frameShape">
                  <enum>QFrame::NoFrame</enum>
@@ -3131,12 +2531,7 @@ QLineEdit::placeholderText {
                    <item>
                     <widget class="QLabel" name="label_desconto_3">
                      <property name="styleSheet">
-                      <string notr="true">QLabel {
-    color: black;
-    text-align: center; /* Centraliza o texto horizontalmente */
-    vertical-align: middle; /* Centraliza o texto verticalmente */
-}
-</string>
+                      <string notr="true"/>
                      </property>
                      <property name="text">
                       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Desconto&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -3164,18 +2559,7 @@ QLineEdit::placeholderText {
                       </size>
                      </property>
                      <property name="styleSheet">
-                      <string notr="true">QLineEdit {
-	color: black;
-    background-color: rgb(240, 240, 240); /* Cor de fundo cinza claro */
-    border: 2px solid rgb(50, 150,250); /* Borda azul */
-    border-radius: 6px; /* Cantos arredondados */
-    padding: 3px; /* Espaçamento interno */
-}
-
-QLineEdit::placeholderText {
-    color: black; /* Cor do texto do placeholder */
-}
-</string>
+                      <string notr="true"/>
                      </property>
                      <property name="placeholderText">
                       <string>Opcional</string>
@@ -3196,7 +2580,7 @@ QLineEdit::placeholderText {
                  </size>
                 </property>
                 <property name="styleSheet">
-                 <string notr="true">background-color: rgb(0, 80, 121);</string>
+                 <string notr="true"/>
                 </property>
                 <property name="frameShape">
                  <enum>QFrame::NoFrame</enum>
@@ -3210,12 +2594,7 @@ QLineEdit::placeholderText {
                    <item>
                     <widget class="QLabel" name="label_data_cadastro">
                      <property name="styleSheet">
-                      <string notr="true">QLabel {
-    color: black;
-    text-align: center; /* Centraliza o texto horizontalmente */
-    vertical-align: middle; /* Centraliza o texto verticalmente */
-}
-</string>
+                      <string notr="true"/>
                      </property>
                      <property name="text">
                       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Data do Cadastro&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -3243,13 +2622,7 @@ QLineEdit::placeholderText {
                       </size>
                      </property>
                      <property name="styleSheet">
-                      <string notr="true">QDateEdit {
-    color: black; /* Cor do texto */
-    background-color: white; /* Cor de fundo */
-	 border: 2px solid rgb(50, 150,250); /* Borda azul */
-	border-radius: 6px; /* Cantos arredondados */
-}
-</string>
+                      <string notr="true"/>
                      </property>
                      <property name="readOnly">
                       <bool>false</bool>
@@ -3310,12 +2683,7 @@ QLineEdit::placeholderText {
                    <item>
                     <widget class="QLabel" name="label_codigo_item_3">
                      <property name="styleSheet">
-                      <string notr="true">QLabel {
-    color: black;
-    text-align: center; /* Centraliza o texto horizontalmente */
-    vertical-align: middle; /* Centraliza o texto verticalmente */
-}
-</string>
+                      <string notr="true"/>
                      </property>
                      <property name="text">
                       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Código do Item&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -3337,18 +2705,7 @@ QLineEdit::placeholderText {
                       </size>
                      </property>
                      <property name="styleSheet">
-                      <string notr="true">QLineEdit {
-	color: black;
-    background-color: rgb(240, 240, 240); /* Cor de fundo cinza claro */
-    border: 2px solid rgb(50, 150,250); /* Borda azul */
-    border-radius: 6px; /* Cantos arredondados */
-    padding: 3px; /* Espaçamento interno */
-}
-
-QLineEdit::placeholderText {
-    color: black; /* Cor do texto do placeholder */
-}
-</string>
+                      <string notr="true"/>
                      </property>
                     </widget>
                    </item>
@@ -3377,12 +2734,7 @@ QLineEdit::placeholderText {
                    <item>
                     <widget class="QLabel" name="label_cliente_4">
                      <property name="styleSheet">
-                      <string notr="true">QLabel {
-    color: black;
-    text-align: center; /* Centraliza o texto horizontalmente */
-    vertical-align: middle; /* Centraliza o texto verticalmente */
-}
-</string>
+                      <string notr="true"/>
                      </property>
                      <property name="text">
                       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Cliente&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -3404,18 +2756,7 @@ QLineEdit::placeholderText {
                       </size>
                      </property>
                      <property name="styleSheet">
-                      <string notr="true">QLineEdit {
-	color: black;
-    background-color: rgb(240, 240, 240); /* Cor de fundo cinza claro */
-    border: 2px solid rgb(50, 150,250); /* Borda azul */
-    border-radius: 6px; /* Cantos arredondados */
-    padding: 3px; /* Espaçamento interno */
-}
-
-QLineEdit::placeholderText {
-    color: black; /* Cor do texto do placeholder */
-}
-</string>
+                      <string notr="true"/>
                      </property>
                     </widget>
                    </item>
@@ -3460,12 +2801,7 @@ QLineEdit::placeholderText {
                    <item>
                     <widget class="QLabel" name="label_descricao_produto_3">
                      <property name="styleSheet">
-                      <string notr="true">QLabel {
-    color: black;
-    text-align: center; /* Centraliza o texto horizontalmente */
-    vertical-align: middle; /* Centraliza o texto verticalmente */
-}
-</string>
+                      <string notr="true"/>
                      </property>
                      <property name="text">
                       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Descrição do Produto&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -3493,18 +2829,7 @@ QLineEdit::placeholderText {
                       </size>
                      </property>
                      <property name="styleSheet">
-                      <string notr="true">QLineEdit {
-	color: black;
-    background-color: rgb(240, 240, 240); /* Cor de fundo cinza claro */
-    border: 2px solid rgb(50, 150,250); /* Borda azul */
-    border-radius: 6px; /* Cantos arredondados */
-    padding: 3px; /* Espaçamento interno */
-}
-
-QLineEdit::placeholderText {
-    color: black; /* Cor do texto do placeholder */
-}
-</string>
+                      <string notr="true"/>
                      </property>
                     </widget>
                    </item>
@@ -3560,310 +2885,6 @@ QLineEdit::placeholderText {
              </property>
             </widget>
            </item>
-           <item row="2" column="3" rowspan="3">
-            <widget class="QFrame" name="frame_imagem_produto_3">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="minimumSize">
-              <size>
-               <width>302</width>
-               <height>321</height>
-              </size>
-             </property>
-             <property name="maximumSize">
-              <size>
-               <width>283</width>
-               <height>309</height>
-              </size>
-             </property>
-             <property name="frameShape">
-              <enum>QFrame::NoFrame</enum>
-             </property>
-             <property name="frameShadow">
-              <enum>QFrame::Raised</enum>
-             </property>
-            </widget>
-           </item>
-           <item row="3" column="1">
-            <widget class="QFrame" name="frame_remover_e_carregar_imagem">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="maximumSize">
-              <size>
-               <width>200</width>
-               <height>89</height>
-              </size>
-             </property>
-             <property name="frameShape">
-              <enum>QFrame::NoFrame</enum>
-             </property>
-             <property name="frameShadow">
-              <enum>QFrame::Raised</enum>
-             </property>
-             <layout class="QVBoxLayout" name="verticalLayout_13">
-              <item>
-               <widget class="QPushButton" name="btn_remover_imagem">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="maximumSize">
-                 <size>
-                  <width>180</width>
-                  <height>30</height>
-                 </size>
-                </property>
-                <property name="cursor">
-                 <cursorShape>PointingHandCursor</cursorShape>
-                </property>
-                <property name="styleSheet">
-                 <string notr="true">QPushButton {
-    color: rgb(255, 255, 255);
-    border-radius: 8px;
-    font-size: 16px;
-    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */
-    border: 4px solid transparent;
-}
-
-QPushButton:hover {
-    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */
-    color: black;
-}</string>
-                </property>
-                <property name="text">
-                 <string>REMOVER IMAGEM</string>
-                </property>
-                <property name="icon">
-                 <iconset>
-                  <normaloff>imagens/icons8-remover-imagem-16.png</normaloff>imagens/icons8-remover-imagem-16.png</iconset>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QPushButton" name="btn_carregar_imagem">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="minimumSize">
-                 <size>
-                  <width>153</width>
-                  <height>0</height>
-                 </size>
-                </property>
-                <property name="maximumSize">
-                 <size>
-                  <width>180</width>
-                  <height>30</height>
-                 </size>
-                </property>
-                <property name="cursor">
-                 <cursorShape>PointingHandCursor</cursorShape>
-                </property>
-                <property name="styleSheet">
-                 <string notr="true">QPushButton {
-    color: rgb(255, 255, 255);
-    border-radius: 8px;
-    font-size: 16px;
-    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */
-    border: 4px solid transparent;
-}
-
-QPushButton:hover {
-    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */
-    color: black;
-}</string>
-                </property>
-                <property name="text">
-                 <string>CARREGAR IMAGEM</string>
-                </property>
-                <property name="icon">
-                 <iconset>
-                  <normaloff>imagens/014upload2_99941.png</normaloff>imagens/014upload2_99941.png</iconset>
-                </property>
-               </widget>
-              </item>
-             </layout>
-            </widget>
-           </item>
-           <item row="2" column="2" rowspan="3">
-            <widget class="QFrame" name="frame_6">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="maximumSize">
-              <size>
-               <width>350</width>
-               <height>16777215</height>
-              </size>
-             </property>
-             <property name="frameShape">
-              <enum>QFrame::NoFrame</enum>
-             </property>
-             <property name="frameShadow">
-              <enum>QFrame::Raised</enum>
-             </property>
-             <layout class="QGridLayout" name="gridLayout_16">
-              <item row="0" column="0">
-               <widget class="QFrame" name="frame_valor_total_produtos">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="minimumSize">
-                 <size>
-                  <width>321</width>
-                  <height>102</height>
-                 </size>
-                </property>
-                <property name="maximumSize">
-                 <size>
-                  <width>321</width>
-                  <height>102</height>
-                 </size>
-                </property>
-                <property name="styleSheet">
-                 <string notr="true">QFrame {
-    background-color: rgb(100, 200, 100); /* Verde claro */
-    border-radius: 15px; /* Ajuste o valor para a curvatura desejada */
-}
-
-</string>
-                </property>
-                <property name="frameShape">
-                 <enum>QFrame::StyledPanel</enum>
-                </property>
-                <property name="frameShadow">
-                 <enum>QFrame::Raised</enum>
-                </property>
-               </widget>
-              </item>
-              <item row="1" column="0">
-               <widget class="QFrame" name="frame_valor_do_desconto">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="minimumSize">
-                 <size>
-                  <width>0</width>
-                  <height>102</height>
-                 </size>
-                </property>
-                <property name="maximumSize">
-                 <size>
-                  <width>321</width>
-                  <height>102</height>
-                 </size>
-                </property>
-                <property name="styleSheet">
-                 <string notr="true">QFrame {
-    background-color: rgb(100, 200, 100); /* Verde claro */
-    border-radius: 15px; /* Ajuste o valor para a curvatura desejada */
-}
-</string>
-                </property>
-                <property name="frameShape">
-                 <enum>QFrame::StyledPanel</enum>
-                </property>
-                <property name="frameShadow">
-                 <enum>QFrame::Raised</enum>
-                </property>
-               </widget>
-              </item>
-              <item row="2" column="0">
-               <widget class="QFrame" name="frame_valor_com_desconto1">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="minimumSize">
-                 <size>
-                  <width>0</width>
-                  <height>102</height>
-                 </size>
-                </property>
-                <property name="maximumSize">
-                 <size>
-                  <width>321</width>
-                  <height>102</height>
-                 </size>
-                </property>
-                <property name="styleSheet">
-                 <string notr="true">QFrame {
-    background-color: rgb(100, 200, 100); /* Verde claro */
-    border-radius: 15px; /* Ajuste o valor para a curvatura desejada */
-}
-</string>
-                </property>
-                <property name="frameShape">
-                 <enum>QFrame::StyledPanel</enum>
-                </property>
-                <property name="frameShadow">
-                 <enum>QFrame::Raised</enum>
-                </property>
-               </widget>
-              </item>
-              <item row="3" column="0">
-               <widget class="QFrame" name="frame_quantidade">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="minimumSize">
-                 <size>
-                  <width>0</width>
-                  <height>102</height>
-                 </size>
-                </property>
-                <property name="maximumSize">
-                 <size>
-                  <width>321</width>
-                  <height>102</height>
-                 </size>
-                </property>
-                <property name="styleSheet">
-                 <string notr="true">QFrame {
-    background-color: rgb(100, 200, 100); /* Verde claro */
-    border-radius: 15px; /* Ajuste o valor para a curvatura desejada */
-}
-
-</string>
-                </property>
-                <property name="frameShape">
-                 <enum>QFrame::StyledPanel</enum>
-                </property>
-                <property name="frameShadow">
-                 <enum>QFrame::Raised</enum>
-                </property>
-               </widget>
-              </item>
-             </layout>
-            </widget>
-           </item>
            <item row="4" column="1">
             <widget class="QFrame" name="frame_confirmar_ver_produto">
              <property name="sizePolicy">
@@ -3909,19 +2930,7 @@ QPushButton:hover {
                  <cursorShape>PointingHandCursor</cursorShape>
                 </property>
                 <property name="styleSheet">
-                 <string notr="true">QPushButton {
-    color: rgb(255, 255, 255); /* Cor do texto (branco) */
-    border-radius: 10px;
-    font-size: 16px;
-    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 200, 100), stop:1 rgb(150, 255, 150)); /* Gradiente de verde claro para verde mais claro */
-    border: 3px solid transparent;
-}
-
-QPushButton:hover {
-    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(150, 255, 150), stop:1 rgb(200, 255, 200)); /* Gradiente de verde mais claro para verde ainda mais claro */
-    color: rgb(0, 0, 0); /* Cor do texto (preto) */
-}
-</string>
+                 <string notr="true"/>
                 </property>
                 <property name="text">
                  <string>CONFIRMAR</string>
@@ -3950,18 +2959,7 @@ QPushButton:hover {
                  <cursorShape>PointingHandCursor</cursorShape>
                 </property>
                 <property name="styleSheet">
-                 <string notr="true">QPushButton {
-    color: rgb(255, 255, 255);
-    border-radius: 8px;
-    font-size: 16px;
-    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */
-    border: 4px solid transparent;
-}
-
-QPushButton:hover {
-    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */
-    color: black;
-}</string>
+                 <string notr="true"/>
                 </property>
                 <property name="text">
                  <string>VER CLIENTES</string>
@@ -4002,18 +3000,7 @@ QPushButton:hover {
                  <cursorShape>PointingHandCursor</cursorShape>
                 </property>
                 <property name="styleSheet">
-                 <string notr="true">QPushButton {
-    color: rgb(255, 255, 255);
-    border-radius: 8px;
-    font-size: 16px;
-    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */
-    border: 4px solid transparent;
-}
-
-QPushButton:hover {
-    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */
-    color: black;
-}</string>
+                 <string notr="true"/>
                 </property>
                 <property name="text">
                  <string>VER PRODUTOS</string>
@@ -4021,6 +3008,196 @@ QPushButton:hover {
                 <property name="icon">
                  <iconset>
                   <normaloff>imagens/pasta.png</normaloff>imagens/pasta.png</iconset>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item row="2" column="1">
+            <widget class="QFrame" name="frame_botoes_a_e_a_a">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="minimumSize">
+              <size>
+               <width>0</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>218</width>
+               <height>190</height>
+              </size>
+             </property>
+             <property name="frameShape">
+              <enum>QFrame::NoFrame</enum>
+             </property>
+             <property name="frameShadow">
+              <enum>QFrame::Raised</enum>
+             </property>
+             <layout class="QVBoxLayout" name="verticalLayout_12">
+              <item>
+               <widget class="QPushButton" name="btn_adicionar_produto">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>16777215</width>
+                  <height>30</height>
+                 </size>
+                </property>
+                <property name="cursor">
+                 <cursorShape>PointingHandCursor</cursorShape>
+                </property>
+                <property name="styleSheet">
+                 <string notr="true"/>
+                </property>
+                <property name="text">
+                 <string>ADICIONAR</string>
+                </property>
+                <property name="icon">
+                 <iconset>
+                  <normaloff>imagens/pngwing.com.png</normaloff>imagens/pngwing.com.png</iconset>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="btn_editar">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>16777215</width>
+                  <height>30</height>
+                 </size>
+                </property>
+                <property name="cursor">
+                 <cursorShape>PointingHandCursor</cursorShape>
+                </property>
+                <property name="styleSheet">
+                 <string notr="true"/>
+                </property>
+                <property name="text">
+                 <string>EDITAR </string>
+                </property>
+                <property name="icon">
+                 <iconset>
+                  <normaloff>imagens/editar.png</normaloff>imagens/editar.png</iconset>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="btn_sair_modo_edicao_produtos">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>16777215</width>
+                  <height>30</height>
+                 </size>
+                </property>
+                <property name="cursor">
+                 <cursorShape>PointingHandCursor</cursorShape>
+                </property>
+                <property name="styleSheet">
+                 <string notr="true"/>
+                </property>
+                <property name="text">
+                 <string>SAIR DO MODO EDIÇÃO</string>
+                </property>
+                <property name="icon">
+                 <iconset>
+                  <normaloff>imagens/sair.png</normaloff>imagens/sair.png</iconset>
+                </property>
+                <property name="iconSize">
+                 <size>
+                  <width>16</width>
+                  <height>16</height>
+                 </size>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="btn_atualizar_produto">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>16777215</width>
+                  <height>30</height>
+                 </size>
+                </property>
+                <property name="cursor">
+                 <cursorShape>PointingHandCursor</cursorShape>
+                </property>
+                <property name="styleSheet">
+                 <string notr="true"/>
+                </property>
+                <property name="text">
+                 <string>ATUALIZAR</string>
+                </property>
+                <property name="icon">
+                 <iconset>
+                  <normaloff>imagens/toppng.com-update-512x512.png</normaloff>imagens/toppng.com-update-512x512.png</iconset>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="btn_limpar_campos">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>16777215</width>
+                  <height>30</height>
+                 </size>
+                </property>
+                <property name="cursor">
+                 <cursorShape>PointingHandCursor</cursorShape>
+                </property>
+                <property name="styleSheet">
+                 <string notr="true"/>
+                </property>
+                <property name="text">
+                 <string>APAGAR</string>
+                </property>
+                <property name="icon">
+                 <iconset>
+                  <normaloff>imagens/Delete-Button-PNG-Download-Image.png</normaloff>imagens/Delete-Button-PNG-Download-Image.png</iconset>
+                </property>
+                <property name="iconSize">
+                 <size>
+                  <width>27</width>
+                  <height>29</height>
+                 </size>
+                </property>
+                <property name="checkable">
+                 <bool>false</bool>
                 </property>
                </widget>
               </item>
@@ -6125,7 +5302,7 @@ QLineEdit::placeholderText {
               <enum>QTabWidget::Rounded</enum>
              </property>
              <property name="currentIndex">
-              <number>1</number>
+              <number>0</number>
              </property>
              <widget class="QWidget" name="tab_clientes">
               <property name="styleSheet">

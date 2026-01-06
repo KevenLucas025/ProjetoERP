@@ -1,6 +1,6 @@
 {
-    "usuario": "",
-    "senha": "",
+    "usuario": "Keven",
+    "senha": "123",
     "mantem_conectado": false,
     "nao_mostrar_mensagem_boas_vindas": true,
     "nao_mostrar_aviso_irreversivel": true,
@@ -10,15 +10,18 @@
     "historico_autocompletes": {
         "txt_nome": [
             "dsfdsfs",
-            "sdsd"
+            "sdsd",
+            "Gabi linda"
         ],
         "txt_usuario_cadastro": [
             "sdfsd",
-            "sds"
+            "sds",
+            "Gabi.linda"
         ],
         "txt_senha_cadastro": [
             "python .\\main.py",
-            "1212!@fasdf"
+            "1212!@fasdf",
+            "09092002"
         ],
         "txt_produto": [
             "Pizza"
@@ -51,37 +54,47 @@
             "dfsdfsd"
         ],
         "txt_confirmar_senha": [
-            "1212!@fasdf"
+            "1212!@fasdf",
+            "09092002"
         ],
         "txt_cep": [
-            "13179905"
+            "13179905",
+            "13.179-905"
         ],
         "txt_telefone": [
-            "19982018869"
+            "19982018869",
+            "19989737867"
         ],
         "txt_email": [
-            "keven.lucas00@hotmail.com"
+            "keven.lucas00@hotmail.com",
+            "gabi.ignacio0909@gmail.com"
         ],
         "txt_endereco": [
             "Rua José Vieira da Silva"
         ],
         "txt_data_nascimento": [
-            "26012000"
+            "26012000",
+            "09/09/2002"
         ],
         "txt_rg": [
-            "529915595"
+            "529915595",
+            "58237837",
+            "58.237.837-0"
         ],
         "txt_cpf": [
-            "50679677810"
+            "50679677810",
+            "52416395866",
+            "524.163.958-66"
         ],
         "txt_cnpj": [
-            "00000000000000"
+            "00000000000000",
+            "000.000.00000000"
         ],
         "txt_complemento": [
             "1215"
         ]
     },
-    "tema": "claro",
+    "tema": "escuro",
     "tamanho_fonte_percentual": 100,
     "atalhos": {
         "Pesquisar": "Ctrl+F",

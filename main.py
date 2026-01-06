@@ -13,6 +13,7 @@ from login import Login
 from mane_python import Ui_MainWindow
 from database import DataBase
 import sys
+import resources_rc
 import locale
 from config_senha import TrocarSenha
 from atualizarprodutos import AtualizarProduto
@@ -112,7 +113,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.atalhos = {}  # dicionário com os atalhos definidos
         atexit.register(self.aplicar_atualizacao_automatica)
         
+        
         self.limpar_pycache_pendente()
+
+        self.btn_editar.setIcon(QIcon(":/imagens/editar.png"))
 
         
         self.janela_config = None
@@ -877,6 +881,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             except Exception as e:
                 print(f"Erro ao iniciar atualizador: {e}")
 
+  
 
 
     def carregar_config_padrao(self):
@@ -3872,12 +3877,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def aplicar_tema_global(self,app: QApplication, tema: str):
         if tema == "escuro":
             app.setStyleSheet("""
+                           
                 QWidget {
                     background-color: #2b2b2b;
                     color: white;
                     font-size: 12px;
                 }   
-                   
+                QFrame#frame_botoes_navegacoes{
+                    background-color: #2b2b2b;
+                } 
 
                 QMessageBox {
                     background-color: #2b2b2b;   /* fundo escuro */

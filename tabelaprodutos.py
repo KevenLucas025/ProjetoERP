@@ -1565,8 +1565,7 @@ class TabelaProdutos(QMainWindow):
                     return
                 else:
                     print("Pixmap carregado com sucesso para visualização.")
-
-
+                    
                 # Salvar imagem temporariamente para visualização
                 caminho_pasta = "imagens_temporarias"
                 os.makedirs(caminho_pasta,exist_ok=True)  # Cria a pasta se não existir
