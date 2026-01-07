@@ -3,13 +3,14 @@ from PySide6.QtWidgets import (QLineEdit,QTableWidgetItem,
                                QPushButton,QScrollArea,QComboBox,QGridLayout,QHeaderView,QHBoxLayout,
                                QGraphicsOpacityEffect,QTableWidget,QDialog,
                                QRadioButton,QGroupBox,QFileDialog,QFormLayout,QDateEdit,QMenu,QApplication)
-from PySide6.QtGui import QColor,QBrush,QGuiApplication
+from PySide6.QtGui import QColor,QBrush,QGuiApplication,QIcon
 from PySide6.QtCore import Qt,QTimer,QPropertyAnimation,QEvent,QDate,QPoint
 from database import DataBase
 import sqlite3
 import pandas as pd
 from configuracoes import Configuracoes_Login
 from utils import Temas
+from utils import caminho_recurso
 from datetime import datetime
 from dialogos import ComboDialog,DialogoSenha,ConfirmacaoDialog
 import csv
@@ -62,6 +63,7 @@ class Clientes_Juridicos(QWidget):
         self.btn_gerar_relatorio_clientes.clicked.connect(self.abrir_janela_relatorio_clientes_juridicos)
         self.imagem_line()
 
+        self.atualizar_icone_botao_lupa_juridicos()
         
         
         # ENTER → busca manual
@@ -79,16 +81,10 @@ class Clientes_Juridicos(QWidget):
             lambda: self.buscar_cliente_juridico_dinamico(manual=False)
         )
 
-
-
         self.configurar_menu_contexto()
 
-        
-        #self.configurar_line_clientes()
-
-
-        
         self.installEventFilter(self)
+        
         self.table_clientes_juridicos.viewport().installEventFilter(self)
 
     def _iniciar_timer_busca_juridicos(self, texto):
@@ -182,10 +178,38 @@ class Clientes_Juridicos(QWidget):
         # Posicionar o botão no canto direito da LineEdit
         self.botao_lupa_juridicos.move(self.line_clientes.width() - altura + 1, 2)
 
-        
-
         # Conectar clique do botão a uma função
         self.botao_lupa_juridicos.clicked.connect(self.buscar_cliente_juridico_dinamico)
+    
+    def atualizar_icone_botao_lupa_juridicos(self):
+        tema = self.main_window.temas.config.get("tema", "classico")
+
+        if tema == "escuro":
+            icone = caminho_recurso("imagens/botao_lupa_branco.png")
+        else:
+            icone = caminho_recurso("imagens/botao_lupa.png")
+
+        self.botao_lupa_juridicos.setIcon(QIcon(icone))
+        self.botao_lupa_juridicos.setIconSize(self.botao_lupa_juridicos.size())
+
+        self.botao_lupa_juridicos.setStyleSheet("""
+            QPushButton#botao_lupa_juridicos {
+                border: none;
+                background: transparent;
+                padding: 0px;
+            }
+
+            QPushButton#botao_lupa_juridicos:hover {
+                background: transparent;
+            }
+
+            QPushButton#botao_lupa_juridicos:pressed {
+                background: transparent;
+                padding-left: 1px;
+                padding-top: 1px;
+            }
+        """)
+
 
     def _buscar_clientes_juridicos(self, texto):
         """Executa a busca no banco e retorna lista de resultados."""
@@ -383,6 +407,7 @@ class Clientes_Juridicos(QWidget):
                     background-color: #555555;
                     border: 2px solid #888888;
                 }
+                
             """
             combobox_style = """
                 QComboBox {

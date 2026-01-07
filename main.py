@@ -13,7 +13,6 @@ from login import Login
 from mane_python import Ui_MainWindow
 from database import DataBase
 import sys
-import resources_rc
 import locale
 from config_senha import TrocarSenha
 from atualizarprodutos import AtualizarProduto
@@ -50,6 +49,7 @@ import requests
 from packaging import version  # Para comparar versões
 import shutil
 import atexit
+ 
 
 VERSAO_ATUAL = "1.1.11"  # O arquivo versao.json precisa ser maior que essa para chegar a atualização
 
@@ -100,6 +100,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def __init__(self, user=None, login_window=None, tipo_usuario=None, connection=None,app=None):
         super(MainWindow, self).__init__()
         self.setupUi(self)
+        self.aplicar_icones()
         self.setWindowTitle("Sistema de Gerenciamento")
         self.historico_pausado = False
         self.historico_pausado_clientes_juridicos = False
@@ -115,9 +116,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         
         
         self.limpar_pycache_pendente()
-
-        self.btn_editar.setIcon(QIcon(":/imagens/editar.png"))
-
         
         self.janela_config = None
 
@@ -267,13 +265,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         
         # Criação dos botões      
         self.btn_avancar = QPushButton(self)
-        self.btn_avancar.setIcon(QIcon(caminho_recurso("imagens/seta_direita-removebg-preview.png")))  # Adicione o caminho do ícone de avançar
         self.btn_avancar.setGeometry(35, 5, 30, 30)
         self.btn_avancar.setToolTip("Avançar")  # Adiciona uma dica de ferramenta
       
         
         self.btn_retroceder = QPushButton(self)
-        self.btn_retroceder.setIcon(QIcon(caminho_recurso("imagens/seta esquerda 2.png")))  # Adicione o caminho do ícone de retroceder
         self.btn_retroceder.setGeometry(5, 5, 30, 30) 
         self.btn_retroceder.setToolTip("Retroceder") # Adiciona uma dica de ferramenta
         
@@ -1732,23 +1728,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # Conectar os botões aos slots correspondentes
         self.btn_avancar.clicked.connect(self.avancar_pagina)
         self.btn_retroceder.clicked.connect(self.retroceder_pagina)
-
-        # Definir o estilo para os botões
-        estilo_botao_avancar_retroceder = """
-        QPushButton {
-            color: rgb(255, 255, 255);
-            border-radius: 3px;
-            font-size: 16px;
-            background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */
-            border: 3px solid transparent;
-        }
-        QPushButton:hover {
-            background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */
-            color: black;
-        }
-        """
-        self.btn_avancar.setStyleSheet(estilo_botao_avancar_retroceder)
-        self.btn_retroceder.setStyleSheet(estilo_botao_avancar_retroceder)
 #*********************************************************************************************************************
     def exibir_botao_mostrar_usuarios(self):
         self.tabela_usuario_dialogo.btn_mostrar_usuarios.setVisible(True)
@@ -3872,7 +3851,26 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         else:
             print("⚠️ Página atual não tem método de atualização com F5.")
 
+    def aplicar_icones(self):
+        self.btn_editar.setIcon(
+            QIcon(caminho_recurso("imagens/editar.png"))
+        )
 
+        self.btn_adicionar_produto.setIcon(
+            QIcon(caminho_recurso("imagens/pngwing.com.png"))
+        )
+
+        self.btn_sair_modo_edicao_produtos.setIcon(
+            QIcon(caminho_recurso("imagens/sair.png"))
+        )
+
+        self.btn_atualizar_produto.setIcon(
+            QIcon(caminho_recurso("imagens/toppng.com-update-512x512.png"))
+        )
+
+        self.btn_limpar_campos.setIcon(
+            QIcon(caminho_recurso("imagens/Delete-Button-PNG-Download-Image.png"))
+        )
     
     def aplicar_tema_global(self,app: QApplication, tema: str):
         if tema == "escuro":
@@ -3910,6 +3908,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 QMessageBox QDialogButtonBox QPushButton:pressed {
                     background-color: #888888;
                 }
+        
                 
             """)
         elif tema == "claro":

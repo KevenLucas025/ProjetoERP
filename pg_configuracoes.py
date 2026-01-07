@@ -152,7 +152,7 @@ class Pagina_Configuracoes(QWidget):
             }
             /* QTableView com seleção diferenciada */
             QTableView {
-                background-color: #ffffff;
+                background-color: #2b2b2b;
                 color: black;
                 gridline-color: #555555;
                 selection-background-color: #7a7a7a;
@@ -244,26 +244,6 @@ class Pagina_Configuracoes(QWidget):
             QTabBar::tab:hover {
                 background-color: #f5f5f5;
             }
-            
-            QPushButton#btn_mostrar_senha{
-                qproperty-icon: url(":/imagens/olho_branco.png");
-                qproperty-iconSize: 16px 16px;
-                background: transparent;
-                border: none;  
-            }
-            QPushButton#btn_mostrar_senha::pressed{
-                padding-left: 1px;
-                padding-top: 1px;      
-            }
-            QPushButton#botao_lupa_juridicos,
-            QPushButton#botao_lupa_fisicos {
-                qproperty-icon: url(":/imagens/botao_lupa_branco.png");
-                qproperty-iconSize: 16px 16px;
-                background: transparent;
-                border: none;
-            }
-            
-
             /* Botões gerais */
             QPushButton {
                 border-radius: 8px;
@@ -357,6 +337,7 @@ class Pagina_Configuracoes(QWidget):
             }
             QPushButton#btn_avancar,
             QPushButton#btn_retroceder{
+                border-radius: 4px;
                 background: qlineargradient(
                     x1:0, y1:0, x2:0, y2:1,
                     stop:0 rgb(60, 60, 60),   /* topo */
@@ -368,8 +349,8 @@ class Pagina_Configuracoes(QWidget):
             QPushButton#btn_retroceder:hover{
                 background: qlineargradient(
                     x1:0, y1:0, x2:0, y2:1,
-                    stop:0 rgb(90, 90, 90),
-                    stop:1 rgb(130, 130, 130)
+                    stop:0 rgb(60, 60, 60),   /* topo */
+                    stop:1 rgb(100, 100, 100) /* base */
                 ); 
             }
             QPushButton#btn_avancar:pressed,
@@ -379,7 +360,7 @@ class Pagina_Configuracoes(QWidget):
                     stop:0 rgb(50, 50, 50),
                     stop:1 rgb(80, 80, 80)
                 );
-                border: 2px solid #888888;
+                border: 8px solid #888888;
             }
 
             /* Campos de entrada */
@@ -873,6 +854,33 @@ class Pagina_Configuracoes(QWidget):
                 font-size: 16px;
                 border: 3px solid transparent;
             }
+            QPushButton#btn_avancar,
+            QPushButton#btn_retroceder{
+                border-radius: 4px;
+                background: qlineargradient(
+                    x1:0, y1:0, x2:0, y2:1,
+                    stop:0 rgb(220, 220, 220),  /* topo */
+                    stop:1 rgb(245, 245, 245)   /* base */
+                );
+            
+            }
+            QPushButton#btn_avancar:hover,
+            QPushButton#btn_retroceder:hover{
+                background: qlineargradient(
+                    x1:0, y1:0, x2:0, y2:1,
+                    stop:0 rgb(220, 220, 220),  /* topo */
+                    stop:1 rgb(245, 245, 245)   /* base */
+                );
+            }
+            QPushButton#btn_avancar:pressed,
+            QPushButton#btn_retroceder:pressed{
+                background: qlineargradient(
+                    x1:0, y1:0, x2:0, y2:1,
+                    stop:0 rgb(220, 220, 220),  /* topo */
+                    stop:1 rgb(245, 245, 245)   /* base */
+                );
+                border: 4px solid #888888;
+            }
 
             QMenu {
                 background-color: white;
@@ -895,19 +903,6 @@ class Pagina_Configuracoes(QWidget):
                 margin: 5px 10px;
             }
             
-            QPushButton#botao_lupa_juridicos,
-            QPushButton#botao_lupa_fisicos {
-                qproperty-icon: url(":/imagens/botao_lupa.png");
-                qproperty-iconSize: 16px 16px;
-                background: transparent;
-                border: none;
-            }
-            QPushButton#btn_mostrar_senha{
-                qproperty-icon: url(":/imagens/olho_preto.png");
-                qproperty-iconSize: 16px 16px;
-                background: transparent;
-                border: none;  
-            }
             QLineEdit#txt_usuario,
             QLineEdit#txt_senha{
                 border: 2px solid #0078d4;  /* Cor da borda */
@@ -1121,6 +1116,9 @@ class Pagina_Configuracoes(QWidget):
         # Iterar sobre todos os widgets da aplicação e aplicar o estilo
         QApplication.instance().setStyleSheet(style_sheet)
         
+        self.btn_opcoes.setIcon(QIcon(caminho_recurso("imagens/seta esquerda 2.png")))  # Adicione o caminho do ícone de avançar
+        self.btn_retroceder.setIcon(QIcon(caminho_recurso("imagens/seta_direita-removebg-preview.png")))  # Adicione o caminho do ícone de retroceder
+        
         # Salvar no JSON que o tema agora é claro
         self.config.tema = "claro"
         self.config.salvar(self.config.usuario, self.config.senha, self.config.mantem_conectado)
@@ -1276,19 +1274,6 @@ class Pagina_Configuracoes(QWidget):
                 margin: 5px 10px;
             }
 
-            QPushButton#botao_lupa_juridicos,
-            QPushButton#botao_lupa_fisicos {
-                qproperty-icon: url(":/imagens/botao_lupa.png");
-                qproperty-iconSize: 16px 16px;
-                background: transparent;
-                border: none;
-            }
-            QPushButton#btn_mostrar_senha{
-                qproperty-icon: url(":/imagens/olho_preto.png ");
-                qproperty-iconSize: 16px 16px;
-                background: transparent;
-                border: none;  
-            }
             QPushButton#btn_incluir_produto_sistema{
                 font-size: 12px;
             }
@@ -1300,7 +1285,6 @@ class Pagina_Configuracoes(QWidget):
                 border: 4px solid transparent;
             }
             
-
             QPushButton:hover{
                 background: qlineargradient(x1:0, y1:0, x2:0, y2:1, 
                 stop:0 rgb(100, 180, 255), 
@@ -1335,19 +1319,7 @@ class Pagina_Configuracoes(QWidget):
             QLineEdit#txt_senha{
                 color: black;  /* Cor do placeholder */
             }
-            QLineEdit#line_clientes,
-            QLineEdit#line_clientes_fisicos {
-                color: black;
-                background-color: rgb(240, 240, 240); /* Cor de fundo cinza claro */
-                border: 2px solid rgb(50, 150,250); /* Borda azul */
-                border-radius: 6px; /* Cantos arredondados */
-                padding: 3px; /* Espaçamento interno */
-            }
-
-            QLineEdit#line_clientes::placeholderText,
-            QLineEdit#line_clientes_fisicos::placeholderText {
-                color: black; /* Cor do texto do placeholder */
-            }
+            
             QLineEdit#txt_nome,
             QLineEdit#txt_usuario_cadastro,
             QLineEdit#txt_senha_cadastro,
@@ -1733,6 +1705,7 @@ class Pagina_Configuracoes(QWidget):
         # Iterar sobre todos os widgets da aplicação e aplicar o estilo
         QApplication.instance().setStyleSheet(style_sheet)
         
+       
         # Salvar no JSON que o tema agora é clássico
         self.config.tema = "classico"
         self.config.salvar(self.config.usuario, self.config.senha, self.config.mantem_conectado)

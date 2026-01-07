@@ -1,8 +1,8 @@
 
-import pygetwindow as gw
+'''import pygetwindow as gw
 for w in gw.getAllTitles():
-    print(w)
-
+    print(w)'''
+    
 
 
 

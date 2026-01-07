@@ -21,7 +21,9 @@
         "txt_senha_cadastro": [
             "python .\\main.py",
             "1212!@fasdf",
-            "09092002"
+            "09092002",
+            "dfdf",
+            "dsfsdf"
         ],
         "txt_produto": [
             "Pizza"
@@ -94,7 +96,7 @@
             "1215"
         ]
     },
-    "tema": "escuro",
+    "tema": "claro",
     "tamanho_fonte_percentual": 100,
     "atalhos": {
         "Pesquisar": "Ctrl+F",

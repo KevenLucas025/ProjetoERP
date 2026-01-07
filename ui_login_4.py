@@ -3,7 +3,7 @@
 ################################################################################
 ## Form generated from reading UI file 'login_4.ui'
 ##
-## Created by: Qt User Interface Compiler version 6.8.2
+## Created by: Qt User Interface Compiler version 6.10.1
 ##
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
@@ -31,7 +31,7 @@ class Ui_Mainwindow_Login(object):
         sizePolicy.setHeightForWidth(Mainwindow_Login.sizePolicy().hasHeightForWidth())
         Mainwindow_Login.setSizePolicy(sizePolicy)
         Mainwindow_Login.setMaximumSize(QSize(683, 600))
-        Mainwindow_Login.setStyleSheet(u"background-color: rgb(0, 80, 121);")
+        Mainwindow_Login.setStyleSheet(u"")
         self.centralwidget = QWidget(Mainwindow_Login)
         self.centralwidget.setObjectName(u"centralwidget")
         sizePolicy.setHeightForWidth(self.centralwidget.sizePolicy().hasHeightForWidth())
@@ -43,16 +43,7 @@ class Ui_Mainwindow_Login(object):
         self.btn_opcoes_extras.setSizePolicy(sizePolicy)
         self.btn_opcoes_extras.setMaximumSize(QSize(21, 21))
         self.btn_opcoes_extras.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
-        self.btn_opcoes_extras.setStyleSheet(u"QToolButton {\n"
-"    color: rgb(255, 255, 255);\n"
-"    border-radius: 10px;\n"
-"    border:  transparent;\n"
-"	background-color: rgb(100, 200, 255);\n"
-"}\n"
-"\n"
-"\n"
-"\n"
-"")
+        self.btn_opcoes_extras.setStyleSheet(u"")
         icon = QIcon()
         icon.addFile(u"imagens/32339.png", QSize(), QIcon.Mode.Normal, QIcon.State.Off)
         self.btn_opcoes_extras.setIcon(icon)
@@ -64,14 +55,7 @@ class Ui_Mainwindow_Login(object):
         self.frame_2.setSizePolicy(sizePolicy)
         self.frame_2.setMinimumSize(QSize(0, 0))
         self.frame_2.setMaximumSize(QSize(16777215, 16777215))
-        self.frame_2.setStyleSheet(u"QFrame#frame_2 {\n"
-"    border-radius: 12px;\n"
-"    border: 2px solid qlineargradient(\n"
-"        spread:pad, x1:0, y1:0, x2:1, y2:0,\n"
-"        stop:0 #1de9b6, stop:1 #0d47a1\n"
-"    );\n"
-"}\n"
-"")
+        self.frame_2.setStyleSheet(u"")
         self.frame_2.setFrameShape(QFrame.Box)
         self.frame_2.setFrameShadow(QFrame.Raised)
         self.gridLayout = QGridLayout(self.frame_2)
@@ -85,19 +69,7 @@ class Ui_Mainwindow_Login(object):
         self.btn_login.setMinimumSize(QSize(0, 31))
         self.btn_login.setMaximumSize(QSize(16777215, 40))
         self.btn_login.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
-        self.btn_login.setStyleSheet(u"QPushButton {\n"
-"    color: rgb(255, 255, 255);\n"
-"    border-radius: 14px;\n"
-"    font-size: 16px;\n"
-"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */\n"
-"    border: 3px solid transparent;\n"
-"}\n"
-"\n"
-"QPushButton:hover {\n"
-"    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(100, 180, 255), stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */\n"
-"    color: black;\n"
-"}\n"
-"")
+        self.btn_login.setStyleSheet(u"")
 
         self.gridLayout.addWidget(self.btn_login, 6, 1, 1, 6)
 
@@ -125,7 +97,7 @@ class Ui_Mainwindow_Login(object):
         sizePolicy.setHeightForWidth(self.btn_manter_conectado.sizePolicy().hasHeightForWidth())
         self.btn_manter_conectado.setSizePolicy(sizePolicy)
         self.btn_manter_conectado.setMaximumSize(QSize(16777215, 16777215))
-        self.btn_manter_conectado.setStyleSheet(u"color: rgb(255, 255, 255);")
+        self.btn_manter_conectado.setStyleSheet(u"")
 
         self.verticalLayout_2.addWidget(self.btn_manter_conectado)
 
@@ -145,6 +117,7 @@ class Ui_Mainwindow_Login(object):
         sizePolicy.setHeightForWidth(self.label_trocar_senha.sizePolicy().hasHeightForWidth())
         self.label_trocar_senha.setSizePolicy(sizePolicy)
         self.label_trocar_senha.setMaximumSize(QSize(16777215, 16777215))
+        self.label_trocar_senha.setStyleSheet(u"")
 
         self.verticalLayout.addWidget(self.label_trocar_senha)
 
@@ -157,16 +130,7 @@ class Ui_Mainwindow_Login(object):
         self.txt_senha.setSizePolicy(sizePolicy)
         self.txt_senha.setMinimumSize(QSize(0, 40))
         self.txt_senha.setMaximumSize(QSize(16777215, 30))
-        self.txt_senha.setStyleSheet(u"QLineEdit {\n"
-"    border: 2px solid #0078d4;  /* Cor da borda */\n"
-"    border-radius: 5px;          /* Bordas arredondadas */\n"
-"    padding: 5px;                /* Espa\u00e7amento interno */\n"
-"}\n"
-"\n"
-"QLineEdit::placeholder {\n"
-"    color: white;  /* Cor do placeholder */\n"
-"}\n"
-"")
+        self.txt_senha.setStyleSheet(u"")
         self.txt_senha.setEchoMode(QLineEdit.Password)
         self.txt_senha.setAlignment(Qt.AlignCenter)
 
@@ -178,16 +142,7 @@ class Ui_Mainwindow_Login(object):
         self.txt_usuario.setSizePolicy(sizePolicy)
         self.txt_usuario.setMinimumSize(QSize(0, 40))
         self.txt_usuario.setMaximumSize(QSize(16777215, 40))
-        self.txt_usuario.setStyleSheet(u"QLineEdit {\n"
-"    border: 2px solid #0078d4;  /* Cor da borda */\n"
-"    border-radius: 5px;          /* Bordas arredondadas */\n"
-"    padding: 5px;                /* Espa\u00e7amento interno */\n"
-"}\n"
-"\n"
-"QLineEdit::placeholder {\n"
-"    color: white;  /* Cor do placeholder */\n"
-"}\n"
-"")
+        self.txt_usuario.setStyleSheet(u"")
         self.txt_usuario.setAlignment(Qt.AlignCenter)
 
         self.gridLayout.addWidget(self.txt_usuario, 1, 0, 1, 8)
@@ -222,7 +177,7 @@ class Ui_Mainwindow_Login(object):
         self.label_foto_sistema.setStyleSheet(u"border-radius: 45px;\n"
 "background: transparent;")
         self.label_foto_sistema.setFrameShape(QFrame.Box)
-        self.label_foto_sistema.setPixmap(QPixmap(u"imagens/Imagem2.png"))
+        self.label_foto_sistema.setPixmap(QPixmap(u"../../../../Downloads/Imagem2.png"))
         self.label_foto_sistema.setScaledContents(True)
         self.label_foto_sistema.setAlignment(Qt.AlignCenter)
         self.label_foto_sistema.setWordWrap(False)

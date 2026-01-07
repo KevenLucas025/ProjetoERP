@@ -1,8 +1,10 @@
 from PySide6.QtWidgets import QLineEdit, QPushButton,QVBoxLayout,QLabel,QFrame
 from PySide6.QtCore import Qt, QPropertyAnimation
+from PySide6.QtGui import QIcon
 import json
 import os
 import sys
+
 
 
 
@@ -12,6 +14,7 @@ class MostrarSenha:
         self._show_password = False
         self.botao_exibir_senha()
         self.main_window = main_window  
+        self.atualizar_icone()
 
     def botao_exibir_senha(self):
         # Criar botão dentro do QLineEdit
@@ -38,6 +41,38 @@ class MostrarSenha:
         altura = self.line_edit.height() - 4
         self.btn_mostrar_senha.setFixedSize(altura, altura)
         self.btn_mostrar_senha.move(self.line_edit.width() - altura - 2, 2)
+        
+    def atualizar_icone(self):
+        tema = self.main_window.temas.config.get("tema", "classico")
+
+        if tema == "escuro":
+            icone = caminho_recurso("imagens/olho_branco.png")
+        else:
+            icone = caminho_recurso("imagens/olho_preto.png")
+
+        self.btn_mostrar_senha.setIcon(QIcon(icone))
+        self.btn_mostrar_senha.setIconSize(self.btn_mostrar_senha.size())
+
+        self.btn_mostrar_senha.setStyleSheet("""
+            QPushButton#btn_mostrar_senha {
+                border: none;
+                background: transparent;
+                padding: 0px;
+                qproperty-iconSize: 16px 16px;
+            }
+
+            QPushButton#btn_mostrar_senha:hover {
+                background: transparent;
+            }
+
+            QPushButton#btn_mostrar_senha:pressed {
+                background: transparent;
+                padding-left: 1px;
+                padding-top: 1px;
+            }
+        """)
+
+
         
     def animar_botao(self):
         rect = self.btn_mostrar_senha.geometry()

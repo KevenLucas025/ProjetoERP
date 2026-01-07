@@ -1,9 +1,9 @@
 from PySide6.QtWidgets import (QLineEdit, QToolButton,QTableWidgetItem,
                                QMessageBox,QMainWindow,QVBoxLayout,QWidget,QLabel,QCheckBox,
-                               QPushButton,QScrollArea,QComboBox,QGridLayout,QHeaderView,QHBoxLayout,
-                               QGraphicsOpacityEffect,QTableWidget,QInputDialog,QDialog,
+                               QPushButton,QScrollArea,QComboBox,QHeaderView,QHBoxLayout,
+                               QGraphicsOpacityEffect,QTableWidget,QDialog,
                                QRadioButton,QGroupBox,QFileDialog,QFormLayout,QDateEdit,QMenu,QApplication)
-from PySide6.QtGui import QColor,QBrush,QGuiApplication
+from PySide6.QtGui import QColor,QBrush,QGuiApplication,QIcon
 from PySide6.QtCore import Qt,QTimer,QPropertyAnimation,QEvent,QDate,QPoint
 from database import DataBase
 import sqlite3
@@ -12,6 +12,7 @@ from configuracoes import Configuracoes_Login
 from dialogos import ComboDialog,DialogoSenha
 from datetime import datetime
 from utils import Temas
+from utils import caminho_recurso
 import csv
 from reportlab.lib import colors
 from reportlab.lib.pagesizes import letter
@@ -57,7 +58,9 @@ class Clientes_Fisicos(QWidget):
         self.btn_editar_clientes_fisicos.clicked.connect(self.editar_cliente_fisico)
         self.btn_historico_clientes_fisicos.clicked.connect(self.historico_clientes_fisicos)
         self.btn_gerar_relatorio_clientes_fisicos.clicked.connect(self.abrir_janela_relatorio_clientes_fisicos)
+        
         self.imagem_line_fisico()
+        self.atualizar_icone_botao_lupa_fisicos()
         
         
        # ENTER → busca manual
@@ -303,6 +306,35 @@ class Clientes_Fisicos(QWidget):
 
         # Conectar clique do botão a uma função
         self.botao_lupa_fisicos.clicked.connect(self.buscar_cliente_fisico_dinamico)
+        
+    def atualizar_icone_botao_lupa_fisicos(self):
+        tema = self.main_window.temas.config.get("tema", "classico")
+
+        if tema == "escuro":
+            icone = caminho_recurso("imagens/botao_lupa_branco.png")
+        else:
+            icone = caminho_recurso("imagens/botao_lupa.png")
+
+        self.botao_lupa_fisicos.setIcon(QIcon(icone))
+        self.botao_lupa_fisicos.setIconSize(self.botao_lupa_fisicos.size())
+
+        self.botao_lupa_fisicos.setStyleSheet("""
+            QPushButton#botao_lupa_fisicos {
+                border: none;
+                background: transparent;
+                padding: 0px;
+            }
+
+            QPushButton#botao_lupa_fisicos:hover {
+                background: transparent;
+            }
+
+            QPushButton#botao_lupa_fisicos:pressed {
+                background: transparent;
+                padding-left: 1px;
+                padding-top: 1px;
+            }
+        """)
 
 
     
