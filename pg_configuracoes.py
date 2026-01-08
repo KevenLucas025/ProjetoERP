@@ -89,15 +89,7 @@ class Pagina_Configuracoes(QWidget):
         self.estilo_original_classico = Ui_MainWindow()
         self.config = Configuracoes_Login(main_window=main_window)
         
-        
-        if self.config.tema == "escuro":
-            self.aplicar_modo_escuro_sem_progress()
-        elif self.config.tema == "claro":
-            self.aplicar_modo_claro_sem_progress()
-        else:
-            self.aplicar_modo_classico_sem_progress()
-    
-
+ 
         self.line_excel.setObjectName("line_excel")
 
 
@@ -124,6 +116,20 @@ class Pagina_Configuracoes(QWidget):
 
         layout_principal.addWidget(self.progress_bar)
         layout_principal.addStretch()
+        
+        QTimer.singleShot(100, self.aplicar_tema_inicial)
+
+        
+    def aplicar_tema_inicial(self):
+        tema = self.config.tema
+
+        if tema == "escuro":
+            self.aplicar_modo_escuro_sem_progress()
+        elif tema == "claro":
+            self.aplicar_modo_claro_sem_progress()
+        else:
+            self.aplicar_modo_classico_sem_progress()
+
 
     def aplicar_tema_escuro(self):
         # Estilo geral dos botões (modo escuro)
@@ -323,44 +329,6 @@ class Pagina_Configuracoes(QWidget):
                     stop:0 rgb(90, 90, 90),
                     stop:1 rgb(130, 130, 130)
                 );
-            }
-            /* Botão de login */
-            QPushButton#btn_opcoes_extras {
-                border-radius: 8px;
-                width: 120px;   /* largura mínima */
-                min-height: 21px;   /* altura mínima */
-                background: qlineargradient(
-                    x1:0, y1:0, x2:0, y2:1,
-                    stop:0 rgb(60, 60, 60),   /* topo */
-                    stop:1 rgb(100, 100, 100) /* base */
-                );
-            }
-            QPushButton#btn_avancar,
-            QPushButton#btn_retroceder{
-                border-radius: 4px;
-                background: qlineargradient(
-                    x1:0, y1:0, x2:0, y2:1,
-                    stop:0 rgb(60, 60, 60),   /* topo */
-                    stop:1 rgb(100, 100, 100) /* base */
-                );
-            
-            }
-            QPushButton#btn_avancar:hover,
-            QPushButton#btn_retroceder:hover{
-                background: qlineargradient(
-                    x1:0, y1:0, x2:0, y2:1,
-                    stop:0 rgb(60, 60, 60),   /* topo */
-                    stop:1 rgb(100, 100, 100) /* base */
-                ); 
-            }
-            QPushButton#btn_avancar:pressed,
-            QPushButton#btn_retroceder:pressed{
-                background: qlineargradient(
-                    x1:0, y1:0, x2:0, y2:1,
-                    stop:0 rgb(50, 50, 50),
-                    stop:1 rgb(80, 80, 80)
-                );
-                border: 8px solid #888888;
             }
 
             /* Campos de entrada */
@@ -639,7 +607,7 @@ class Pagina_Configuracoes(QWidget):
         self.btn_retroceder.setIcon(QIcon(caminho_recurso("imagens/imagens_modo_escuro/seta_direita_preta.png"))) # Esse botão é o botão avançar, nomenclatura errada
         
 
-        self.btn_retroceder.setGeometry(40, 5, 30, 30)  # Define a geometria do botão 'btn_retroceder'
+        self.btn_retroceder.setGeometry(35, 5, 30, 30)  # Define a geometria do botão 'btn_retroceder'
 
 
     def aplicar_modo_escuro(self):
@@ -830,6 +798,36 @@ class Pagina_Configuracoes(QWidget):
             QMessageBox QPushButton:pressed {
                 background-color: #c7d7f9;
             }
+            QPushButton {
+                outline: none;
+            }
+
+            QPushButton:focus {
+                outline: none;
+            }
+
+            QToolButton {
+                outline: none;
+            }
+
+            QToolButton:focus {
+                outline: none;
+            }
+            QPushButton {
+                outline: none;
+            }
+
+            QPushButton:focus {
+                outline: none;
+            }
+
+            QToolButton {
+                outline: none;
+            }
+
+            QToolButton:focus {
+                outline: none;
+            }
             /* Botões gerais  */
             QPushButton {
                 border-radius: 8px;
@@ -854,33 +852,7 @@ class Pagina_Configuracoes(QWidget):
                 font-size: 16px;
                 border: 3px solid transparent;
             }
-            QPushButton#btn_avancar,
-            QPushButton#btn_retroceder{
-                border-radius: 4px;
-                background: qlineargradient(
-                    x1:0, y1:0, x2:0, y2:1,
-                    stop:0 rgb(220, 220, 220),  /* topo */
-                    stop:1 rgb(245, 245, 245)   /* base */
-                );
             
-            }
-            QPushButton#btn_avancar:hover,
-            QPushButton#btn_retroceder:hover{
-                background: qlineargradient(
-                    x1:0, y1:0, x2:0, y2:1,
-                    stop:0 rgb(220, 220, 220),  /* topo */
-                    stop:1 rgb(245, 245, 245)   /* base */
-                );
-            }
-            QPushButton#btn_avancar:pressed,
-            QPushButton#btn_retroceder:pressed{
-                background: qlineargradient(
-                    x1:0, y1:0, x2:0, y2:1,
-                    stop:0 rgb(220, 220, 220),  /* topo */
-                    stop:1 rgb(245, 245, 245)   /* base */
-                );
-                border: 4px solid #888888;
-            }
 
             QMenu {
                 background-color: white;
@@ -1116,8 +1088,10 @@ class Pagina_Configuracoes(QWidget):
         # Iterar sobre todos os widgets da aplicação e aplicar o estilo
         QApplication.instance().setStyleSheet(style_sheet)
         
-        self.btn_opcoes.setIcon(QIcon(caminho_recurso("imagens/seta esquerda 2.png")))  # Adicione o caminho do ícone de avançar
-        self.btn_retroceder.setIcon(QIcon(caminho_recurso("imagens/seta_direita-removebg-preview.png")))  # Adicione o caminho do ícone de retroceder
+        self.btn_opcoes.setIcon(QIcon(caminho_recurso("imagens/imagens_modo_escuro/seta_esquerda_preta.png")))  # Adicione o caminho do ícone de avançar
+        self.btn_retroceder.setIcon(QIcon(caminho_recurso("imagens/imagens_modo_escuro/seta_direita_preta.png")))  # Adicione o caminho do ícone de retroceder
+        
+        self.btn_retroceder.setGeometry(35, 5, 30, 30)  # Define a geometria do botão 'btn_retroceder'
         
         # Salvar no JSON que o tema agora é claro
         self.config.tema = "claro"
@@ -1304,6 +1278,21 @@ class Pagina_Configuracoes(QWidget):
             }
             QPushButton#btn_login:hover {
                 color: black;
+            }
+            QPushButton {
+                outline: none;
+            }
+
+            QPushButton:focus {
+                outline: none;
+            }
+
+            QToolButton {
+                outline: none;
+            }
+
+            QToolButton:focus {
+                outline: none;
             }
 
             QLineEdit#txt_usuario,
@@ -1704,6 +1693,10 @@ class Pagina_Configuracoes(QWidget):
         """
         # Iterar sobre todos os widgets da aplicação e aplicar o estilo
         QApplication.instance().setStyleSheet(style_sheet)
+        
+        self.btn_opcoes.setIcon(QIcon(caminho_recurso("imagens/seta esquerda 2.png")))  # Adicione o caminho do ícone de avançar
+        self.btn_retroceder.setIcon(QIcon(caminho_recurso("imagens/seta_direita-removebg-preview.png")))  # Adicione o caminho do ícone de retroceder
+        
         
        
         # Salvar no JSON que o tema agora é clássico

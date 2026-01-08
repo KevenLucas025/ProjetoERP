@@ -1725,9 +1725,66 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         return True
 #*********************************************************************************************************************
     def criar_botoes_avancar_voltar(self):
-        # Conectar os botões aos slots correspondentes
         self.btn_avancar.clicked.connect(self.avancar_pagina)
         self.btn_retroceder.clicked.connect(self.retroceder_pagina)
+
+        if self.tema_atual == "escuro":
+            css = """
+            QPushButton {
+                border-radius: 8px;
+                background: qlineargradient(
+                    x1:0, y1:0, x2:0, y2:1,
+                    stop:0 rgb(50, 50, 50),
+                    stop:1 rgb(80, 80, 80)
+                );
+                border: 4px solid transparent;
+            }
+
+            QPushButton:hover {
+                background: qlineargradient(
+                    x1:0, y1:0, x2:0, y2:1,
+                    stop:0 rgb(60, 60, 60),
+                    stop:1 rgb(100, 100, 100)
+                );
+            }
+            """
+        elif self.tema_atual == "claro":
+            css = """
+            QPushButton {
+                border-radius: 8px;
+                background: qlineargradient(
+                    x1:0, y1:0, x2:0, y2:1,
+                    stop:0 rgb(220, 220, 220),
+                    stop:1 rgb(245, 245, 245)
+                );
+                border: 4px solid transparent;
+            }
+            """
+        else:
+            css = """
+            QPushButton {
+                border-radius: 8px;
+                background: qlineargradient(
+                    x1:0, y1:0, x2:0, y2:1,
+                    stop:0 rgb(50,150,250),
+                    stop:1 rgb(100,200,255)
+                );
+                border: 4px solid transparent;
+            }
+
+            QPushButton:hover {
+                background: qlineargradient(
+                    x1:0, y1:0, x2:0, y2:1,
+                    stop:0 rgb(100,180,255),
+                    stop:1 rgb(150,220,255)
+                );
+                border: 4px solid transparent;
+            }
+            """
+
+        for btn in (self.btn_avancar, self.btn_retroceder):
+            btn.setStyleSheet(css)
+            btn.setCursor(Qt.PointingHandCursor)
 #*********************************************************************************************************************
     def exibir_botao_mostrar_usuarios(self):
         self.tabela_usuario_dialogo.btn_mostrar_usuarios.setVisible(True)
@@ -3871,6 +3928,50 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.btn_limpar_campos.setIcon(
             QIcon(caminho_recurso("imagens/Delete-Button-PNG-Download-Image.png"))
         )
+        
+        self.btn_remover_imagem.setIcon(
+            QIcon(caminho_recurso("imagens/icons8-remover-imagem-16.png"))
+        )
+        self.btn_carregar_imagem.setIcon(
+            QIcon(caminho_recurso("imagens/014upload2_99941.png"))
+        )
+        self.btn_confirmar.setIcon(
+            QIcon(caminho_recurso("imagens/confirmacao.png"))
+        )
+        self.btn_ver_clientes_juridicos.setIcon(
+            QIcon(caminho_recurso("imagens/74472.png"))
+        )
+        self.btn_ver_item.setIcon(
+            QIcon(caminho_recurso("imagens/pasta.png"))
+        )
+        self.btn_editar_cadastro.setIcon(
+            QIcon(caminho_recurso("imagens/editar.png"))
+        )
+        self.btn_carregar_imagem_4.setIcon(
+            QIcon(caminho_recurso("imagens/pasta.png"))
+        )
+        self.btn_apagar_cadastro.setIcon(
+            QIcon(caminho_recurso("imagens/pasta.png"))
+        )
+        self.btn_atualizar_cadastro.setIcon(
+            QIcon(caminho_recurso("imagens/toppng.com-update-512x512.png"))
+        )
+        self.btn_sair_modo_edicao.setIcon(
+            QIcon(caminho_recurso("imagens/sair.png"))
+        )
+        self.btn_remover_imagem_usuario.setIcon(
+            QIcon(caminho_recurso("imagens/icons8-remover-imagem-16.png"))
+        )
+        self.btn_fazer_cadastro.setIcon(
+            QIcon(caminho_recurso("imagens/confirmacao.png"))
+        )
+        self.btn_ver_usuario.setIcon(
+            QIcon(caminho_recurso("imagens/74472.png"))
+        )
+        
+        
+        
+        
     
     def aplicar_tema_global(self,app: QApplication, tema: str):
         if tema == "escuro":
@@ -3908,7 +4009,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 QMessageBox QDialogButtonBox QPushButton:pressed {
                     background-color: #888888;
                 }
-        
                 
             """)
         elif tema == "claro":
