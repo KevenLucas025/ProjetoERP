@@ -114,6 +114,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.atalhos = {}  # dicionário com os atalhos definidos
         atexit.register(self.aplicar_atualizacao_automatica)
         
+        # Carregar tema do sistema ou  configuração
+        config = self.temas.carregar_config_arquivo()  # função de config do JSON
+        self.tema_atual = config.get("tema", "claro")
+        
         
         self.limpar_pycache_pendente()
         
@@ -122,11 +126,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.atualizador_ja_iniciado = False
         
 
-
         self.table_base.verticalHeader().setFixedWidth(20)  # você pode ajustar o valor
 
-
-        
         # Atalho F5 global
         self.atalho_f5 = QShortcut(QKeySequence("F5"), self)
         self.atalho_f5.activated.connect(self.tratar_f5_global)
@@ -143,7 +144,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         else:
             self.connection = connection
 
-        self.login_window = login_window
 
         self.exibir_senha = MostrarSenha(self,self.txt_senha_cadastro)
         self.exibir_senha_usuario = MostrarSenha(self,self.txt_confirmar_senha)
@@ -161,16 +161,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.db.create_table_clientes_fisicos()
         self.db.create_table_historico_fisico()
         self.db.create_table_historico_juridico()
-
-    
-        # Carregar tema do sistema ou  configuração
-        config = self.temas.carregar_config_arquivo()  # função de config do JSON
-        self.tema_atual = config.get("tema", "claro")
-
-        if app is not None:
-            self.aplicar_tema_global(app, self.tema_atual)
-
-        
 
         # Mapeia os campos com identificadores únicos
         self.campos_com_autocomplete = {
@@ -567,13 +557,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.txt_cep.editingFinished.connect(self.on_cep_editing_finished)
 
-    
-        if self.tema_atual == "escuro":
-            self.pagina_configuracoes.aplicar_tema_escuro()
-        elif self.tema_atual == "claro":
-            self.pagina_configuracoes.aplicar_tema_claro()
-        else:
-            self.pagina_configuracoes.aplicar_tema_classico()
             
     def carregar_env(self):
         if getattr(sys, "frozen", False):
@@ -3948,10 +3931,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             QIcon(caminho_recurso("imagens/editar.png"))
         )
         self.btn_carregar_imagem_4.setIcon(
-            QIcon(caminho_recurso("imagens/pasta.png"))
+            QIcon(caminho_recurso("imagens/014upload2_99941.png"))
         )
         self.btn_apagar_cadastro.setIcon(
-            QIcon(caminho_recurso("imagens/pasta.png"))
+            QIcon(caminho_recurso("imagens/Delete-Button-PNG-Download-Image.png"))
         )
         self.btn_atualizar_cadastro.setIcon(
             QIcon(caminho_recurso("imagens/toppng.com-update-512x512.png"))
@@ -3962,158 +3945,41 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.btn_remover_imagem_usuario.setIcon(
             QIcon(caminho_recurso("imagens/icons8-remover-imagem-16.png"))
         )
-        self.btn_fazer_cadastro.setIcon(
+        self.btn_fazer_cadastro.setIcon( 
             QIcon(caminho_recurso("imagens/confirmacao.png"))
         )
         self.btn_ver_usuario.setIcon(
             QIcon(caminho_recurso("imagens/74472.png"))
         )
-        
-        
-        
-        
-    
-    def aplicar_tema_global(self,app: QApplication, tema: str):
-        if tema == "escuro":
-            app.setStyleSheet("""
-                           
-                QWidget {
-                    background-color: #2b2b2b;
-                    color: white;
-                    font-size: 12px;
-                }   
-                QFrame#frame_botoes_navegacoes{
-                    background-color: #2b2b2b;
-                } 
-
-                QMessageBox {
-                    background-color: #2b2b2b;   /* fundo escuro */
-                    color: #f0f0f0;              /* texto claro */
-                    border: 2px solid #555555;
-                    border-radius: 10px;
-                }
-                QMessageBox QLabel {
-                    color: #f0f0f0;              /* cor do texto */
-                    font-size: 14px;
-                    background-color: transparent;
-                }
-                QMessageBox QDialogButtonBox QPushButton {
-                    background-color: #444444;
-                    color: #ffffff;
-                    border-radius: 6px;
-                    padding: 4px 10px;
-                }
-                QMessageBox QDialogButtonBox QPushButton:hover {
-                    background-color: #666666;
-                }
-                QMessageBox QDialogButtonBox QPushButton:pressed {
-                    background-color: #888888;
-                }
-                
-            """)
-        elif tema == "claro":
-            app.setStyleSheet("""
-                QMessageBox {
-                background: qlineargradient(
-                    x1: 0, y1: 0,
-                    x2: 0, y2: 1,
-                    stop: 0 #ffffff,       /* branco puro no topo */
-                    stop: 0.2 #f5f5f5,     /* branco acinzentado na faixa */
-                    stop: 1 #c0c0c0       /* branco acinzentado no resto */
-                );
-                color: black;
-            }
-            QMessageBox QLabel {
-                color: black;              /* cor do texto */
-                font-size: 14px;
-                background-color: transparent;
-                }
-            QMessageBox QPushButton {
-                background-color: #ffffff;
-                color: black;
-                border: 1px solid #0078d7;
-                padding: 2px 10px;
-                border-radius: 6px;
-                min-width: 40px;
-                min-height: 10px; 
-                font-size: 12px; 
-            }
-            
-            QMessageBox QPushButton:hover {
-                background-color: #e6f0fa;
-            }
-
-            QMessageBox QPushButton:pressed {
-                background-color: #c7d7f9;
-            }
-            QLabel#label_primeiro_acesso,
-            QLabel#label_trocar_senha {
-                color: #0078d7;  /* azul Windows */
-                font-weight: normal;
-                text-decoration: underline; /* opcional, se quiser parecer um link */
-            }
-             
-            """) 
-            
-        else:  # clássico
-            app.setStyleSheet("""
-                QWidget {
-                    background-color: rgb(0,80,121);
-                    color: black;
-                    font-size: 12px;
-                }                      
-                QMessageBox {
-                    background: qlineargradient(
-                        x1: 0, y1: 0,
-                        x2: 0, y2: 1,
-                        stop: 0 #ffffff,       /* branco puro no topo */
-                        stop: 0.2 #f5f5f5,     /* branco acinzentado na faixa */
-                        stop: 1 #c0c0c0       /* branco acinzentado no resto */
-                    );
-                    color: black;
-                }
-                QMessageBox QLabel {
-                    color: black;              /* cor do texto */
-                    font-size: 14px;
-                    background-color: transparent;
-                }
-                QMessageBox QPushButton {
-                    background-color: #ffffff;
-                    color: black;
-                    border: 1px solid #0078d7;
-                    padding: 2px 10px;
-                    border-radius: 6px;
-                    min-width: 40px;
-                    min-height: 10px; 
-                    font-size: 12px; 
-                }
-                
-                QMessageBox QPushButton:hover {
-                    background-color: #e6f0fa;
-                }
-
-                QMessageBox QPushButton:pressed {
-                    background-color: #c7d7f9;
-                }
-                           
-            """)
             
     def closeEvent(self, event):
         event.accept()
         
 
 
-
-
 # Função principal
 if __name__ == '__main__':
     app = QApplication(sys.argv)
-    login_window = Login(login_window=None)
-    main_window = MainWindow (user=None, tipo_usuario=None, login_window=login_window,app=app)
-    
-    # Usa estilo nativo do Windows explicitamente
+
     app.setStyle("WindowsVista")
     app.setWindowIcon(QIcon(caminho_recurso("imagens/ícone_sistema_provisório.png")))
-    
+
+    temas = Temas()
+
+    login_window = Login(login_window=None)
+    main_window = MainWindow(
+        user=None,
+        tipo_usuario=None,
+        login_window=login_window,
+        app=app
+    )
+
+    # 🔥 APLICA O TEMA NO MOMENTO CERTO (ESSENCIAL PARA EXE)
+    QTimer.singleShot(0, lambda: temas.aplicar_tema_global(app))
+
     login_window.show()
     sys.exit(app.exec())
+
+
+
+
