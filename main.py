@@ -860,8 +860,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             except Exception as e:
                 print(f"Erro ao iniciar atualizador: {e}")
 
-  
-
 
     def carregar_config_padrao(self):
         return {
@@ -3248,8 +3246,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         success_msg.setStyleSheet("color: black;")
         success_msg.exec()
 #*********************************************************************************************************************
-    def formatar_cep(self, text, widget):
+    def formatar_cep(self, text, widget=None):
+        if widget is None:
+            widget = self.sender()  # pega o QLineEdit que disparou o sinal
+            if widget is None:
+                return
+
         numero_limpo = ''.join(filter(str.isdigit, text))[:8]
+
         if len(numero_limpo) >= 5:
             cep_formatado = f"{numero_limpo[:5]}-{numero_limpo[5:]}"
         else:
@@ -3258,8 +3262,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         widget.blockSignals(True)
         widget.setText(cep_formatado)
         widget.blockSignals(False)
+
 #*********************************************************************************************************************
-    def formatar_cpf(self, text, widget):
+    def formatar_cpf(self, text, widget=None):
+        if widget is None:
+            widget = self.sender()
+            if widget is None:
+                return
+            
         if text == "Não Cadastrado":
             widget.setText(text)
             return
@@ -3277,7 +3287,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         widget.setText(cpf_formatado)
         widget.blockSignals(False)
 #*********************************************************************************************************************
-    def formatar_cnpj(self, text, widget):
+    def formatar_cnpj(self, text, widget=None):
+        if widget is None:
+            widget = self.sender()
+            if widget is None:
+                return
+
         if text == "Não Cadastrado":
             widget.setText(text)
             return
@@ -3333,7 +3348,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             valor_formatado = locale.currency(valor_float, grouping=True)
             widget.setText(valor_formatado)
 #*********************************************************************************************************************
-    def formatar_rg(self, text,widget):
+    def formatar_rg(self, text,widget=None):
+        if widget is None:
+            widget = self.sender()
+            if widget is None:
+                return
+
         if text == "Não Cadastrado":
             widget.setText(text)
             return
@@ -3356,7 +3376,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             widget.setText(numero_rg)
             widget.blockSignals(False)
 
-    def formatar_cnh(self, text, widget):
+    def formatar_cnh(self, text, widget=None):
+        if widget is None:
+            widget = self.sender()
+            if widget is None:
+                return
+
         if text == "Não Cadastrado":
             widget.setText(text)
             return
@@ -3371,7 +3396,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         widget.setText(cnh_formatada)
 
 #*********************************************************************************************************************
-    def formatar_data_nascimento(self, text, widget):
+    def formatar_data_nascimento(self, text, widget=None):
+        if widget is None:
+            widget = self.sender()
+            if widget is None:
+                return
+
         if text == "Não Cadastrado":
             widget.setText(text)
             return
@@ -3391,7 +3421,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         widget.setText(data_formatada)
         widget.blockSignals(False)
 
-    def validar_data_quando_finalizar(self, text, widget):
+    def validar_data_quando_finalizar(self, text, widget=None):
+        if widget is None:
+            widget = self.sender()
+            if widget is None:
+                return
+            
         if len(text) == 10:  # formato completo dd/mm/yyyy
             try:
                 datetime.strptime(text, "%d/%m/%Y")
@@ -3400,7 +3435,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 widget.setText("")
                 widget.setFocus()
 #*********************************************************************************************************************
-    def formatar_telefone(self, text, widget):
+    def formatar_telefone(self, text, widget=None):   
+        if widget is None:
+            widget = self.sender()
+            if widget is None:
+                return
+        
         numero_limpo = ''.join(filter(str.isdigit, text))[:14]
 
         if len(numero_limpo) >= 2:
@@ -3965,6 +4005,7 @@ if __name__ == '__main__':
     app.setWindowIcon(QIcon(caminho_recurso("imagens/ícone_sistema_provisório.png")))
 
     temas = Temas()
+    temas.aplicar_tema_global(app)
 
     login_window = Login(login_window=None)
     main_window = MainWindow(
@@ -3974,8 +4015,6 @@ if __name__ == '__main__':
         app=app
     )
 
-    # 🔥 APLICA O TEMA NO MOMENTO CERTO (ESSENCIAL PARA EXE)
-    QTimer.singleShot(0, lambda: temas.aplicar_tema_global(app))
 
     login_window.show()
     sys.exit(app.exec())

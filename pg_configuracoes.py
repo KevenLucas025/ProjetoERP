@@ -117,7 +117,7 @@ class Pagina_Configuracoes(QWidget):
         layout_principal.addWidget(self.progress_bar)
         layout_principal.addStretch()
         
-        QTimer.singleShot(100, self.aplicar_tema_inicial)
+        self.aplicar_tema_inicial()
 
         
     def aplicar_tema_inicial(self):

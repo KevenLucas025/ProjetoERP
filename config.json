@@ -3,106 +3,63 @@
     "senha": "123",
     "mantem_conectado": false,
     "nao_mostrar_mensagem_boas_vindas": true,
-    "nao_mostrar_aviso_irreversivel": true,
-    "nao_mostrar_mensagem_arquivo_excel": true,
-    "nao_mostrar_mensagem_arquivo_excel_fisicos": true,
+    "nao_mostrar_aviso_irreversivel": false,
+    "nao_mostrar_mensagem_arquivo_excel": false,
+    "nao_mostrar_mensagem_arquivo_excel_fisicos": false,
     "nao_mostrar_aviso_atualizacoes": false,
     "historico_autocompletes": {
         "txt_nome": [
-            "dsfdsfs",
-            "sdsd",
-            "Gabi linda"
+            "Kee",
+            "Jorge Lucas"
         ],
         "txt_usuario_cadastro": [
-            "sdfsd",
-            "sds",
-            "Gabi.linda"
+            "Jorge"
         ],
         "txt_senha_cadastro": [
-            "python .\\main.py",
-            "1212!@fasdf",
-            "09092002",
-            "dfdf",
-            "dsfsdf"
-        ],
-        "txt_produto": [
-            "Pizza"
-        ],
-        "txt_quantidade": [
-            "12"
-        ],
-        "txt_valor_produto_3": [
-            "12",
-            "2323"
-        ],
-        "txt_codigo_item": [
-            "dsdsda",
-            "dasdas",
-            "dss",
-            "12"
-        ],
-        "txt_cliente_3": [
-            "Keven Lucas",
-            "Keven Lucas da Silva Jesus",
-            "12"
-        ],
-        "txt_descricao_produto_3": [
-            "sddasdas",
-            "Alimentos",
-            "dsdsd",
-            "dsadasdas"
-        ],
-        "line_clientes": [
-            "dfsdfsd"
+            "Jorge",
+            "Jorge12!"
         ],
         "txt_confirmar_senha": [
-            "1212!@fasdf",
-            "09092002"
+            "Jorge12!"
         ],
         "txt_cep": [
             "13179905",
-            "13.179-905"
+            "13179-905"
         ],
         "txt_telefone": [
             "19982018869",
-            "19989737867"
+            "(19) 98201-8869"
         ],
         "txt_email": [
-            "keven.lucas00@hotmail.com",
-            "gabi.ignacio0909@gmail.com"
+            "keven.lucas00@hotmail.com"
+        ],
+        "txt_data_nascimento": [
+            "26/01/2000"
+        ],
+        "txt_rg": [
+            "529915595",
+            "52.991.559-5"
+        ],
+        "txt_cpf": [
+            "50679677810",
+            "506.796.778-10"
+        ],
+        "txt_cnpj": [
+            "000000000000",
+            "00.000.000/0000-00"
+        ],
+        "txt_numero": [
+            "465"
         ],
         "txt_endereco": [
             "Rua José Vieira da Silva"
         ],
-        "txt_data_nascimento": [
-            "26012000",
-            "09/09/2002"
-        ],
-        "txt_rg": [
-            "529915595",
-            "58237837",
-            "58.237.837-0"
-        ],
-        "txt_cpf": [
-            "50679677810",
-            "52416395866",
-            "524.163.958-66"
-        ],
-        "txt_cnpj": [
-            "00000000000000",
-            "000.000.00000000"
-        ],
         "txt_complemento": [
-            "1215"
+            "Bloco A AP 31"
         ]
     },
-    "tema": "classico",
+    "tema": "escuro",
     "tamanho_fonte_percentual": 100,
-    "atalhos": {
-        "Pesquisar": "Ctrl+F",
-        "Abrir Mais Opções": "Ctrl+I",
-        "Abrir Configurações": "Ctrl+L",
-        "Abrir Página Inicial": "Ctrl+H"
-    },
-    "atualizacoes_automaticas": true
+    "atalhos": {},
+    "atualizacoes_automaticas": false
 }

@@ -1,4 +1,4 @@
-from PySide6.QtWidgets import QLineEdit, QPushButton,QVBoxLayout,QLabel,QFrame,QApplication
+from PySide6.QtWidgets import QLineEdit, QPushButton,QVBoxLayout,QLabel,QFrame,QApplication,QMessageBox
 from PySide6.QtCore import Qt, QPropertyAnimation
 from PySide6.QtGui import QIcon
 import json
@@ -131,7 +131,24 @@ def caminho_recurso(relativo):
 
 class Temas:
     def __init__(self):
+        self._caminho_config = self._resolver_caminho_config()
         self.config = self.carregar_config_arquivo()
+
+    def _resolver_caminho_config(self):
+        if getattr(sys, "frozen", False):
+            # EXE → AppData
+            pasta = os.path.join(
+                os.environ.get("APPDATA"),
+                "SistemaGerenciamento"
+            )
+            os.makedirs(pasta, exist_ok=True)
+            return os.path.join(pasta, "config.json")
+        else:
+            # Python → pasta do projeto
+            return os.path.join(
+                os.path.dirname(os.path.abspath(__file__)),
+                "config.json"
+            )
 
     def carregar_config_padrao(self):
         return {
@@ -146,21 +163,27 @@ class Temas:
             "historico_autocompletes": {}
         }
 
-    def carregar_config_arquivo(self, caminho="config.json"):
+    def carregar_config_arquivo(self):
+        caminho = self._caminho_config
+
         if not os.path.exists(caminho):
-            print(f"Arquivo {caminho} não encontrado. Usando configuração padrão.")
+            self.salvar_config(self.carregar_config_padrao())
             return self.carregar_config_padrao()
 
         try:
             with open(caminho, "r", encoding="utf-8") as f:
                 conteudo = f.read().strip()
                 if not conteudo:
-                    print(f"Arquivo {caminho} vazio. Usando configuração padrão.")
                     return self.carregar_config_padrao()
                 return json.loads(conteudo)
-        except json.JSONDecodeError as e:
-            print(f"Erro ao decodificar {caminho}: {e}. Usando configuração padrão.")
+        except Exception as e:
+            print(f"Erro ao ler config.json: {e}")
             return self.carregar_config_padrao()
+
+    def salvar_config(self, dados: dict):
+        with open(self._caminho_config, "w", encoding="utf-8") as f:
+            json.dump(dados, f, indent=4, ensure_ascii=False)
+
 
 
     def aplicar_tema_global(self,app: QApplication):
