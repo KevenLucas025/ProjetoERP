@@ -1665,28 +1665,55 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         except Exception as e:
             QMessageBox.critical(self, "Erro", f"Erro ao carregar os dados do usuário: {str(e)}")
 
-#*********************************************************************************************************************    
-
-    def validar_cpf(self, cpf):
-        # Remover caracteres não numéricos
-        cpf = re.sub('[^0-9]', '', cpf)
-
-        # Verificar se o CPF tem 11 dígitos
-        if len(cpf) != 11:
-            return False
-
-        return True
 #*********************************************************************************************************************
-    def validar_email(self, email, widget):
-        # Expressão regular para e-mail
-        regex = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
-        return bool(re.match(regex, email))
+    def validar_cpf(self, text, widget=None):
+            if widget is None:
+                widget = self.sender()
+                if widget is None:
+                    return False
+
+            if text == "Não Cadastrado":
+                widget.setText(text)
+                return True
+
+            # Remover caracteres não numéricos
+            cpf = re.sub('[^0-9]', '', text)
+
+            # Verificar se o CPF tem 11 dígitos
+            if len(cpf) != 11:
+                return False
+
+            return True
+#*********************************************************************************************************************
+    def validar_email(self, text, widget=None):
+            if widget is None:
+                widget = self.sender()
+                if widget is None:
+                    return False
+
+            if text == "Não Cadastrado":
+                widget.setText(text)
+                return True
+
+            # Expressão regular para e-mail
+            regex = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+            return bool(re.match(regex, text))
+
 
 
 #*********************************************************************************************************************
-    def validar_cnpj(self, cnpj):
+    def validar_cnpj(self, text, widget=None):
+        if widget is None:
+            widget = self.sender()
+            if widget is None:
+                return False
+
+        if text == "Não Cadastrado":
+            widget.setText(text)
+            return True
+
         # Remover caracteres não numéricos
-        cnpj = re.sub('[^0-9]', '', cnpj)
+        cnpj = re.sub('[^0-9]', '', text)
 
         # Verificar se o CNPJ tem 14 dígitos
         if len(cnpj) != 14:
@@ -1695,11 +1722,20 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         return True
 
 #*********************************************************************************************************************
-    def validar_telefone(self, telefone):
-        # Remover caracteres não numéricos
-        telefone = re.sub('[^0-9]', '', telefone)
+    def validar_telefone(self, text, widget=None):
+        if widget is None:
+            widget = self.sender()
+            if widget is None:
+                return False
 
-        # Verificar se o telefone tem o formato válido
+        if text == "Não Cadastrado":
+            widget.setText(text)
+            return True
+
+        # Remover caracteres não numéricos
+        telefone = re.sub('[^0-9]', '', text)
+
+        # Verificar se o telefone tem 11 dígitos
         if len(telefone) != 11:
             return False
 
@@ -2098,7 +2134,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.label_imagem_usuario.clear()
 
         except Exception as e:
-            QMessageBox.critical(self, "Erro", f"Erro ao cadastrar usuário: {str(e)}")
+            QMessageBox.critical(self, "Erro", f"Erro ao cadastrar usuário:\n{e}")
+
 
 
     def buscar_cep(self,cep:str):
@@ -2196,7 +2233,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             buffer.open(QIODevice.WriteOnly)
             pixmap.save(buffer, "PNG")  # Salvar a imagem como PNG
             # Retornar a sequência de bytes da imagem
-            return bytes_array.toBase64().data()
+            return bytes_array.toBase64().data().decode("utf-8")
 
         return None  # Retornar None se não houver imagem carregada
 #*********************************************************************************************************************    
@@ -2411,11 +2448,17 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
             name_label_asterisco = f'label_asterisco_usuarios_{campo}'
 
-            if not hasattr(self,name_label_asterisco):
+            if not hasattr(self, name_label_asterisco):
                 # Define o QLabel para o asterisco
                 label = QLabel(frame)
                 # Carregar a imagem do asterisco, redimensionando para 12x12, mantendo a proporção original
-                asterisco_pixmap = QPixmap(caminho_recurso("imagens/Imagem1.png").scaled(12, 12, Qt.KeepAspectRatio, Qt.SmoothTransformation))
+                asterisco_pixmap = QPixmap(
+                    caminho_recurso("imagens/Imagem1.png")
+                ).scaled(
+                    12, 12,
+                    Qt.KeepAspectRatio,
+                    Qt.SmoothTransformation
+                )
                 # Definir o tamanho do QLabel para ser o mesmo que o QFrame
                 label.setPixmap(asterisco_pixmap)
                 # Alinhar o QLabel ao centro do frame
@@ -2434,6 +2477,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             
             # Exibir o frame de erro
             frame.show()
+
 #*********************************************************************************************************************
     def esconder_asteriscos_usuarios(self):
         for campo, frame in self.frames_erros_usuarios.items():
