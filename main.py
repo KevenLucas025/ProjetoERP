@@ -1515,6 +1515,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         usuario_estado = self.perfil_estado.currentText()
         usuario_senha = self.txt_senha_cadastro.text()
         usuario_confirmar_senha = self.txt_confirmar_senha.text()
+        usuario_acesso = self.perfil_usuarios.currentText()
+
 
         # Verificar campos obrigatórios
         campos_nao_preenchidos_usuarios = []
@@ -1530,11 +1532,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if not usuario_data_nascimento: campos_nao_preenchidos_usuarios.append("data_nascimento")
         if not usuario_rg: campos_nao_preenchidos_usuarios.append("rg")
         if not usuario_cpf: campos_nao_preenchidos_usuarios.append("cpf")
-        if not usuario_cnpj: campos_nao_preenchidos_usuarios.append("cnpj")
         if not usuario_cep: campos_nao_preenchidos_usuarios.append("cep")
         if not usuario_estado: campos_nao_preenchidos_usuarios.append("estado")
         if not usuario_senha: campos_nao_preenchidos_usuarios.append("senha")
         if not usuario_confirmar_senha: campos_nao_preenchidos_usuarios.append("confirmar_senha")
+        if not usuario_acesso: campos_nao_preenchidos_usuarios.append("perfil_usuarios")
 
         if campos_nao_preenchidos_usuarios:
             self.exibir_asteriscos_usuarios(campos_nao_preenchidos_usuarios)
@@ -1560,6 +1562,17 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.exibir_asteriscos_usuarios(["telefone"])
             QMessageBox.warning(self, "Aviso", "Número de telefone inválido!")
             return
+        
+        if usuario_cnpj and not self.validar_cnpj(usuario_cnpj):
+            self.exibir_asteriscos_usuarios(["cnpj"])
+            QMessageBox.warning(self, "Aviso", "CNPJ informado está incorreto!")
+            return
+        
+        if self.perfil_usuarios.currentIndex() == 0:
+            self.exibir_asteriscos_usuarios(["perfil"])
+            QMessageBox.warning(self, "Aviso", "Por favor informe um tipo de acesso válido")
+            return
+
 
         # Obter imagem, se houver
         usuario_imagem = None
@@ -1578,26 +1591,26 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 UPDATE users 
                 SET Nome=?, Telefone=?, Endereço=?, Número=?, Cidade=?, Bairro=?, Complemento=?, 
                     Email=?, "Data de Nascimento"=?, RG=?, CPF=?, CNPJ=?, CEP=?, Estado=?, 
-                    Senha=?, Imagem=?, "Confirmar Senha"=?
+                    Senha=?, Imagem=?, "Confirmar Senha"=?,Acesso=?
                 WHERE id=?
             """
             valores = (
                 usuario_nome, usuario_telefone, usuario_endereco, usuario_numero, usuario_cidade, usuario_bairro, usuario_complemento,
                 usuario_email, usuario_data_nascimento, usuario_rg, usuario_cpf, usuario_cnpj, usuario_cep, usuario_estado,
-                usuario_senha, usuario_imagem, usuario_confirmar_senha, self.selected_user_id
+                usuario_senha, usuario_imagem, usuario_confirmar_senha,usuario_acesso, self.selected_user_id
             )
         else:
             sql = """
                 UPDATE users 
                 SET Nome=?, Telefone=?, Endereço=?, Número=?, Cidade=?, Bairro=?, Complemento=?, 
                     Email=?, "Data de Nascimento"=?, RG=?, CPF=?, CNPJ=?, CEP=?, Estado=?, 
-                    Senha=?, "Confirmar Senha"=?
+                    Senha=?, "Confirmar Senha"=?,Acesso=?
                 WHERE id=?
             """
             valores = (
                 usuario_nome, usuario_telefone, usuario_endereco, usuario_numero, usuario_cidade, usuario_bairro, usuario_complemento,
                 usuario_email, usuario_data_nascimento, usuario_rg, usuario_cpf, usuario_cnpj, usuario_cep, usuario_estado,
-                usuario_senha, usuario_confirmar_senha, self.selected_user_id
+                usuario_senha, usuario_confirmar_senha, usuario_acesso,self.selected_user_id
             )
 
         try:
@@ -1927,28 +1940,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.txt_usuario_cadastro.setText(self.config.usuario if self.config.usuario else "")
         self.login_window.btn_manter_conectado.setChecked(self.config.mantem_conectado)
 #*********************************************************************************************************************
-    def mostrar_detalhes_erro(self):
-        detalhes_msg = QMessageBox(self)
-        detalhes_msg.setIcon(QMessageBox.Warning)
-        detalhes_msg.setWindowTitle("Erro")
-        detalhes_msg.setText("Não é possível incluir um valor menor que R$ 10,00.")
-
-        ok_btn = QPushButton("OK")
-        detalhes_msg.addButton(ok_btn, QMessageBox.RejectRole)
-
-        detalhes_btn = QPushButton("Detalhes")
-        detalhes_msg.addButton(detalhes_btn, QMessageBox.ActionRole)
-
-        detalhes_msg.setDefaultButton(ok_btn)
-        detalhes_msg.exec()
-
-        if detalhes_msg.clickedButton() == detalhes_btn:
-            detalhes_msg_detalhes = QMessageBox(self)
-            detalhes_msg_detalhes.setIcon(QMessageBox.Information)
-            detalhes_msg_detalhes.setWindowTitle("Detalhes do Erro")
-            detalhes_msg_detalhes.setText("O valor não pode ser menor que R$ 10,00. \n Por favor adicione um valor maior que R$ 10,00")
-            detalhes_msg_detalhes.exec()
-#*********************************************************************************************************************
     def formatar_porcentagem(self):
         valor = self.txt_desconto_3.text()
         if valor:
@@ -2045,13 +2036,22 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 QMessageBox.warning(self, "Erro", "A senha deve conter pelo menos 8 caracteres, incluindo letras e números.")
                 return
                 
-
             # Validação de e-mail
             if not self.email_valido(email):
                 self.exibir_asteriscos_usuarios(["email"])
                 QMessageBox.warning(self, "Erro", "E-mail inválido.")
                 return
             
+            if cnpj and not self.validar_cnpj(cnpj):
+                self.exibir_asteriscos_usuarios(["cnpj"])
+                QMessageBox.warning(self, "Aviso", "CNPJ informado está incorreto!")
+                return
+            
+            if self.perfil_usuarios.currentIndex() == 0:
+                self.exibir_asteriscos_usuarios(["acesso"])
+                QMessageBox.warning(self, "Aviso", "Selecione um tipo de acesso válido!")
+                return
+
 
             # Verificar se usuário já existe
             campo_duplicado = db.user_exists(usuario,telefone,email,rg,cpf,cnpj)
@@ -2402,12 +2402,16 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         'data_nascimento': self.txt_data_nascimento,  # <--- corrigido
         'rg': self.txt_rg,
         'cpf': self.txt_cpf,
-        'cnpj': self.txt_cnpj,
         'cep': self.txt_cep,
         'estado': self.perfil_estado,
         'senha': self.txt_senha_cadastro,
         'confirmar senha': self.txt_confirmar_senha,
         'perfil': self.perfil_usuarios
+        }
+        
+        self.campos_evento_usuarios = {
+            **self.campos_obrigatorios_usuarios,
+            'cnpj': self.txt_cnpj
         }
 
         self.frames_erros_usuarios = {
@@ -2436,7 +2440,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             frame.hide()
 
         # Conectar o sinal focusIn ao método esconder_asteriscos
-        for widget in self.campos_obrigatorios_usuarios.values():
+        for widget in self.campos_evento_usuarios.values():
             widget.installEventFilter(self)
 #*********************************************************************************************************************
     def exibir_asteriscos_usuarios(self, campos_nao_preenchidos_usuarios):
@@ -2489,7 +2493,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     def eventFilter(self, obj, event):
         if event.type() == QEvent.FocusIn:
             # Esconder somente o erro do campo de USUÁRIO que recebeu foco
-            for campo, widget in self.campos_obrigatorios_usuarios.items():
+            for campo,widget in self.campos_evento_usuarios.items():
                 if obj is widget:
                     frame = self.frames_erros_usuarios.get(campo)
                     if frame:
@@ -2700,6 +2704,24 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             
         # 2. Formatar para padrão BR
         valor_total_formatado = f"R$ {valor_total_cliente:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
+        
+        # Descobrir modo do cliente
+        if produto_info.get("cnpj"):
+            cursor.execute(
+                'SELECT "Modo Valor Gasto" FROM clientes_juridicos WHERE CNPJ = ?',
+                (produto_info["cnpj"],)
+            )
+        else:
+            cursor.execute(
+                'SELECT "Modo Valor Gasto" FROM clientes_fisicos WHERE CPF = ?',
+                (produto_info["cpf"],)
+            )
+
+        modo = cursor.fetchone()[0]
+
+        # Se for manual, NÃO recalcula
+        if modo == "manual":
+            return
 
         # Atualizar tabela de clientes
         if produto_info.get("cnpj"):
@@ -3167,7 +3189,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         produto_nome = self.txt_produto.text()
         produto_quantidade = self.txt_quantidade.text()
         produto_valor_real = self.txt_valor_produto_3.text()
-        produto_desconto = self.txt_desconto_3.text()
+        produto_desconto = self.txt_desconto_3.text().strip()
+
+        if produto_desconto and produto_desconto != "Não Cadastrado":
+            produto_valor_total = self.label_valor_desconto.text()
+        else:
+            produto_valor_total = self.label_valor_total_produtos.text()
+
+
         produto_data_cadastro = self.dateEdit_3.date().toString("dd/MM/yyyy")
         produto_codigo_item = self.txt_codigo_item.text()
         produto_cliente = self.txt_cliente_3.text()
@@ -3179,12 +3208,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         try:
             db.connecta()
             db.atualizar_produto(
-                produto_id, produto_nome, produto_quantidade, produto_valor_real,
-                produto_desconto, produto_data_cadastro,
+                produto_id, produto_nome, produto_quantidade,produto_valor_real,
+                produto_desconto,produto_valor_total,produto_data_cadastro,
                 produto_codigo_item, produto_cliente, produto_descricao, produto_imagem
             )
-            msgBox2 = QMessageBox(self, "Sucesso", "Produto atualizado com sucesso!")
-            msgBox2.exec()
+            QMessageBox.information(self, "Sucesso", "Produto atualizado com sucesso!")
             self.limpar_imagem_produto_após_atualizar()
             self.limpar_campos_produtos()
             self.is_editing_produto = False
@@ -3366,31 +3394,44 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             widget.setText(numero_cnpj)
             widget.blockSignals(False)
 #*********************************************************************************************************************
-    def formatar_moeda(self, widget):
+    def formatar_moeda(self, widget=None):
+        if widget is None:
+            widget = self.sender()
+            if widget is None:
+                return
+                
         valor = widget.text().strip()
-
+        
         # Permitir "Não Cadastrado"
         if valor.lower() == "não cadastrado":
+            widget.blockSignals(True)
             widget.setText("Não Cadastrado")
+            widget.blockSignals(False)
             return
 
-        if valor:
-            try:
-                # Remove R$, espaços e pontos de milhar
-                valor = valor.replace("R$", "").replace(" ", "").replace(".", "").replace(",", ".")
-                valor_float = float(valor)
-            except ValueError:
-                QMessageBox.warning(self, "Erro", "Valor inválido.")
-                return
+        if not valor:
+            return
 
-            # Regra: valor mínimo
-            if valor_float < 10:
-                self.mostrar_detalhes_erro()
-                return
+        try:
+            # Remove R$, espaços e separadores
+            valor_limpo = (
+                valor.replace("R$", "")
+                    .replace(" ", "")
+                    .replace(".", "")
+                    .replace(",", ".")
+            )
+            valor_float = float(valor_limpo)
+        except ValueError:
+            QMessageBox.warning(self, "Erro", "Valor inválido.")
+            return
 
-            # Formatar como moeda
-            valor_formatado = locale.currency(valor_float, grouping=True)
-            widget.setText(valor_formatado)
+        # Formatar como moeda
+        valor_formatado = locale.currency(valor_float, grouping=True)
+
+        widget.blockSignals(True)
+        widget.setText(valor_formatado)
+        widget.blockSignals(False)
+
 #*********************************************************************************************************************
     def formatar_rg(self, text,widget=None):
         if widget is None:

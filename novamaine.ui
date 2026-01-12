@@ -3724,8 +3724,7 @@
                    </size>
                   </property>
                   <property name="styleSheet">
-                   <string notr="true">
-</string>
+                   <string notr="true"/>
                   </property>
                  </widget>
                 </item>
@@ -4119,9 +4118,7 @@
                    </size>
                   </property>
                   <property name="styleSheet">
-                   <string notr="true">
-
-</string>
+                   <string notr="true"/>
                   </property>
                   <property name="editable">
                    <bool>false</bool>
@@ -4535,8 +4532,7 @@
                    </size>
                   </property>
                   <property name="styleSheet">
-                   <string notr="true">
-</string>
+                   <string notr="true"/>
                   </property>
                   <property name="echoMode">
                    <enum>QLineEdit::Password</enum>
@@ -4594,9 +4590,7 @@
                    </size>
                   </property>
                   <property name="styleSheet">
-                   <string notr="true">
-
-</string>
+                   <string notr="true"/>
                   </property>
                   <property name="editable">
                    <bool>false</bool>
@@ -4874,7 +4868,7 @@
               <enum>QTabWidget::Rounded</enum>
              </property>
              <property name="currentIndex">
-              <number>1</number>
+              <number>0</number>
              </property>
              <widget class="QWidget" name="tab_clientes">
               <property name="styleSheet">
@@ -5242,6 +5236,11 @@
                  </column>
                  <column>
                   <property name="text">
+                   <string>Modo Valor Gasto</string>
+                  </property>
+                 </column>
+                 <column>
+                  <property name="text">
                    <string>Última Compra</string>
                   </property>
                  </column>
@@ -5605,6 +5604,11 @@
                  </column>
                  <column>
                   <property name="text">
+                   <string>Modo Valor Gasto</string>
+                  </property>
+                 </column>
+                 <column>
+                  <property name="text">
                    <string>Última Compra</string>
                   </property>
                  </column>
@@ -5686,9 +5690,7 @@
               <item>
                <widget class="QLabel" name="label_desenvolvido">
                 <property name="styleSheet">
-                 <string notr="true">
-
-</string>
+                 <string notr="true"/>
                 </property>
                 <property name="text">
                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:16pt; font-weight:600; font-style:italic;&quot;&gt;Desenvolvido e publicado por:&lt;/span&gt;&lt;/p&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:16pt; font-weight:600; font-style:italic;&quot;&gt;Keven Lucas&lt;/span&gt;&lt;/p&gt;&lt;p align=&quot;center&quot;&gt;&lt;br/&gt;&lt;/p&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:16pt; font-weight:600; font-style:italic;&quot;&gt;(19) 98201-8869&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -5787,8 +5789,7 @@
                  <cursorShape>PointingHandCursor</cursorShape>
                 </property>
                 <property name="styleSheet">
-                 <string notr="true">
-</string>
+                 <string notr="true"/>
                 </property>
                 <property name="text">
                  <string>Fazer o cadastro em massa</string>
@@ -5813,8 +5814,7 @@
                  <cursorShape>PointingHandCursor</cursorShape>
                 </property>
                 <property name="styleSheet">
-                 <string notr="true">
-</string>
+                 <string notr="true"/>
                 </property>
                 <property name="text">
                  <string>Abrir planilha</string>
@@ -5839,8 +5839,7 @@
                  <cursorShape>PointingHandCursor</cursorShape>
                 </property>
                 <property name="styleSheet">
-                 <string notr="true">
-</string>
+                 <string notr="true"/>
                 </property>
                 <property name="text">
                  <string>Editar produto</string>
@@ -5862,8 +5861,7 @@
                  </size>
                 </property>
                 <property name="styleSheet">
-                 <string notr="true">
-</string>
+                 <string notr="true"/>
                 </property>
                 <property name="value">
                  <number>0</number>
@@ -5891,9 +5889,7 @@
                  </size>
                 </property>
                 <property name="styleSheet">
-                 <string notr="true">
-
-</string>
+                 <string notr="true"/>
                 </property>
                 <property name="alignment">
                  <set>Qt::AlignCenter</set>
@@ -6096,8 +6092,7 @@
                  <cursorShape>PointingHandCursor</cursorShape>
                 </property>
                 <property name="styleSheet">
-                 <string notr="true">
-</string>
+                 <string notr="true"/>
                 </property>
                 <property name="text">
                  <string>Abrir planilha</string>
@@ -6156,8 +6151,7 @@
                  </size>
                 </property>
                 <property name="styleSheet">
-                 <string notr="true">
-</string>
+                 <string notr="true"/>
                 </property>
                 <property name="alignment">
                  <set>Qt::AlignCenter</set>
@@ -6225,8 +6219,7 @@
                  <cursorShape>PointingHandCursor</cursorShape>
                 </property>
                 <property name="styleSheet">
-                 <string notr="true">
-</string>
+                 <string notr="true"/>
                 </property>
                 <property name="text">
                  <string>Fazer o cadastro em massa</string>

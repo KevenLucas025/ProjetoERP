@@ -247,6 +247,7 @@ class Clientes_Juridicos(QWidget):
                 "Última Atualização",
                 "Origem do Cliente",
                 "Valor Gasto Total",
+                "Modo Valor Gasto",
                 "Última Compra"
             FROM clientes_juridicos
             WHERE 
@@ -285,6 +286,7 @@ class Clientes_Juridicos(QWidget):
                 "Última Atualização",
                 "Origem do Cliente",
                 "Valor Gasto Total",
+                "Modo Valor Gasto",
                 "Última Compra"
             FROM clientes_juridicos
         """)
@@ -670,6 +672,18 @@ class Clientes_Juridicos(QWidget):
         add_linha("CPF")
         add_linha("Email")
         add_linha("CNH")
+        
+        combo_modo_valor = QComboBox()
+        combo_modo_valor.addItems([
+            "Automático (somar produtos)",
+            "Manual (valor fixo)"
+        ])
+        
+        combo_modo_valor.setStyleSheet(combobox_style)
+        
+        
+        
+        
 
         # Categoria CNH
         combobox_categoria_cnh = QComboBox()
@@ -742,6 +756,11 @@ class Clientes_Juridicos(QWidget):
         # Valor gasto total
         add_linha("Valor Gasto Total")
         self.campos_cliente_juridico["Valor Gasto Total"].setText(dados_cliente.get("Valor Gasto Total",""))
+        
+        # Modo Valor Gasto, esse modo diz se o usuário quer seguir o valor original do produto ou deixar manual
+        label_modo, widget_modo = add_linha("Modo do Valor Gasto", combo_modo_valor)
+        
+        self.campos_cliente_juridico["Modo do Valor Gasto"] = widget_modo
 
         # Última Compra
         add_linha("Última Compra")
@@ -782,6 +801,10 @@ class Clientes_Juridicos(QWidget):
         self.campos_cliente_juridico["Valor Gasto Total"].editingFinished.connect(
             lambda: self.main_window.formatar_moeda(self.campos_cliente_juridico["Valor Gasto Total"])
         )
+        
+        
+
+
         
          # Campos de data conectados corretamente
         campos_data = ["Data de Emissão da CNH", "Data de Vencimento da CNH",
@@ -830,7 +853,7 @@ class Clientes_Juridicos(QWidget):
         colunas = [
             "Nome do Cliente", "Razão Social", "Data da Inclusão", "CNPJ","RG","CPF","Email","CNH","Categoria da CNH","Data de Emissão da CNH","Data de Vencimento da CNH","Telefone","CEP", "Endereço", 
             "Número", "Complemento", "Cidade", "Bairro","Estado", "Status do Cliente","Categoria do Cliente",
-            "Última Atualização","Valor Gasto Total", "Última Compra"
+            "Última Atualização","Valor Gasto Total", "Modo Valor Gasto", "Última Compra"
         ]
         
 
@@ -1493,7 +1516,7 @@ class Clientes_Juridicos(QWidget):
                     RG = ?, CPF = ?, CNH = ?, `Categoria da CNH` = ?, `Data de Emissão da CNH` = ?, 
                     `Data de Vencimento da CNH` = ?, Telefone = ?, CEP = ?, Endereço = ?, 
                     Número = ?, Complemento = ?, Cidade = ?, Bairro = ?, Estado = ?, `Status do Cliente` = ?, `Categoria do Cliente` = ?,
-                    `Última Atualização` = ?, `Valor Gasto Total` = ?, `Última Compra` = ?
+                    `Última Atualização` = ?, `Valor Gasto Total` = ?,`Modo Valor Gasto`, `Última Compra` = ?
                 WHERE CNPJ = ?
             """
             valores = (
@@ -1501,7 +1524,7 @@ class Clientes_Juridicos(QWidget):
                 dados_atualizados["RG"], dados_atualizados["CPF"], dados_atualizados["CNH"], dados_atualizados["Categoria da CNH"], dados_atualizados["Data de Emissão da CNH"], 
                 dados_atualizados["Data de Vencimento da CNH"], dados_atualizados["Telefone"], dados_atualizados["CEP"], dados_atualizados["Endereço"], dados_atualizados["Número"], dados_atualizados["Complemento"],
                 dados_atualizados["Cidade"], dados_atualizados["Bairro"], dados_atualizados["Estado"], dados_atualizados["Status do Cliente"], dados_atualizados["Categoria do Cliente"],
-                dados_atualizados["Última Atualização"], dados_atualizados["Valor Gasto Total"], dados_atualizados["Última Compra"],
+                dados_atualizados["Última Atualização"], dados_atualizados["Valor Gasto Total"],dados_atualizados["Modo Valor Gasto"], dados_atualizados["Última Compra"],
                 cnpj
             )
 
@@ -1620,7 +1643,7 @@ class Clientes_Juridicos(QWidget):
                     "Nome do Cliente", "Razão Social", "Data da Inclusão", CNPJ, RG, 
                         CPF,Email, CNH, "Categoria da CNH", "Data de Emissão da CNH", "Data de Vencimento da CNH",  
                     Telefone, CEP, Endereço, Número, Complemento, Cidade, Bairro, Estado, 
-                    "Status do Cliente", "Categoria do Cliente", "Última Atualização", "Valor Gasto Total", "Última Compra"
+                    "Status do Cliente", "Categoria do Cliente", "Última Atualização", "Valor Gasto Total","Modo Valor Gasto", "Última Compra"
                 )
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?,?)
             """, (
@@ -3911,7 +3934,7 @@ class Clientes_Juridicos(QWidget):
             "Nome", "Razão Social", "Data da Inclusão", "CNPJ",
             "Contato", "CEP", "Endereço", "Número", "Complemento", "Cidade", "Bairro", "Estado",
             "Status", "Categoria", "Última Atualização", "Origem",
-            "Valor Gasto Total", "Última Compra"
+            "Valor Gasto Total","Modo Valor Gasto", "Última Compra"
         ]
 
         self.checkboxes_relatorio = []
@@ -4017,6 +4040,7 @@ class Clientes_Juridicos(QWidget):
             "Última Atualização": "Última Atualização",
             "Origem": "Origem",
             "Valor Gasto Total": "Valor Gasto Total",
+            "Modo Valor Gasto": "Modo Valor Gasto",
             "Última Compra": "Última Compra"
         }
 
@@ -4182,6 +4206,7 @@ class Clientes_Juridicos(QWidget):
             "Última Atualização": "Última Atualização",
             "Origem": "Origem",
             "Valor Gasto Total": "Valor Gasto Total",
+            "Modo Valor Gasto": "Modo Valor Gasto",
             "Última Compra": "Última Compra"
         }
 

@@ -465,75 +465,56 @@ class DataBase:
         except Exception as e:
             print("Erro ao apagar usuário do banco de dados:", e)
 #*********************************************************************************************************************
-    def atualizar_produto(self, produto_id, produto=None, quantidade=None, 
-                        valor_real=None,desconto=None, valor_total=None,
-                        data_cadastro=None, codigo_item=None, cliente=None, descricao_produto=None, produto_imagem=None):
+    def atualizar_produto(
+        self, produto_id, produto=None, quantidade=None, 
+        valor_real=None, desconto=None, valor_total=None,
+        data_cadastro=None, codigo_item=None, cliente=None,
+        descricao_produto=None, produto_imagem=None
+    ):
         try:
-            # Monta a query SQL dinamicamente com base nos parâmetros fornecidos
             columns_to_update = []
             values_to_update = []
 
             if produto:
                 columns_to_update.append("Produto = ?")
                 values_to_update.append(produto)
+
             if quantidade is not None:
                 columns_to_update.append("Quantidade = ?")
                 values_to_update.append(quantidade)
+
             if valor_real is not None:
                 columns_to_update.append("Valor_Real = ?")
                 values_to_update.append(valor_real)
-            if desconto is not None:
-                columns_to_update.append("Desconto = ?")
-                values_to_update.append(desconto)
-            else:
-                desconto = "Não Cadastrado"
-                columns_to_update.append("Desconto = ?")
-                values_to_update.append(desconto)
-            if valor_total is not None:
-                columns_to_update.append("Valor Total = ?")
-                values_to_update.append(valor_total)
-            else:
-                valor_total = "Não Cadastrado"
-                columns_to_update.append("Valor Total = ?")
-                values_to_update.append(valor_total)
-            if data_cadastro:
-                columns_to_update.append("Data do Cadastro = ?")
-                values_to_update.append(data_cadastro)
-            else:
-                data_cadastro = "Não Cadastrado"
-                columns_to_update.append("Data do Cadastro = ?")
-                values_to_update.append(data_cadastro)
-            if codigo_item:
-                columns_to_update.append("Código_Item = ?")
-                values_to_update.append(codigo_item)
-            else:
-                codigo_item = "Não Cadastrado"
-                columns_to_update.append("Código_Item = ?")
-                values_to_update.append(codigo_item)
-            if cliente:
-                columns_to_update.append("Cliente = ?")
-                values_to_update.append(cliente)
-            else:
-                cliente = "Não Cadastrado"
-                columns_to_update.append("Cliente = ?")
-                values_to_update.append(cliente)
-            if descricao_produto:
-                columns_to_update.append("Descrição_Produto = ?")
-                values_to_update.append(descricao_produto)
-            else:
-                descricao_produto = "Não Cadastrado"
-                columns_to_update.append("Descrição_Produto = ?")
-                values_to_update.append(descricao_produto)
-            if produto_imagem:
-                columns_to_update.append("Imagem = ?")
-                values_to_update.append(produto_imagem)
-            else:
-                produto_imagem = "Não Cadastrado"
-                columns_to_update.append("Não Cadastrado")
-                values_to_update.append(produto_imagem)
 
+            # Desconto
+            columns_to_update.append("Desconto = ?")
+            values_to_update.append(desconto if desconto else "Não Cadastrado")
 
-            # Converte as listas em strings separadas por vírgula
+            # Valor Total (COLUNA COM ESPAÇO)
+            columns_to_update.append('"Valor Total" = ?')
+            values_to_update.append(valor_total if valor_total else "Não Cadastrado")
+
+            # Data do Cadastro (COLUNA COM ESPAÇO)
+            columns_to_update.append('"Data do Cadastro" = ?')
+            values_to_update.append(data_cadastro if data_cadastro else "Não Cadastrado")
+
+            # Código do Item
+            columns_to_update.append("Código_Item = ?")
+            values_to_update.append(codigo_item if codigo_item else "Não Cadastrado")
+
+            # Cliente
+            columns_to_update.append("Cliente = ?")
+            values_to_update.append(cliente if cliente else "Não Cadastrado")
+
+            # Descrição do Produto
+            columns_to_update.append("Descrição_Produto = ?")
+            values_to_update.append(descricao_produto if descricao_produto else "Não Cadastrado")
+
+            # Imagem (CORRIGIDO)
+            columns_to_update.append("Imagem = ?")
+            values_to_update.append(produto_imagem if produto_imagem else "Não Cadastrado")
+
             set_clause = ", ".join(columns_to_update)
 
             query = f"""
@@ -542,7 +523,6 @@ class DataBase:
                 WHERE id = ?
             """
 
-            # Adiciona o produto_id ao final da lista de valores
             values_to_update.append(produto_id)
 
             cursor = self.connection.cursor()
@@ -550,8 +530,10 @@ class DataBase:
             self.connection.commit()
 
             print("Produto atualizado com sucesso!")
+
         except Exception as e:
             print("Erro ao atualizar produto:", e)
+
 
 #*********************************************************************************************************************
     def obter_caminho_imagem_produto(self, produto_id):

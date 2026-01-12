@@ -56,6 +56,24 @@
         ],
         "txt_complemento": [
             "Bloco A AP 31"
+        ],
+        "txt_valor_produto_3": [
+            "15",
+            "18",
+            "21",
+            "23",
+            "25"
+        ],
+        "txt_cliente_3": [
+            "dsadasdas",
+            "Keven Lucas da Silva Jesus",
+            "Não Cadastrado"
+        ],
+        "txt_codigo_item": [
+            "a Jesu"
+        ],
+        "txt_descricao_produto_3": [
+            "Pizza"
         ]
     },
     "tema": "escuro",
