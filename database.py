@@ -254,6 +254,7 @@ class DataBase:
                     "Categoria do Cliente" TEXT,
                     "Última Atualização" TEXT,
                     "Valor Gasto Total" TEXT,
+                    "Modo Valor Gasto" TEXT,
                     "Última Compra" TEXT  
                     )
                 """)
@@ -288,6 +289,7 @@ class DataBase:
                     "Categoria do Cliente" TEXT,
                     "Última Atualização" TEXT,
                     "Valor Gasto Total" TEXT,
+                    "Modo Valor Gasto" TEXT,
                     "Última Compra" TEXT  
                     )
                 """)

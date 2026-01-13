@@ -54,7 +54,6 @@ class Clientes_Juridicos(QWidget):
         self.btn_historico_clientes = btn_historico_clientes
         
         
-        
         self.btn_excluir_clientes.clicked.connect(self.excluir_clientes_juridicos)
         self.btn_marcar_como_clientes.clicked.connect(self.marcar_como_clientes)
         self.btn_adicionar_cliente_juridico.clicked.connect(self.exibir_janela_cadastro_cliente)
@@ -64,6 +63,8 @@ class Clientes_Juridicos(QWidget):
         self.imagem_line()
 
         self.atualizar_icone_botao_lupa_juridicos()
+        
+        self.carregar_clientes_juridicos()
         
         
         # ENTER → busca manual
@@ -129,16 +130,21 @@ class Clientes_Juridicos(QWidget):
                     "Categoria do Cliente",
                     "Última Atualização",
                     "Valor Gasto Total",
+                    "Modo Valor Gasto",
                     "Última Compra"
                 FROM clientes_juridicos
                 ORDER BY "Data da Inclusão" DESC
             """)
-
+            
             dados = cursor.fetchall()
 
             # Limpa a tabela antes de recarregar
             self.table_clientes_juridicos.clearContents()
             self.table_clientes_juridicos.setRowCount(0)
+            
+            
+            print("Colunas no SELECT:", len(cursor.description))
+            print("Colunas na tabela:", self.table_clientes_juridicos.columnCount())
 
             deslocamento = 1 if self.coluna_checkboxes_clientes_adicionada else 0
             self.checkboxes_clientes = []
@@ -674,16 +680,15 @@ class Clientes_Juridicos(QWidget):
         add_linha("CNH")
         
         combo_modo_valor = QComboBox()
-        combo_modo_valor.addItems([
-            "Automático (somar produtos)",
-            "Manual (valor fixo)"
-        ])
-        
+        combo_modo_valor.addItem("Automático (somar produtos)", "automatico")
+        combo_modo_valor.addItem("Manual (valor fixo)", "manual")
         combo_modo_valor.setStyleSheet(combobox_style)
         
-        
-        
-        
+        # 🔹 definir valor atual vindo do banco
+        valor_modo = dados_cliente.get("Modo Valor Gasto", "automatico")
+        index = combo_modo_valor.findData(valor_modo)
+        combo_modo_valor.setCurrentIndex(index if index >= 0 else 0)
+
 
         # Categoria CNH
         combobox_categoria_cnh = QComboBox()
@@ -758,9 +763,9 @@ class Clientes_Juridicos(QWidget):
         self.campos_cliente_juridico["Valor Gasto Total"].setText(dados_cliente.get("Valor Gasto Total",""))
         
         # Modo Valor Gasto, esse modo diz se o usuário quer seguir o valor original do produto ou deixar manual
-        label_modo, widget_modo = add_linha("Modo do Valor Gasto", combo_modo_valor)
+        label_modo, widget_modo = add_linha("Modo Valor Gasto", combo_modo_valor)
         
-        self.campos_cliente_juridico["Modo do Valor Gasto"] = widget_modo
+        self.campos_cliente_juridico["Modo Valor Gasto"] = widget_modo
 
         # Última Compra
         add_linha("Última Compra")
@@ -1501,14 +1506,51 @@ class Clientes_Juridicos(QWidget):
             cnpj = dados_atualizados["CNPJ"]  # Identificador único
 
             # --- VALORES PADRÃO PARA CAMPOS NÃO PREENCHIDOS ---
-            if not dados_atualizados["CNH"]:
-                dados_atualizados["CNH"] = "Não Cadastrado"
-                dados_atualizados["Categoria da CNH"] = "Não Cadastrado"
-                dados_atualizados["Data de Emissão da CNH"] = "Não Cadastrado"
-                dados_atualizados["Data de Vencimento da CNH"] = "Não Cadastrado"
+            campos_cnh = [
+                "CNH",
+                "Categoria da CNH",
+                "Data de Emissão da CNH",
+                "Data de Vencimento da CNH"
+            ]
+
+            for campo in campos_cnh:
+                valor_novo = dados_atualizados.get(campo, "").strip()
+                valor_original = self.dados_originais_cliente.get(campo, "")
+
+                # Se o usuário apagou explicitamente
+                if valor_novo == "" and valor_original != "":
+                    dados_atualizados[campo] = "Não Cadastrado"
+
+                # Se não mexeu, mantém o valor original
+                elif valor_novo == "":
+                    dados_atualizados[campo] = valor_original
+
 
             if not dados_atualizados["Complemento"]:
                 dados_atualizados["Complemento"] = "Não se aplica"
+                
+            # 🔹 Se o modo for automático, recalcular Valor Gasto Total
+            if dados_atualizados["Modo Valor Gasto"] == "automatico":
+                cursor.execute("""
+                    SELECT "Valor Total"
+                    FROM products
+                    WHERE CNPJ = ?
+                """, (cnpj,))
+
+                linhas = cursor.fetchall()
+                total = 0.0
+
+                for linha in linhas:
+                    valor_str = str(linha[0]).replace("R$", "").replace(".", "").replace(",", ".")
+                    try:
+                        total += float(valor_str)
+                    except:
+                        pass
+
+                total_formatado = f"R$ {total:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
+
+                dados_atualizados["Valor Gasto Total"] = total_formatado
+
 
             query = """
                 UPDATE clientes_juridicos SET
@@ -1516,7 +1558,7 @@ class Clientes_Juridicos(QWidget):
                     RG = ?, CPF = ?, CNH = ?, `Categoria da CNH` = ?, `Data de Emissão da CNH` = ?, 
                     `Data de Vencimento da CNH` = ?, Telefone = ?, CEP = ?, Endereço = ?, 
                     Número = ?, Complemento = ?, Cidade = ?, Bairro = ?, Estado = ?, `Status do Cliente` = ?, `Categoria do Cliente` = ?,
-                    `Última Atualização` = ?, `Valor Gasto Total` = ?,`Modo Valor Gasto`, `Última Compra` = ?
+                    `Última Atualização` = ?, `Valor Gasto Total` = ?,`Modo Valor Gasto` = ?, `Última Compra` = ?
                 WHERE CNPJ = ?
             """
             valores = (
@@ -1627,6 +1669,7 @@ class Clientes_Juridicos(QWidget):
             valor_gasto_total = "Não Cadastrado"
             ultima_compra = "Não Cadastrado"
             ultima_atualizacao = "Não Cadastrado"
+            modo_valor_gasto = "Automático"
 
             if not cnh:
                 cnh = "Não Cadastrado"
@@ -1645,12 +1688,12 @@ class Clientes_Juridicos(QWidget):
                     Telefone, CEP, Endereço, Número, Complemento, Cidade, Bairro, Estado, 
                     "Status do Cliente", "Categoria do Cliente", "Última Atualização", "Valor Gasto Total","Modo Valor Gasto", "Última Compra"
                 )
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?,?)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?,?,?)
             """, (
                 nome, razao_social, data_inclusao, cnpj, rg, 
                 cpf,email, cnh, categoria_cnh, data_emissao_cnh, data_vencimento_cnh, 
                 telefone, cep, endereco, numero, complemento, cidade, bairro, estado, 
-                status, categoria, ultima_atualizacao, valor_gasto_total,ultima_compra
+                status, categoria, ultima_atualizacao, valor_gasto_total,modo_valor_gasto,ultima_compra
             ))
             self.db.connection.commit()
 

@@ -70,10 +70,18 @@
             "Não Cadastrado"
         ],
         "txt_codigo_item": [
-            "a Jesu"
+            "a Jesu",
+            "sds"
         ],
         "txt_descricao_produto_3": [
-            "Pizza"
+            "Pizza",
+            "dsds"
+        ],
+        "txt_produto": [
+            "Maça"
+        ],
+        "txt_quantidade": [
+            "12"
         ]
     },
     "tema": "escuro",

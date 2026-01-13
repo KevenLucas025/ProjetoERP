@@ -2132,6 +2132,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.perfil_estado.setCurrentIndex(0)
             self.perfil_usuarios.setCurrentIndex(0)
             self.label_imagem_usuario.clear()
+            
+            
 
         except Exception as e:
             QMessageBox.critical(self, "Erro", f"Erro ao cadastrar usuário:\n{e}")
@@ -2705,19 +2707,29 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # 2. Formatar para padrão BR
         valor_total_formatado = f"R$ {valor_total_cliente:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
         
-        # Descobrir modo do cliente
-        if produto_info.get("cnpj"):
-            cursor.execute(
-                'SELECT "Modo Valor Gasto" FROM clientes_juridicos WHERE CNPJ = ?',
-                (produto_info["cnpj"],)
-            )
-        else:
-            cursor.execute(
-                'SELECT "Modo Valor Gasto" FROM clientes_fisicos WHERE CPF = ?',
-                (produto_info["cpf"],)
-            )
 
-        modo = cursor.fetchone()[0]
+        # Descobrir modo do cliente (COM VALIDAÇÃO)
+        if produto_info.get("cnpj"):
+            cursor.execute("""
+                SELECT "Modo Valor Gasto"
+                FROM clientes_juridicos
+                WHERE CNPJ = ?
+            """, (produto_info["cnpj"],))
+        else:
+            cursor.execute("""
+                SELECT "Modo Valor Gasto"
+                FROM clientes_fisicos
+                WHERE CPF = ?
+            """, (produto_info["cpf"],))
+
+        resultado = cursor.fetchone()
+
+        if not resultado:
+            print("[ERRO] Cliente não encontrado ao buscar 'Modo Valor Gasto'")
+            return  # evita KeyError / crash
+
+        modo = resultado[0].strip().lower()
+
 
         # Se for manual, NÃO recalcula
         if modo == "manual":
@@ -2738,6 +2750,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             """, (valor_total_formatado, produto_info["data_cadastro"], produto_info["cpf"]))
 
         db.connection.commit()
+        
+        if hasattr(self, "pagina_clientes_juridicos"):
+            self.pagina_clientes_juridicos.carregar_clientes_juridicos()
 
         if registrar_historico:
             # Registrar no histórico após a inserção do produto
@@ -4012,9 +4027,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 QMessageBox.information(self,"Aviso","Dados atualizados com sucesso!")
                 self.pagina_clientes_fisicos.carregar_clientes_fisicos()
             else:
-                print("⚠️ Nenhuma tabela de cliente visível")
+                print("Nenhuma tabela de cliente visível")
         else:
-            print("⚠️ Página atual não tem método de atualização com F5.")
+            print("Página atual não tem método de atualização com F5.")
 
     def aplicar_icones(self):
         self.btn_editar.setIcon(
