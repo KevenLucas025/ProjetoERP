@@ -161,7 +161,17 @@ class Clientes_Juridicos(QWidget):
 
                 # Preenche os dados nas colunas (com deslocamento)
                 for coluna_idx, dado in enumerate(linha_dados):
-                    item = self.formatar_texto_juridico(str(dado))
+
+                    valor = str(dado)
+
+                    # 🔹 Tradução do Modo Valor Gasto para a interface
+                    if cursor.description[coluna_idx][0] == "Modo Valor Gasto":
+                        if valor == "automatico":
+                            valor = "Automático (somar produtos)"
+                        elif valor == "manual":
+                            valor = "Manual (valor fixo)"
+
+                    item = self.formatar_texto_juridico(valor)
                     self.table_clientes_juridicos.setItem(linha_idx, coluna_idx + deslocamento, item)
 
             self.table_clientes_juridicos.resizeColumnsToContents()
@@ -680,6 +690,7 @@ class Clientes_Juridicos(QWidget):
         add_linha("CNH")
         
         combo_modo_valor = QComboBox()
+        combo_modo_valor.addItem("Selecione")
         combo_modo_valor.addItem("Automático (somar produtos)", "automatico")
         combo_modo_valor.addItem("Manual (valor fixo)", "manual")
         combo_modo_valor.setStyleSheet(combobox_style)
@@ -806,10 +817,6 @@ class Clientes_Juridicos(QWidget):
         self.campos_cliente_juridico["Valor Gasto Total"].editingFinished.connect(
             lambda: self.main_window.formatar_moeda(self.campos_cliente_juridico["Valor Gasto Total"])
         )
-        
-        
-
-
         
          # Campos de data conectados corretamente
         campos_data = ["Data de Emissão da CNH", "Data de Vencimento da CNH",
@@ -1461,7 +1468,11 @@ class Clientes_Juridicos(QWidget):
             if isinstance(widget, QLineEdit):
                 dados_atualizados[campo] = widget.text()
             elif isinstance(widget, QComboBox):
-                dados_atualizados[campo] = widget.currentText()
+                dados_atualizados[campo] = (
+                    widget.currentData()
+                    if widget.currentData() is not None
+                    else widget.currentText()
+                    )
             else:
                 dados_atualizados[campo] = str(widget)
 
@@ -1529,8 +1540,8 @@ class Clientes_Juridicos(QWidget):
             if not dados_atualizados["Complemento"]:
                 dados_atualizados["Complemento"] = "Não se aplica"
                 
-            # 🔹 Se o modo for automático, recalcular Valor Gasto Total
-            if dados_atualizados["Modo Valor Gasto"] == "automatico":
+            #  Se o modo for automático, recalcular Valor Gasto Total
+            if "automatico" in dados_atualizados["Modo Valor Gasto"].lower():
                 cursor.execute("""
                     SELECT "Valor Total"
                     FROM products
@@ -1669,7 +1680,7 @@ class Clientes_Juridicos(QWidget):
             valor_gasto_total = "Não Cadastrado"
             ultima_compra = "Não Cadastrado"
             ultima_atualizacao = "Não Cadastrado"
-            modo_valor_gasto = "Automático"
+            modo_valor_gasto = "automatico"
 
             if not cnh:
                 cnh = "Não Cadastrado"
@@ -1679,6 +1690,32 @@ class Clientes_Juridicos(QWidget):
 
             if not complemento:
                 complemento = "Não se aplica"
+                
+            # --- CALCULAR VALOR GASTO TOTAL SE JÁ EXISTIREM PRODUTOS ---
+            cursor.execute("""
+                SELECT "Valor Total", "Data do Cadastro"
+                FROM products
+                WHERE CNPJ = ?
+            """, (cnpj,))
+
+            linhas = cursor.fetchall()
+
+            total = 0.0
+            ultima_compra = "Não Cadastrado"
+
+            for valor, data in linhas:
+                valor_str = str(valor).replace("R$", "").replace(".", "").replace(",", ".")
+                try:
+                    total += float(valor_str)
+                    ultima_compra = data  # última linha já será a mais recente se houver ORDER
+                except:
+                    pass
+
+            if total > 0:
+                valor_gasto_total = f"R$ {total:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
+            else:
+                valor_gasto_total = "R$ 0,00"
+
             
             # Inserir no banco
             cursor.execute("""

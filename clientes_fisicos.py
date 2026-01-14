@@ -368,7 +368,7 @@ class Clientes_Fisicos(QWidget):
         colunas = [
             "Nome do Cliente", "Data da Inclusão", "RG","CPF","Email","CNH","Categoria da CNH","Data de Emissão da CNH",
             "Data de Vencimento da CNH","Telefone","CEP", "Endereço", "Número", "Complemento", "Cidade", "Bairro",
-            "Estado", "Status do Cliente","Categoria do Cliente","Última Atualização","Valor Gasto Total", "Última Compra"
+            "Estado", "Status do Cliente","Categoria do Cliente","Última Atualização","Valor Gasto Total","Modo Valor Gasto" "Última Compra"
         ]
         
 
@@ -1098,6 +1098,17 @@ class Clientes_Fisicos(QWidget):
         add_linha("CPF")
         add_linha("Email")
         add_linha("CNH")
+        
+        combo_modo_valor_fisicos = QComboBox()
+        combo_modo_valor_fisicos.addItem("Selecione")
+        combo_modo_valor_fisicos.addItem("Automático (somar produtos)", "automatico")
+        combo_modo_valor_fisicos.addItem("Manual (valor fixo)", "manual")
+        combo_modo_valor_fisicos.setStyleSheet(combobox_style)
+        
+        # 🔹 definir valor atual vindo do banco
+        valor_modo = dados_cliente.get("Modo Valor Gasto", "automatico")
+        index = combo_modo_valor_fisicos.findData(valor_modo)
+        combo_modo_valor_fisicos.setCurrentIndex(index if index >= 0 else 0)
 
         # Categoria CNH
         combobox_categoria_cnh = QComboBox()
@@ -1173,6 +1184,12 @@ class Clientes_Fisicos(QWidget):
         # Valor gasto total
         add_linha("Valor Gasto Total")
         self.campos_cliente_fisico["Valor Gasto Total"].setText(dados_cliente.get("Valor Gasto Total",""))
+        
+        # Modo Valor Gasto, esse modo diz se o usuário quer seguir o valor original do produto ou deixar manual
+        label_modo, widget_modo = add_linha("Modo Valor Gasto", combo_modo_valor_fisicos)
+        
+        self.campos_cliente_fisico["Modo Valor Gasto"] = widget_modo
+
 
         # Última Compra
         add_linha("Última Compra")
@@ -1403,6 +1420,7 @@ class Clientes_Fisicos(QWidget):
             valor_gasto_total = "Não Cadastrado"
             ultima_compra = "Não Cadastrado"
             ultima_atualizacao = "Não Cadastrado"
+            modo_valor_gasto = "automatico"
 
             if not cnh:
                 cnh = "Não Cadastrado"
@@ -1412,19 +1430,44 @@ class Clientes_Fisicos(QWidget):
 
             if not complemento:
                 complemento = "Não se aplica"
+                
+            # --- CALCULAR VALOR GASTO TOTAL SE JÁ EXISTIREM PRODUTOS ---
+            cursor.execute("""
+                SELECT "Valor Total", "Data do Cadastro"
+                FROM products
+                WHERE CNPJ = ?
+            """, (cpf,))
+
+            linhas = cursor.fetchall()
+
+            total = 0.0
+            ultima_compra = "Não Cadastrado"
+
+            for valor, data in linhas:
+                valor_str = str(valor).replace("R$", "").replace(".", "").replace(",", ".")
+                try:
+                    total += float(valor_str)
+                    ultima_compra = data  # última linha já será a mais recente se houver ORDER
+                except:
+                    pass
+
+            if total > 0:
+                valor_gasto_total = f"R$ {total:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
+            else:
+                valor_gasto_total = "R$ 0,00"
             
             # Inserir no banco
             cursor.execute("""
                 INSERT INTO clientes_fisicos(
                     "Nome do Cliente", "Data da Inclusão",RG, CPF,Email, CNH, "Categoria da CNH", "Data de Emissão da CNH", 
                     "Data de Vencimento da CNH",  Telefone, CEP, Endereço, Número, Complemento, Cidade, Bairro, Estado, 
-                    "Status do Cliente", "Categoria do Cliente", "Última Atualização", "Valor Gasto Total", "Última Compra"
+                    "Status do Cliente", "Categoria do Cliente", "Última Atualização", "Valor Gasto Total","Modo Valor Gasto", "Última Compra"
                 )
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?)
             """, (
                 nome, data_inclusao, rg, cpf,email, cnh, categoria_cnh, data_emissao_cnh, data_vencimento_cnh, 
                 telefone, cep, endereco, numero, complemento, cidade, bairro, estado, 
-                status, categoria, ultima_atualizacao, valor_gasto_total,ultima_compra
+                status, categoria, ultima_atualizacao, valor_gasto_total,modo_valor_gasto,ultima_compra
             ))
             self.db.connection.commit()
 
@@ -1456,7 +1499,11 @@ class Clientes_Fisicos(QWidget):
             if isinstance(widget, QLineEdit):
                 valor = widget.text().strip()
             elif isinstance(widget, QComboBox):
-                valor = widget.currentText().strip()
+                dados_atualizados[campo] = (
+                    widget.currentData()
+                    if widget.currentData() is not None
+                    else widget.currentText()
+                    )
             else:
                 valor = str(widget).strip()
 
@@ -1514,15 +1561,51 @@ class Clientes_Fisicos(QWidget):
             # CPF ORIGINAL — garante que vamos atualizar o cliente certo
             cpf_original = self.dados_originais_cliente_fisico["CPF"]
 
-            # Corrigir campos vazios antes do UPDATE
-            if not dados_atualizados["CNH"]:
-                dados_atualizados["CNH"] = "Não Cadastrado"
-                dados_atualizados["Categoria da CNH"] = "Não Cadastrado"
-                dados_atualizados["Data de Emissão da CNH"] = "Não Cadastrado"
-                dados_atualizados["Data de Vencimento da CNH"] = "Não Cadastrado"
+            # --- VALORES PADRÃO PARA CAMPOS NÃO PREENCHIDOS ---
+            campos_cnh = [
+                "CNH",
+                "Categoria da CNH",
+                "Data de Emissão da CNH",
+                "Data de Vencimento da CNH"
+            ]
+
+            for campo in campos_cnh:
+                valor_novo = dados_atualizados.get(campo, "").strip()
+                valor_original = self.dados_originais_cliente.get(campo, "")
+
+                # Se o usuário apagou explicitamente
+                if valor_novo == "" and valor_original != "":
+                    dados_atualizados[campo] = "Não Cadastrado"
+
+                # Se não mexeu, mantém o valor original
+                elif valor_novo == "":
+                    dados_atualizados[campo] = valor_original
+
 
             if not dados_atualizados["Complemento"]:
                 dados_atualizados["Complemento"] = "Não se aplica"
+                
+            #  Se o modo for automático, recalcular Valor Gasto Total
+            if "automatico" in dados_atualizados["Modo Valor Gasto"].lower():
+                cursor.execute("""
+                    SELECT "Valor Total"
+                    FROM products
+                    WHERE CPF = ?
+                """, (cpf_original,))
+
+                linhas = cursor.fetchall()
+                total = 0.0
+
+                for linha in linhas:
+                    valor_str = str(linha[0]).replace("R$", "").replace(".", "").replace(",", ".")
+                    try:
+                        total += float(valor_str)
+                    except:
+                        pass
+
+                total_formatado = f"R$ {total:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
+
+                dados_atualizados["Valor Gasto Total"] = total_formatado
 
             query = """
             UPDATE clientes_fisicos SET
@@ -1530,7 +1613,7 @@ class Clientes_Fisicos(QWidget):
                 RG = ?, CPF = ?, CNH = ?, `Categoria da CNH` = ?, `Data de Emissão da CNH` = ?, 
                 `Data de Vencimento da CNH` = ?, Telefone = ?, CEP = ?, Endereço = ?, 
                 Número = ?, Complemento = ?, Cidade = ?, Bairro = ?, Estado = ?, `Status do Cliente` = ?, `Categoria do Cliente` = ?,
-                `Última Atualização` = ?, `Valor Gasto Total` = ?, `Última Compra` = ?
+                `Última Atualização` = ?, `Valor Gasto Total` = ?,`Modo Valor Gasto` = ?, `Última Compra` = ?
             WHERE CPF = ?
             """
 
@@ -1539,7 +1622,7 @@ class Clientes_Fisicos(QWidget):
                 dados_atualizados["RG"], dados_atualizados["CPF"], dados_atualizados["CNH"], dados_atualizados["Categoria da CNH"], dados_atualizados["Data de Emissão da CNH"], 
                 dados_atualizados["Data de Vencimento da CNH"], dados_atualizados["Telefone"], dados_atualizados["CEP"], dados_atualizados["Endereço"], dados_atualizados["Número"], dados_atualizados["Complemento"],
                 dados_atualizados["Cidade"], dados_atualizados["Bairro"], dados_atualizados["Estado"], dados_atualizados["Status do Cliente"], dados_atualizados["Categoria do Cliente"],
-                dados_atualizados["Última Atualização"], dados_atualizados["Valor Gasto Total"], dados_atualizados["Última Compra"],
+                dados_atualizados["Última Atualização"], dados_atualizados["Valor Gasto Total"], dados_atualizados["Modo Valor Gasto"],dados_atualizados["Última Compra"],
                 cpf_original
             )
 

@@ -1034,103 +1034,124 @@ class TabelaProdutos(QMainWindow):
         produtos_para_remover = []
         linhas_para_remover = []
 
-        # Verificar se a tabela está vazia
         if self.table_widget.rowCount() == 0:
             QMessageBox.warning(self, "Aviso", "Nenhum produto cadastrado para apagar.")
-            return  # Se a tabela estiver vazia, encerra a função sem prosseguir
+            return
 
-        # 1. Verificar checkboxes marcadas
         if self.coluna_checkboxes_produtos_adicionada:
             total_rows = self.table_widget.rowCount()
             for row in range(total_rows):
                 if row < len(self.checkboxes):
                     checkbox = self.checkboxes[row]
                     if checkbox and checkbox.isChecked():
-                        item_id = self.table_widget.item(row, 1)  # ID do produto (coluna 1)
-                        nome_item = self.table_widget.item(row, 2)  # Nome do produto (coluna 2)
+                        item_id = self.table_widget.item(row, 1)
+                        nome_item = self.table_widget.item(row, 2)
 
                         if item_id and nome_item:
                             produto_id = item_id.text().strip()
                             nome_produto = nome_item.text().strip()
 
-                            print(f"Produto (checkbox) na linha {row + 1}: Nome = '{nome_produto}', ID = '{produto_id}'")  # Depuração
-
-                            # Verificando se o ID do produto é um número válido
-                            if produto_id.isdigit():  # Verifica se o ID é numérico
-                                # Evitar duplicados entre seleção direta e checkboxes
+                            if produto_id.isdigit():
                                 if (int(produto_id), nome_produto) not in produtos_para_remover:
                                     produtos_para_remover.append((int(produto_id), nome_produto))
                                     linhas_para_remover.append(row)
-                            else:
-                                QMessageBox.warning(self, "Erro", f"ID inválido para o produto na linha {row + 1}. Esperado um número.")
 
-        # 2. Verificar linhas selecionadas utilizando selectedIndexes, se não houver seleção por checkbox
-        if not produtos_para_remover:  # Só verificar `selectedIndexes()` se não houver produtos selecionados via checkbox
+        if not produtos_para_remover:
             selecionados = self.table_widget.selectedIndexes()
-
             if selecionados:
-                # Usando um conjunto para garantir que cada linha seja processada apenas uma vez
                 linhas_selecionadas = set(index.row() for index in selecionados)
-
                 for row in linhas_selecionadas:
-                    item_id = self.table_widget.item(row, 0)  # ID do produto (coluna 1)
-                    nome_item = self.table_widget.item(row, 1)  # Nome do produto (coluna 2)
+                    item_id = self.table_widget.item(row, 0)
+                    nome_item = self.table_widget.item(row, 1)
 
                     if item_id and nome_item:
-                        produto_id = item_id.text().strip()  # Pega o ID e remove espaços extras
+                        produto_id = item_id.text().strip()
                         nome_produto = nome_item.text().strip()
 
-                        # Verificando se o ID do produto é um número válido
-                        if produto_id.isdigit():  # Verifica se o ID é numérico
+                        if produto_id.isdigit():
                             produtos_para_remover.append((int(produto_id), nome_produto))
                             linhas_para_remover.append(row)
-                        else:
-                            QMessageBox.warning(self, "Erro", f"ID inválido para o produto na linha {row + 1}: '{produto_id}'. Esperado um número.")
-                    else:
-                        QMessageBox.warning(self, "Erro", f"Produto na linha {row + 1} não tem dados válidos.")
 
-        # 3. Validar se há produtos para remover
         if produtos_para_remover:
-            num_produtos = len(produtos_para_remover)
-            mensagem = "Você tem certeza que deseja apagar o produto selecionado?" if num_produtos == 1 else "Você tem certeza que deseja apagar os produtos selecionados?"
-
-            # Criar a caixa de confirmação
             msgbox = QMessageBox(self)
             msgbox.setWindowTitle("Confirmar")
-            msgbox.setText(mensagem)
+            msgbox.setText(
+                "Você tem certeza que deseja apagar o produto selecionado?"
+                if len(produtos_para_remover) == 1
+                else "Você tem certeza que deseja apagar os produtos selecionados?"
+            )
 
-            # Adicionar botões personalizados
             btn_sim = QPushButton("Sim")
             btn_nao = QPushButton("Não")
             msgbox.addButton(btn_sim, QMessageBox.ButtonRole.YesRole)
             msgbox.addButton(btn_nao, QMessageBox.ButtonRole.NoRole)
-
             msgbox.setDefaultButton(btn_nao)
-            resposta = msgbox.exec()
+            msgbox.exec()
 
-            # Se o usuário confirmar a ação
             if msgbox.clickedButton() == btn_sim:
                 db = DataBase()
                 try:
                     db.connecta()
+                    cursor = db.connection.cursor()
+
+                    cnpjs_afetados = set()
+
                     for produto_id, nome_produto in produtos_para_remover:
+                        cursor.execute("""
+                            SELECT CNPJ
+                            FROM products
+                            WHERE id = ?
+                        """, (produto_id,))
+                        res = cursor.fetchone()
+                        if res and res[0]:
+                            cnpjs_afetados.add(res[0])
+
                         db.remover_produto(produto_id)
 
-                        # Registrar no histórico após a remoção do produto
                         descricao = f"Produto {nome_produto} (ID: {produto_id}) foi removido."
                         self.main_window.registrar_historico("Remoção de Produto", descricao)
 
-                    # Remover as linhas da tabela
                     for row in sorted(linhas_para_remover, reverse=True):
                         self.table_widget.removeRow(row)
 
-                    # Sucesso
+                    for cnpj in cnpjs_afetados:
+                        cursor.execute("""
+                            SELECT "Modo Valor Gasto"
+                            FROM clientes_juridicos
+                            WHERE CNPJ = ?
+                        """, (cnpj,))
+                        modo = cursor.fetchone()[0].strip().lower()
+
+                        if "automatico" in modo:
+                            cursor.execute("""
+                                SELECT "Valor Total"
+                                FROM products
+                                WHERE CNPJ = ?
+                            """, (cnpj,))
+
+                            total = 0.0
+                            for (valor,) in cursor.fetchall():
+                                valor = str(valor).replace("R$", "").replace(".", "").replace(",", ".")
+                                try:
+                                    total += float(valor)
+                                except:
+                                    pass
+
+                            total_formatado = f"R$ {total:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
+
+                            cursor.execute("""
+                                UPDATE clientes_juridicos
+                                SET "Valor Gasto Total" = ?
+                                WHERE CNPJ = ?
+                            """, (total_formatado, cnpj))
+
+                    db.connection.commit()
+
                     QMessageBox.information(self, "Sucesso", "Produtos removidos com sucesso!")
 
                 except Exception as e:
                     QMessageBox.critical(self, "Erro", f"Erro ao remover os produtos: {str(e)}")
-        else:
-            QMessageBox.warning(self, "Aviso", "Nenhum produto selecionado para apagar.")
+
 
 #*******************************************************************************************************
     def editar_produto_tabela(self):

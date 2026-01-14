@@ -2732,8 +2732,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
 
         # Se for manual, NÃO recalcula
-        if modo == "manual":
-            return
+        if "manual" in modo:
+            return # MANUAL = não mexe em nada
 
         # Atualizar tabela de clientes
         if produto_info.get("cnpj"):
