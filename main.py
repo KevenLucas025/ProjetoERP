@@ -2632,29 +2632,58 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # salva no JSON
         self.config.salvar_percentual_fonte(percentual)
 #*********************************************************************************************************************
-    def inserir_produto_no_bd(self, produto_info,registrar_historico=True):
+    def inserir_produto_no_bd(self, produto_info, registrar_historico=True):
         try:
             db = DataBase()
             db.connecta()
             cursor = db.connection.cursor()
-            
-             #  Verificar se o cliente existe antes de continuar
-            cursor.execute("""
-                SELECT CNPJ FROM clientes_juridicos WHERE rowid = ?
-            """, (produto_info["rowid_cliente"],))
-            result = cursor.fetchone()
-            
-            if not result:
-                return  # Cliente não encontrado
-            cnpj_cliente = result[0]
 
-            # Formatando o valor_real com o símbolo "R$" e duas casas decimais
-            valor_real_formatado = produto_info['valor_produto']
+            # ===============================
+            # 1️⃣ Verificar se o cliente existe
+            # ===============================
+            if produto_info.get("cnpj"):
+                cursor.execute(
+                    "SELECT CPF, CNPJ FROM clientes_juridicos WHERE CNPJ = ?",
+                    (produto_info["cnpj"],)
+                )
+            elif produto_info.get("cpf"):
+                cursor.execute(
+                    "SELECT CPF FROM clientes_fisicos WHERE CPF = ?",
+                    (produto_info["cpf"],)
+                )
+            else:
+                QMessageBox.critical(self, "Erro", "Cliente sem CPF ou CNPJ.")
+                return
 
-            # Se o desconto for zero, inserir "Sem desconto", caso contrário, formatar com porcentagem
-            desconto_formatado = "Sem desconto" if produto_info['desconto'] == 0 else f"{int(produto_info['desconto'])}%"
+            row = cursor.fetchone()
+            if not row:
+                QMessageBox.critical(self, "Erro", "Cliente não encontrado no banco.")
+                return
 
-            # Carregar a imagem e convertê-la para bytes
+            # ===============================
+            # 2️⃣ Definir CPF / CNPJ finais
+            # ===============================
+            cpf_final = None
+            cnpj_final = None
+
+            if produto_info.get("cnpj"):
+                cpf_final, cnpj_final = row
+            else:
+                cpf_final = row[0]
+
+            # ===============================
+            # 3️⃣ Preparar dados do produto
+            # ===============================
+            valor_real_formatado = produto_info["valor_produto"]
+            desconto_formatado = (
+                "Sem desconto"
+                if produto_info["desconto"] == 0
+                else f"{int(produto_info['desconto'])}%"
+            )
+
+            # ===============================
+            # 4️⃣ Converter imagem
+            # ===============================
             imagem_bytes = None
             if self.imagem_carregada_produto:
                 pixmap = self.label_imagem_produto.pixmap()
@@ -2664,9 +2693,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 pixmap.save(buffer, "PNG")
                 imagem_bytes = byte_array.toBase64().data().decode()
 
-            usuario_logado = self.get_usuario_logado()  # Obtenha o usuário logado aqui
+            usuario_logado = self.get_usuario_logado()
 
-            # Inserindo os dados formatados no banco de dados, incluindo a imagem
+            # ===============================
+            # 5️⃣ Inserir produto
+            # ===============================
             db.insert_product(
                 produto_info["produto"],
                 produto_info["quantidade"],
@@ -2677,87 +2708,117 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 produto_info["codigo_item"],
                 produto_info["cliente"],
                 produto_info["descricao_produto"],
-                usuario_logado,  # Passando o usuário logado
-                imagem_bytes,  # Adicionando a imagem aqui
-                produto_info.get("cnpj"),  # novo campo CNPJ
-                produto_info.get("cpf")    # novo campo CPF
+                usuario_logado,
+                cnpj_final,
+                cpf_final,
+                imagem_bytes
             )
+
+            # ===============================
+            # 6️⃣ Somar valor total do cliente
+            # ===============================
+            if cnpj_final:
+                cursor.execute(
+                    'SELECT "Valor Total" FROM products WHERE CNPJ = ?',
+                    (cnpj_final,)
+                )
+            else:
+                cursor.execute(
+                    'SELECT "Valor Total" FROM products WHERE CPF = ?',
+                    (cpf_final,)
+                )
+
+            linhas = cursor.fetchall()
+            valor_total_cliente = 0.0
+
+            for linha in linhas:
+                valor_str = (
+                    str(linha[0])
+                    .replace("R$", "")
+                    .replace(".", "")
+                    .replace(",", ".")
+                )
+                try:
+                    valor_total_cliente += float(valor_str)
+                except Exception as e:
+                    print(f"Erro ao converter valor: '{valor_str}' -> {e}")
+
+            valor_total_formatado = (
+                f"R$ {valor_total_cliente:,.2f}"
+                .replace(",", "X")
+                .replace(".", ",")
+                .replace("X", ".")
+            )
+
+            # ===============================
+            # 7️⃣ Verificar modo do cliente
+            # ===============================
+            if cnpj_final:
+                cursor.execute(
+                    'SELECT "Modo Valor Gasto" FROM clientes_juridicos WHERE CNPJ = ?',
+                    (cnpj_final,)
+                )
+            else:
+                cursor.execute(
+                    'SELECT "Modo Valor Gasto" FROM clientes_fisicos WHERE CPF = ?',
+                    (cpf_final,)
+                )
+
+            resultado = cursor.fetchone()
+            if not resultado:
+                print("[ERRO] Cliente sem 'Modo Valor Gasto'")
+                return
+
+            modo = resultado[0].strip().lower()
+
+            # ===============================
+            # 8️⃣ Se for manual, parar aqui
+            # ===============================
+            if "manual" in modo:
+                db.connection.commit()
+                return
+
+            # ===============================
+            # 9️⃣ Atualizar cliente
+            # ===============================
+            if cnpj_final:
+                cursor.execute("""
+                    UPDATE clientes_juridicos
+                    SET "Valor Gasto Total" = ?, "Última Compra" = ?
+                    WHERE CNPJ = ?
+                """, (valor_total_formatado, produto_info["data_cadastro"], cnpj_final))
+            else:
+                cursor.execute("""
+                    UPDATE clientes_fisicos
+                    SET "Valor Gasto Total" = ?, "Última Compra" = ?
+                    WHERE CPF = ?
+                """, (valor_total_formatado, produto_info["data_cadastro"], cpf_final))
+
+            db.connection.commit()
+
+            # ===============================
+            # 🔁 Atualizar telas
+            # ===============================
+            if cnpj_final and hasattr(self, "pagina_clientes_juridicos"):
+                self.pagina_clientes_juridicos.carregar_clientes_juridicos()
+
+            if cpf_final and hasattr(self, "pagina_clientes_fisicos"):
+                self.pagina_clientes_fisicos.carregar_clientes_fisicos()
+
+            # ===============================
+            # 🕘 Histórico
+            # ===============================
+            if registrar_historico:
+                descricao = (
+                    f"Produto {produto_info['produto']} foi cadastrado "
+                    f"com quantidade {produto_info['quantidade']} "
+                    f"e valor {valor_real_formatado}."
+                )
+                self.registrar_historico("Cadastro de Produto", descricao)
+
         except Exception as e:
             QMessageBox.critical(self, "Erro", f"Erro ao cadastrar produto: {str(e)}")
-            
-         # Atualizar "Valor Gasto Total" e "Última Compra" apenas para o cliente correto
-        cursor = db.connection.cursor()
 
-        if produto_info.get("cnpj"):  # Cliente jurídico
-            cursor.execute("""SELECT "Valor Total" FROM products WHERE CNPJ = ?""", (produto_info["cnpj"],))
-        else:  # Cliente físico
-            cursor.execute("""SELECT "Valor Total" FROM products WHERE CPF = ?""", (produto_info["cpf"],))
-
-
-        
-        linhas = cursor.fetchall()
-        valor_total_cliente = 0.0
-        for linha in linhas:
-            valor_str = str(linha[0]).replace("R$", "").replace(".", "").replace(",", ".")
-            try:
-                valor_total_cliente += float(valor_str)
-            except Exception as e:
-                print(f"Erro ao converter valor: '{valor_str}' -> {e}")
-            
-        # 2. Formatar para padrão BR
-        valor_total_formatado = f"R$ {valor_total_cliente:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
-        
-
-        # Descobrir modo do cliente (COM VALIDAÇÃO)
-        if produto_info.get("cnpj"):
-            cursor.execute("""
-                SELECT "Modo Valor Gasto"
-                FROM clientes_juridicos
-                WHERE CNPJ = ?
-            """, (produto_info["cnpj"],))
-        else:
-            cursor.execute("""
-                SELECT "Modo Valor Gasto"
-                FROM clientes_fisicos
-                WHERE CPF = ?
-            """, (produto_info["cpf"],))
-
-        resultado = cursor.fetchone()
-
-        if not resultado:
-            print("[ERRO] Cliente não encontrado ao buscar 'Modo Valor Gasto'")
-            return  # evita KeyError / crash
-
-        modo = resultado[0].strip().lower()
-
-
-        # Se for manual, NÃO recalcula
-        if "manual" in modo:
-            return # MANUAL = não mexe em nada
-
-        # Atualizar tabela de clientes
-        if produto_info.get("cnpj"):
-            cursor.execute("""
-                UPDATE clientes_juridicos
-                SET "Valor Gasto Total" = ?, "Última Compra" = ?
-                WHERE CNPJ = ?
-            """, (valor_total_formatado, produto_info["data_cadastro"], produto_info["cnpj"]))
-        else:
-            cursor.execute("""
-                UPDATE clientes_fisicos
-                SET "Valor Gasto Total" = ?, "Última Compra" = ?
-                WHERE CPF = ?
-            """, (valor_total_formatado, produto_info["data_cadastro"], produto_info["cpf"]))
-
-        db.connection.commit()
-        
-        if hasattr(self, "pagina_clientes_juridicos"):
-            self.pagina_clientes_juridicos.carregar_clientes_juridicos()
-
-        if registrar_historico:
-            # Registrar no histórico após a inserção do produto
-            descricao = f"Produto {produto_info['produto']} foi cadastrado com quantidade {produto_info['quantidade']} e valor {valor_real_formatado}."
-            self.registrar_historico("Cadastro de Produto", descricao)
 #*********************************************************************************************************************
     def adicionar_produto(self):
         # Verificar se todos os campos estão preenchidos
@@ -3330,7 +3391,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         success_msg.setIcon(QMessageBox.Information)
         success_msg.setWindowTitle("Sucesso")
         success_msg.setText("Produtos confirmados e cadastrados com sucesso.")
-        success_msg.setStyleSheet("color: black;")
         success_msg.exec()
 #*********************************************************************************************************************
     def formatar_cep(self, text, widget=None):

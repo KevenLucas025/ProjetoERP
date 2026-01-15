@@ -80,7 +80,7 @@ class Clientes_Fisicos(QWidget):
 
         self.configurar_menu_contexto_fisicos()
         
-
+        self.carregar_clientes_fisicos()
         
         
         self.installEventFilter(self)
@@ -129,6 +129,7 @@ class Clientes_Fisicos(QWidget):
                     "Última Atualização",
                     "Origem do Cliente",
                     "Valor Gasto Total",
+                    "Modo Valor Gasto",
                     "Última Compra"
                 FROM clientes_fisicos
                 WHERE 
@@ -168,6 +169,7 @@ class Clientes_Fisicos(QWidget):
                     "Última Atualização",
                     "Origem do Cliente",
                     "Valor Gasto Total",
+                    "Modo Valor Gasto",
                     "Última Compra"
                 FROM clientes_fisicos
             """)
@@ -256,6 +258,7 @@ class Clientes_Fisicos(QWidget):
                     "Categoria do Cliente",
                     "Última Atualização",
                     "Valor Gasto Total",
+                    "Modo Valor Gasto",
                     "Última Compra"
                 FROM clientes_fisicos
                 ORDER BY "Data da Inclusão" DESC
@@ -282,7 +285,16 @@ class Clientes_Fisicos(QWidget):
 
                 # Preenche os dados nas colunas (com deslocamento)
                 for coluna_idx, dado in enumerate(linha_dados):
-                    item = self.formatar_texto_fisico(str(dado))
+                    
+                    valor = str(dado)
+                    
+                    if cursor.description[coluna_idx][0] == "Modo Valor Gasto":
+                        if valor == "automatico":
+                            valor = "Automático (somar produtos)"
+                        elif valor == "manual":
+                            valor = "Manual (valor fixo)"
+                            
+                    item = self.formatar_texto_fisico(valor)
                     self.table_clientes_fisicos.setItem(linha_idx, coluna_idx + deslocamento, item)
 
             self.table_clientes_fisicos.resizeColumnsToContents()
@@ -1499,11 +1511,7 @@ class Clientes_Fisicos(QWidget):
             if isinstance(widget, QLineEdit):
                 valor = widget.text().strip()
             elif isinstance(widget, QComboBox):
-                dados_atualizados[campo] = (
-                    widget.currentData()
-                    if widget.currentData() is not None
-                    else widget.currentText()
-                    )
+                valor = widget.currentText().strip()
             else:
                 valor = str(widget).strip()
 
@@ -1515,10 +1523,16 @@ class Clientes_Fisicos(QWidget):
         # Monta dados atualizados
         dados_atualizados = {}
         for campo, widget in self.campos_cliente_fisico.items():
-            if isinstance(widget, QComboBox):
-                dados_atualizados[campo] = widget.currentText()
-            else:
+            if isinstance(widget, QLineEdit):
                 dados_atualizados[campo] = widget.text()
+            elif isinstance(widget, QComboBox):
+                dados_atualizados[campo] = (
+                    widget.currentData()
+                    if widget.currentData() is not None
+                    else widget.currentText()
+                    )
+            else:
+                dados_atualizados[campo] = str(widget)
 
         # --- VERIFICAÇÃO DE CAMPOS SENSÍVEIS ---
         campos_sensiveis_fisicos = ["Data da Inclusão", "Última Atualização", "Valor Gasto Total", "Última Compra"]

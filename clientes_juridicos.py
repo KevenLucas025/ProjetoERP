@@ -142,9 +142,6 @@ class Clientes_Juridicos(QWidget):
             self.table_clientes_juridicos.clearContents()
             self.table_clientes_juridicos.setRowCount(0)
             
-            
-            print("Colunas no SELECT:", len(cursor.description))
-            print("Colunas na tabela:", self.table_clientes_juridicos.columnCount())
 
             deslocamento = 1 if self.coluna_checkboxes_clientes_adicionada else 0
             self.checkboxes_clientes = []

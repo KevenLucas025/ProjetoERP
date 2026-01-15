@@ -348,11 +348,17 @@ class DataBase:
             cpf = cpf if cpf is not None else "Não Cadastrado"
 
             cursor.execute("""
-                INSERT INTO products (Produto, Quantidade, Valor_Real, Desconto,"Valor Total", "Data do Cadastro", Código_Item, 
-                        Cliente, Descrição_Produto,"Status da Saída", Imagem, Usuário,CNPJ,CPF) 
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?,?,?,?)
-            """, (produto, quantidade, valor_real, desconto,valor_total, data_cadastro, codigo_item, 
-                cliente, descricao_produto, 0,imagem, usuario,cpf,cnpj))
+                INSERT INTO products (
+                    Produto, Quantidade, Valor_Real, Desconto, "Valor Total",
+                    "Data do Cadastro", Código_Item, Cliente, Descrição_Produto,
+                    "Status da Saída", Imagem, Usuário, CNPJ, CPF
+                ) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """, (
+                produto, quantidade, valor_real, desconto, valor_total,
+                data_cadastro, codigo_item, cliente, descricao_produto,
+                0, imagem, usuario, cnpj, cpf
+            ))
             self.connection.commit()
             print("Produto inserido com sucesso!")
         except Exception as e:
