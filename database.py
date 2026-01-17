@@ -67,6 +67,16 @@ class DataBase:
                 print("O banco de dados foi fechado com sucesso.")
         except Exception as e:
             print("Erro ao fechar conexão:", e)
+            
+    def garantir_conexao(self):
+        try:
+            if self.connection is None:
+                self.connection = sqlite3.connect(self.db_path)
+            else:
+                self.connection.execute("SELECT 1")
+        except:
+            self.connection = sqlite3.connect(self.db_path)
+
 #*********************************************************************************************************************    
     def create_table_users(self):
         try:
@@ -364,58 +374,6 @@ class DataBase:
         except Exception as e:
             print("Erro ao inserir produto:", e)
 #*********************************************************************************************************************
-    def insert_imagem_produto(self, produto_id, imagem):
-        try:
-            cursor = self.connection.cursor()
-            cursor.execute("""
-                UPDATE products
-                SET Imagem = ?
-                WHERE id = ?
-            """, (imagem, produto_id))
-            self.connection.commit()
-            print("Imagem inserida com sucesso!")
-        except Exception as e:
-            print("Erro ao inserir imagem:", e)
-#*********************************************************************************************************************
-    def insert_imagem_usuario(self, id_usuario, imagem):
-        try:
-            cursor = self.connection.cursor()
-            cursor.execute("""
-                UPDATE users
-                SET Imagem = ?
-                WHERE id = ?
-            """, (imagem, id_usuario))
-            self.connection.commit()
-            print("Imagem inserida com sucesso!")
-        except Exception as e:
-            print("Erro ao inserir imagem:", e)
-#*********************************************************************************************************************
-    def retrieve_imagem(self, produto_id):
-        try:
-            cursor = self.connection.cursor()
-            cursor.execute("SELECT Imagem FROM products WHERE id = ?", (produto_id,))
-            result = cursor.fetchone()
-            if result:
-                return result[0]
-            else:
-                return None
-        except Exception as e:
-            print("Erro ao recuperar imagem:", e)
-            return None
-#*********************************************************************************************************************        
-    def retrieve_imagem_usuario(self, id_usuario):
-        try:
-            cursor = self.connection.cursor()
-            cursor.execute("SELECT Imagem FROM users WHERE id = ?", (id_usuario,))
-            result = cursor.fetchone()
-            if result:
-                return result[0]
-            else:
-                return None
-        except Exception as e:
-            print("Erro ao recuperar imagem:", e)
-            return None
-#*********************************************************************************************************************
     def check_user(self, usuario, senha):
         try:
             query = "SELECT Usuário FROM users WHERE Usuário = ? AND Senha = ? COLLATE NOCASE"
@@ -429,16 +387,18 @@ class DataBase:
 #*********************************************************************************************************************
     def get_products(self):
         try:
+            self.garantir_conexao()
             cursor = self.connection.cursor()
             cursor.execute("SELECT * FROM products")
-            produtos = cursor.fetchall()
-            return produtos
+            return cursor.fetchall()
         except Exception as e:
             print("Erro ao obter produtos:", e)
             return []
+
 #*********************************************************************************************************************        
     def get_users(self):
         try:
+            self.garantir_conexao()
             cursor = self.connection.cursor()
             cursor.execute("SELECT * FROM users")
             usuarios = cursor.fetchall()
@@ -457,6 +417,7 @@ class DataBase:
  #*********************************************************************************************************************       
     def remover_produto(self, produto_id):
         try:
+            self.garantir_conexao()
             cursor = self.connection.cursor()
             cursor.execute("DELETE FROM products WHERE id = ?", (produto_id,))
             self.connection.commit()
@@ -466,6 +427,7 @@ class DataBase:
 #*********************************************************************************************************************
     def remover_usuario(self, id_usuario):
         try:
+            self.garantir_conexao()
             cursor = self.connection.cursor()
             cursor.execute("DELETE FROM users WHERE id = ?", (id_usuario,))
             self.connection.commit()
@@ -541,27 +503,10 @@ class DataBase:
 
         except Exception as e:
             print("Erro ao atualizar produto:", e)
-
-
-#*********************************************************************************************************************
-    def obter_caminho_imagem_produto(self, produto_id):
-        try:
-            cursor = self.connection.cursor()
-            cursor.execute("SELECT Imagem FROM products WHERE id = ?", (produto_id,))
-            resultado = cursor.fetchone()
-            
-            if resultado:
-                # Retorna o caminho da imagem se o produto for encontrado
-                return resultado[0]
-            else:
-                # Retorna None se o produto não for encontrado
-                return None
-        except Exception as e:
-            print("Erro ao obter caminho da imagem:", e)
-            return None
 #*********************************************************************************************************************        
     def user_exists(self, Usuario, Telefone, Email, RG, CPF,CNPJ):
         try:
+            self.garantir_conexao()
             if not self.connection:
                 self.connecta()
             cursor = self.connection.cursor()
@@ -605,6 +550,7 @@ class DataBase:
     def insert_user(self, nome, usuario, senha, confirmar_senha, cep, endereco, numero, cidade, bairro, estado,
                 complemento, telefone, email, data_nascimento, rg, cpf, cnpj, segredo, usuario_logado, acesso, imagem=None):
         try:
+            self.garantir_conexao()
             cursor = self.connection.cursor()
             data_atual = datetime.now().strftime("%d/%m/%Y")
 
@@ -653,23 +599,6 @@ class DataBase:
 
         except Exception as e:
             print("Erro ao inserir usuário:", e)
-
-#*********************************************************************************************************************
-    def obter_caminho_imagem_usuario(self):
-        try:
-            cursor = self.connection.cursor()
-            cursor.execute("SELECT Imagem FROM users WHERE id = ?", )
-            resultado = cursor.fetchone()
-            
-            if resultado:
-                # Retorna o caminho da imagem se o produto for encontrado
-                return resultado[0]
-            else:
-                # Retorna None se o produto não for encontrado
-                return None
-        except Exception as e:
-            print("Erro ao obter caminho da imagem:", e)
-            return None
 #*********************************************************************************************************************        
     def atualizar_usuario(self,id,nome=None, usuario=None, senha=None, confirmar_senha=None,
                       cep=None, endereco=None, numero=None, cidade=None, bairro=None, estado=None,
@@ -729,6 +658,7 @@ class DataBase:
         dias_desde_ultima_troca = self.verificar_tempo_ultima_troca(id_usuario)
         if dias_desde_ultima_troca is None or dias_desde_ultima_troca >= 15:  # Permitir atualização se for None
             cursor = self.connection.cursor()
+            self.garantir_conexao()
             cursor.execute("UPDATE users SET Senha = ?, \"Última Troca de Senha\" = ? WHERE id = ?", 
                         (nova_senha, datetime.now().strftime("%d/%m/%Y"), id_usuario))
             self.connection.commit()
@@ -738,12 +668,14 @@ class DataBase:
     def atualizar_data_ultima_troca(self, id_usuario):
         data_atual = datetime.now().strftime("%d/%m/%Y ")
         cursor = self.connection.cursor()
+        self.garantir_conexao()
         cursor.execute("UPDATE users SET \"Última Troca de Senha\" = ? WHERE id = ?", (data_atual, id_usuario))
         self.connection.commit()
 #*********************************************************************************************************************
         
     def ultima_troca(self, usuario):
         try:
+            self.garantir_conexao()
             cursor = self.connection.cursor()
             query = "SELECT strftime('%d/%m/%Y', [Última Troca de Senha']) FROM users WHERE Usuário = ?"
             cursor.execute(query, (usuario,))
@@ -764,6 +696,7 @@ class DataBase:
 #*********************************************************************************************************************
 
     def verificar_tempo_ultima_troca(self, id_usuario):
+        self.garantir_conexao()
         cursor = self.connection.cursor()
         cursor.execute("SELECT \"Última Troca de Senha\" FROM users WHERE id = ?", (id_usuario,))
         result = cursor.fetchone()
@@ -776,17 +709,20 @@ class DataBase:
 #*********************************************************************************************************************
     def executar_query(self, query, params=None):
         try:
+            self.garantir_conexao()
             cursor = self.connection.cursor()
             if params:
                 cursor.execute(query, params)
             else:
                 cursor.execute(query)
-            return cursor.fetchall()  # Retorna todos os resultados da consulta
+            return cursor.fetchall()
         except Exception as e:
             print(f"Erro ao executar a consulta: {str(e)}")
             return None
 
+
     def obter_produtos_base(self):
+        self.garantir_conexao()
         cursor = self.connection.cursor()
         cursor.execute("""
             SELECT Produto, Quantidade, Valor_Real, Desconto,"Valor Total", "Data do Cadastro", Código_Item, Cliente, 
@@ -797,6 +733,7 @@ class DataBase:
         return produtos
 
     def obter_produtos_saida(self):
+        self.garantir_conexao()
         cursor = self.connection.cursor()
         cursor.execute("""
             SELECT Produto, Quantidade, "Valor do Produto", Desconto, "Valor Total","Data de Saída", "Data da Criação", "Código do Produto", 
@@ -807,6 +744,7 @@ class DataBase:
         return produtos
     
     def obter_usuarios_ativos(self):
+        self.garantir_conexao()
         cursor = self.connection.cursor()
         cursor.execute("""
             SELECT Nome,Usuário,Senha,"Confirmar Senha",CEP,Endereço,Número,Cidade,Bairro,Estado,Complemento,Telefone,Email,
@@ -818,6 +756,7 @@ class DataBase:
         return usuarios
     
     def obter_usuarios_inativos(self):
+        self.garantir_conexao()
         cursor = self.connection.cursor()
         cursor.execute("""
             SELECT Nome,Usuário,Senha,"Confirmar Senha",CEP,Endereço,Número,Cidade,Bairro,Estado,Complemento,Telefone,Email,
@@ -828,40 +767,9 @@ class DataBase:
         usuarios = cursor.fetchall()
         return usuarios
 
-    def remover_historico(self, valor_identificador, coluna_identificador="id"):
-        try:
-            cursor = self.connection.cursor()
-            query = f"DELETE FROM historico WHERE \"{coluna_identificador}\" = ?"
-            cursor.execute(query, (valor_identificador,))
-            self.connection.commit()
-            return True
-        except Exception as e:
-            print(f"Erro ao remover registro do histórico: {str(e)}")
-            return False
-        
-    def ensure_connection(self):
-        if not self.connection:
-            self.connecta()  # Método para estabelecer a conexão
-
-
-    def get_user_secret(self, usuario_ou_email):
-        try:
-            self.ensure_connection()  # Garante que a conexão está ativa
-            cursor = self.connection.cursor()
-            query = "SELECT Secret FROM users WHERE (Usuário = ? OR Email = ?)"
-            cursor.execute(query, (usuario_ou_email, usuario_ou_email))
-            result = cursor.fetchone()
-            if result:
-                return result[0]  # Retorna o segredo
-            else:
-                print("Segredo não encontrado para o usuário.")
-                return None
-        except Exception as e:
-            print("Erro ao buscar chave secreta:", e)
-            return None
-
     def salvar_usuario_logado(self, usuario_logado):
         try:
+            self.garantir_conexao()
             if not self.connection:
                 self.connecta()
             query = "UPDATE users SET 'Usuário Logado' = ? WHERE id = 1"
@@ -873,21 +781,6 @@ class DataBase:
         finally:
             pass  # Não feche a conexão automaticamente aqui
 
-    def get_user_email(self, usuario):
-        self.connecta()
-        query = "SELECT Email FROM users WHERE Usuário = ?"
-        cursor = self.connection.cursor()
-        cursor.execute(query, (usuario,))
-        result = cursor.fetchone()
-        self.close_connection()
-        return result[0] if result else None
-    
-    def tabela_existe(self, nome_tabela):
-        cursor = self.connection.cursor()
-        cursor.execute("""
-            SELECT name FROM sqlite_master WHERE type='table' AND name=?
-        """, (nome_tabela,))
-        return cursor.fetchone() is not None
 
     def salvar_saida_produto(self, produto_info):
         try:
@@ -934,6 +827,7 @@ class DataBase:
         try:
             conn = self.connecta()
             cursor = conn.cursor()
+            self.garantir_conexao()
             cursor.execute(query)
             return cursor.fetchall()
         except Exception as e:
@@ -944,6 +838,7 @@ class DataBase:
                 cursor.close()
 
     def recuperar_usuario_por_id(self, id_usuario):
+        self.garantir_conexao()
         cursor = self.connection.cursor()
         cursor.execute("""
             SELECT Nome, Usuário, Senha, "Confirmar Senha", CEP, Endereço, Número, Cidade, Bairro,
@@ -952,79 +847,10 @@ class DataBase:
             WHERE id = ?
         """, (id_usuario,))
         return cursor.fetchone()
-    
-    def upsert_cliente_juridico(self, nome_cliente, data_inclusao, status, categoria, ultima_atualizacao, 
-                                origem, valor_gasto, ultima_compra):
-        cursor = self.connection.cursor()
 
-        cursor.execute("SELECT * FROM clientes_juridicos WHERE \"Nome do Cliente\" = ?", (nome_cliente,))
-        existente = cursor.fetchone()
-
-        if existente:
-            cursor.execute("""
-                UPDATE clientes_juridicos
-                SET "Última Atualização" = ?, "Categoria do Cliente" = ?, 
-                    "Origem do Cliente" = ?, "Valor Gasto Total" = "Valor Gasto Total" + ?, 
-                    "Última Compra" = ?, "Status do Cliente" = ?
-                WHERE "Nome do Cliente" = ?
-            """, (
-                ultima_atualizacao, categoria, origem, valor_gasto, ultima_compra, status, nome_cliente
-            ))
-        else:
-            cursor.execute("""
-                INSERT INTO clientes_juridicos (
-                    "Nome do Cliente","Razão Social", "Data da Inclusão", "Status do Cliente", 
-                    "Categoria do Cliente", "Última Atualização", 
-                    "Origem do Cliente", "Valor Gasto Total", "Última Compra"
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?,?)
-            """, (
-                nome_cliente, data_inclusao, status, categoria, ultima_atualizacao,
-                origem, valor_gasto, ultima_compra
-            ))
-
-        self.connection.commit()
-
-
-    def update_dados_cliente_juridico_endereco(self, nome_cliente, cnpj, telefone, cep, endereco, numero, cidade, bairro):
-        cursor = self.connection.cursor()
-
-        cursor.execute("SELECT * FROM clientes_juridicos WHERE \"Nome do Cliente\" = ?", (nome_cliente,))
-        existente = cursor.fetchone()
-
-        if existente:
-            # Atualiza os dados
-            cursor.execute("""
-                UPDATE clientes_juridicos
-                SET CNPJ = ?, Telefone = ?, CEP = ?, Endereço = ?, Número = ?,Complemento = ?, Cidade = ?, Bairro = ?
-                WHERE "Nome do Cliente" = ?
-            """, (cnpj, telefone, cep, endereco, numero, cidade, bairro, nome_cliente))
-        else:
-            # Cria um novo cliente com os dados básicos
-            cursor.execute("""
-                INSERT INTO clientes_juridicos (
-                    "Nome do Cliente", "Data da Inclusão", CNPJ, Telefone, CEP, Endereço, Número,Complemento,
-                    Cidade, Bairro, "Status do Cliente", "Categoria do Cliente", "Última Atualização",
-                    "Origem do Cliente", "Valor Gasto Total", "Última Compra"
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?,?)
-            """, (
-                nome_cliente, datetime.now().strftime("%d/%m/%Y"), cnpj, telefone, cep, endereco, numero,
-                cidade, bairro, "Ativo", "Não informado", datetime.now().strftime("%d/%m/%Y"),
-                "Nacional", 0.0, "Não informado"
-            ))
-
-        self.connection.commit()
-
-
-
-    def get_dados_cliente_por_nome(self, nome_cliente):
-        cursor = self.connection.cursor()
-        cursor.execute("""
-            SELECT CNPJ, Telefone, CEP, Endereço, Número,CEP, Cidade, Bairro
-            FROM users WHERE Nome = ?
-        """, (nome_cliente,))
-        return cursor.fetchone()
     
     def obter_clientes_juridicos(self):
+        self.garantir_conexao()
         cursor = self.connection.cursor()
         cursor.execute("""
             SELECT "Nome do Cliente", "Razão Social","Data da Inclusão", CNPJ,RG,CPF,Email,CNH,"Categoria da CNH","Data de Emissão da CNH",
@@ -1035,6 +861,7 @@ class DataBase:
         return cursor.fetchall()
     
     def obter_clientes_fisicos(self):
+        self.garantir_conexao()
         cursor = self.connection.cursor()
         cursor.execute("""
             SELECT "Nome do Cliente","Data da Inclusão",RG,CPF,Email,CNH,"Categoria da CNH","Data de Emissão da CNH","Data de Vencimento da CNH",

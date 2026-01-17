@@ -2099,17 +2099,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.registrar_historico_usuarios("Cadastro de Usuários", f"Usuário {usuario} cadastrado com sucesso.")
             QMessageBox.information(self, "Cadastro de Usuário", "Cadastro realizado com sucesso.")
 
-            '''db.update_dados_cliente_juridico_endereco(
-                nome_cliente=nome,
-                cnpj=cnpj,
-                telefone=telefone,
-                cep=cep,
-                endereco=endereco,
-                numero=numero,
-                cidade=cidade,
-                bairro=bairro
-            )'''
-
 
             # Limpar campos após cadastro
             self.txt_nome.clear()

@@ -164,11 +164,10 @@ class EstoqueProduto(QWidget):
 
         for row in produtos_selecionados:
             produto = self.main_window.table_base.item(row, 0).text() or ""
-            quantidade_str = self.main_window.table_base.item(row, 1).text() or "0"
-            quantidade = int(quantidade_str)
+            quantidade = int(self.main_window.table_base.item(row, 1).text() or "0")
             valor_produto = self.main_window.table_base.item(row, 2).text() or ""
             desconto = self.main_window.table_base.item(row, 3).text() or ""
-            valor_total = self.main_window.table_base.item(row, 4).text() or ""
+            valor_total_str = self.main_window.table_base.item(row, 4).text() or "0"
             data_cadastro = self.main_window.table_base.item(row, 5).text() or ""
             codigo_produto = self.main_window.table_base.item(row, 6).text() or ""
             cliente = self.main_window.table_base.item(row, 7).text() or ""
@@ -177,56 +176,64 @@ class EstoqueProduto(QWidget):
             status_saida = 1
             data_saida = datetime.now().strftime("%d/%m/%Y %H:%M")
 
+            # 👉 Escolher quantidade de saída
             if quantidade > 1:
-                opcoes = [str(i) for i in range(1, quantidade + 1)]
                 dialog = ComboDialog(
                     titulo="Saída de Produto",
                     mensagem=f"O produto '{produto}' tem {quantidade} unidades.\nQuantas deseja dar saída?",
-                    opcoes=opcoes,
+                    opcoes=[str(i) for i in range(1, quantidade + 1)],
                     parent=self
                 )
-                
                 if dialog.exec():
                     quantidade_saida = int(dialog.escolha())
                 else:
-                    return  # usuário cancelou
+                    return
             else:
                 quantidade_saida = 1
 
+            # 👉 Cálculo financeiro correto
+            valor_total_float = float(valor_total_str.replace(",", "."))
+            valor_unitario = valor_total_float / quantidade
+            valor_saida = valor_unitario * quantidade_saida
+            novo_valor_total = valor_total_float - valor_saida
 
             nova_quantidade = quantidade - quantidade_saida
-            atualizacoes_produtos.append((nova_quantidade, codigo_produto))
+            atualizacoes_produtos.append((nova_quantidade, novo_valor_total, codigo_produto))
 
-            # Atualiza visualmente na table_base
+            # 👉 Atualiza table_base
             if nova_quantidade > 0:
                 self.main_window.table_base.item(row, 1).setText(str(nova_quantidade))
-                self.main_window.table_base.setItem(row, 1, self.criar_item("1"))  
+                self.main_window.table_base.item(row, 4).setText(
+                    f"{novo_valor_total:.2f}".replace(".", ",")
+                )
             else:
                 self.main_window.table_base.removeRow(row)
 
-            # Verifica se já está na lista e soma
-            produto_existente = None
-            for i, p in enumerate(produtos_saida):
-                if p[7] == codigo_produto: # Índice 7 = Código do Produto
-                    produto_existente = i
-                    break
+            # 👉 Consolidação em memória (mesmo código)
+            produto_existente = next(
+                (i for i, p in enumerate(produtos_saida) if p[7] == codigo_produto),
+                None
+            )
+
+            valor_saida_fmt = f"{valor_saida:.2f}".replace(".", ",")
 
             if produto_existente is not None:
-                quantidade_existente = int(produtos_saida[produto_existente][1])
-                nova_quantidade_saida = quantidade_existente + quantidade_saida
+                qtd_existente = int(produtos_saida[produto_existente][1])
+                valor_existente = float(produtos_saida[produto_existente][4].replace(",", "."))
+
                 produtos_saida[produto_existente] = (
                     produto,
-                    str(nova_quantidade_saida),
+                    str(qtd_existente + quantidade_saida),
                     valor_produto,
                     desconto,
-                    valor_total,
+                    f"{valor_existente + valor_saida:.2f}".replace(".", ","),
                     data_saida,
                     data_cadastro,
                     codigo_produto,
                     cliente,
                     descricao,
                     usuario,
-                    status_saida # 12º item (sem imagem)
+                    status_saida
                 )
             else:
                 produtos_saida.append((
@@ -234,7 +241,7 @@ class EstoqueProduto(QWidget):
                     str(quantidade_saida),
                     valor_produto,
                     desconto,
-                    valor_total,
+                    valor_saida_fmt,
                     data_saida,
                     data_cadastro,
                     codigo_produto,
@@ -244,92 +251,85 @@ class EstoqueProduto(QWidget):
                     status_saida
                 ))
 
-            historico_logs.append(f"Produto {produto} foi gerado saída de {quantidade_saida} unidade(s).")
+            historico_logs.append(
+                f"Produto {produto} teve saída de {quantidade_saida} unidade(s)."
+            )
 
+        # 👉 Banco de dados
         try:
             cursor = self.db.connection.cursor()
 
-            for (nova_quantidade, codigo_produto) in atualizacoes_produtos:
-                if nova_quantidade > 0:
+            for nova_qtd, novo_valor, codigo in atualizacoes_produtos:
+                if nova_qtd > 0:
                     cursor.execute("""
                         UPDATE products
-                        SET Quantidade = ?, 'Status da Saída' = 1
+                        SET Quantidade = ?, "Valor Total" = ?, "Status da Saída" = 1
                         WHERE Código_Item = ?
-                    """, (nova_quantidade, codigo_produto))
+                    """, (nova_qtd, f"{novo_valor:.2f}", codigo))
                 else:
                     cursor.execute("""
-                        UPDATE products
-                        SET 'Status da Saída' = 1
-                        WHERE Código_Item = ?
-                    """, (codigo_produto,))
-                    cursor.execute("""
-                        DELETE FROM products
-                        WHERE Código_Item = ?
-                    """, (codigo_produto,))
+                        DELETE FROM products WHERE Código_Item = ?
+                    """, (codigo,))
 
             for produto_info in produtos_saida:
-                # Recupera imagem separadamente e adiciona à tupla
-                imagem = self.recuperar_imagem_produto_bd_products(produto_info[7]) # Código do Produto
-                produto_info_com_imagem = produto_info[:11] + (imagem,produto_info[11]) # insere imagem no índice 11
-                self.db.salvar_saida_produto(produto_info_com_imagem)
+                imagem = self.recuperar_imagem_produto_bd_products(produto_info[7])
+                self.db.salvar_saida_produto(produto_info[:11] + (imagem, produto_info[11]))
 
             self.db.connection.commit()
 
         except Exception as e:
             print(f"Erro ao salvar saída: {e}")
 
-        for texto in historico_logs:
-            self.main_window.registrar_historico("Gerado Saída", texto)
+        for log in historico_logs:
+            self.main_window.registrar_historico("Gerado Saída", log)
 
         if produtos_saida:
-            msg_box = QMessageBox(self)
-            msg_box.setIcon(QMessageBox.Information)
-            msg_box.setWindowTitle("Aviso")
-            msg_box.setText("Saída do(s) produto(s) gerada com sucesso!")
-            msg_box.exec()
+            QMessageBox.information(
+                self, "Aviso", "Saída do(s) produto(s) gerada com sucesso!"
+            )
             self.tabela_saida_preencher(produtos_saida)
 
         self.reindex_table_base()
 
 
 
+
     def tabela_saida_preencher(self, dados_saida):
         for item in dados_saida:
-            codigo_produto_novo = item[7]  # 'Código do Produto'
+            codigo = item[7]
             quantidade_nova = int(item[1])
+            valor_novo = float(item[4].replace(",", "."))
 
             linha_existente = None
             for row in range(self.main_window.table_saida.rowCount()):
-                codigo_existente = self.main_window.table_saida.item(row, 6)
-                if codigo_existente and codigo_existente.text() == codigo_produto_novo:
+                if self.main_window.table_saida.item(row, 7).text() == codigo:
                     linha_existente = row
                     break
 
             if linha_existente is not None:
-                # Produto já existe: somar as quantidades
-                quantidade_existente = int(self.main_window.table_saida.item(linha_existente, 1).text())
-                nova_quantidade = quantidade_existente + quantidade_nova
-                self.main_window.table_saida.item(linha_existente, 1).setText(str(nova_quantidade))
+                qtd_atual = int(self.main_window.table_saida.item(linha_existente, 1).text())
+                valor_atual = float(
+                    self.main_window.table_saida.item(linha_existente, 4).text().replace(",", ".")
+                )
+
+                self.main_window.table_saida.item(linha_existente, 1).setText(
+                    str(qtd_atual + quantidade_nova)
+                )
+                self.main_window.table_saida.item(linha_existente, 4).setText(
+                    f"{valor_atual + valor_novo:.2f}".replace(".", ",")
+                )
             else:
-                # Produto não existe ainda: adicionar nova linha
-                row_position = self.main_window.table_saida.rowCount()
-                self.main_window.table_saida.insertRow(row_position)
+                row = self.main_window.table_saida.rowCount()
+                self.main_window.table_saida.insertRow(row)
 
-                self.main_window.table_saida.setItem(row_position, 0, self.criar_item(item[0]))   # Produto
-                self.main_window.table_saida.setItem(row_position, 1, self.criar_item(item[1]))   # Quantidade
-                self.main_window.table_saida.setItem(row_position, 2, self.criar_item(item[2]))   # Valor do Produto
-                self.main_window.table_saida.setItem(row_position, 3, self.criar_item(item[3]))   # Desconto
-                self.main_window.table_saida.setItem(row_position, 4, self.criar_item(item[4]))   # Valor Total
-                self.main_window.table_saida.setItem(row_position, 5, self.criar_item(item[5]))   # Data de Saída
-                self.main_window.table_saida.setItem(row_position, 6, self.criar_item(item[6]))   # Data da Criação
-                self.main_window.table_saida.setItem(row_position, 7, self.criar_item(item[7]))   # Código do Produto
-                self.main_window.table_saida.setItem(row_position, 8, self.criar_item(item[8]))   # Cliente
-                self.main_window.table_saida.setItem(row_position, 9, self.criar_item(item[9]))   # Descrição
-                self.main_window.table_saida.setItem(row_position, 10, self.criar_item(item[10])) # Usuário
-                self.main_window.table_saida.setItem(row_position, 11, self.criar_item(str(item[11]))) # Status da Saída
+                for col, valor in enumerate(item):
+                    self.main_window.table_saida.setItem(
+                        row, col, self.criar_item(str(valor))
+                    )
 
-                self.table_saida.resizeColumnsToContents()
-                self.table_saida.resizeRowsToContents()
+        self.main_window.table_saida.resizeColumnsToContents()
+        self.main_window.table_saida.resizeRowsToContents()
+
 
 
 
