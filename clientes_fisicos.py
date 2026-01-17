@@ -380,7 +380,7 @@ class Clientes_Fisicos(QWidget):
         colunas = [
             "Nome do Cliente", "Data da Inclusão", "RG","CPF","Email","CNH","Categoria da CNH","Data de Emissão da CNH",
             "Data de Vencimento da CNH","Telefone","CEP", "Endereço", "Número", "Complemento", "Cidade", "Bairro",
-            "Estado", "Status do Cliente","Categoria do Cliente","Última Atualização","Valor Gasto Total","Modo Valor Gasto" "Última Compra"
+            "Estado", "Status do Cliente","Categoria do Cliente","Última Atualização","Valor Gasto Total","Modo Valor Gasto", "Última Compra"
         ]
         
 
@@ -1117,9 +1117,10 @@ class Clientes_Fisicos(QWidget):
         combo_modo_valor_fisicos.addItem("Manual (valor fixo)", "manual")
         combo_modo_valor_fisicos.setStyleSheet(combobox_style)
         
+        
         # 🔹 definir valor atual vindo do banco
         valor_modo = dados_cliente.get("Modo Valor Gasto", "automatico")
-        index = combo_modo_valor_fisicos.findData(valor_modo)
+        index = combo_modo_valor_fisicos.findText(valor_modo)
         combo_modo_valor_fisicos.setCurrentIndex(index if index >= 0 else 0)
 
         # Categoria CNH
@@ -1585,7 +1586,7 @@ class Clientes_Fisicos(QWidget):
 
             for campo in campos_cnh:
                 valor_novo = dados_atualizados.get(campo, "").strip()
-                valor_original = self.dados_originais_cliente.get(campo, "")
+                valor_original = self.dados_originais_cliente_fisico.get(campo, "")
 
                 # Se o usuário apagou explicitamente
                 if valor_novo == "" and valor_original != "":
@@ -1636,7 +1637,7 @@ class Clientes_Fisicos(QWidget):
                 dados_atualizados["RG"], dados_atualizados["CPF"], dados_atualizados["CNH"], dados_atualizados["Categoria da CNH"], dados_atualizados["Data de Emissão da CNH"], 
                 dados_atualizados["Data de Vencimento da CNH"], dados_atualizados["Telefone"], dados_atualizados["CEP"], dados_atualizados["Endereço"], dados_atualizados["Número"], dados_atualizados["Complemento"],
                 dados_atualizados["Cidade"], dados_atualizados["Bairro"], dados_atualizados["Estado"], dados_atualizados["Status do Cliente"], dados_atualizados["Categoria do Cliente"],
-                dados_atualizados["Última Atualização"], dados_atualizados["Valor Gasto Total"], dados_atualizados["Modo Valor Gasto"],dados_atualizados["Última Compra"],
+                dados_atualizados["Última Atualização"], dados_atualizados["Valor Gasto Total"], dados_atualizados["Modo Valor Gasto"], dados_atualizados["Última Compra"],
                 cpf_original
             )
 

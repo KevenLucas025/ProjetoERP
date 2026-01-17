@@ -1,7 +1,7 @@
 from PySide6.QtWidgets import (QDialog, QPushButton, QVBoxLayout, QTableWidget, 
                                QTableWidgetItem, QMessageBox, QCheckBox, QLabel, 
                                QLabel,QFileDialog,QWidget,QHBoxLayout,
-                               QHeaderView,QMainWindow)
+                               QHeaderView,QMainWindow,QApplication)
 from PySide6 import QtWidgets
 from PySide6.QtGui import QPixmap, Qt,QColor,QBrush
 from PySide6.QtCore import QDate, Qt,QTimer
@@ -15,6 +15,7 @@ from datetime import datetime
 from utils import Temas
 
 
+
 class TabelaProdutos(QMainWindow):
     def __init__(self, main_window, date_edit, parent=None):
         super().__init__(parent)
@@ -25,7 +26,7 @@ class TabelaProdutos(QMainWindow):
         self.filtragem_aplicada = False  # Inicializa a variável
         self.db = DataBase()  # Inicializando o atributo db
         self.temas = Temas()
-        
+
         self.setWindowTitle("Tabela de Produtos")
         self.setMinimumWidth(800)
         self.setMinimumHeight(600)
@@ -1038,9 +1039,11 @@ class TabelaProdutos(QMainWindow):
             QMessageBox.warning(self, "Aviso", "Nenhum produto cadastrado para apagar.")
             return
 
+        # ===============================
+        # Coleta produtos marcados
+        # ===============================
         if self.coluna_checkboxes_produtos_adicionada:
-            total_rows = self.table_widget.rowCount()
-            for row in range(total_rows):
+            for row in range(self.table_widget.rowCount()):
                 if row < len(self.checkboxes):
                     checkbox = self.checkboxes[row]
                     if checkbox and checkbox.isChecked():
@@ -1052,15 +1055,17 @@ class TabelaProdutos(QMainWindow):
                             nome_produto = nome_item.text().strip()
 
                             if produto_id.isdigit():
-                                if (int(produto_id), nome_produto) not in produtos_para_remover:
-                                    produtos_para_remover.append((int(produto_id), nome_produto))
-                                    linhas_para_remover.append(row)
+                                produtos_para_remover.append((int(produto_id), nome_produto))
+                                linhas_para_remover.append(row)
 
+        # ===============================
+        # Fallback: seleção normal
+        # ===============================
         if not produtos_para_remover:
             selecionados = self.table_widget.selectedIndexes()
             if selecionados:
-                linhas_selecionadas = set(index.row() for index in selecionados)
-                for row in linhas_selecionadas:
+                linhas = set(index.row() for index in selecionados)
+                for row in linhas:
                     item_id = self.table_widget.item(row, 0)
                     nome_item = self.table_widget.item(row, 1)
 
@@ -1072,85 +1077,152 @@ class TabelaProdutos(QMainWindow):
                             produtos_para_remover.append((int(produto_id), nome_produto))
                             linhas_para_remover.append(row)
 
-        if produtos_para_remover:
-            msgbox = QMessageBox(self)
-            msgbox.setWindowTitle("Confirmar")
-            msgbox.setText(
-                "Você tem certeza que deseja apagar o produto selecionado?"
-                if len(produtos_para_remover) == 1
-                else "Você tem certeza que deseja apagar os produtos selecionados?"
-            )
+        if not produtos_para_remover:
+            return
 
-            btn_sim = QPushButton("Sim")
-            btn_nao = QPushButton("Não")
-            msgbox.addButton(btn_sim, QMessageBox.ButtonRole.YesRole)
-            msgbox.addButton(btn_nao, QMessageBox.ButtonRole.NoRole)
-            msgbox.setDefaultButton(btn_nao)
-            msgbox.exec()
+        # ===============================
+        # Confirmação
+        # ===============================
+        msgbox = QMessageBox(self)
+        msgbox.setWindowTitle("Confirmar")
+        msgbox.setText(
+            "Você tem certeza que deseja apagar o produto selecionado?"
+            if len(produtos_para_remover) == 1
+            else "Você tem certeza que deseja apagar os produtos selecionados?"
+        )
 
-            if msgbox.clickedButton() == btn_sim:
-                db = DataBase()
-                try:
-                    db.connecta()
-                    cursor = db.connection.cursor()
+        btn_sim = QPushButton("Sim")
+        btn_nao = QPushButton("Não")
+        msgbox.addButton(btn_sim, QMessageBox.YesRole)
+        msgbox.addButton(btn_nao, QMessageBox.NoRole)
+        msgbox.setDefaultButton(btn_nao)
+        msgbox.exec()
 
-                    cnpjs_afetados = set()
+        if msgbox.clickedButton() != btn_sim:
+            return
 
-                    for produto_id, nome_produto in produtos_para_remover:
-                        cursor.execute("""
-                            SELECT CNPJ
-                            FROM products
-                            WHERE id = ?
-                        """, (produto_id,))
-                        res = cursor.fetchone()
-                        if res and res[0]:
-                            cnpjs_afetados.add(res[0])
+        # ===============================
+        # Remoção no banco
+        # ===============================
+        db = DataBase()
+        try:
+            db.connecta()
+            cursor = db.connection.cursor()
 
-                        db.remover_produto(produto_id)
+            # ✅ DEFINIDOS FORA DO LOOP
+            cnpjs_afetados = set()
+            cpfs_afetados = set()
 
-                        descricao = f"Produto {nome_produto} (ID: {produto_id}) foi removido."
-                        self.main_window.registrar_historico("Remoção de Produto", descricao)
+            for produto_id, nome_produto in produtos_para_remover:
+                cursor.execute("""
+                    SELECT CNPJ, CPF
+                    FROM products
+                    WHERE id = ?
+                """, (produto_id,))
+                res = cursor.fetchone()
 
-                    for row in sorted(linhas_para_remover, reverse=True):
-                        self.table_widget.removeRow(row)
+                if res:
+                    if res[0]:
+                        cnpjs_afetados.add(res[0])
+                    if res[1]:
+                        cpfs_afetados.add(res[1])
 
-                    for cnpj in cnpjs_afetados:
-                        cursor.execute("""
-                            SELECT "Modo Valor Gasto"
-                            FROM clientes_juridicos
-                            WHERE CNPJ = ?
-                        """, (cnpj,))
-                        modo = cursor.fetchone()[0].strip().lower()
+                db.remover_produto(produto_id)
 
-                        if "automatico" in modo:
-                            cursor.execute("""
-                                SELECT "Valor Total"
-                                FROM products
-                                WHERE CNPJ = ?
-                            """, (cnpj,))
+                descricao = f"Produto {nome_produto} (ID: {produto_id}) foi removido."
+                self.main_window.registrar_historico("Remoção de Produto", descricao)
 
-                            total = 0.0
-                            for (valor,) in cursor.fetchall():
-                                valor = str(valor).replace("R$", "").replace(".", "").replace(",", ".")
-                                try:
-                                    total += float(valor)
-                                except:
-                                    pass
+            # Remove linhas da tabela
+            for row in sorted(linhas_para_remover, reverse=True):
+                self.table_widget.removeRow(row)
 
-                            total_formatado = f"R$ {total:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
+            # ===============================
+            # Atualiza CLIENTES JURÍDICOS
+            # ===============================
+            for cnpj in cnpjs_afetados:
+                cursor.execute("""
+                    SELECT "Modo Valor Gasto"
+                    FROM clientes_juridicos
+                    WHERE CNPJ = ?
+                """, (cnpj,))
+                res = cursor.fetchone()
+                if not res:
+                    continue
 
-                            cursor.execute("""
-                                UPDATE clientes_juridicos
-                                SET "Valor Gasto Total" = ?
-                                WHERE CNPJ = ?
-                            """, (total_formatado, cnpj))
+                if "automatico" in res[0].lower():
+                    cursor.execute("""
+                        SELECT "Valor Total"
+                        FROM products
+                        WHERE CNPJ = ?
+                    """, (cnpj,))
 
-                    db.connection.commit()
+                    total = 0.0
+                    for (valor,) in cursor.fetchall():
+                        valor = str(valor).replace("R$", "").replace(".", "").replace(",", ".")
+                        try:
+                            total += float(valor)
+                        except:
+                            pass
 
-                    QMessageBox.information(self, "Sucesso", "Produtos removidos com sucesso!")
+                    total_formatado = f"R$ {total:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
 
-                except Exception as e:
-                    QMessageBox.critical(self, "Erro", f"Erro ao remover os produtos: {str(e)}")
+                    cursor.execute("""
+                        UPDATE clientes_juridicos
+                        SET "Valor Gasto Total" = ?
+                        WHERE CNPJ = ?
+                    """, (total_formatado, cnpj))
+
+            # ===============================
+            # ✅ ATUALIZA CLIENTES FÍSICOS
+            # ===============================
+            for cpf in cpfs_afetados:
+                cursor.execute("""
+                    SELECT "Modo Valor Gasto"
+                    FROM clientes_fisicos
+                    WHERE CPF = ?
+                """, (cpf,))
+                res = cursor.fetchone()
+                if not res:
+                    continue
+
+                if "automatico" in res[0].lower():
+                    cursor.execute("""
+                        SELECT "Valor Total"
+                        FROM products
+                        WHERE CPF = ?
+                    """, (cpf,))
+
+                    total = 0.0
+                    for (valor,) in cursor.fetchall():
+                        valor = str(valor).replace("R$", "").replace(".", "").replace(",", ".")
+                        try:
+                            total += float(valor)
+                        except:
+                            pass
+
+                    total_formatado = f"R$ {total:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
+
+                    cursor.execute("""
+                        UPDATE clientes_fisicos
+                        SET "Valor Gasto Total" = ?
+                        WHERE CPF = ?
+                    """, (total_formatado, cpf))
+
+            db.connection.commit()
+            QMessageBox.information(self, "Sucesso", "Produtos removidos com sucesso!")
+            
+            if hasattr(self.main_window, "pagina_clientes_juridicos"):
+                self.main_window.pagina_clientes_juridicos.carregar_clientes_juridicos()
+
+            if hasattr(self.main_window, "pagina_clientes_fisicos"):
+                self.main_window.pagina_clientes_fisicos.carregar_clientes_fisicos()
+
+            QApplication.processEvents()
+
+
+        except Exception as e:
+            QMessageBox.critical(self, "Erro", f"Erro ao remover os produtos: {str(e)}")
+
 
 
 #*******************************************************************************************************

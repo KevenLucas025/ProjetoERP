@@ -694,7 +694,7 @@ class Clientes_Juridicos(QWidget):
         
         # 🔹 definir valor atual vindo do banco
         valor_modo = dados_cliente.get("Modo Valor Gasto", "automatico")
-        index = combo_modo_valor.findData(valor_modo)
+        index = combo_modo_valor.findText(valor_modo)
         combo_modo_valor.setCurrentIndex(index if index >= 0 else 0)
 
 
