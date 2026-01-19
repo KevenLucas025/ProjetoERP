@@ -89,7 +89,7 @@ class EstoqueProduto(QWidget):
         
         # Carregar dados da tabela "products" usando pandas
         query = """
-        SELECT Produto, Quantidade, Valor_Real, IFNULL(Desconto, 'Sem Desconto') AS Desconto,"Valor Total", "Data do Cadastro", 
+        SELECT Produto, Quantidade, Valor_Real, IFNULL(Desconto, 'Sem Desconto') AS Desconto,"Total Sem Desconto","Valor Total", "Data do Cadastro", 
         Código_Item, Cliente, Descrição_Produto, Usuário, "Status da Saída"
         FROM products
         """
@@ -167,12 +167,13 @@ class EstoqueProduto(QWidget):
             quantidade = int(self.main_window.table_base.item(row, 1).text() or "0")
             valor_produto = self.main_window.table_base.item(row, 2).text() or ""
             desconto = self.main_window.table_base.item(row, 3).text() or ""
-            valor_total_str = self.main_window.table_base.item(row, 4).text() or "0"
-            data_cadastro = self.main_window.table_base.item(row, 5).text() or ""
-            codigo_produto = self.main_window.table_base.item(row, 6).text() or ""
-            cliente = self.main_window.table_base.item(row, 7).text() or ""
-            descricao = self.main_window.table_base.item(row, 8).text() or ""
-            usuario = self.main_window.table_base.item(row, 9).text() or ""
+            total_sem_desconto = self.main_window.table_base.item(row,4).text() or "0"
+            valor_total_str = self.main_window.table_base.item(row, 5).text() or "0"
+            data_cadastro = self.main_window.table_base.item(row, 6).text() or ""
+            codigo_produto = self.main_window.table_base.item(row, 7).text() or ""
+            cliente = self.main_window.table_base.item(row, 8).text() or ""
+            descricao = self.main_window.table_base.item(row, 9).text() or ""
+            usuario = self.main_window.table_base.item(row, 10).text() or ""
             status_saida = 1
             data_saida = datetime.now().strftime("%d/%m/%Y %H:%M")
 
@@ -191,8 +192,15 @@ class EstoqueProduto(QWidget):
             else:
                 quantidade_saida = 1
 
-            # 👉 Cálculo financeiro correto
-            valor_total_float = float(valor_total_str.replace(",", "."))
+            #  Cálculo financeiro correto
+            valor_total_float = float(
+                valor_total_str
+                .replace("R$", "")
+                .replace(" ", "")
+                .replace(".", "")
+                .replace(",", ".")
+            )
+
             valor_unitario = valor_total_float / quantidade
             valor_saida = valor_unitario * quantidade_saida
             novo_valor_total = valor_total_float - valor_saida
@@ -226,6 +234,7 @@ class EstoqueProduto(QWidget):
                     str(qtd_existente + quantidade_saida),
                     valor_produto,
                     desconto,
+                    total_sem_desconto,
                     f"{valor_existente + valor_saida:.2f}".replace(".", ","),
                     data_saida,
                     data_cadastro,
@@ -241,6 +250,7 @@ class EstoqueProduto(QWidget):
                     str(quantidade_saida),
                     valor_produto,
                     desconto,
+                    total_sem_desconto,
                     valor_saida_fmt,
                     data_saida,
                     data_cadastro,
@@ -268,7 +278,7 @@ class EstoqueProduto(QWidget):
                     """, (nova_qtd, f"{novo_valor:.2f}", codigo))
                 else:
                     cursor.execute("""
-                        DELETE FROM products WHERE Código_Item = ?
+                        DELETE  FROM products WHERE Código_Item = ?
                     """, (codigo,))
 
             for produto_info in produtos_saida:
@@ -296,42 +306,66 @@ class EstoqueProduto(QWidget):
 
     def tabela_saida_preencher(self, dados_saida):
         for item in dados_saida:
-            codigo = item[7]
+            codigo = item[8]
             quantidade_nova = int(item[1])
-            valor_novo = float(item[4].replace(",", "."))
+            valor_novo = float(
+                item[4]
+                .replace("R$", "")
+                .replace(" ", "")
+                .replace(".", "")
+                .replace(",", ".")
+            )
+
 
             linha_existente = None
             for row in range(self.main_window.table_saida.rowCount()):
-                if self.main_window.table_saida.item(row, 7).text() == codigo:
+                if self.main_window.table_saida.item(row, 8).text() == codigo:
                     linha_existente = row
                     break
 
             if linha_existente is not None:
                 qtd_atual = int(self.main_window.table_saida.item(linha_existente, 1).text())
                 valor_atual = float(
-                    self.main_window.table_saida.item(linha_existente, 4).text().replace(",", ".")
+                    self.main_window.table_saida.item(linha_existente, 4).text()
+                    .replace("R$", "")
+                    .replace(" ", "")
+                    .replace(".", "")
+                    .replace(",", ".")
                 )
 
                 self.main_window.table_saida.item(linha_existente, 1).setText(
                     str(qtd_atual + quantidade_nova)
                 )
                 self.main_window.table_saida.item(linha_existente, 4).setText(
-                    f"{valor_atual + valor_novo:.2f}".replace(".", ",")
+                    f"R$ {valor_atual + valor_novo:,.2f}"
+                    .replace(",", "X").replace(".", ",").replace("X", ".")
                 )
             else:
                 row = self.main_window.table_saida.rowCount()
                 self.main_window.table_saida.insertRow(row)
 
+
+                # Copia todos os campos
                 for col, valor in enumerate(item):
-                    self.main_window.table_saida.setItem(
-                        row, col, self.criar_item(str(valor))
-                    )
+                    if col == 4 or col == 5:  # Total sem desconto e Valor Total
+                        valor_float = float(
+                            str(valor)
+                            .replace("R$", "")
+                            .replace(" ", "")
+                            .replace(".", "")
+                            .replace(",", ".")
+                        )
+                        self.main_window.table_saida.setItem(
+                            row, col, self.criar_item(self.formatar_moeda(valor_float))
+                        )
+                    else:
+                        self.main_window.table_saida.setItem(
+                            row, col, self.criar_item(str(valor))
+                        )
+
 
         self.main_window.table_saida.resizeColumnsToContents()
         self.main_window.table_saida.resizeRowsToContents()
-
-
-
 
 
     def reindex_table_base(self):
@@ -371,22 +405,24 @@ class EstoqueProduto(QWidget):
             return
 
         for row in range(row_count):
-            produto_item = self.main_window.table_saida.item(row, 0)
-            quantidade_item = self.main_window.table_saida.item(row, 1)
-            valor_real_item = self.main_window.table_saida.item(row, 2)
-            desconto_item = self.main_window.table_saida.item(row, 3)
-            valor_total_item = self.main_window.table_saida.item(row, 4)         # Valor Total
-            data_cadastro_item = self.main_window.table_saida.item(row, 6)       # Data do Cadastro
-            codigo_item = self.main_window.table_saida.item(row, 7)              # Código do Produto
-            cliente_item = self.main_window.table_saida.item(row, 8)             # Cliente
-            descricao_item = self.main_window.table_saida.item(row, 9)           # Descrição
-            usuario_item = self.main_window.table_saida.item(row, 10)            # Usuário
-            status_saida_item = self.main_window.table_saida.item(row, 11)       # Status da Saída
+            produto_item = self.main_window.table_saida.item(row, 0)             # Produto
+            quantidade_item = self.main_window.table_saida.item(row, 1)          # Quantidade
+            valor_real_item = self.main_window.table_saida.item(row, 2)          # Valor do Produto
+            desconto_item = self.main_window.table_saida.item(row, 3)            # Desconto
+            total_sem_deconto_item = self.main_window.table_saida.item(row, 4)        # Total Sem Desconto
+            valor_total_item = self.main_window.table_saida.item(row, 5)         # Valor Total
+            data_cadastro_item = self.main_window.table_saida.item(row, 7)       # Data do Cadastro
+            codigo_item = self.main_window.table_saida.item(row, 8)              # Código do Produto
+            cliente_item = self.main_window.table_saida.item(row, 9)             # Cliente
+            descricao_item = self.main_window.table_saida.item(row, 10)          # Descrição
+            usuario_item = self.main_window.table_saida.item(row, 11)            # Usuário
+            status_saida_item = self.main_window.table_saida.item(row, 12)       # Status da Saída
 
             produto = produto_item.text() if produto_item else ""
             quantidade = int(quantidade_item.text()) if quantidade_item else "0"
             valor_real = valor_real_item.text() if valor_real_item else ""
             desconto = desconto_item.text() if desconto_item else ""
+            total_sem_deconto = total_sem_deconto_item.text() if total_sem_deconto_item else "Não Cadastrado"
             valor_total = valor_total_item.text() if valor_total_item else ""
             data_cadastro = data_cadastro_item.text() if data_cadastro_item else ""
             codigo_produto = codigo_item.text() if codigo_item else ""
@@ -446,9 +482,9 @@ class EstoqueProduto(QWidget):
                     # Insere como novo produto
                     cursor.execute("""
                         INSERT INTO products 
-                        (Produto, Quantidade, Valor_Real, Desconto, "Valor Total","Data do Cadastro", Código_Item, Cliente, Descrição_Produto, Imagem, Usuário,'Status da Saída')
-                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?,?)
-                    """, (produto, str(quantidade_estorno), valor_real, desconto,valor_total, data_cadastro, 
+                        (Produto, Quantidade, Valor_Real, Desconto, "Total Sem Desconto","Valor Total","Data do Cadastro", Código_Item, Cliente, Descrição_Produto, Imagem, Usuário,'Status da Saída')
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?,?,?)
+                    """, (produto, str(quantidade_estorno), valor_real, desconto, total_sem_deconto,valor_total, data_cadastro, 
                           codigo_produto, cliente, descricao, imagem, usuario, 1))
                 cn.commit()
 
@@ -479,7 +515,7 @@ class EstoqueProduto(QWidget):
                 # Soma a quantidade diretamente na linha existente
                 item_quantidade = self.main_window.table_base.item(linha_existente,1)
                 quantidade_atual = int(item_quantidade.text()) if item_quantidade else 0
-                nova_quantidade_visual = quantidade_atual + int(quantidade)
+                nova_quantidade_visual = quantidade_atual + quantidade_estorno
                 self.main_window.table_base.setItem(linha_existente, 1,self.criar_item(str(nova_quantidade_visual)))
             else:
                 # Recupera o nome do usuário do código original
@@ -492,13 +528,14 @@ class EstoqueProduto(QWidget):
                 self.main_window.table_base.setItem(row_base, 1, self.criar_item(str(quantidade_estorno)))
                 self.main_window.table_base.setItem(row_base, 2, self.criar_item(valor_real))
                 self.main_window.table_base.setItem(row_base, 3, self.criar_item(desconto))
-                self.main_window.table_base.setItem(row_base, 4, self.criar_item(valor_total))
-                self.main_window.table_base.setItem(row_base, 5, self.criar_item(data_cadastro))
-                self.main_window.table_base.setItem(row_base, 6, self.criar_item(codigo_produto))
-                self.main_window.table_base.setItem(row_base, 7, self.criar_item(cliente))
-                self.main_window.table_base.setItem(row_base, 8, self.criar_item(descricao))
-                self.main_window.table_base.setItem(row_base, 9, self.criar_item(usuario))
-                self.main_window.table_base.setItem(row_base,10,self.criar_item("1"))
+                self.main_window.table_base.setItem(row_base, 4, self.criar_item(total_sem_deconto))
+                self.main_window.table_base.setItem(row_base, 5, self.criar_item(valor_total))
+                self.main_window.table_base.setItem(row_base, 6, self.criar_item(data_cadastro))
+                self.main_window.table_base.setItem(row_base, 7, self.criar_item(codigo_produto))
+                self.main_window.table_base.setItem(row_base, 8, self.criar_item(cliente))
+                self.main_window.table_base.setItem(row_base, 9, self.criar_item(descricao))
+                self.main_window.table_base.setItem(row_base, 10, self.criar_item(usuario))
+                self.main_window.table_base.setItem(row_base,11,self.criar_item("1"))
 
             # Registrar histórico
             historico_texto = f"Produto '{produto}' foi estornado."
@@ -552,7 +589,7 @@ class EstoqueProduto(QWidget):
 
             # Consultar todos os produtos
             query = """
-            SELECT Produto, Quantidade, Valor_Real, Desconto, "Valor Total","Data do Cadastro", Código_Item, Cliente, Descrição_Produto, Usuário, "Status da Saída"
+            SELECT Produto, Quantidade, Valor_Real, Desconto,"Total Sem Desconto", "Valor Total","Data do Cadastro", Código_Item, Cliente, Descrição_Produto, Usuário, "Status da Saída"
             FROM products
             """
             produtos = self.db.executar_query(query)
@@ -601,6 +638,7 @@ class EstoqueProduto(QWidget):
                 SUM(Quantidade) as Quantidade, 
                 "Valor do Produto", 
                 Desconto,
+                "Total Sem Desconto",
                 "Valor Total", 
                 "Data de Saída", 
                 "Data da Criação", 
@@ -611,10 +649,11 @@ class EstoqueProduto(QWidget):
                 "Status da Saída"
             FROM products_saida
             WHERE "Status da Saída" = 1
-            GROUP BY 
+            GROUP BY "Código do Produto"
                 Produto, 
                 "Valor do Produto", 
                 Desconto,
+                "Total Sem Desconto",
                 "Valor Total", 
                 "Data de Saída", 
                 "Data da Criação", 
@@ -702,9 +741,9 @@ class EstoqueProduto(QWidget):
             c.drawString(50, height - 50, "Relatório de Produtos")
 
             # Cabeçalhos
-            c.setFont("Helvetica-Bold", 10)
+            c.setFont("Helvetica-Bold", 11)
             headers = ["Produto", "Quantidade", "Valor", "Desconto", 
-                       "Data", "Código", "Cliente", "Descrição", "Usuário"]
+                       "Total Sem Desconto","Valor Total","Data", "Código", "Cliente", "Descrição", "Usuário"]
             y = height - 80
             for i, header in enumerate(headers):
                 c.drawString(50 + i * 60, y, header)
@@ -2516,31 +2555,69 @@ class EstoqueProduto(QWidget):
             if total_linhas == 0:
                 QMessageBox.warning(self, "Aviso", "Nenhum produto encontrado para cadastrar.")
                 return
+
             for linha in range(total_linhas):
                 produto = self.table_massa_produtos.item(linha, 0).text()
-                quantidade = self.table_massa_produtos.item(linha, 1).text()
 
-              
+                # Quantidade
+                quantidade_str = self.table_massa_produtos.item(linha, 1).text()
+                quantidade = int(quantidade_str) if quantidade_str else 0
 
-                # Tratamento do valor (remover R$ e converter para float)
-                valor_str = self.table_massa_produtos.item(linha, 2).text().replace("R$", "").replace(".", "").replace(",", ".").strip()
-                valor_float = float(valor_str) if valor_str else 0.0
-                valor_produto = f"R$ {valor_float:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
+                # Valor unitário
+                valor_str = (
+                    self.table_massa_produtos.item(linha, 2)
+                    .text()
+                    .replace("R$", "")
+                    .replace(".", "")
+                    .replace(",", ".")
+                    .strip()
+                )
+                valor_unitario = float(valor_str) if valor_str else 0.0
 
-                # Desconto: tratar "Sem desconto" como 0
-                desconto_str = self.table_massa_produtos.item(linha, 3).text().replace("%", "").replace(",", ".").strip()
-                desconto = 0.0 if desconto_str.lower() == "sem desconto" else float(desconto_str)
+                valor_produto = (
+                    f"R$ {valor_unitario:,.2f}"
+                    .replace(",", "X")
+                    .replace(".", ",")
+                    .replace("X", ".")
+                )
 
+                # Desconto
+                desconto_str = (
+                    self.table_massa_produtos.item(linha, 3)
+                    .text()
+                    .replace("%", "")
+                    .replace(",", ".")
+                    .strip()
+                )
+                desconto = 0.0 if desconto_str.lower() == "sem desconto" or not desconto_str else float(desconto_str)
+
+                # Outros campos
                 data_cadastro = self.table_massa_produtos.item(linha, 4).text()
                 cliente = self.table_massa_produtos.item(linha, 6).text()
                 descricao_produto = self.table_massa_produtos.item(linha, 7).text()
-                
-                 # Valor total vindo da coluna 5 (ajuste se estiver em outra)
-                valor_total_str = self.table_massa_produtos.item(linha, 5).text().replace("R$", "").replace(".", "").replace(",", ".").strip()
-                valor_total_float = float(valor_total_str) if valor_total_str else 0.0
-                valor_total = f"R$ {valor_total_float:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
 
-                # Gerar código aleatório para cada produto
+                # ============================
+                # 🔢 CÁLCULOS CORRETOS
+                # ============================
+                total_sem_desconto_float = quantidade * valor_unitario
+                valor_desconto = total_sem_desconto_float * (desconto / 100)
+                valor_total_float = total_sem_desconto_float - valor_desconto
+
+                total_sem_desconto = (
+                    f"R$ {total_sem_desconto_float:,.2f}"
+                    .replace(",", "X")
+                    .replace(".", ",")
+                    .replace("X", ".")
+                )
+
+                valor_total = (
+                    f"R$ {valor_total_float:,.2f}"
+                    .replace(",", "X")
+                    .replace(".", ",")
+                    .replace("X", ".")
+                )
+
+                # Código do produto
                 codigo_aleatorio = self.main_window.gerar_codigo_aleatorio()
 
                 produto_info = {
@@ -2548,26 +2625,31 @@ class EstoqueProduto(QWidget):
                     "quantidade": quantidade,
                     "valor_produto": valor_produto,
                     "desconto": desconto,
-                    "valor_total":valor_total,
+                    "total_sem_desconto": total_sem_desconto,
+                    "valor_total": valor_total,
                     "data_cadastro": data_cadastro,
                     "codigo_item": codigo_aleatorio,
                     "cliente": cliente,
                     "descricao_produto": descricao_produto
                 }
-                self.main_window.inserir_produto_no_bd(produto_info,registrar_historico=False)
 
-                # Registrar no histórico para o cadastro em massa
-                descricao = f"Produto {produto} foi cadastrado com quantidade {quantidade} e valor {valor_produto}!"
+                self.main_window.inserir_produto_no_bd(produto_info, registrar_historico=False)
+
+                # Histórico
+                descricao = (
+                    f"Produto {produto} foi cadastrado "
+                    f"com quantidade {quantidade} e valor {valor_produto}!"
+                )
                 self.main_window.registrar_historico("Cadastro em Massa", descricao)
 
             QMessageBox.information(self, "Sucesso", "Produtos cadastrados com sucesso!")
             self.line_edit_massa_produtos.clear()
-
-            # Limpar a tabela após a inserção
             self.table_massa_produtos.setRowCount(0)
 
         except Exception as e:
             QMessageBox.critical(self, "Erro", f"Erro ao cadastrar produtos em massa:\n{e}")
 
+
     
-    
+    def formatar_moeda(self, valor_float):
+        return f"R$ {valor_float:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")

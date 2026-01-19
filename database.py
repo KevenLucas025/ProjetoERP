@@ -162,6 +162,7 @@ class DataBase:
                     Quantidade INTEGER NOT NULL,
                     Valor_Real REAL NOT NULL,
                     Desconto TEXT,
+                    "Total Sem Desconto",
                     "Valor Total" TEXT,
                     "Data do Cadastro" TEXT,
                     Código_Item TEXT,
@@ -190,6 +191,7 @@ class DataBase:
                     Quantidade INTEGER NOT NULL,
                     "Valor do Produto"  NOT NULL,
                     Desconto,
+                    "Total Sem Desconto", 
                     "Valor Total" TEXT,
                     "Data de Saída" TEXT,
                     "Data da Criação" TEXT,
@@ -337,7 +339,7 @@ class DataBase:
         except Exception as e:
             print("Erro ao criar tabela de historico_clientes_fisicos: ", e)
 #*********************************************************************************************************************
-    def insert_product(self, produto, quantidade, valor_real, desconto,valor_total, data_cadastro, 
+    def insert_product(self, produto, quantidade, valor_real, desconto,total_sem_desconto,valor_total, data_cadastro, 
                     codigo_item, cliente, descricao_produto, usuario,cnpj,cpf, imagem=None):
         try:
             cursor = self.connection.cursor()
@@ -347,6 +349,7 @@ class DataBase:
             quantidade = quantidade if quantidade is not None else 0
             valor_real = valor_real if valor_real is not None else 0.0
             desconto = desconto if desconto is not None else "Sem desconto"
+            total_sem_desconto = total_sem_desconto if total_sem_desconto is not None else "Não Cadastrado"
             valor_total = valor_total if valor_total is not None else "Não Cadastrado"
             data_cadastro = data_cadastro if data_cadastro is not None else "Não Cadastrado"
             codigo_item = codigo_item if codigo_item is not None else "Não Cadastrado"
@@ -359,13 +362,13 @@ class DataBase:
 
             cursor.execute("""
                 INSERT INTO products (
-                    Produto, Quantidade, Valor_Real, Desconto, "Valor Total",
+                    Produto, Quantidade, Valor_Real, Desconto, "Total Sem Desconto","Valor Total",
                     "Data do Cadastro", Código_Item, Cliente, Descrição_Produto,
                     "Status da Saída", Imagem, Usuário, CNPJ, CPF
                 ) 
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?)
             """, (
-                produto, quantidade, valor_real, desconto, valor_total,
+                produto, quantidade, valor_real, desconto,total_sem_desconto, valor_total,
                 data_cadastro, codigo_item, cliente, descricao_produto,
                 0, imagem, usuario, cnpj, cpf
             ))
@@ -437,7 +440,7 @@ class DataBase:
 #*********************************************************************************************************************
     def atualizar_produto(
         self, produto_id, produto=None, quantidade=None, 
-        valor_real=None, desconto=None, valor_total=None,
+        valor_real=None, desconto=None,total_sem_desconto=None, valor_total=None,
         data_cadastro=None, codigo_item=None, cliente=None,
         descricao_produto=None, produto_imagem=None
     ):
@@ -460,6 +463,9 @@ class DataBase:
             # Desconto
             columns_to_update.append("Desconto = ?")
             values_to_update.append(desconto if desconto else "Não Cadastrado")
+            
+            columns_to_update.append('"Total Sem Desconto" = ?')
+            values_to_update.append(total_sem_desconto if total_sem_desconto else "Não Cadastrado")
 
             # Valor Total (COLUNA COM ESPAÇO)
             columns_to_update.append('"Valor Total" = ?')
@@ -725,7 +731,7 @@ class DataBase:
         self.garantir_conexao()
         cursor = self.connection.cursor()
         cursor.execute("""
-            SELECT Produto, Quantidade, Valor_Real, Desconto,"Valor Total", "Data do Cadastro", Código_Item, Cliente, 
+            SELECT Produto, Quantidade, Valor_Real, Desconto,"Total Sem Desconto","Valor Total", "Data do Cadastro", Código_Item, Cliente, 
                        Descrição_Produto, Imagem, 'Status da Saída' 
             FROM products
         """)
@@ -736,7 +742,7 @@ class DataBase:
         self.garantir_conexao()
         cursor = self.connection.cursor()
         cursor.execute("""
-            SELECT Produto, Quantidade, "Valor do Produto", Desconto, "Valor Total","Data de Saída", "Data da Criação", "Código do Produto", 
+            SELECT Produto, Quantidade, "Valor do Produto", Desconto,"Total Sem Desconto", "Valor Total","Data de Saída", "Data da Criação", "Código do Produto", 
                        Cliente, "Descrição do Produto", Usuário, "Status da Saída",Imagem 
             FROM products_saida
         """)
@@ -806,9 +812,9 @@ class DataBase:
             else:
                 query_insert = """
                 INSERT INTO products_saida 
-                (Produto, Quantidade, "Valor do Produto", Desconto,"Valor Total", "Data de Saída", 
+                (Produto, Quantidade, "Valor do Produto", Desconto,"Total Sem Desconto","Valor Total", "Data de Saída", 
                 "Data da Criação", "Código do Produto", Cliente, "Descrição do Produto", Usuário, Imagem,"Status da Saída")
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?)
                 """
                 self.executar_comando(query_insert, produto_info)
 

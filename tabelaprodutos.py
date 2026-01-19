@@ -55,11 +55,11 @@ class TabelaProdutos(QMainWindow):
 
         # Tabela para exibir os produtos
         self.table_widget = QTableWidget()
-        self.table_widget.setColumnCount(12)  # Definindo o número de colunas
+        self.table_widget.setColumnCount(13)  # Definindo o número de colunas
         self.table_widget.setObjectName("tabelaProdutos")
         self.setStyleSheet(self.aplicar_tema(self.tema))
         self.table_widget.setHorizontalHeaderLabels(["ID", "Produto", "Quantidade", "Valor do Produto", 
-                                                     "Desconto","Valor Total", "Data do Cadastro", "Código do Produto", 
+                                                     "Desconto","Total Sem Desconto","Valor Total", "Data do Cadastro", "Código do Produto", 
                                                      "Cliente", "Descrição do Produto","Usuário","Status da Saída"])  # Definindo os rótulos das colunas
         
         self.table_widget.horizontalHeader().setSectionResizeMode(QHeaderView.Interactive)

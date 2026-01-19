@@ -1018,6 +1018,11 @@
              </column>
              <column>
               <property name="text">
+               <string>Total Sem Desconto</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
                <string>Valor Total</string>
               </property>
              </column>
@@ -1134,6 +1139,11 @@
              <column>
               <property name="text">
                <string>Desconto</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string>Total Sem Desconto</string>
               </property>
              </column>
              <column>
@@ -4868,7 +4878,7 @@
               <enum>QTabWidget::Rounded</enum>
              </property>
              <property name="currentIndex">
-              <number>0</number>
+              <number>1</number>
              </property>
              <widget class="QWidget" name="tab_clientes">
               <property name="styleSheet">

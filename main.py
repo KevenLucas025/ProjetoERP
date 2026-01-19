@@ -1445,6 +1445,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         
         # Atualizar a tabela na página de estoque
         self.estoque_produtos.tabela_estoque()
+        
     def mostrar_page_clientes(self):
         # Navegar para a página de estoque
         self.paginas_sistemas.setCurrentWidget(self.pg_clientes)
@@ -2692,6 +2693,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 produto_info["quantidade"],
                 valor_real_formatado,
                 desconto_formatado,
+                produto_info["total_sem_desconto"],
                 produto_info["valor_total"],
                 produto_info["data_cadastro"],
                 produto_info["codigo_item"],
@@ -2908,17 +2910,36 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         valor_total = quantidade * valor_produto
         valor_desconto = valor_total * (desconto / 100) # Cálculo usando porcentagem real
         valor_com_desconto = valor_total - valor_desconto
+        
+        # Formatação monetária padrão BR
+        valor_unitario_formatado = (
+            f"R$ {valor_produto:,.2f}"
+            .replace(",", "X")
+            .replace(".", ",")
+            .replace("X", ".")
+        )
 
-        # Formatando o valor para padrão nacional
-        valor_formatado = f"R$ {valor_produto:,.2f}".replace('.', '#').replace(',', '.').replace('#', ',')
-        valor_total_formatado = f"R$ {valor_com_desconto:,.2f}".replace(',', 'X').replace('.', ',').replace('X', '.')
+        total_sem_desconto_formatado = (
+            f"R$ {valor_total:,.2f}"
+            .replace(",", "X")
+            .replace(".", ",")
+            .replace("X", ".")
+        )
+
+        valor_total_formatado = (
+            f"R$ {valor_com_desconto:,.2f}"
+            .replace(",", "X")
+            .replace(".", ",")
+            .replace("X", ".")
+        )
 
         # Adicionar os dados do produto aos produtos pendentes
         produto_info = {
             "produto": self.txt_produto.text(),
             "quantidade": quantidade,
-            "valor_produto": valor_formatado,   
+            "valor_produto": valor_unitario_formatado,   
             "desconto": desconto,
+            "total_sem_desconto": total_sem_desconto_formatado,
             "valor_total": valor_total_formatado,
             "data_cadastro": self.dateEdit_3.date().toString("dd/MM/yyyy"),
             "codigo_item": self.txt_codigo_item.text(),
@@ -3256,10 +3277,20 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         produto_valor_real = self.txt_valor_produto_3.text()
         produto_desconto = self.txt_desconto_3.text().strip()
 
+        valor_real = float(produto_valor_real.replace(",", "."))
+        quantidade = int(produto_quantidade)
+
+        total_sem_desconto = valor_real * quantidade
+
         if produto_desconto and produto_desconto != "Não Cadastrado":
-            produto_valor_total = self.label_valor_desconto.text()
+            desconto_float = float(produto_desconto.replace("%", "").replace(",", "."))
+            produto_valor_total = total_sem_desconto * (1 - desconto_float / 100)
         else:
-            produto_valor_total = self.label_valor_total_produtos.text()
+            produto_valor_total = total_sem_desconto
+
+        produto_total_sem_desconto = f"{total_sem_desconto:.2f}".replace(".", ",")
+        produto_valor_total = f"{produto_valor_total:.2f}".replace(".", ",")
+
 
 
         produto_data_cadastro = self.dateEdit_3.date().toString("dd/MM/yyyy")
@@ -3274,7 +3305,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             db.connecta()
             db.atualizar_produto(
                 produto_id, produto_nome, produto_quantidade,produto_valor_real,
-                produto_desconto,produto_valor_total,produto_data_cadastro,
+                produto_desconto,produto_total_sem_desconto,produto_valor_total,produto_data_cadastro,
                 produto_codigo_item, produto_cliente, produto_descricao, produto_imagem
             )
             QMessageBox.information(self, "Sucesso", "Produto atualizado com sucesso!")
