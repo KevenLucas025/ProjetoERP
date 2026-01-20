@@ -1444,7 +1444,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.paginas_sistemas.setCurrentWidget(self.pag_estoque)
         
         # Atualizar a tabela na página de estoque
-        self.estoque_produtos.tabela_estoque()
+        self.estoque_produtos.carregar_tabela_estoque()
         
     def mostrar_page_clientes(self):
         # Navegar para a página de estoque
@@ -3328,13 +3328,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         usuario = self.get_usuario_logado()  # Obtenha o usuário logado
         data_hora = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
 
-        with self.db.connection as cn:
-            cursor = cn.cursor()
-            cursor.execute("""
-                INSERT INTO historico ('Data e Hora', Usuário, Ação, Descrição)
-                VALUES (?, ?, ?, ?)
-            """, (data_hora, usuario, acao, descricao))
-            cn.commit()
+        cursor = self.db.connection.cursor()
+        cursor.execute("""
+            INSERT INTO historico ('Data e Hora', Usuário, Ação, Descrição)
+            VALUES (?, ?, ?, ?)
+        """, (data_hora, usuario, acao, descricao))
+        self.db.connection.commit()
 #*******************************************************************************************************
     def registrar_historico_usuarios(self,acao,descricao):
         #Verifica se o histórico está pausado
@@ -3344,13 +3343,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         usuario = self.get_usuario_logado()
         data_hora = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
 
-        with self.db.connection as cn:
-            cursor = cn.cursor()
-            cursor.execute("""
-                INSERT INTO historico_usuarios('Data e Hora', Usuário, Ação, Descrição)
-                VALUES (?,?,?,?)
+        cursor = self.db.connection.cursor()
+        cursor.execute("""
+            INSERT INTO historico_usuarios('Data e Hora', Usuário, Ação, Descrição)
+            VALUES (?,?,?,?)
         """,(data_hora,usuario,acao,descricao))
-        cn.commit()
+        self.db.connection.commit()
 #*******************************************************************************************************        
     def registrar_historico_clientes_juridicos(self,acao,descricao):
         # Verifica se o histórico está pausado
@@ -3360,13 +3358,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         usuario = self.get_usuario_logado()  # Obtenha o usuário logado
         data_hora = datetime.now().strftime("%d/%m/%Y %H:%M")
         
-        with self.db.connection as cn:
-            cursor = cn.cursor()
-            cursor.execute("""
-                INSERT INTO historico_clientes_juridicos ('Data e Hora', Usuário, Ação, Descrição)
-                VALUES (?,?,?,?)
-            """,(data_hora,usuario,acao,descricao))
-            cn.commit()
+        cursor = self.db.connection.cursor()
+        cursor.execute("""
+            INSERT INTO historico_clientes_juridicos ('Data e Hora', Usuário, Ação, Descrição)
+            VALUES (?,?,?,?)
+        """,(data_hora,usuario,acao,descricao))
+        self.db.connection.commit()
 
     def registrar_historico_clientes_fisicos(self,acao,descricao):
         # Verifica se o histórico está pausado
@@ -3376,13 +3373,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         usuario = self.get_usuario_logado()
         data_hora = datetime.now().strftime("%d/%m/%Y %H:%M")
 
-        with self.db.connection as cn:
-            cursor = cn.cursor()
-            cursor.execute("""
-                INSERT INTO historico_clientes_fisicos ('Data e Hora',Usuário,Ação,Descrição)
-                VALUES (?,?,?,?)
-            """,(data_hora,usuario,acao,descricao))
-            cn.commit()
+        cursor = self.db.connection.cursor()
+        cursor.execute("""
+            INSERT INTO historico_clientes_fisicos ('Data e Hora',Usuário,Ação,Descrição)
+            VALUES (?,?,?,?)
+        """,(data_hora,usuario,acao,descricao))
+        self.db.connection.commit()
 
 #*******************************************************************************************************
     def campos_obrigatorios_preenchidos(self):

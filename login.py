@@ -112,7 +112,7 @@ class Login(QMainWindow, Ui_Mainwindow_Login):
 
         else:
             self.mostrarMensagem(f"Erro", f"Login ou senha incorretos.\nTentativa {self.tentativas + 1} de 3", QMessageBox.Warning)
-            self.users.close_connection()
+            #self.users.close_connection()
             self.tentativas += 1
             if self.tentativas >= 3:
                 self.mostrarMensagem("Erro", "Número máximo de tentativas excedido.\n O sistema será encerrado, se o erro persistir entre em contato com seu administrador", QMessageBox.Critical)
@@ -156,14 +156,14 @@ class Login(QMainWindow, Ui_Mainwindow_Login):
             self.mostrarMensagem("Erro", "Não foi possível autenticar automaticamente.", QMessageBox.Warning)
 
 
-    def closeEvent(self, event):
+    '''def closeEvent(self, event):
         # Garantir que o banco de dados seja fechado corretamente
         if hasattr(self, 'users'):
             self.users.close_connection()
 
         # Apagar configurações do usuário ao sair
         self.config.usuario = None
-        self.config.salvar_configuracoes(None,"", False)  # Garantir que não está armazenando sessão
+        self.config.salvar_configuracoes(None,"", False)  # Garantir que não está armazenando sessão'''
 
     def limpar_campos(self):
         # Limpar os campos de login e senha

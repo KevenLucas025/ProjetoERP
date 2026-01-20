@@ -83,7 +83,7 @@ class EstoqueProduto(QWidget):
         item.setForeground(QBrush(QColor("white"))) 
         return item
 
-    def tabela_estoque(self):
+    def carregar_tabela_estoque(self):
         # Conectando ao banco de dados SQLite
         cn = self.db.connection
         
@@ -97,7 +97,7 @@ class EstoqueProduto(QWidget):
 
         # Verificando se há dados na consulta
         if df.empty:
-            print("Nenhum dado encontrado no banco de dados.")
+            print("Nenhum dado encontrado no banco de dados após o produto ter gerado saída.")
             return
 
         # Configurando cabeçalhos das colunas
@@ -163,109 +163,70 @@ class EstoqueProduto(QWidget):
         atualizacoes_produtos = []
 
         for row in produtos_selecionados:
-            produto = self.main_window.table_base.item(row, 0).text() or ""
-            quantidade = int(self.main_window.table_base.item(row, 1).text() or "0")
-            valor_produto = self.main_window.table_base.item(row, 2).text() or ""
-            desconto = self.main_window.table_base.item(row, 3).text() or ""
-            total_sem_desconto = self.main_window.table_base.item(row,4).text() or "0"
-            valor_total_str = self.main_window.table_base.item(row, 5).text() or "0"
-            data_cadastro = self.main_window.table_base.item(row, 6).text() or ""
-            codigo_produto = self.main_window.table_base.item(row, 7).text() or ""
-            cliente = self.main_window.table_base.item(row, 8).text() or ""
-            descricao = self.main_window.table_base.item(row, 9).text() or ""
-            usuario = self.main_window.table_base.item(row, 10).text() or ""
+            produto = self.main_window.table_base.item(row, 0).text()
+            quantidade = int(self.main_window.table_base.item(row, 1).text())
+            valor_produto = self.main_window.table_base.item(row, 2).text()
+            desconto = self.main_window.table_base.item(row, 3).text()
+            total_sem_desconto = self.main_window.table_base.item(row, 4).text()
+            valor_total_str = self.main_window.table_base.item(row, 5).text()
+            data_cadastro = self.main_window.table_base.item(row, 6).text()
+            codigo_produto = self.main_window.table_base.item(row, 7).text().strip()
+            cliente = self.main_window.table_base.item(row, 8).text()
+            descricao = self.main_window.table_base.item(row, 9).text()
+            usuario = self.main_window.table_base.item(row, 10).text()
             status_saida = 1
             data_saida = datetime.now().strftime("%d/%m/%Y %H:%M")
 
-            # 👉 Escolher quantidade de saída
             if quantidade > 1:
                 dialog = ComboDialog(
-                    titulo="Saída de Produto",
-                    mensagem=f"O produto '{produto}' tem {quantidade} unidades.\nQuantas deseja dar saída?",
-                    opcoes=[str(i) for i in range(1, quantidade + 1)],
-                    parent=self
+                    "Saída de Produto",
+                    f"O produto '{produto}' tem {quantidade} unidades.\nQuantas deseja dar saída?",
+                    [str(i) for i in range(1, quantidade + 1)],
+                    self
                 )
-                if dialog.exec():
-                    quantidade_saida = int(dialog.escolha())
-                else:
+                if not dialog.exec():
                     return
+                quantidade_saida = int(dialog.escolha())
             else:
                 quantidade_saida = 1
 
-            #  Cálculo financeiro correto
             valor_total_float = float(
-                valor_total_str
-                .replace("R$", "")
-                .replace(" ", "")
-                .replace(".", "")
-                .replace(",", ".")
+                valor_total_str.replace("R$", "").replace(" ", "").replace(".", "").replace(",", ".")
             )
+            
 
             valor_unitario = valor_total_float / quantidade
             valor_saida = valor_unitario * quantidade_saida
             novo_valor_total = valor_total_float - valor_saida
-
             nova_quantidade = quantidade - quantidade_saida
-            atualizacoes_produtos.append((nova_quantidade, novo_valor_total, codigo_produto))
 
-            # 👉 Atualiza table_base
-            if nova_quantidade > 0:
-                self.main_window.table_base.item(row, 1).setText(str(nova_quantidade))
-                self.main_window.table_base.item(row, 4).setText(
-                    f"{novo_valor_total:.2f}".replace(".", ",")
-                )
-            else:
-                self.main_window.table_base.removeRow(row)
-
-            # 👉 Consolidação em memória (mesmo código)
-            produto_existente = next(
-                (i for i, p in enumerate(produtos_saida) if p[7] == codigo_produto),
-                None
+            atualizacoes_produtos.append(
+                (nova_quantidade, novo_valor_total, codigo_produto)
             )
+            
+            self.main_window.table_base.removeRow(row)
 
-            valor_saida_fmt = f"{valor_saida:.2f}".replace(".", ",")
-
-            if produto_existente is not None:
-                qtd_existente = int(produtos_saida[produto_existente][1])
-                valor_existente = float(produtos_saida[produto_existente][4].replace(",", "."))
-
-                produtos_saida[produto_existente] = (
-                    produto,
-                    str(qtd_existente + quantidade_saida),
-                    valor_produto,
-                    desconto,
-                    total_sem_desconto,
-                    f"{valor_existente + valor_saida:.2f}".replace(".", ","),
-                    data_saida,
-                    data_cadastro,
-                    codigo_produto,
-                    cliente,
-                    descricao,
-                    usuario,
-                    status_saida
-                )
-            else:
-                produtos_saida.append((
-                    produto,
-                    str(quantidade_saida),
-                    valor_produto,
-                    desconto,
-                    total_sem_desconto,
-                    valor_saida_fmt,
-                    data_saida,
-                    data_cadastro,
-                    codigo_produto,
-                    cliente,
-                    descricao,
-                    usuario,
-                    status_saida
-                ))
+            produtos_saida.append((
+                produto,
+                str(quantidade_saida),
+                valor_produto,
+                desconto,
+                total_sem_desconto,
+                f"{valor_saida:.2f}".replace(".", ","),
+                data_saida,
+                data_cadastro,
+                codigo_produto,
+                cliente,
+                descricao,
+                usuario,
+                status_saida
+            ))
 
             historico_logs.append(
                 f"Produto {produto} teve saída de {quantidade_saida} unidade(s)."
             )
 
-        # 👉 Banco de dados
+        #  BANCO DE DADOS 
         try:
             cursor = self.db.connection.cursor()
 
@@ -274,37 +235,79 @@ class EstoqueProduto(QWidget):
                     cursor.execute("""
                         UPDATE products
                         SET Quantidade = ?, "Valor Total" = ?, "Status da Saída" = 1
-                        WHERE Código_Item = ?
+                        WHERE "Código_Item" = ?
                     """, (nova_qtd, f"{novo_valor:.2f}", codigo))
                 else:
                     cursor.execute("""
-                        DELETE  FROM products WHERE Código_Item = ?
+                        DELETE FROM products WHERE "Código_Item" = ?
                     """, (codigo,))
 
+            
+            
+             #  INSERE NA TABELA DE SAÍDA
             for produto_info in produtos_saida:
-                imagem = self.recuperar_imagem_produto_bd_products(produto_info[7])
-                self.db.salvar_saida_produto(produto_info[:11] + (imagem, produto_info[11]))
+                imagem = self.recuperar_imagem_produto_bd_products(produto_info[8])
 
+                produto_info_db = (
+                    produto_info[0],
+                    produto_info[1],
+                    produto_info[2],
+                    produto_info[3],
+                    produto_info[4],
+                    produto_info[5],
+                    produto_info[6],
+                    produto_info[7],
+                    produto_info[8],
+                    produto_info[9],
+                    produto_info[10],
+                    produto_info[11],
+                    imagem,
+                    produto_info[12],
+                )
+
+                cursor.execute("""
+                    INSERT INTO products_saida (
+                        Produto, Quantidade, "Valor do Produto", Desconto,
+                        "Total Sem Desconto", "Valor Total", "Data de Saída",
+                        "Data da Criação", "Código do Produto", Cliente,
+                        "Descrição do Produto", Usuário, Imagem, "Status da Saída"
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                """, produto_info_db)
+                
             self.db.connection.commit()
 
         except Exception as e:
-            print(f"Erro ao salvar saída: {e}")
+            try:
+                if self.db.connection:
+                    self.db.connection.rollback()
+            except:
+                pass
+            print("Erro ao salvar saída:", e)
+            return
+
+
+        #  UI REFLETE O BANCO
+        self.carregar_tabela_estoque()
+        self.carregar_tabela_saida(produtos_saida)
 
         for log in historico_logs:
             self.main_window.registrar_historico("Gerado Saída", log)
 
-        if produtos_saida:
-            QMessageBox.information(
-                self, "Aviso", "Saída do(s) produto(s) gerada com sucesso!"
-            )
-            self.tabela_saida_preencher(produtos_saida)
-
-        self.reindex_table_base()
+        QMessageBox.information(self, "Aviso", "Saída gerada com sucesso!")
 
 
 
+    def reindex_table_base(self):
+        cursor = self.db.connection.cursor()
+        row_count = self.main_window.table_base.rowCount()
+        for row in range(row_count):
+            item = QTableWidgetItem(str(row + 1))
+            self.main_window.table_base.setVerticalHeaderItem(row, item)
+            
+        cursor.execute('SELECT COUNT(*) FROM products')
+        print("TOTAL NO BANCO:", cursor.fetchone())
 
-    def tabela_saida_preencher(self, dados_saida):
+    def carregar_tabela_saida(self, dados_saida):
         for item in dados_saida:
             codigo = item[8]
             quantidade_nova = int(item[1])
@@ -367,17 +370,11 @@ class EstoqueProduto(QWidget):
         self.main_window.table_saida.resizeColumnsToContents()
         self.main_window.table_saida.resizeRowsToContents()
 
-
-    def reindex_table_base(self):
-        row_count = self.main_window.table_base.rowCount()
-        for row in range(row_count):
-            item = QTableWidgetItem(str(row + 1))
-            self.main_window.table_base.setVerticalHeaderItem(row, item)
+    
 
     # Função para recuperar imagem de um produto com base no código do produto
     def recuperar_imagem_produto_bd_products(self, codigo_produto):
-        conexao = self.db.connection
-        cursor = conexao.cursor()
+        cursor = self.db.connection.cursor()
         cursor.execute("SELECT Imagem FROM products WHERE Código_Item = ?", (codigo_produto,))
         
         resultado = cursor.fetchone()  # Tenta buscar uma linha
@@ -387,12 +384,12 @@ class EstoqueProduto(QWidget):
         else:
             imagem_blob = None  # Define como None se a imagem não for encontrada
         
-        conexao.close()
         return imagem_blob
 
     def criar_estorno(self):
         selected_rows = self.main_window.table_base.selectionModel().selectedRows()
         produtos_selecionados = [row.row() for row in selected_rows]
+        historicos = []
         
         row_count = self.main_window.table_saida.rowCount()
 
@@ -409,7 +406,7 @@ class EstoqueProduto(QWidget):
             quantidade_item = self.main_window.table_saida.item(row, 1)          # Quantidade
             valor_real_item = self.main_window.table_saida.item(row, 2)          # Valor do Produto
             desconto_item = self.main_window.table_saida.item(row, 3)            # Desconto
-            total_sem_deconto_item = self.main_window.table_saida.item(row, 4)        # Total Sem Desconto
+            total_sem_deconto_item = self.main_window.table_saida.item(row, 4)   # Total Sem Desconto
             valor_total_item = self.main_window.table_saida.item(row, 5)         # Valor Total
             data_cadastro_item = self.main_window.table_saida.item(row, 7)       # Data do Cadastro
             codigo_item = self.main_window.table_saida.item(row, 8)              # Código do Produto
@@ -463,45 +460,43 @@ class EstoqueProduto(QWidget):
             imagem = self.recuperar_imagem_produto_bd_products_saida(codigo_produto)
 
             # Atualiza ou insere no banco
-            with self.db.connection as cn:
-                cursor = cn.cursor()
+            cursor = self.db.connection.cursor()
 
-                # Verifica se o produto já existe
-                cursor.execute("SELECT Quantidade FROM products WHERE Código_Item = ?", (codigo_produto,))
-                resultado = cursor.fetchone()
+            # Verifica se o produto já existe
+            cursor.execute("SELECT Quantidade FROM products WHERE Código_Item = ?", (codigo_produto,))
+            resultado = cursor.fetchone()
 
-                if resultado:
-                    # Atualiza a quantidade somando a estornada
-                    nova_quantidade = int(resultado[0]) + quantidade_estorno
-                    cursor.execute("""
-                        UPDATE products
-                        SET Quantidade = ?
-                        WHERE Código_Item = ?
-                    """, (nova_quantidade, codigo_produto))
-                else:
-                    # Insere como novo produto
-                    cursor.execute("""
-                        INSERT INTO products 
-                        (Produto, Quantidade, Valor_Real, Desconto, "Total Sem Desconto","Valor Total","Data do Cadastro", Código_Item, Cliente, Descrição_Produto, Imagem, Usuário,'Status da Saída')
-                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?,?,?)
-                    """, (produto, str(quantidade_estorno), valor_real, desconto, total_sem_deconto,valor_total, data_cadastro, 
-                          codigo_produto, cliente, descricao, imagem, usuario, 1))
-                cn.commit()
+            if resultado:
+                # Atualiza a quantidade somando a estornada
+                nova_quantidade = int(resultado[0]) + quantidade_estorno
+                cursor.execute("""
+                    UPDATE products
+                    SET Quantidade = ?
+                    WHERE Código_Item = ?
+                """, (nova_quantidade, codigo_produto))
+            else:
+                # Insere como novo produto
+                cursor.execute("""
+                    INSERT INTO products 
+                    (Produto, Quantidade, Valor_Real, Desconto, "Total Sem Desconto","Valor Total","Data do Cadastro", Código_Item, Cliente, Descrição_Produto, Imagem, Usuário,'Status da Saída')
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?,?,?)
+                """, (produto, str(quantidade_estorno), valor_real, desconto, total_sem_deconto,valor_total, data_cadastro, 
+                        codigo_produto, cliente, descricao, imagem, usuario, 1))
 
-                if quantidade_estorno >= quantidade:
-                    cursor.execute("""
-                        DELETE FROM products_saida WHERE "Código do Produto" = ?
-                    """, (codigo_produto,))
+            if quantidade_estorno >= quantidade:
+                cursor.execute("""
+                    DELETE FROM products_saida WHERE "Código do Produto" = ?
+                """, (codigo_produto,))
 
-                # Deleta da tabela de saída
-                else:
-                    nova_quantidade_saida = quantidade - quantidade_estorno
-                    cursor.execute("""
-                        UPDATE products_saida
-                        SET Quantidade = ?
-                        WHERE "Código do Produto" = ?
-                    """, (nova_quantidade_saida, codigo_produto))
-                    cn.commit()
+            # Deleta da tabela de saída
+            else:
+                nova_quantidade_saida = quantidade - quantidade_estorno
+                cursor.execute("""
+                    UPDATE products_saida
+                    SET Quantidade = ?
+                    WHERE "Código do Produto" = ?
+                """, (nova_quantidade_saida, codigo_produto))
+                
                     
 
             # Verifica se o item já está na table_base visualmente
@@ -538,9 +533,15 @@ class EstoqueProduto(QWidget):
                 self.main_window.table_base.setItem(row_base,11,self.criar_item("1"))
 
             # Registrar histórico
-            historico_texto = f"Produto '{produto}' foi estornado."
-            self.main_window.registrar_historico("Estorno do Produto", historico_texto)
-
+            historicos.append(f"Produto '{produto}' foi estornado.")
+            
+            
+        self.db.connection.commit()
+        
+        # 📝 Agora pode registrar histórico sem erro
+        for texto in historicos:
+            self.main_window.registrar_historico("Estorno do Produto", texto)
+        
         # Limpar a tabela de saída
         self.main_window.table_saida.clearContents()
         self.main_window.table_saida.setRowCount(0)
@@ -556,21 +557,18 @@ class EstoqueProduto(QWidget):
     # Função para recuperar a imagem do produto pelo código (recupera a imagem do banco de dados)
     def recuperar_imagem_produto_bd_products_saida(self, codigo_produto):
         try:
-            with self.db.connection as conexao:
-                cursor = conexao.cursor()
-                # Corrigir se necessário o nome da coluna
-                cursor.execute("SELECT Imagem FROM products_saida WHERE `Código do Produto` = ?", (codigo_produto,))
-                resultado = cursor.fetchone()
-
-                # Verifica se a imagem foi encontrada, caso contrário retorna uma string vazia
-                if resultado:
-                    return resultado[0]  # Retorna a imagem (blob ou caminho da imagem)
-                else:   
-                    return ""  # Retorna uma string vazia se não encontrar a imagem
+            cursor = self.db.connection.cursor()
+            cursor.execute(
+                'SELECT Imagem FROM products_saida WHERE "Código do Produto" = ?',
+                (codigo_produto,)
+            )
+            resultado = cursor.fetchone()
+            return resultado[0] if resultado else None
 
         except sqlite3.Error as e:
             print(f"Erro ao recuperar imagem do banco de dados: {e}")
-            return ""  # Em caso de erro, retorna uma string vazia
+            return None
+
 
 
     def limpar_valor(self, valor):
@@ -645,11 +643,12 @@ class EstoqueProduto(QWidget):
                 "Código do Produto", 
                 Cliente, 
                 "Descrição do Produto", 
-                Usuário,  
+                "Usuário",  
                 "Status da Saída"
             FROM products_saida
             WHERE "Status da Saída" = 1
-            GROUP BY "Código do Produto"
+            GROUP BY 
+                "Código do Produto",
                 Produto, 
                 "Valor do Produto", 
                 Desconto,
@@ -660,7 +659,7 @@ class EstoqueProduto(QWidget):
                 "Código do Produto", 
                 Cliente, 
                 "Descrição do Produto", 
-                Usuário, 
+                "Usuário", 
                 "Status da Saída"
             """
 
@@ -1422,10 +1421,9 @@ class EstoqueProduto(QWidget):
     
 
     def carregar_historico(self):
-        with self.db.connection as cn:
-            cursor = cn.cursor()
-            cursor.execute('SELECT * FROM historico ORDER BY "Data e Hora" DESC')
-            registros = cursor.fetchall()
+        cursor = self.db.connection.cursor()
+        cursor.execute('SELECT * FROM historico ORDER BY "Data e Hora" DESC')
+        registros = cursor.fetchall()
 
         self.tabela_historico.clearContents()
         self.tabela_historico.setRowCount(len(registros))
@@ -1508,15 +1506,14 @@ class EstoqueProduto(QWidget):
                 return
 
             # Excluir do banco de dados
-            with self.db.connection as cn:
-                cursor = cn.cursor()
-                try:
-                    for data_hora in ids_para_remover:
-                        cursor.execute('DELETE FROM historico WHERE "Data e Hora" = ?', (data_hora,))
-                    cn.commit()
-                except Exception as e:
-                    QMessageBox.critical(self, "Erro", f"Erro ao excluir do banco de dados: {e}")
-                    return
+            cursor = self.db.connection.cursor()
+            try:
+                for data_hora in ids_para_remover:
+                    cursor.execute('DELETE FROM historico WHERE "Data e Hora" = ?', (data_hora,))
+                self.db.connection.commit()
+            except Exception as e:
+                QMessageBox.critical(self, "Erro", f"Erro ao excluir do banco de dados: {e}")
+                return
 
             # Remover as linhas na interface
             for row in sorted(linhas_para_remover, reverse=True):
@@ -1545,22 +1542,21 @@ class EstoqueProduto(QWidget):
             item_data_text = item_data_widget.text().strip()
 
             # Conectar ao banco de dados para buscar o ID relacionado à Data/Hora
-            with self.db.connection as cn:
-                cursor = cn.cursor()
-                try:
-                    # Buscar o ID com base na Data/Hora, removendo espaços ou caracteres extras
-                    cursor.execute('SELECT "Data e Hora" FROM historico WHERE "Data e Hora" = ?', (item_data_text,))
-                    resultado = cursor.fetchone()
+            cursor = self.db.connection.cursor()
+            try:
+                # Buscar o ID com base na Data/Hora, removendo espaços ou caracteres extras
+                cursor.execute('SELECT "Data e Hora" FROM historico WHERE "Data e Hora" = ?', (item_data_text,))
+                resultado = cursor.fetchone()
 
-                    if item_data_text:
-                        item_id = resultado[0]  # Pegamos o ID encontrado
-                    else:
-                        QMessageBox.warning(self, "Erro", f"Não foi encontrado um item para a Data/Hora: {item_data_text}")
-                        return
-
-                except Exception as e:
-                    QMessageBox.critical(self, "Erro", f"Erro ao buscar ID: {e}")
+                if item_data_text:
+                    item_id = resultado[0]  # Pegamos o ID encontrado
+                else:
+                    QMessageBox.warning(self, "Erro", f"Não foi encontrado um item para a Data/Hora: {item_data_text}")
                     return
+
+            except Exception as e:
+                QMessageBox.critical(self, "Erro", f"Erro ao buscar ID: {e}")
+                return
 
             # Confirmar exclusão
             mensagem = "Você tem certeza que deseja apagar o item selecionado?"
@@ -1569,15 +1565,14 @@ class EstoqueProduto(QWidget):
                 return
 
             # Excluir do banco de dados
-            with self.db.connection as cn:
-                cursor = cn.cursor()
-                try:
-                    cursor.execute('DELETE FROM historico WHERE "Data e Hora" = ?', (item_id,))
-                    print(f"Item removido do banco de dados: ID {item_id}")
-                    cn.commit()
-                except Exception as e:
-                    QMessageBox.critical(self, "Erro", f"Erro ao excluir do banco de dados: {e}")
-                    return
+            cursor = self.db.connection.cursor()
+            try:
+                cursor.execute('DELETE FROM historico WHERE "Data e Hora" = ?', (item_id,))
+                print(f"Item removido do banco de dados: ID {item_id}")
+                self.db.connection.commit()
+            except Exception as e:
+                QMessageBox.critical(self, "Erro", f"Erro ao excluir do banco de dados: {e}")
+                return
 
             # Remover a linha da interface
             self.tabela_historico.removeRow(linha_selecionada)
@@ -2030,32 +2025,31 @@ class EstoqueProduto(QWidget):
 
 
     def aplicar_filtro(self, data, filtrar_novo, filtrar_velho):
-        with self.db.connection as cn:
-            cursor = cn.cursor()
+        cursor = self.db.connection.cursor()
 
-            query = "SELECT * FROM historico"
-            params = []
+        query = "SELECT * FROM historico"
+        params = []
 
-            # Filtrar pela data, se fornecida
-            if data:
-                try:
-                    # Garantir que a data seja no formato correto (DD/MM/AAAA)
-                    data_formatada = datetime.strptime(data, "%d/%m/%Y").strftime("%d/%m/%Y")  # Formato DD/MM/YYYY
-                    query += " WHERE SUBSTR([Data e Hora], 1, 10) = ?"
-                    params.append(data_formatada)
-                except ValueError:
-                    QMessageBox.warning(self, "Erro", "Data inválida. Use o formato DD/MM/AAAA.")
-                    return
+        # Filtrar pela data, se fornecida
+        if data:
+            try:
+                # Garantir que a data seja no formato correto (DD/MM/AAAA)
+                data_formatada = datetime.strptime(data, "%d/%m/%Y").strftime("%d/%m/%Y")  # Formato DD/MM/YYYY
+                query += " WHERE SUBSTR([Data e Hora], 1, 10) = ?"
+                params.append(data_formatada)
+            except ValueError:
+                QMessageBox.warning(self, "Erro", "Data inválida. Use o formato DD/MM/AAAA.")
+                return
 
-            # Ordenar por hora, se aplicável
-            if filtrar_novo:
-                query += " ORDER BY [Data e Hora] DESC LIMIT 1"
-            elif filtrar_velho:
-                query += " ORDER BY [Data e Hora] ASC LIMIT 1"
+        # Ordenar por hora, se aplicável
+        if filtrar_novo:
+            query += " ORDER BY [Data e Hora] DESC LIMIT 1"
+        elif filtrar_velho:
+            query += " ORDER BY [Data e Hora] ASC LIMIT 1"
 
-            # Executar a consulta
-            cursor.execute(query, params)
-            registros = cursor.fetchall()
+        # Executar a consulta
+        cursor.execute(query, params)
+        registros = cursor.fetchall()
 
         # Atualizar a tabela com os registros filtrados
         self.tabela_historico.clearContents()
@@ -2401,8 +2395,7 @@ class EstoqueProduto(QWidget):
             return False
 
         try:
-            conn = self.db.connection
-            cursor = conn.cursor()
+            cursor = self.db.connection.cursor()
 
             for model_index in selected_rows:
                 row_index = model_index.row()
@@ -2429,8 +2422,7 @@ class EstoqueProduto(QWidget):
                 """, (produto, quantidade, valor_real, desconto, data_cadastro, codigo_item, 
                     cliente, descricao, usuario))
 
-            conn.commit()
-            conn.close()
+            self.db.connection.commit()
             QMessageBox.information(self, "Sucesso", "Produto(s) incluído(s) com sucesso no sistema.")
 
             # Registrar histórico

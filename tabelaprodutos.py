@@ -1107,7 +1107,7 @@ class TabelaProdutos(QMainWindow):
         db = DataBase()
         try:
             db.connecta()
-            cursor = db.connection.cursor()
+            cursor = self.db.connection.cursor()
 
             # ✅ DEFINIDOS FORA DO LOOP
             cnpjs_afetados = set()
@@ -1208,7 +1208,7 @@ class TabelaProdutos(QMainWindow):
                         WHERE CPF = ?
                     """, (total_formatado, cpf))
 
-            db.connection.commit()
+            self.db.connection.commit()
             QMessageBox.information(self, "Sucesso", "Produtos removidos com sucesso!")
             
             if hasattr(self.main_window, "pagina_clientes_juridicos"):
