@@ -260,47 +260,6 @@ class Ui_MainWindow(object):
 
         self.gridLayout_6.addWidget(self.btn_gerar_estorno, 3, 1, 1, 1)
 
-        self.frame_4 = QFrame(self.frame_pag_estoque)
-        self.frame_4.setObjectName(u"frame_4")
-        sizePolicy.setHeightForWidth(self.frame_4.sizePolicy().hasHeightForWidth())
-        self.frame_4.setSizePolicy(sizePolicy)
-        self.frame_4.setMaximumSize(QSize(16777215, 120))
-        self.frame_4.setFrameShape(QFrame.StyledPanel)
-        self.frame_4.setFrameShadow(QFrame.Raised)
-        self.verticalLayout_2 = QVBoxLayout(self.frame_4)
-        self.verticalLayout_2.setObjectName(u"verticalLayout_2")
-        self.btn_abrir_planilha = QPushButton(self.frame_4)
-        self.btn_abrir_planilha.setObjectName(u"btn_abrir_planilha")
-        sizePolicy.setHeightForWidth(self.btn_abrir_planilha.sizePolicy().hasHeightForWidth())
-        self.btn_abrir_planilha.setSizePolicy(sizePolicy)
-        self.btn_abrir_planilha.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
-        self.btn_abrir_planilha.setStyleSheet(u"")
-
-        self.verticalLayout_2.addWidget(self.btn_abrir_planilha)
-
-        self.line_excel = QLineEdit(self.frame_4)
-        self.line_excel.setObjectName(u"line_excel")
-        sizePolicy.setHeightForWidth(self.line_excel.sizePolicy().hasHeightForWidth())
-        self.line_excel.setSizePolicy(sizePolicy)
-        self.line_excel.setStyleSheet(u"")
-        self.line_excel.setAlignment(Qt.AlignCenter)
-        self.line_excel.setReadOnly(True)
-
-        self.verticalLayout_2.addWidget(self.line_excel)
-
-        self.progress_excel = QProgressBar(self.frame_4)
-        self.progress_excel.setObjectName(u"progress_excel")
-        sizePolicy.setHeightForWidth(self.progress_excel.sizePolicy().hasHeightForWidth())
-        self.progress_excel.setSizePolicy(sizePolicy)
-        self.progress_excel.setStyleSheet(u"")
-        self.progress_excel.setValue(0)
-        self.progress_excel.setAlignment(Qt.AlignCenter)
-
-        self.verticalLayout_2.addWidget(self.progress_excel)
-
-
-        self.gridLayout_6.addWidget(self.frame_4, 0, 0, 1, 8)
-
         self.btn_importar = QPushButton(self.frame_pag_estoque)
         self.btn_importar.setObjectName(u"btn_importar")
         sizePolicy.setHeightForWidth(self.btn_importar.sizePolicy().hasHeightForWidth())
@@ -396,16 +355,6 @@ class Ui_MainWindow(object):
         self.btn_limpar_tabelas.setStyleSheet(u"")
 
         self.verticalLayout.addWidget(self.btn_limpar_tabelas)
-
-        self.btn_incluir_produto_sistema = QPushButton(self.frame_14)
-        self.btn_incluir_produto_sistema.setObjectName(u"btn_incluir_produto_sistema")
-        sizePolicy.setHeightForWidth(self.btn_incluir_produto_sistema.sizePolicy().hasHeightForWidth())
-        self.btn_incluir_produto_sistema.setSizePolicy(sizePolicy)
-        self.btn_incluir_produto_sistema.setMaximumSize(QSize(163, 30))
-        self.btn_incluir_produto_sistema.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
-        self.btn_incluir_produto_sistema.setStyleSheet(u"")
-
-        self.verticalLayout.addWidget(self.btn_incluir_produto_sistema)
 
 
         self.gridLayout_6.addWidget(self.frame_14, 0, 8, 5, 1)
@@ -772,55 +721,6 @@ class Ui_MainWindow(object):
         self.label_inativos.setScaledContents(False)
 
         self.gridLayout_21.addWidget(self.label_inativos, 3, 0, 1, 1)
-
-        self.frame_13 = QFrame(self.frame_page_verificar_usuarios)
-        self.frame_13.setObjectName(u"frame_13")
-        sizePolicy.setHeightForWidth(self.frame_13.sizePolicy().hasHeightForWidth())
-        self.frame_13.setSizePolicy(sizePolicy)
-        self.frame_13.setMinimumSize(QSize(0, 0))
-        self.frame_13.setMaximumSize(QSize(16777215, 120))
-        self.frame_13.setFrameShadow(QFrame.Raised)
-        self.horizontalLayout_30 = QHBoxLayout(self.frame_13)
-        self.horizontalLayout_30.setObjectName(u"horizontalLayout_30")
-        self.verticalLayout_19 = QVBoxLayout()
-        self.verticalLayout_19.setObjectName(u"verticalLayout_19")
-        self.btn_abrir_planilha_usuarios = QPushButton(self.frame_13)
-        self.btn_abrir_planilha_usuarios.setObjectName(u"btn_abrir_planilha_usuarios")
-        sizePolicy.setHeightForWidth(self.btn_abrir_planilha_usuarios.sizePolicy().hasHeightForWidth())
-        self.btn_abrir_planilha_usuarios.setSizePolicy(sizePolicy)
-        self.btn_abrir_planilha_usuarios.setMaximumSize(QSize(16777215, 16777215))
-        self.btn_abrir_planilha_usuarios.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
-        self.btn_abrir_planilha_usuarios.setStyleSheet(u"")
-
-        self.verticalLayout_19.addWidget(self.btn_abrir_planilha_usuarios)
-
-        self.line_excel_usuarios = QLineEdit(self.frame_13)
-        self.line_excel_usuarios.setObjectName(u"line_excel_usuarios")
-        sizePolicy.setHeightForWidth(self.line_excel_usuarios.sizePolicy().hasHeightForWidth())
-        self.line_excel_usuarios.setSizePolicy(sizePolicy)
-        self.line_excel_usuarios.setStyleSheet(u"")
-        self.line_excel_usuarios.setAlignment(Qt.AlignCenter)
-        self.line_excel_usuarios.setReadOnly(True)
-
-        self.verticalLayout_19.addWidget(self.line_excel_usuarios)
-
-        self.progress_excel_usuarios = QProgressBar(self.frame_13)
-        self.progress_excel_usuarios.setObjectName(u"progress_excel_usuarios")
-        sizePolicy.setHeightForWidth(self.progress_excel_usuarios.sizePolicy().hasHeightForWidth())
-        self.progress_excel_usuarios.setSizePolicy(sizePolicy)
-        self.progress_excel_usuarios.setStyleSheet(u"")
-        self.progress_excel_usuarios.setValue(0)
-        self.progress_excel_usuarios.setAlignment(Qt.AlignCenter)
-        self.progress_excel_usuarios.setTextVisible(True)
-        self.progress_excel_usuarios.setInvertedAppearance(False)
-
-        self.verticalLayout_19.addWidget(self.progress_excel_usuarios)
-
-
-        self.horizontalLayout_30.addLayout(self.verticalLayout_19)
-
-
-        self.gridLayout_21.addWidget(self.frame_13, 0, 0, 1, 6)
 
 
         self.gridLayout_8.addWidget(self.frame_page_verificar_usuarios, 0, 0, 1, 1)
@@ -2837,7 +2737,7 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
 
-        self.tab_clientes_todos.setCurrentIndex(1)
+        self.tab_clientes_todos.setCurrentIndex(0)
 
 
         QMetaObject.connectSlotsByName(MainWindow)
@@ -2876,8 +2776,6 @@ class Ui_MainWindow(object):
         self.label_imagem_sistema.setText("")
         self.label_bem_vindo.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p align=\"center\"><span style=\" font-size:24pt; font-weight:600; font-style:italic;\">Bem vindo(a) ao</span></p><p align=\"center\"><br/></p><p align=\"center\"><span style=\" font-size:24pt; font-weight:600; font-style:italic;\">Sistema de Gerenciamento do </span></p><p align=\"center\"><span style=\" font-size:24pt; font-weight:600; font-style:italic;\">controle de Estoque</span></p></body></html>", None))
         self.btn_gerar_estorno.setText(QCoreApplication.translate("MainWindow", u"Gerar estorno", None))
-        self.btn_abrir_planilha.setText(QCoreApplication.translate("MainWindow", u"Abrir Planilha", None))
-        self.line_excel.setPlaceholderText(QCoreApplication.translate("MainWindow", u"Arquivo excel aparecer\u00e1 aqui...", None))
         self.btn_importar.setText(QCoreApplication.translate("MainWindow", u"Importar", None))
         self.label_saida.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p align=\"center\"><span style=\" font-size:16pt; font-weight:600; font-style:italic;\">SA\u00cdDA</span></p></body></html>", None))
         self.label_estoque.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p align=\"center\"><span style=\" font-size:16pt; font-weight:600; font-style:italic;\">ESTOQUE</span></p></body></html>", None))
@@ -2887,7 +2785,6 @@ class Ui_MainWindow(object):
         self.btn_historico.setText(QCoreApplication.translate("MainWindow", u"Hist\u00f3rico", None))
         self.btn_gerar_pdf.setText(QCoreApplication.translate("MainWindow", u"Gerar PDF", None))
         self.btn_limpar_tabelas.setText(QCoreApplication.translate("MainWindow", u"Limpar Tabelas", None))
-        self.btn_incluir_produto_sistema.setText(QCoreApplication.translate("MainWindow", u"Incluir produto no sistema", None))
         self.btn_gerar_saida.setText(QCoreApplication.translate("MainWindow", u"Gerar sa\u00edda", None))
         ___qtablewidgetitem = self.table_base.horizontalHeaderItem(0)
         ___qtablewidgetitem.setText(QCoreApplication.translate("MainWindow", u"Produto", None));
@@ -3048,8 +2945,6 @@ class Ui_MainWindow(object):
         self.label_inativos.setWhatsThis(QCoreApplication.translate("MainWindow", u"<html><head/><body><p><span style=\" font-size:18pt; font-weight:600; font-style:italic;\">ESTOQUE</span></p></body></html>", None))
 #endif // QT_CONFIG(whatsthis)
         self.label_inativos.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p><span style=\" font-size:18pt; font-weight:600; font-style:italic;\">INATIVOS</span></p></body></html>", None))
-        self.btn_abrir_planilha_usuarios.setText(QCoreApplication.translate("MainWindow", u"Abrir Planilha", None))
-        self.line_excel_usuarios.setPlaceholderText(QCoreApplication.translate("MainWindow", u"Arquivo em excel aparecer\u00e1 aqui", None))
         self.btn_remover_imagem.setText(QCoreApplication.translate("MainWindow", u"REMOVER IMAGEM", None))
         self.btn_carregar_imagem.setText(QCoreApplication.translate("MainWindow", u"CARREGAR IMAGEM", None))
         self.label_produto.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p><span style=\" font-weight:600;\">Produto</span></p></body></html>", None))

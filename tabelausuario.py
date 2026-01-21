@@ -715,11 +715,28 @@ class TabelaUsuario(QMainWindow):
             QMessageBox.critical(self, "Erro", f"Erro ao acessar o banco de dados: {str(e)}")
 #*******************************************************************************************************
     def exibir_mensagem_sem_usuarios(self):
+        if self.tema == "escuro":
+            text_cor = "white"
+        elif self.tema == "claro":
+            text_cor = "black"
+        else:
+            text_cor = "white"
+            
+        tamanho_font = "16px"
+        
+        style = f"""
+            QLabel {{
+                color: {text_cor};
+                font-size: {tamanho_font};
+            }}
+        """ 
+        
         # Verificar se a QLabel já existe
         if not hasattr(self, 'label_sem_usuario'):
             self.label_sem_usuario = QLabel("Usuários cadastrados serão exibidos aqui...")
             self.label_sem_usuario.setAlignment(Qt.AlignCenter)
-            self.label_sem_usuario.setStyleSheet("font-size: 16px; color: black;")
+            self.label_sem_usuario.setStyleSheet(style)
+            
             
             # Verificar se o widget tem um layout
             if not self.table_widget.layout():

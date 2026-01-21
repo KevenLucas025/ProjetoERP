@@ -192,11 +192,17 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.table_ativos.verticalHeader().setVisible(True)
         self.table_saida.horizontalHeader().setVisible(True)
         self.table_inativos.verticalHeader().setVisible(True)
+        self.table_massa_usuarios.verticalHeader().setVisible(True)
+        self.table_massa_produtos.verticalHeader().setVisible(True)
         self.table_clientes_fisicos.verticalHeader().setVisible(True)
+        self.table_clientes_juridicos.verticalHeader().setVisible(True)
         self.table_base.setShowGrid(True)
         self.table_saida.setShowGrid(True)
         self.table_ativos.setShowGrid(True)
         self.table_inativos.setShowGrid(True)
+        self.table_massa_usuarios.setShowGrid(True)
+        self.table_massa_produtos.setShowGrid(True)
+        
         
 
         # funções que precisam do banco de dados
@@ -276,8 +282,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                                                          self.pg_cadastrar_usuario,self.frame_pag_cadastrar_usuario,
                                                          self.btn_mais_opcoes,self.btn_avancar,self.btn_retroceder,self.btn_home,self.btn_verificar_estoque,
                                                          self.btn_cadastrar_produto, self.btn_cadastrar_usuarios, self.btn_clientes,
-                                                         self.btn_abrir_planilha,self.btn_importar,self.btn_gerar_saida,
-                                                         self.line_excel,self.btn_gerar_estorno,
+                                                         self.btn_importar,self.btn_gerar_saida,self.btn_gerar_estorno,
                                                          self.label_cadastramento,self.label_cadastramento_produtos,self.frame_valor_total_produtos,
                                                          self.frame_valor_do_desconto,self.frame_valor_com_desconto1,self.frame_quantidade,self.login_window)
 
@@ -431,18 +436,16 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         #self.pagina_configuracoes_atualizacao = UpdateCheckThread(VERSAO_ATUAL)
         
 
-        self.pagina_usuarios = Pagina_Usuarios(self, self.btn_abrir_planilha_usuarios,self.btn_cadastrar_novo_usuario,
+        self.pagina_usuarios = Pagina_Usuarios(self, self.btn_cadastrar_novo_usuario,
                                                self.btn_historico_usuarios,self.btn_atualizar_ativos,
                                                self.btn_atualizar_inativos,self.btn_limpar_tabelas_usuarios,self.btn_gerar_saida_usuarios,
-                                               self.line_excel_usuarios,self.progress_excel_usuarios,self.btn_importar_usuarios,
+                                               self.btn_importar_usuarios,
                                                self.btn_abrir_planilha_massa_usuarios,self.btn_fazer_cadastro_massa_usuarios,self.progress_massa_usuarios,
                                                self.line_edit_massa_usuarios)
 
         self.estoque_produtos = EstoqueProduto(self,self.btn_gerar_pdf,self.btn_gerar_estorno,
                                                self.btn_gerar_saida,self.btn_importar,self.btn_limpar_tabelas,
-                                               self.btn_atualizar_saida,self.btn_atualizar_estoque,self.btn_historico,
-                                               self.btn_abrir_planilha,self.line_excel,self.progress_excel,
-                                               self.btn_incluir_produto_sistema,self.btn_fazer_cadastro_massa_produtos,
+                                               self.btn_atualizar_saida,self.btn_atualizar_estoque,self.btn_historico,self.btn_fazer_cadastro_massa_produtos,
                                                self.btn_abrir_planilha_massa_produtos,self.progress_massa_produtos,self.line_edit_massa_produtos)
         
         self.configuracoes_senha = TrocarSenha(self)  
@@ -3188,7 +3191,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             else:
                 QMessageBox.warning(self, "Aviso", "Não foi possível carregar a imagem.")
         else:
-            QMessageBox.warning(self, "Aviso", "Nenhuma imagem foi selecionada.")
+            pass
 #*********************************************************************************************************************
     def limpar_imagem_produto(self):
         for widget in self.frame_imagem_produto_3.children():
@@ -3277,7 +3280,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         produto_valor_real = self.txt_valor_produto_3.text()
         produto_desconto = self.txt_desconto_3.text().strip()
 
-        valor_real = float(produto_valor_real.replace(",", "."))
+        valor_real = float(produto_valor_real.replace('R$', '').replace('.', '').replace(',', '.').strip())
         quantidade = int(produto_quantidade)
 
         total_sem_desconto = valor_real * quantidade

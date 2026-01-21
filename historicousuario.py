@@ -21,10 +21,9 @@ import json
 
 
 class Pagina_Usuarios(QWidget):
-    def __init__(self,main_window,btn_abrir_planilha_usuarios,btn_cadastrar_novo_usuario,
+    def __init__(self,main_window,btn_cadastrar_novo_usuario,
                   btn_historico_usuarios,btn_atualizar_ativos,btn_atualizar_inativos,btn_limpar_tabelas_usuarios,
-                  btn_gerar_saida_usuarios,line_excel_usuarios,progress_excel_usuarios,
-                  btn_importar_usuarios,btn_abrir_planilha_massa_usuarios,btn_fazer_cadastro_massa_usuarios,
+                  btn_gerar_saida_usuarios,btn_importar_usuarios,btn_abrir_planilha_massa_usuarios,btn_fazer_cadastro_massa_usuarios,
                   progress_massa_usuarios,line_edit_massa_usuarios,parent=None):
         super().__init__(parent)
 
@@ -45,15 +44,12 @@ class Pagina_Usuarios(QWidget):
         self.table_ativos = self.main_window.table_ativos  # Referência para a tabela no main window
         self.table_inativos = self.main_window.table_inativos
         self.table_massa_usuarios = self.main_window.table_massa_usuarios
-        self.btn_abrir_planilha_usuarios = btn_abrir_planilha_usuarios
         self.btn_cadastrar_novo_usuario = btn_cadastrar_novo_usuario
         self.btn_historico_usuarios = btn_historico_usuarios
         self.btn_atualizar_ativos = btn_atualizar_ativos
         self.btn_atualizar_inativos = btn_atualizar_inativos
         self.btn_limpar_tabelas_usuarios = btn_limpar_tabelas_usuarios
         self.btn_gerar_saida_usuarios = btn_gerar_saida_usuarios
-        self.line_excel_usuarios = line_excel_usuarios
-        self.progress_excel_usuarios = progress_excel_usuarios
         self.btn_importar_usuarios = btn_importar_usuarios
         self.btn_abrir_planilha_massa_usuarios = btn_abrir_planilha_massa_usuarios
         self.btn_fazer_cadastro_massa_usuarios = btn_fazer_cadastro_massa_usuarios
@@ -67,7 +63,6 @@ class Pagina_Usuarios(QWidget):
         self.btn_atualizar_ativos.clicked.connect(self.atualizar_ativos)
         self.btn_atualizar_inativos.clicked.connect(self.atualizar_inativos)
         self.btn_historico_usuarios.clicked.connect(self.exibir_tabela_historico_usuario)
-        self.btn_abrir_planilha_usuarios.clicked.connect(self.abrir_planilha_usuarios)
         self.btn_importar_usuarios.clicked.connect(self.importar_usuario)
         self.btn_abrir_planilha_massa_usuarios.clicked.connect(self.abrir_panilha_usuarios_em_massa)
         self.btn_fazer_cadastro_massa_usuarios.clicked.connect(self.cadastrar_usuarios_em_massa)
@@ -83,20 +78,21 @@ class Pagina_Usuarios(QWidget):
         item.setForeground(QBrush(QColor("white"))) 
         return item
 
-    def tabela_ativos(self):
+    def carregar_tabela_ativos(self):
         cn = self.db.connection
 
         # Carregar dados da tabela users usando pandas
         query = """
-        SELECT Nome,Usuário,Senha,"Confirmar Senha",Acesso,Endereço,CEP,CPF,Número,Estado,Email,RG,Complemento,
-        Telefone,"Data de Nascimento","Última Troca de Senha","Data da Senha Cadastrada","Data da Inclusão do Usuário",Segredo
+        SELECT Nome,Usuário,Senha,"Confirmar Senha",CEP,Endereço,Número,Cidade,Bairro,Estado,Complemento,Telefone,Email,
+        "Data de Nascimento",RG,CPF,CNPJ,"Última Troca de Senha","Data da Senha Cadastrada","Data da Inclusão do Usuário",Segredo,
+        "Usuário Logado",Acesso
         FROM users
         """
         df = pd.read_sql_query(query, cn)
 
         # Verificando se há dados na consulta
         if df.empty:
-            print("Nenhum dado encontrado no banco de dados 'users'")
+            print("Nenhum dado encontrado no banco de dados após o usário ter sido inativo")
             return
         
         # Configurando cabeçalhos das colunas
@@ -107,7 +103,11 @@ class Pagina_Usuarios(QWidget):
     
        # Limpando o QTableWidget antes de popular com novos dados
         self.table_ativos.clearContents()
-        self.table_ativos.setRowCount(0)  # Certificando  que as linhas estão limpas 
+        self.table_ativos.setRowCount(0)  # Certificando  que as linhas estão limpas
+        
+        self.table_ativos.resizeColumnsToContents()
+        self.table_ativos.resizeRowsToContents()
+        
 
         for row_index, row_data in df.iterrows():
             self.table_ativos.insertRow(row_index)
@@ -125,89 +125,87 @@ class Pagina_Usuarios(QWidget):
         total_usuarios_ativos = self.main_window.table_ativos.rowCount()
         quantidade_selecionada = len(usuarios_selecionados)
         
-        if total_usuarios_ativos - quantidade_selecionada <= 1:
+        if total_usuarios_ativos - quantidade_selecionada < 1:
             QMessageBox.critical(self,"Erro","Não é possível gerar saída. O sistema deve ter pelo menos um usuário ativo")
             return
+        
+        cursor = self.db.connection.cursor()
 
+        for row in usuarios_selecionados:
+            usuario_nome = self.main_window.table_ativos.item(row, 0).text() or ""
+            usuario_usuario = self.main_window.table_ativos.item(row, 1).text() or ""
+            usuario_senha = self.main_window.table_ativos.item(row, 2).text() or ""
+            usuario_confirmar_senha = self.main_window.table_ativos.item(row, 3).text() or ""
+            usuario_cep = self.main_window.table_ativos.item(row, 4).text() or ""
+            usuario_endereco = self.main_window.table_ativos.item(row, 5).text() or ""
+            usuario_numero = self.main_window.table_ativos.item(row, 6).text() or ""
+            usuario_cidade = self.main_window.table_ativos.item(row, 7).text() or ""
+            usuario_bairro = self.main_window.table_ativos.item(row, 8).text() or ""
+            usuario_estado = self.main_window.table_ativos.item(row, 9).text() or ""
+            usuario_complemento = self.main_window.table_ativos.item(row, 10).text() or ""
+            usuario_telefone = self.main_window.table_ativos.item(row, 11).text() or ""
+            usuario_email = self.main_window.table_ativos.item(row, 12).text() or ""
+            usuario_data_nascimento = self.main_window.table_ativos.item(row, 13).text() or ""
+            usuario_rg = self.main_window.table_ativos.item(row, 14).text() or ""
+            usuario_cpf = self.main_window.table_ativos.item(row, 15).text() or ""
+            usuario_cnpj = self.main_window.table_ativos.item(row, 16).text() or ""
+            usuario_ultima_troca_senha = self.main_window.table_ativos.item(row, 17).text() or ""
+            usuario_data_senha_cadastrada = self.main_window.table_ativos.item(row, 18).text() or ""
+            usuario_data_inclusao_usuario = self.main_window.table_ativos.item(row, 19).text() or ""
+            usuario_segredo = self.main_window.table_ativos.item(row, 20).text() or ""
+            usuario_logado = self.main_window.table_ativos.item(row, 21).text() or ""
+            usuario_acesso = self.main_window.table_ativos.item(row, 22).text() or ""
 
-        with self.db.connecta() as conexao:
-            cursor = conexao.cursor()
+            
 
-            for row in usuarios_selecionados:
-                usuario_nome = self.main_window.table_ativos.item(row, 0).text() or ""
-                usuario_usuario = self.main_window.table_ativos.item(row, 1).text() or ""
-                usuario_senha = self.main_window.table_ativos.item(row, 2).text() or ""
-                usuario_confirmar_senha = self.main_window.table_ativos.item(row, 3).text() or ""
-                usuario_cep = self.main_window.table_ativos.item(row, 4).text() or ""
-                usuario_endereco = self.main_window.table_ativos.item(row, 5).text() or ""
-                usuario_numero = self.main_window.table_ativos.item(row, 6).text() or ""
-                usuario_cidade = self.main_window.table_ativos.item(row, 7).text() or ""
-                usuario_bairro = self.main_window.table_ativos.item(row, 8).text() or ""
-                usuario_estado = self.main_window.table_ativos.item(row, 9).text() or ""
-                usuario_complemento = self.main_window.table_ativos.item(row, 10).text() or ""
-                usuario_telefone = self.main_window.table_ativos.item(row, 11).text() or ""
-                usuario_email = self.main_window.table_ativos.item(row, 12).text() or ""
-                usuario_data_nascimento = self.main_window.table_ativos.item(row, 13).text() or ""
-                usuario_rg = self.main_window.table_ativos.item(row, 14).text() or ""
-                usuario_cpf = self.main_window.table_ativos.item(row, 15).text() or ""
-                usuario_cnpj = self.main_window.table_ativos.item(row, 16).text() or ""
-                usuario_ultima_troca_senha = self.main_window.table_ativos.item(row, 17).text() or ""
-                usuario_data_senha_cadastrada = self.main_window.table_ativos.item(row, 18).text() or ""
-                usuario_data_inclusao_usuario = self.main_window.table_ativos.item(row, 19).text() or ""
-                usuario_segredo = self.main_window.table_ativos.item(row, 20).text() or ""
-                usuario_logado = self.main_window.table_ativos.item(row, 21).text() or ""
-                usuario_acesso = self.main_window.table_ativos.item(row, 22).text() or ""
+            # Recupera a imagem somente para o banco de dados
+            imagem_usuario = self.recuperar_imagem_usuario_bd_users(usuario_usuario)
 
-                
+            # Dados completos com imagem - para o banco
+            dados_para_banco = (
+                usuario_nome, usuario_usuario, usuario_senha, usuario_confirmar_senha,
+                usuario_cep, usuario_endereco, usuario_numero, usuario_cidade, usuario_bairro,
+                usuario_estado, usuario_complemento, usuario_telefone, usuario_email,
+                usuario_data_nascimento, usuario_rg, usuario_cpf, usuario_cnpj, imagem_usuario,
+                usuario_ultima_troca_senha, usuario_data_senha_cadastrada, usuario_data_inclusao_usuario,
+                data_atual,  # Data da Inatividade
+                usuario_segredo, usuario_logado, usuario_acesso
+            )
 
-                # Recupera a imagem somente para o banco de dados
-                imagem_usuario = self.recuperar_imagem_usuario_bd_users(usuario_usuario)
+            # Dados sem imagem - para exibir na tabela
+            dados_para_interface = (
+                usuario_nome, usuario_usuario, usuario_senha, usuario_confirmar_senha,
+                usuario_cep, usuario_endereco, usuario_numero, usuario_cidade, usuario_bairro,
+                usuario_estado, usuario_complemento, usuario_telefone, usuario_email,
+                usuario_data_nascimento, usuario_rg, usuario_cpf, usuario_cnpj,
+                usuario_ultima_troca_senha, usuario_data_senha_cadastrada, usuario_data_inclusao_usuario,
+                data_atual, usuario_segredo, usuario_logado, usuario_acesso
+            )
 
-                # Dados completos com imagem - para o banco
-                dados_para_banco = (
-                    usuario_nome, usuario_usuario, usuario_senha, usuario_confirmar_senha,
-                    usuario_cep, usuario_endereco, usuario_numero, usuario_cidade, usuario_bairro,
-                    usuario_estado, usuario_complemento, usuario_telefone, usuario_email,
-                    usuario_data_nascimento, usuario_rg, usuario_cpf, usuario_cnpj, imagem_usuario,
-                    usuario_ultima_troca_senha, usuario_data_senha_cadastrada, usuario_data_inclusao_usuario,
-                    data_atual,  # Data da Inatividade
-                    usuario_segredo, usuario_logado, usuario_acesso
-                )
+            # Adiciona na lista para exibir
+            saida_usuarios.append(dados_para_interface)
 
-                # Dados sem imagem - para exibir na tabela
-                dados_para_interface = (
-                    usuario_nome, usuario_usuario, usuario_senha, usuario_confirmar_senha,
-                    usuario_cep, usuario_endereco, usuario_numero, usuario_cidade, usuario_bairro,
-                    usuario_estado, usuario_complemento, usuario_telefone, usuario_email,
-                    usuario_data_nascimento, usuario_rg, usuario_cpf, usuario_cnpj,
-                    usuario_ultima_troca_senha, usuario_data_senha_cadastrada, usuario_data_inclusao_usuario,
-                    data_atual, usuario_segredo, usuario_logado, usuario_acesso
-                )
+            # Adiciona ao banco de dados
+            cursor.execute("""
+                INSERT OR REPLACE INTO users_inativos (
+                    Nome, Usuário, Senha, "Confirmar Senha", CEP, Endereço, Número, Cidade, Bairro, Estado,
+                    Complemento, Telefone, Email, "Data de Nascimento", RG, CPF, CNPJ, Imagem,
+                    "Última Troca de Senha", "Data da Senha Cadastrada", "Data da Inclusão do Usuário",
+                    "Data da Inatividade do Usuário", Segredo, "Usuário Logado", Acesso
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """, dados_para_banco)
 
-                # Adiciona na lista para exibir
-                saida_usuarios.append(dados_para_interface)
+            historico_logs.append(f"Usuário '{usuario_nome}' ({usuario_usuario}) foi transferido para inativos.")
 
-                # Adiciona ao banco de dados
-                cursor.execute("""
-                    INSERT OR REPLACE INTO users_inativos (
-                        Nome, Usuário, Senha, "Confirmar Senha", CEP, Endereço, Número, Cidade, Bairro, Estado,
-                        Complemento, Telefone, Email, "Data de Nascimento", RG, CPF, CNPJ, Imagem,
-                        "Última Troca de Senha", "Data da Senha Cadastrada", "Data da Inclusão do Usuário",
-                        "Data da Inatividade do Usuário", Segredo, "Usuário Logado", Acesso
-                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-                """, dados_para_banco)
+            cursor.execute("""DELETE FROM users WHERE "Usuário" = ?""",(usuario_usuario,))
+            linhas_para_remover.append(row)
 
-                historico_logs.append(f"Usuário '{usuario_nome}' ({usuario_usuario}) foi transferido para inativos.")
+        self.db.connection.commit()
+        self.carregar_tabela_inativos(saida_usuarios,limpar=False)
 
-                cursor.execute("""DELETE FROM users WHERE "Usuário" = ?""",(usuario_usuario,))
-                linhas_para_remover.append(row)
-
-            conexao.commit()
-            self.tabela_inativos_preencher(saida_usuarios,limpar=False)
-
-            # Remover da tabela de ativos os usuários transferidos
-            for row in sorted(linhas_para_remover):
-                self.main_window.table_ativos.removeRow(row)
+        # Remover da tabela de ativos os usuários transferidos
+        for row in sorted(linhas_para_remover):
+            self.main_window.table_ativos.removeRow(row)
 
         for texto in historico_logs:
             self.main_window.registrar_historico_usuarios("Gerado Saída de Usuário", texto)
@@ -221,7 +219,7 @@ class Pagina_Usuarios(QWidget):
 
    
 
-    def tabela_inativos_preencher(self, dados, limpar=True):
+    def carregar_tabela_inativos(self, dados, limpar=True):
         if limpar:
             self.main_window.table_inativos.setRowCount(0)
             linha_inicial = 0
@@ -240,8 +238,7 @@ class Pagina_Usuarios(QWidget):
         
      # Função para recuperar imagem de um produto com base no código do produto
     def recuperar_imagem_usuario_bd_users(self, id_usuario):
-        conexao = self.db.connection
-        cursor = conexao.cursor()
+        cursor = self.db.connection.cursor()
         cursor.execute("SELECT Imagem FROM users WHERE Usuário = ?", (id_usuario,))
         
         resultado = cursor.fetchone()  # Tenta buscar uma linha
@@ -251,7 +248,6 @@ class Pagina_Usuarios(QWidget):
         else:
             imagem_blob = None  # Define como None se a imagem não for encontrada
         
-        conexao.close()
         return imagem_blob
 
 
@@ -1087,10 +1083,9 @@ class Pagina_Usuarios(QWidget):
 
 
     def carregar_historico_usuario(self):
-        with self.db.connection as cn:
-            cursor = cn.cursor()
-            cursor.execute('SELECT * FROM historico_usuarios ORDER BY "Data e Hora" DESC')
-            registros = cursor.fetchall()
+        cursor = self.db.connection.cursor()
+        cursor.execute('SELECT * FROM historico_usuarios ORDER BY "Data e Hora" DESC')
+        registros = cursor.fetchall()
 
         self.tabela_historico_usuarios.clearContents()
         self.tabela_historico_usuarios.setRowCount(len(registros))
@@ -1156,15 +1151,14 @@ class Pagina_Usuarios(QWidget):
                 return
 
             # Excluir do banco de dados
-            with self.db.connection as cn:
-                cursor = cn.cursor()
-                try:
-                    for item_id in ids_para_remover:
-                        cursor.execute("DELETE FROM historico_usuarios WHERE 'Data e Hora' = ?", (item_id,))
-                    cn.commit()
-                except Exception as e:
-                    QMessageBox.critical(self, "Erro", f"Erro ao excluir do banco de dados: {e}")
-                    return
+            cursor = self.db.connection.cursor()
+            try:
+                for item_id in ids_para_remover:
+                    cursor.execute("DELETE FROM historico_usuarios WHERE 'Data e Hora' = ?", (item_id,))
+                self.db.connection.commit()
+            except Exception as e:
+                QMessageBox.critical(self, "Erro", f"Erro ao excluir do banco de dados: {e}")
+                return
 
             # Remover as linhas na interface
             for row in sorted(linhas_para_remover, reverse=True):
@@ -1193,22 +1187,21 @@ class Pagina_Usuarios(QWidget):
             item_data_text = item_data_widget.text().strip()
 
             # Conectar ao banco de dados para buscar o ID relacionado à Data/Hora
-            with self.db.connection as cn:
-                cursor = cn.cursor()
-                try:
-                    # Buscar o ID com base na Data/Hora, removendo espaços ou caracteres extras
-                    cursor.execute('SELECT "Data e Hora" FROM historico_usuarios WHERE "Data e Hora" = ?', (item_data_text,))
-                    resultado = cursor.fetchone()
+            cursor = self.db.connection.cursor()
+            try:
+                # Buscar o ID com base na Data/Hora, removendo espaços ou caracteres extras
+                cursor.execute('SELECT "Data e Hora" FROM historico_usuarios WHERE "Data e Hora" = ?', (item_data_text,))
+                resultado = cursor.fetchone()
 
-                    if resultado:
-                        item_id = resultado[0]  # Pegamos o ID encontrado
-                    else:
-                        QMessageBox.warning(self, "Erro", f"Não foi encontrado um item para a Data/Hora: {item_data_text}")
-                        return
-
-                except Exception as e:
-                    QMessageBox.critical(self, "Erro", f"Erro ao buscar ID: {e}")
+                if resultado:
+                    item_id = resultado[0]  # Pegamos o ID encontrado
+                else:
+                    QMessageBox.warning(self, "Erro", f"Não foi encontrado um item para a Data/Hora: {item_data_text}")
                     return
+
+            except Exception as e:
+                QMessageBox.critical(self, "Erro", f"Erro ao buscar ID: {e}")
+                return
 
             # Confirmar exclusão
             mensagem = "Você tem certeza que deseja apagar o item selecionado?"
@@ -1217,15 +1210,14 @@ class Pagina_Usuarios(QWidget):
                 return
 
             # Excluir do banco de dados
-            with self.db.connection as cn:
-                cursor = cn.cursor()
-                try:
-                    cursor.execute('DELETE FROM historico_usuarios WHERE "Data e Hora" = ?', (item_id,))
-                    print(f"Item removido do banco de dados: ID {item_id}")
-                    cn.commit()
-                except Exception as e:
-                    QMessageBox.critical(self, "Erro", f"Erro ao excluir do banco de dados: {e}")
-                    return
+            cursor = self.db.connection.cursor()
+            try:
+                cursor.execute('DELETE FROM historico_usuarios WHERE "Data e Hora" = ?', (item_id,))
+                print(f"Item removido do banco de dados: ID {item_id}")
+                self.db.connection.commit()
+            except Exception as e:
+                QMessageBox.critical(self, "Erro", f"Erro ao excluir do banco de dados: {e}")
+                return
 
             # Remover a linha da interface
             self.tabela_historico_usuarios.removeRow(linha_selecionada)
@@ -1671,32 +1663,30 @@ class Pagina_Usuarios(QWidget):
         janela_filtro.exec()
 
     def aplicar_filtro_usuarios(self, data, filtrar_novo, filtrar_velho):
-        with self.db.connection as cn:
-            cursor = cn.cursor()
+        cursor = self.db.connection.cursor()
+        query = "SELECT * FROM historico_usuarios"
+        params = []
 
-            query = "SELECT * FROM historico_usuarios"
-            params = []
+        # Filtrar pela data, se fornecida
+        if data:
+            try:
+                # Garantir que a data seja no formato correto (DD/MM/AAAA)
+                data_formatada = datetime.strptime(data, "%d/%m/%Y").strftime("%d/%m/%Y")  # Formato DD/MM/YYYY
+                query += " WHERE SUBSTR([Data e Hora], 1, 10) = ?"
+                params.append(data_formatada)
+            except ValueError:
+                QMessageBox.warning(self, "Erro", "Data inválida. Use o formato DD/MM/AAAA.")
+                return
 
-            # Filtrar pela data, se fornecida
-            if data:
-                try:
-                    # Garantir que a data seja no formato correto (DD/MM/AAAA)
-                    data_formatada = datetime.strptime(data, "%d/%m/%Y").strftime("%d/%m/%Y")  # Formato DD/MM/YYYY
-                    query += " WHERE SUBSTR([Data e Hora], 1, 10) = ?"
-                    params.append(data_formatada)
-                except ValueError:
-                    QMessageBox.warning(self, "Erro", "Data inválida. Use o formato DD/MM/AAAA.")
-                    return
+        # Ordenar por hora, se aplicável
+        if filtrar_novo:
+            query += " ORDER BY [Data e Hora] DESC LIMIT 1"
+        elif filtrar_velho:
+            query += " ORDER BY [Data e Hora] ASC LIMIT 1"
 
-            # Ordenar por hora, se aplicável
-            if filtrar_novo:
-                query += " ORDER BY [Data e Hora] DESC LIMIT 1"
-            elif filtrar_velho:
-                query += " ORDER BY [Data e Hora] ASC LIMIT 1"
-
-            # Executar a consulta
-            cursor.execute(query, params)
-            registros = cursor.fetchall()
+        # Executar a consulta
+        cursor.execute(query, params)
+        registros = cursor.fetchall()
 
         # Atualizar a tabela com os registros filtrados
         self.tabela_historico_usuarios.clearContents()
@@ -1742,25 +1732,24 @@ class Pagina_Usuarios(QWidget):
     def aplicar_filtro_usuarios(self, data_filtrada, ordenar_por_mais_recente, ordenar_por_mais_antigo):
         data_formatada = data_filtrada.strip()
 
-        with self.db.connecta() as conexao:
-            cursor = conexao.cursor()
+        cursor = self.db.connection.cursor()
 
-            query_base = "SELECT * FROM historico_usuarios"
-            parametros = []
+        query_base = "SELECT * FROM historico_usuarios"
+        parametros = []
 
-            # Filtro por data
-            if data_formatada:
-                query_base += ' WHERE "Data e Hora" LIKE ?'
-                parametros.append(f"%{data_formatada}%")
+        # Filtro por data
+        if data_formatada:
+            query_base += ' WHERE "Data e Hora" LIKE ?'
+            parametros.append(f"%{data_formatada}%")
 
-            if ordenar_por_mais_recente:
-                query_base += ' ORDER BY "Data e Hora" ASC'
-            elif ordenar_por_mais_antigo:
-                query_base += ' ORDER BY "Data e Hora" DESC'
+        if ordenar_por_mais_recente:
+            query_base += ' ORDER BY "Data e Hora" ASC'
+        elif ordenar_por_mais_antigo:
+            query_base += ' ORDER BY "Data e Hora" DESC'
 
 
-            cursor.execute(query_base, parametros)
-            resultados = cursor.fetchall()
+        cursor.execute(query_base, parametros)
+        resultados = cursor.fetchall()
 
         # Limpar e preencher a tabela
         self.tabela_historico_usuarios.setRowCount(0)
@@ -1772,7 +1761,6 @@ class Pagina_Usuarios(QWidget):
             self.tabela_historico_usuarios.setItem(i, 3, QTableWidgetItem(row[3]))  # Descrição
 
         QMessageBox.information(self, "Filtro Aplicado", f"{len(resultados)} registro(s) encontrado(s)!")
-
 
 
     def exportar_csv_usuarios(self):
@@ -1950,83 +1938,6 @@ class Pagina_Usuarios(QWidget):
         QMessageBox.information(self, "Histórico", "O registro do histórico continua ativo.")
 
 
-
-    def abrir_planilha_usuarios(self):
-        # Abrir o diálogo para selecionar o arquivo Excel
-        nome_arquivo, _ = QFileDialog.getOpenFileName(self, "Abrir Arquivo Excel", "", "Arquivos Excel (*.xlsx)")
-
-        if not nome_arquivo:
-            return  # Se o usuário cancelar a seleção do arquivo
-
-        
-        # Alterar o texto da line_excel para "Carregando arquivo Excel..."
-        self.line_excel_usuarios.setText("Carregando arquivo Excel...")
-        self.nome_arquivo_excel = nome_arquivo  # Salva para usar depois
-
-        # Inicializar a barra de progresso
-        self.progress_excel_usuarios.setValue(0)
-        self.progresso = 0
-        
-
-        # Começar o timer para simular carregamento visual
-        self.timer_excel = QTimer()
-        self.timer_excel.timeout.connect(self.atualizar_progresso_excel_usuarios)
-        self.timer_excel.start(20)
-
-
-    def atualizar_progresso_excel_usuarios(self):
-        if self.progresso < 100:
-            self.progresso += 1
-            self.progress_excel_usuarios.setValue(self.progresso)
-        else:
-            self.timer_excel.stop()
-
-            try:
-                df = pd.read_excel(self.nome_arquivo_excel, engine="openpyxl", header=0)
-                df = df.fillna("Não informado")
-
-                coluna_table_ativos = [
-                    "Nome", "Usuário", "Senha", "Confirmar Senha", "Acesso",
-                    "Endereço", "CEP", "CPF", "Número", "Estado", "E-mail", "RG", "Complemento", "Telefone",
-                    "Data de Nascimento", "Última Troca de Senha", "Data da Senha Cadastrada",
-                    "Data da Inclusão do Usuário", "Segredo", "Usuário Logado"
-                ]
-
-                if df.shape[1] != len(coluna_table_ativos):
-                    QMessageBox.warning(self, "Erro", "O número de colunas no arquivo Excel não corresponde ao número esperado.")
-                    self.line_excel_usuarios.clear()
-                    self.resetar_progresso()
-                    return
-
-                if df.empty:
-                    QMessageBox.warning(self, "Erro", "O arquivo Excel está vazio.")
-                    self.line_excel_usuarios.clear()
-                    self.resetar_progresso()
-                    return
-
-                self.table_ativos.setRowCount(0)
-
-                for row in df.itertuples(index=False):
-                    row_position = self.table_ativos.rowCount()
-                    self.table_ativos.insertRow(row_position)
-                    for column, value in enumerate(row):
-                        item = self.formatar_texto(str(value))
-                        self.table_ativos.setItem(row_position, column, item)
-
-                QMessageBox.information(self, "Sucesso", "Arquivo Excel importado com sucesso!")
-
-            except Exception as e:
-                QMessageBox.critical(self, "Erro", f"Erro ao importar o arquivo Excel: {e}")
-
-            self.line_excel_usuarios.setText(self.nome_arquivo_excel)
-            self.resetar_progresso()
-            # Ajusta colunas e linhas automaticamente após preencher
-            self.main_window.table_ativos.resizeColumnsToContents()
-            self.main_window.table_ativos.resizeRowsToContents()
-
-    def resetar_progresso(self):
-        self.progress_excel_usuarios.setValue(0)
-        self.progresso = 0
     
     def importar_usuario(self):
         if self.table_ativos.rowCount() == 0 and self.table_inativos.rowCount() == 0:
@@ -2198,8 +2109,8 @@ class Pagina_Usuarios(QWidget):
             if total_linhas == 0:
                 QMessageBox.warning(self, "Erro", "Nenhum usuário encontrado para cadastrar.")
                 return
-            with self.db.connecta() as conexao:
-                cursor = conexao.cursor()
+            
+            cursor = self.db.connection.cursor()
             
             
             usuario_logado = self.config.obter_usuario_logado()
@@ -2240,13 +2151,16 @@ class Pagina_Usuarios(QWidget):
                     VALUES (?,?,?,?)
                 """,(data_atual,usuario_logado, "Cadastro em Massa",descricao))
 
-            conexao.commit()
-
+            self.db.connection.commit()
 
             QMessageBox.information(self, "Sucesso", "Usuários cadastrados em massa com sucesso!")
             self.line_edit_massa_usuarios.clear()
             # Limpar a tabela após a inserção
             self.table_massa_usuarios.setRowCount(0)
+            
+            self.carregar_tabela_ativos()
+            self.table_ativos.resizeColumnsToContents()
+            self.table_ativos.resizeRowsToContents()
 
         except Exception as e:
             QMessageBox.critical(self, "Erro", f"Erro ao cadastrar usuários em massa:\n{e}")

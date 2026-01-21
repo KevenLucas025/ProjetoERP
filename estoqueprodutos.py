@@ -1,7 +1,7 @@
 from PySide6.QtGui import QColor, QBrush,QGuiApplication
 from PySide6.QtWidgets import (QWidget, QTableWidget, QTableWidgetItem, 
                                QMessageBox,QCheckBox,QVBoxLayout,QDialog,QPushButton,QMainWindow,QHBoxLayout,
-                               QLineEdit,QLabel,QInputDialog,QGroupBox,QRadioButton,QFileDialog,QHeaderView)
+                               QLineEdit,QGroupBox,QRadioButton,QFileDialog,QHeaderView)
 from PySide6.QtCore import Qt,QTimer,QEvent
 import sqlite3
 import pandas as pd
@@ -21,7 +21,6 @@ class EstoqueProduto(QWidget):
     def __init__(self, main_window, btn_gerar_pdf, btn_gerar_estorno, 
                  btn_gerar_saida,btn_importar, btn_limpar_tabela, 
                  btn_atualizar_saida, btn_atualizar_estoque, btn_historico,
-                 btn_abrir_planilha, line_excel, progress_excel, btn_incluir_produto_sistema,
                  btn_fazer_cadastro_massa_produtos,btn_abrir_planilha_massa_produtos,progress_massa_produtos,
                  line_edit_massa_produtos,parent=None):
         super().__init__(parent)
@@ -48,10 +47,6 @@ class EstoqueProduto(QWidget):
         self.btn_atualizar_saida = btn_atualizar_saida
         self.btn_atualizar_estoque = btn_atualizar_estoque
         self.btn_historico = btn_historico
-        self.btn_abrir_planilha = btn_abrir_planilha
-        self.line_excel = line_excel
-        self.progress_excel = progress_excel
-        self.btn_incluir_produto_sistema = btn_incluir_produto_sistema
         self.btn_fazer_cadastro_massa_produtos = btn_fazer_cadastro_massa_produtos
         self.btn_abrir_planilha_massa_produtos = btn_abrir_planilha_massa_produtos
         self.progress_massa_produtos = progress_massa_produtos
@@ -67,8 +62,6 @@ class EstoqueProduto(QWidget):
         self.btn_atualizar_saida.clicked.connect(self.atualizar_saida)
         self.btn_atualizar_estoque.clicked.connect(self.atualizar_estoque)
         self.btn_historico.clicked.connect(self.exibir_historico)    
-        self.btn_abrir_planilha.clicked.connect(self.abrir_planilha)
-        self.btn_incluir_produto_sistema.clicked.connect(self.incluir_produto_no_sistema)
         self.btn_fazer_cadastro_massa_produtos.clicked.connect(self.cadastrar_produtos_em_massa)
         self.btn_abrir_planilha_massa_produtos.clicked.connect(self.abrir_planilha_em_massa_produtos)
         self.main_window.table_base.viewport().installEventFilter(self)
@@ -176,11 +169,20 @@ class EstoqueProduto(QWidget):
             usuario = self.main_window.table_base.item(row, 10).text()
             status_saida = 1
             data_saida = datetime.now().strftime("%d/%m/%Y %H:%M")
+            
+            #  Verifica se a quantidade é válida
+            if int(quantidade) <= 0:
+                msg_box = QMessageBox(self)
+                msg_box.setIcon(QMessageBox.Warning)
+                msg_box.setWindowTitle("Estorno inválido")
+                msg_box.setText(None,f"O produto '{produto}' tem quantidade 0 e não pode ser estornado.")
+                msg_box.exec()
+                continue
 
             if quantidade > 1:
                 dialog = ComboDialog(
                     "Saída de Produto",
-                    f"O produto '{produto}' tem {quantidade} unidades.\nQuantas deseja dar saída?",
+                    f"O produto '{produto}' tem {quantidade} unidades. Quantas deseja dar saída?",
                     [str(i) for i in range(1, quantidade + 1)],
                     self
                 )
@@ -2240,97 +2242,6 @@ class EstoqueProduto(QWidget):
         # Atualiza o estado do histórico para inativo (continua registrando)
         self.main_window.historico_pausado = False  # Atualiza a variável no MainWindow
         QMessageBox.information(self, "Histórico", "O registro do histórico continua ativo.")
-        
-
-
-    def abrir_planilha(self):
-        # Abrir o diálogo para selecionar o arquivo Excel
-        nome_arquivo, _ = QFileDialog.getOpenFileName(self, "Abrir Arquivo Excel", "", "Arquivos Excel (*.xlsx)")
-
-        if not nome_arquivo:
-            return  # Se o usuário cancelar a seleção do arquivo
-
-        
-        # Alterar o texto da line_excel para "Carregando arquivo Excel..."
-        self.line_excel.setText("Carregando arquivo Excel...")
-        self.nome_arquivo_excel = nome_arquivo  # Salva para usar depois
-
-        # Inicializar a barra de progresso
-        self.progress_excel.setValue(0)
-        self.progresso = 0
-        
-
-        # Começar o timer para simular carregamento visual
-        self.timer_excel = QTimer()
-        self.timer_excel.timeout.connect(self.atualizar_progress_excel)
-        self.timer_excel.start(20)
-
-    def atualizar_progress_excel(self):
-        if self.progresso < 100:
-            self.progresso += 1
-            self.progress_excel.setValue(self.progresso)
-        else:
-            self.timer_excel.stop()
-
-            try:
-                df = pd.read_excel(self.nome_arquivo_excel, engine="openpyxl", header=0)
-                df = df.fillna("Não informado")
-
-                colunas_table_base = ["Produto", "Quantidade", "Valor do Produto", "Desconto", "Data da Compra",
-                                    "Código do Item", "Cliente", "Descrição do Produto", "Usuário","Status da Saída"]
-
-                if df.shape[1] != len(colunas_table_base):
-                    QMessageBox.warning(self, "Erro", "O número de colunas no arquivo Excel não corresponde ao número esperado.")
-                    self.line_excel.clear()
-                    # Zerando a barra de progresso
-                    self.progress_excel.setValue(0)
-                    self.progresso = 0  # Resetando a variável de progresso
-                    return
-
-                if df.shape[0] == 0:
-                    QMessageBox.warning(self, "Erro", "O arquivo Excel está vazio.")
-                    self.line_excel.clear()
-                    # Zerando a barra de progresso
-                    self.progress_excel.setValue(0)
-                    self.progresso = 0  # Resetando a variável de progresso
-                    return
-                
-
-                self.table_base.setRowCount(0)
-
-                df["Valor do Produto"] = pd.to_numeric(df.iloc[:, 2], errors="coerce").fillna(0)
-                df["Valor do Produto"] = df["Valor do Produto"].apply(
-                    lambda x: f"R$ {x:,.2f}".replace(",", "_").replace(".", ",").replace("_", ".")
-                )
-
-                df["Desconto"] = pd.to_numeric(df.iloc[:, 3], errors="coerce").fillna(0)
-                df["Desconto"] = df["Desconto"].apply(
-                    lambda x: f"{x:.2f}%" if x < 1 else f"{x * 100:.2f}%"
-                )
-
-                if "Data da Compra" in df.columns:
-                    df["Data da Compra"] = pd.to_datetime(df["Data da Compra"], errors="coerce").dt.strftime('%d/%m/%Y')
-                else:
-                    df["Data da Compra"] = ""
-
-                for row in df.itertuples(index=False):
-                    row_position = self.table_base.rowCount()
-                    self.table_base.insertRow(row_position)
-                    for column, value in enumerate(row):
-                        item = self.criar_item(str(value))
-                        self.table_base.setItem(row_position, column, item)
-
-                QMessageBox.information(self, "Sucesso", "Arquivo Excel importado com sucesso!")
-
-            except Exception as e:
-                QMessageBox.critical(self, "Erro", f"Erro ao importar o arquivo Excel: {e}")
-
-            # Quando o arquivo for carregado, atualizar o texto da line_excel com o caminho do arquivo
-            self.line_excel.setText(self.nome_arquivo_excel)
-
-            # Zerando a barra de progresso
-            self.progress_excel.setValue(0)
-            self.progresso = 0  # Resetando a variável de progresso
 
     def importar_produto(self):
         # Verificar se a tabela está vazia
@@ -2380,60 +2291,6 @@ class EstoqueProduto(QWidget):
         
         except Exception as e:
             QMessageBox.critical(self, "Erro", f"Erro ao salvar arquivo Excel: {str(e)}")
-
-
-    
-    def incluir_produto_no_sistema(self):
-        selected_rows = self.main_window.table_base.selectionModel().selectedRows()
-
-        if not hasattr(self, 'nome_arquivo_excel') or not self.nome_arquivo_excel:
-            QMessageBox.warning(self, "Aviso", "Você precisa carregar uma planilha antes de cadastrar os produtos no sistema.")
-            return
-
-        if not selected_rows:
-            QMessageBox.critical(self, "Aviso", "Nenhum produto selecionado para gerar saída!")
-            return False
-
-        try:
-            cursor = self.db.connection.cursor()
-
-            for model_index in selected_rows:
-                row_index = model_index.row()
-                row_data = []
-                for col in range(self.main_window.table_base.columnCount()):
-                    item = self.main_window.table_base.item(row_index, col)
-                    row_data.append(item.text() if item else "")
-
-                # Desempacotar os dados corretamente
-                produto = row_data[0]
-                quantidade = row_data[1]
-                valor_real = row_data[2]
-                desconto = row_data[3]
-                data_cadastro = row_data[4]
-                codigo_item = row_data[5]
-                cliente = row_data[6]
-                descricao = row_data[7]
-                usuario = row_data[8]
-
-                cursor.execute("""
-                    INSERT INTO products (Produto, Quantidade, Valor_Real, Desconto, "Data do Cadastro", Código_Item, 
-                            Cliente, Descrição_Produto, Usuário) 
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-                """, (produto, quantidade, valor_real, desconto, data_cadastro, codigo_item, 
-                    cliente, descricao, usuario))
-
-            self.db.connection.commit()
-            QMessageBox.information(self, "Sucesso", "Produto(s) incluído(s) com sucesso no sistema.")
-
-            # Registrar histórico
-            descricao = f"Produto '{produto}' foi incluído no sistema."
-            self.main_window.registrar_historico( "Inclusão de produto",descricao)
-
-
-        except Exception as e:
-            QMessageBox.critical(self, "Erro", f"Erro ao incluir o produto no sistema:\n{e}")
-
-
 
     # Limpa a coluna selecionada clicando em qualquer lugar da tabela
     def eventFilter(self, source, event):

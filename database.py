@@ -558,7 +558,7 @@ class DataBase:
         try:
             self.garantir_conexao()
             cursor = self.connection.cursor()
-            data_atual = datetime.now().strftime("%d/%m/%Y")
+            data_atual = datetime.now().strftime("%d/%m/%Y %H:%M")
 
             # Função auxiliar para padronizar valores
             def padrao(valor):
@@ -853,6 +853,40 @@ class DataBase:
             WHERE id = ?
         """, (id_usuario,))
         return cursor.fetchone()
+    
+    def buscar_produto_por_id(self, produto_id):
+        cursor = self.connection.cursor()
+        cursor.execute("""
+            SELECT
+                Produto, Quantidade, Valor_Real, Desconto,
+                "Total Sem Desconto", "Valor Total",
+                "Data do Cadastro", Código_Item, Cliente,
+                Descrição_Produto, Usuário, CNPJ, CPF, Imagem
+            FROM products
+            WHERE id = ?
+        """, (produto_id,))
+
+        row = cursor.fetchone()
+        if not row:
+            return None
+
+        return {
+            "produto": row[0],
+            "quantidade": row[1],
+            "valor_real": row[2],
+            "desconto": row[3],
+            "total_sem_desconto": row[4],
+            "valor_total": row[5],
+            "data_cadastro": row[6],
+            "codigo_item": row[7],
+            "cliente": row[8],
+            "descricao_produto": row[9],
+            "usuario": row[10],
+            "cnpj": row[11],
+            "cpf": row[12],
+            "imagem": row[13]
+        }
+
 
     
     def obter_clientes_juridicos(self):

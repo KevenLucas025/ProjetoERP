@@ -1273,15 +1273,15 @@ class TabelaProdutos(QMainWindow):
         imagem_data = self.recuperar_imagem_do_banco(produto_id)
 
         coluna_id = 1 if self.coluna_checkboxes_produtos_adicionada else 0
-        coluna_nome = coluna_id + 1                  # Produto
-        coluna_quantidade = coluna_nome + 1          # Quantidade
-        coluna_valor = coluna_quantidade + 1         # Valor do Produto
-        coluna_desconto = coluna_valor + 1           # Desconto
-        # Pula coluna de Valor Total (frame separado)
-        coluna_dateEdit = coluna_desconto + 2        # Data do Cadastro
-        coluna_codigo_item = coluna_dateEdit + 1     # Código do Produto
-        coluna_cliente = coluna_codigo_item + 1      # Cliente
-        coluna_descricao = coluna_cliente + 1        # Descrição
+        coluna_nome = coluna_id + 1
+        coluna_quantidade = coluna_nome + 1
+        coluna_valor = coluna_quantidade + 1
+        coluna_desconto = coluna_valor + 1
+        coluna_valor_total = coluna_desconto + 1     # EXISTE NA TABELA
+        coluna_dateEdit = coluna_valor_total + 1
+        coluna_codigo_item = coluna_dateEdit + 2
+        coluna_cliente = coluna_codigo_item + 1
+        coluna_descricao = coluna_cliente + 1
 
         # Econtrar a linha onde está o produto id
         linha_produto = None
@@ -1296,7 +1296,7 @@ class TabelaProdutos(QMainWindow):
         # ATIVAR MODO DE EDIÇÃO AQUI
         self.main_window.is_editing_produto = True
 
-        # Pegar os dados da linha selecionada
+        # Pegar os dados da linha selecionada da tabela
         produto_nome = self.table_widget.item(linha_produto, coluna_nome).text()
         produto_quantidade = self.table_widget.item(linha_produto, coluna_quantidade).text()
         produto_valor_real = self.table_widget.item(linha_produto, coluna_valor).text()
@@ -1334,6 +1334,7 @@ class TabelaProdutos(QMainWindow):
         
         self.main_window.produto_original = self.main_window.produto_selecionado.copy()
 
+        # Joga os dados nas suas respectivas posições
         self.main_window.txt_produto.setText(produto_nome)
         self.main_window.txt_quantidade.setText(produto_quantidade)
         self.main_window.txt_valor_produto_3.setText(produto_valor_real)
@@ -1709,13 +1710,12 @@ class TabelaProdutos(QMainWindow):
         return label_imagem
     
     def carregar_tabela_produtos(self):
-        with self.db.connection as cn:
-            cursor = cn.cursor()
-            cursor.execute('SELECT id, Produto, Quantidade, Valor_Real, Desconto, "Valor Total", "Data do Cadastro", '
-                        'Código_Item, Cliente, Descrição_Produto, "Usuário" '
-                        'FROM products ORDER BY id ASC')  # Ordem crescente
+        cursor = self.db.connection.cursor()
+        cursor.execute('SELECT id, Produto, Quantidade, Valor_Real, Desconto,"Total Sem Desconto", "Valor Total", "Data do Cadastro", '
+                    'Código_Item, Cliente, Descrição_Produto, "Usuário","Status da Saída" '
+                    'FROM products ORDER BY id ASC')  # Ordem crescente
 
-            registros = cursor.fetchall()
+        registros = cursor.fetchall()
 
         self.table_widget.setSortingEnabled(False)  # Impede bagunça enquanto carrega
         self.table_widget.clearContents()
@@ -1724,8 +1724,8 @@ class TabelaProdutos(QMainWindow):
         deslocamento = 1 if self.coluna_checkboxes_produtos_adicionada else 0
         self.checkboxes = []  # Zera os checkboxes
 
-        for i, (id, produto, quantidade, valor_real, desconto, valor_total, data_cadastro,
-                codigo_item, cliente, descricao_produto, usuario) in enumerate(registros):
+        for i, (id, produto, quantidade, valor_real, total_sem_desconto,desconto, valor_total, data_cadastro,
+                codigo_item, cliente, descricao_produto, usuario,status_da_saida) in enumerate(registros):
 
             if self.coluna_checkboxes_produtos_adicionada:
                 checkbox = QCheckBox()
@@ -1738,12 +1738,14 @@ class TabelaProdutos(QMainWindow):
             self.table_widget.setItem(i, 2 + deslocamento, QTableWidgetItem(str(quantidade)))
             self.table_widget.setItem(i, 3 + deslocamento, QTableWidgetItem(str(valor_real)))
             self.table_widget.setItem(i, 4 + deslocamento, QTableWidgetItem(str(desconto)))
-            self.table_widget.setItem(i, 5 + deslocamento, QTableWidgetItem(str(valor_total)))  # Valor Total
-            self.table_widget.setItem(i, 6 + deslocamento, QTableWidgetItem(data_cadastro))
-            self.table_widget.setItem(i, 7 + deslocamento, QTableWidgetItem(codigo_item))
-            self.table_widget.setItem(i, 8 + deslocamento, QTableWidgetItem(cliente))
-            self.table_widget.setItem(i, 9 + deslocamento, QTableWidgetItem(descricao_produto))
-            self.table_widget.setItem(i, 10 + deslocamento, QTableWidgetItem(usuario))
+            self.table_widget.setItem(i, 5 + deslocamento, QTableWidgetItem(str(total_sem_desconto)))
+            self.table_widget.setItem(i, 6 + deslocamento, QTableWidgetItem(str(valor_total)))  # Valor Total
+            self.table_widget.setItem(i, 7 + deslocamento, QTableWidgetItem(data_cadastro))
+            self.table_widget.setItem(i, 8 + deslocamento, QTableWidgetItem(codigo_item))
+            self.table_widget.setItem(i, 9 + deslocamento, QTableWidgetItem(cliente))
+            self.table_widget.setItem(i, 10 + deslocamento, QTableWidgetItem(descricao_produto))
+            self.table_widget.setItem(i, 11 + deslocamento, QTableWidgetItem(usuario))
+            self.table_widget.setItem(i,12 + deslocamento, QTableWidgetItem(status_da_saida))
 
         # Agora sim: organiza pela coluna de ID (em ordem crescente)
         self.table_widget.sortItems(0 + deslocamento, Qt.AscendingOrder)
@@ -1791,56 +1793,58 @@ class TabelaProdutos(QMainWindow):
             QMessageBox.information(self,"Aviso","Arquivo excel gerado com sucesso")
 
     def duplicar_produto(self):
-        # Verificar se há uma linha selecionada
-        linha_selecionada = self.table_widget.currentRow()
-
         # Verificar se a tabela está vazia
         if self.table_widget.rowCount() == 0:
             QMessageBox.warning(self, "Aviso", "Nenhum produto cadastrado para duplicar.")
-            return  # Se a tabela estiver vazia, encerra a função sem prosseguir
-        
+            return
+
+        linha_selecionada = self.table_widget.currentRow()
         if linha_selecionada == -1:
-            # Se nenhuma linha estiver selecionada, mostrar um aviso
             QMessageBox.warning(self, "Aviso", "Nenhum produto selecionado para duplicar.")
             return
 
-        # Obter os dados da linha selecionada
-        dados_produto = []
-        for coluna in range(self.table_widget.columnCount()):
-            item = self.table_widget.item(linha_selecionada, coluna)
-            dados_produto.append(item.text() if item is not None else "")
-
-        # Adicionar uma nova linha na tabela
-        linha_nova = self.table_widget.rowCount()
-        self.table_widget.insertRow(linha_nova)
-
-        # Preencher a nova linha com os dados duplicados
-        for coluna, dado in enumerate(dados_produto):
-            self.table_widget.setItem(linha_nova, coluna, QTableWidgetItem(dado))
-
-        # Inserir o produto duplicado no banco de dados
         try:
-            # Preparar os dados para inserção, omitindo o ID
-            produto = dados_produto[1]  # Assumindo que o primeiro dado é o nome do produto
-            quantidade = dados_produto[2]
-            valor_real = dados_produto[3]
-            desconto = dados_produto[4]
-            data_cadastro = dados_produto[5]
-            valor_total = dados_produto[6]
-            codigo_item = dados_produto[7]
-            cliente = dados_produto[8]
-            descricao_produto = dados_produto[9]
-            imagem = dados_produto[10] if len(dados_produto) > 8 else None
+            # Descobrir a coluna do ID
+            coluna_id = 1 if self.coluna_checkboxes_produtos_adicionada else 0
 
-            # Inserir o produto no banco de dados usando a função do módulo database
-            self.db.insert_product(produto, quantidade, valor_real, desconto, data_cadastro, 
-                        valor_total,codigo_item, cliente, descricao_produto, imagem)
+            produto_id = int(
+                self.table_widget.item(linha_selecionada, coluna_id).text()
+            )
 
-            # Exibir uma mensagem de sucesso
-            QMessageBox.information(self, "Sucesso", "Produto duplicado e cadastrado com sucesso.")
-        
+            # Buscar o produto COMPLETO no banco
+            produto_db = self.db.buscar_produto_por_id(produto_id)
+
+            # Inserir produto duplicado no banco
+            self.db.insert_product(
+                produto_db["produto"],
+                produto_db["quantidade"],
+                produto_db["valor_real"],
+                produto_db["desconto"],
+                produto_db["total_sem_desconto"],
+                produto_db["valor_total"],
+                produto_db["data_cadastro"],
+                produto_db["codigo_item"],
+                produto_db["cliente"],
+                produto_db["descricao_produto"],
+                self.main_window.get_usuario_logado(),
+                produto_db["cnpj"],
+                produto_db["cpf"],
+                produto_db["imagem"]
+            )
+
+            QMessageBox.information(self, "Sucesso", "Produto duplicado com sucesso!")
+
+            # Recarregar tabela (fonte da verdade = banco)
+            self.carregar_tabela_produtos()
+
         except Exception as e:
-            QMessageBox.critical(self, "Erro", f"Falha ao cadastrar o produto: {str(e)}")
+            QMessageBox.critical(
+                self,
+                "Erro",
+                f"Falha ao duplicar o produto:\n{str(e)}"
+            )
+            print("Erro ao duplicar produto:", e)
+
 
 
 
