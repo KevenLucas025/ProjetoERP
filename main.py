@@ -1,14 +1,14 @@
 #*********************************************************************************************************************
 import re
 from PySide6.QtCore import (Qt, QTimer, QDate, QBuffer, QByteArray, QIODevice, Signal,
-                            QEvent)
+                            QEvent,QPoint)
 from PySide6 import QtCore
 from PySide6.QtWidgets import (QMainWindow, QMessageBox, QPushButton,
                                QLabel, QFileDialog, QVBoxLayout,
                                QMenu,QTableWidgetItem,QCheckBox,QApplication,QToolButton,QHeaderView,QCompleter,
                                QComboBox,QInputDialog,QProgressDialog,QDialog,QLineEdit,QWidget,QHBoxLayout,QProgressBar,QFormLayout,QTextEdit)
 from PySide6.QtGui import (QDoubleValidator, QIcon, QColor, QPixmap,QBrush,
-                           QAction,QMovie,QImage,QShortcut,QKeySequence)
+                           QAction,QMovie,QImage,QShortcut,QKeySequence,QPainterPath,QPainter,QFontMetrics)
 from login import Login
 from mane_python import Ui_MainWindow
 from database import DataBase
@@ -304,14 +304,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         layout_usuario = QVBoxLayout()  # Definindo layout_usuario aqui
         layout_usuario.addWidget(self.label_imagem_usuario)
         self.frame_imagem_cadastro.setLayout(layout_usuario)
+        
+        
 
-        '''self.label_exibir_usuario = QLabel(self)
-        layout_exibir_usuario = QVBoxLayout()
-        layout_exibir_usuario.addWidget(self.label_exibir_usuario)
-        self.label_exibir_usuario.setGeometry(1265,5,600,30)'''
 
-        # Atualizar o nome do usuário logado
-        #self.atualizar_usuario_logado(self.config.obter_usuario_logado())
         
         self.frame_imagem_produto_3.setLayout(QVBoxLayout())
         self.label_imagem_produto = QLabel(self.frame_imagem_produto_3)
@@ -320,9 +316,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.label_imagem_produto.setScaledContents(False)
         self.frame_imagem_produto_3.layout().addWidget(self.label_imagem_produto)  # Adicionar QLabel ao layout do frame
         self.imagem_carregada_produto = False
-
-
-        
 
 
         # Criar as ações do menu
@@ -559,8 +552,180 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.widget_pesquisa.showEvent = lambda event: self.reposicionar_pesquisa()
 
         self.txt_cep.editingFinished.connect(self.on_cep_editing_finished)
+        
+        self.label_nome_usuario.setStyleSheet("""
+            color: white;
+            font-weight: bold;
+        """)
+        
+        self.label_avatar.setCursor(Qt.PointingHandCursor)
+        self.label_avatar.setAlignment(Qt.AlignCenter)
+        self.label_avatar.setFixedSize(40, 40)
 
-            
+        # Caminho da foto do usuário
+        self.caminho_foto_usuario = caminho_recurso("caminho/da/foto_usuario.png")
+
+        # Menu do avatar
+        self.menu_avatar = QMenu(self)
+        acao_ver_foto = QAction("👁 Ver foto", self)
+        acao_alterar_foto = QAction("🔄 Alterar foto", self)
+
+        self.menu_avatar.addAction(acao_ver_foto)
+        self.menu_avatar.addAction(acao_alterar_foto)
+
+        acao_ver_foto.triggered.connect(self.ver_foto_usuario)
+        acao_alterar_foto.triggered.connect(self.alterar_foto_usuario)
+
+        # Evento de clique no avatar
+        def avatar_click(event):
+            if event.button() == Qt.LeftButton:
+                self.menu_avatar.exec(
+                    self.label_avatar.mapToGlobal(QPoint(0, self.label_avatar.height()))
+                )
+
+        self.label_avatar.mousePressEvent = avatar_click
+
+        # Atualizações iniciais
+        self.atualizar_avatar()
+        self.atualizar_usuario_logado()
+        
+    def atualizar_usuario_logado(self):
+        nome_completo = self.get_nome_completo_usuario()
+
+        if not nome_completo:
+            self.label_nome_usuario.setText("Nenhum usuário logado")
+            self.label_avatar.setText("")
+            return
+
+        # Nome completo ao lado
+        self.label_nome_usuario.setText(nome_completo)
+
+        # Iniciais no avatar
+        self.label_avatar.setText(self.gerar_iniciais(nome_completo))
+
+    def atualizar_avatar(self):
+        usuario = self.get_usuario_logado()
+        nome_completo = self.get_nome_completo_usuario() or "Usuário"
+
+        db = DataBase()
+        db.connecta()
+        caminho = db.obter_imagem_usuario(usuario)
+
+        if caminho and os.path.exists(caminho):
+            pixmap = QPixmap(caminho)
+            pixmap = self.pixmap_circular(pixmap, 40)
+            self.label_avatar.setPixmap(pixmap)
+            self.label_avatar.setText("")
+        else:
+            self.label_avatar.setPixmap(QPixmap())
+            self.label_avatar.setText(self.gerar_iniciais(nome_completo))
+            self.label_avatar.setStyleSheet("""
+                background-color: #4f46e5;
+                color: white;
+                font-weight: bold;
+                font-size: 14px;
+                border-radius: 20px;
+            """)
+
+
+
+    def ver_foto_usuario(self):
+        if not os.path.exists(self.caminho_foto_usuario):
+            QMessageBox.information(self, "Foto", "Usuário não possui foto cadastrada.")
+            return
+
+        dialog = QDialog(self)
+        dialog.setWindowTitle("Foto do Usuário")
+
+        label = QLabel(dialog)
+        pixmap = QPixmap(self.caminho_foto_usuario).scaled(
+            300, 300, Qt.KeepAspectRatio, Qt.SmoothTransformation
+        )
+        label.setPixmap(pixmap)
+
+        layout = QVBoxLayout(dialog)
+        layout.addWidget(label)
+
+        dialog.exec()
+        
+    def alterar_foto_usuario(self):
+        arquivo, _ = QFileDialog.getOpenFileName(
+            self,
+            "Selecionar foto",
+            "",
+            "Imagens (*.png *.jpg *.jpeg)"
+        )
+
+        if not arquivo:
+            return
+
+        usuario = self.get_usuario_logado()
+        
+        pasta_destino = caminho_recurso("media/usuarios")
+        os.makedirs(pasta_destino,exist_ok=True)
+        
+        extensao = os.path.splitext(arquivo)[1]
+        novo_caminho = os.path.join(pasta_destino, f"{usuario}{extensao}")
+        
+        shutil.copyfile(arquivo, novo_caminho)
+
+        # salva no banco
+        db = DataBase()
+        db.connecta()
+        db.salvar_imagem_usuario(usuario, novo_caminho)
+
+        self.caminho_foto_usuario = novo_caminho
+        self.atualizar_avatar()
+
+        
+    def pixmap_circular(self, pixmap, size=40):
+        pixmap = pixmap.scaled(
+            size, size,
+            Qt.KeepAspectRatioByExpanding,
+            Qt.SmoothTransformation
+        )
+
+        result = QPixmap(size, size)
+        result.fill(Qt.transparent)
+
+        painter = QPainter(result)
+        painter.setRenderHint(QPainter.Antialiasing)
+        path = QPainterPath()
+        path.addEllipse(0, 0, size, size)
+        painter.setClipPath(path)
+        painter.drawPixmap(0, 0, pixmap)
+        painter.end()
+
+        return result
+#*********************************************************************************************************************        
+    def atualizar_usuario_logado(self):
+        nome_completo = self.get_nome_completo_usuario()
+
+        if not nome_completo:
+            self.label_nome_usuario.setText("Nenhum usuário logado")
+            self.label_avatar.setText("")
+            return
+
+        # 👉 TEXTO AO LADO = NOME COMPLETO
+        self.label_nome_usuario.setText(nome_completo)
+
+        # 👉 AVATAR = INICIAIS
+        iniciais = self.gerar_iniciais(nome_completo)
+        self.label_avatar.setText(iniciais)
+#*********************************************************************************************************************
+    def gerar_iniciais(self,nome):
+        partes = nome.strip().split()
+        if len(partes) == 1:
+            return partes[0][:2].upper()
+        return (partes[0][0] + partes[-1][0]).upper()
+#*********************************************************************************************************************
+    def get_nome_completo_usuario(self):
+        return self.config.obter_nome_completo_usuario()
+#*********************************************************************************************************************
+    def get_usuario_logado(self):
+        # Obtenha o usuário logado das configurações
+        return self.config.obter_usuario_logado()
+#*********************************************************************************************************************        
     def carregar_env(self):
         if getattr(sys, "frozen", False):
             # MODO EXE → mesma pasta do .exe
@@ -914,15 +1079,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.config.nao_mostrar_mensagem_boas_vindas = True
             self.config.salvar_configuracoes(self.config.usuario, self.config.senha, self.config.mantem_conectado)
 
-    '''def atualizar_usuario_logado(self, user):
-        if user:
-            usuario_logado = f"Usuário logado: {user}"
-        else:
-            usuario_logado = "Nenhum usuário logado"
-
-        self.label_exibir_usuario.setText(usuario_logado)
-        self.label_exibir_usuario.setStyleSheet("font-size: 15px; font-weight: bold; color: white;")
-        print(usuario_logado)'''
+    
 
 
     '''def verificar_conexao(self):
@@ -3036,10 +3193,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             pass
         # Retornar os valores calculados para exibição
         return quantidade, valor_desconto, valor_com_desconto
-#*********************************************************************************************************************
-    def get_usuario_logado(self):
-        # Obtenha o usuário logado das configurações
-        return self.config.obter_usuario_logado()
+
 #*********************************************************************************************************************
     def verificar_alteracoes_produto(self, produto_original):
         try:

@@ -121,10 +121,6 @@ class Ui_MainWindow(object):
 
         self.gridLayout_2.addWidget(self.frame_botoes_navegacoes, 0, 0, 2, 1)
 
-        self.horizontalSpacer_5 = QSpacerItem(1130, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
-
-        self.gridLayout_2.addItem(self.horizontalSpacer_5, 0, 1, 1, 1)
-
         self.btn_mais_opcoes = QToolButton(self.centralwidget)
         self.btn_mais_opcoes.setObjectName(u"btn_mais_opcoes")
         sizePolicy.setHeightForWidth(self.btn_mais_opcoes.sizePolicy().hasHeightForWidth())
@@ -139,7 +135,11 @@ class Ui_MainWindow(object):
         self.btn_mais_opcoes.setPopupMode(QToolButton.MenuButtonPopup)
         self.btn_mais_opcoes.setToolButtonStyle(Qt.ToolButtonTextOnly)
 
-        self.gridLayout_2.addWidget(self.btn_mais_opcoes, 0, 2, 1, 1)
+        self.gridLayout_2.addWidget(self.btn_mais_opcoes, 0, 4, 1, 1)
+
+        self.horizontalSpacer_5 = QSpacerItem(1130, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+
+        self.gridLayout_2.addItem(self.horizontalSpacer_5, 0, 1, 1, 1)
 
         self.paginas_sistemas = QStackedWidget(self.centralwidget)
         self.paginas_sistemas.setObjectName(u"paginas_sistemas")
@@ -162,13 +162,24 @@ class Ui_MainWindow(object):
         self.frame.setFrameShadow(QFrame.Raised)
         self.gridLayout_7 = QGridLayout(self.frame)
         self.gridLayout_7.setObjectName(u"gridLayout_7")
-        self.verticalSpacer_2 = QSpacerItem(20, 98, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
+        self.frame_15 = QFrame(self.frame)
+        self.frame_15.setObjectName(u"frame_15")
+        self.frame_15.setFrameShape(QFrame.StyledPanel)
+        self.frame_15.setFrameShadow(QFrame.Raised)
+        self.gridLayout_4 = QGridLayout(self.frame_15)
+        self.gridLayout_4.setObjectName(u"gridLayout_4")
+        self.label_bem_vindo = QLabel(self.frame_15)
+        self.label_bem_vindo.setObjectName(u"label_bem_vindo")
+        sizePolicy.setHeightForWidth(self.label_bem_vindo.sizePolicy().hasHeightForWidth())
+        self.label_bem_vindo.setSizePolicy(sizePolicy)
+        self.label_bem_vindo.setMaximumSize(QSize(502, 236))
+        self.label_bem_vindo.setStyleSheet(u"")
+        self.label_bem_vindo.setAlignment(Qt.AlignCenter)
 
-        self.gridLayout_7.addItem(self.verticalSpacer_2, 0, 2, 1, 1)
+        self.gridLayout_4.addWidget(self.label_bem_vindo, 0, 0, 1, 1)
 
-        self.horizontalSpacer_6 = QSpacerItem(470, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
 
-        self.gridLayout_7.addItem(self.horizontalSpacer_6, 1, 0, 1, 2)
+        self.gridLayout_7.addWidget(self.frame_15, 3, 1, 2, 3)
 
         self.label_imagem_sistema = QLabel(self.frame)
         self.label_imagem_sistema.setObjectName(u"label_imagem_sistema")
@@ -194,36 +205,25 @@ class Ui_MainWindow(object):
 
         self.gridLayout_7.addItem(self.verticalSpacer_4, 2, 2, 1, 1)
 
-        self.frame_15 = QFrame(self.frame)
-        self.frame_15.setObjectName(u"frame_15")
-        self.frame_15.setFrameShape(QFrame.StyledPanel)
-        self.frame_15.setFrameShadow(QFrame.Raised)
-        self.gridLayout_4 = QGridLayout(self.frame_15)
-        self.gridLayout_4.setObjectName(u"gridLayout_4")
-        self.label_bem_vindo = QLabel(self.frame_15)
-        self.label_bem_vindo.setObjectName(u"label_bem_vindo")
-        sizePolicy.setHeightForWidth(self.label_bem_vindo.sizePolicy().hasHeightForWidth())
-        self.label_bem_vindo.setSizePolicy(sizePolicy)
-        self.label_bem_vindo.setMaximumSize(QSize(502, 234))
-        self.label_bem_vindo.setStyleSheet(u"")
-        self.label_bem_vindo.setAlignment(Qt.AlignCenter)
+        self.horizontalSpacer_6 = QSpacerItem(470, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
 
-        self.gridLayout_4.addWidget(self.label_bem_vindo, 0, 0, 1, 1)
+        self.gridLayout_7.addItem(self.horizontalSpacer_6, 1, 0, 1, 2)
 
+        self.verticalSpacer_3 = QSpacerItem(20, 148, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
 
-        self.gridLayout_7.addWidget(self.frame_15, 3, 1, 2, 3)
-
-        self.horizontalSpacer_14 = QSpacerItem(317, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
-
-        self.gridLayout_7.addItem(self.horizontalSpacer_14, 3, 4, 1, 1)
+        self.gridLayout_7.addItem(self.verticalSpacer_3, 5, 2, 1, 1)
 
         self.horizontalSpacer_13 = QSpacerItem(341, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
 
         self.gridLayout_7.addItem(self.horizontalSpacer_13, 4, 0, 1, 1)
 
-        self.verticalSpacer_3 = QSpacerItem(20, 148, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
+        self.horizontalSpacer_14 = QSpacerItem(317, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
 
-        self.gridLayout_7.addItem(self.verticalSpacer_3, 5, 2, 1, 1)
+        self.gridLayout_7.addItem(self.horizontalSpacer_14, 3, 4, 1, 1)
+
+        self.verticalSpacer_2 = QSpacerItem(20, 98, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
+
+        self.gridLayout_7.addItem(self.verticalSpacer_2, 0, 2, 1, 1)
 
 
         self.gridLayout_3.addWidget(self.frame, 1, 0, 1, 1)
@@ -1170,6 +1170,8 @@ class Ui_MainWindow(object):
 
         self.label_cadastramento_produtos = QLabel(self.frame_cadastrar_produto)
         self.label_cadastramento_produtos.setObjectName(u"label_cadastramento_produtos")
+        sizePolicy.setHeightForWidth(self.label_cadastramento_produtos.sizePolicy().hasHeightForWidth())
+        self.label_cadastramento_produtos.setSizePolicy(sizePolicy)
         self.label_cadastramento_produtos.setMaximumSize(QSize(16777215, 50))
         self.label_cadastramento_produtos.setStyleSheet(u"")
 
@@ -2731,7 +2733,27 @@ class Ui_MainWindow(object):
 
         self.paginas_sistemas.addWidget(self.page_cadastrar_massa_usuarios)
 
-        self.gridLayout_2.addWidget(self.paginas_sistemas, 1, 1, 1, 2)
+        self.gridLayout_2.addWidget(self.paginas_sistemas, 1, 1, 1, 4)
+
+        self.label_avatar = QLabel(self.centralwidget)
+        self.label_avatar.setObjectName(u"label_avatar")
+        sizePolicy.setHeightForWidth(self.label_avatar.sizePolicy().hasHeightForWidth())
+        self.label_avatar.setSizePolicy(sizePolicy)
+        self.label_avatar.setMinimumSize(QSize(40, 40))
+        self.label_avatar.setMaximumSize(QSize(40, 40))
+        self.label_avatar.setStyleSheet(u"")
+
+        self.gridLayout_2.addWidget(self.label_avatar, 0, 2, 1, 1)
+
+        self.label_nome_usuario = QLabel(self.centralwidget)
+        self.label_nome_usuario.setObjectName(u"label_nome_usuario")
+        sizePolicy.setHeightForWidth(self.label_nome_usuario.sizePolicy().hasHeightForWidth())
+        self.label_nome_usuario.setSizePolicy(sizePolicy)
+        self.label_nome_usuario.setMinimumSize(QSize(0, 0))
+        self.label_nome_usuario.setMaximumSize(QSize(16777215, 40))
+        self.label_nome_usuario.setStyleSheet(u"")
+
+        self.gridLayout_2.addWidget(self.label_nome_usuario, 0, 3, 1, 1)
 
         MainWindow.setCentralWidget(self.centralwidget)
 
@@ -2773,8 +2795,8 @@ class Ui_MainWindow(object):
         self.btn_mais_opcoes.setToolTip(QCoreApplication.translate("MainWindow", u"Op\u00e7\u00f5es adicionais", None))
 #endif // QT_CONFIG(tooltip)
         self.btn_mais_opcoes.setText(QCoreApplication.translate("MainWindow", u"Mais op\u00e7\u00f5es", None))
-        self.label_imagem_sistema.setText("")
         self.label_bem_vindo.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p align=\"center\"><span style=\" font-size:24pt; font-weight:600; font-style:italic;\">Bem vindo(a) ao</span></p><p align=\"center\"><br/></p><p align=\"center\"><span style=\" font-size:24pt; font-weight:600; font-style:italic;\">Sistema de Gerenciamento do </span></p><p align=\"center\"><span style=\" font-size:24pt; font-weight:600; font-style:italic;\">controle de Estoque</span></p></body></html>", None))
+        self.label_imagem_sistema.setText("")
         self.btn_gerar_estorno.setText(QCoreApplication.translate("MainWindow", u"Gerar estorno", None))
         self.btn_importar.setText(QCoreApplication.translate("MainWindow", u"Importar", None))
         self.label_saida.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p align=\"center\"><span style=\" font-size:16pt; font-weight:600; font-style:italic;\">SA\u00cdDA</span></p></body></html>", None))
@@ -3201,5 +3223,7 @@ class Ui_MainWindow(object):
         ___qtablewidgetitem145.setText(QCoreApplication.translate("MainWindow", u"CNPJ", None));
         ___qtablewidgetitem146 = self.table_massa_usuarios.horizontalHeaderItem(17)
         ___qtablewidgetitem146.setText(QCoreApplication.translate("MainWindow", u"Acesso", None));
+        self.label_avatar.setText("")
+        self.label_nome_usuario.setText("")
     # retranslateUi
 

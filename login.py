@@ -17,6 +17,7 @@ import os
 import sqlite3
 from datetime import datetime
 import subprocess
+from historicousuario import Pagina_Usuarios
 
 
 
@@ -32,6 +33,7 @@ class Login(QMainWindow, Ui_Mainwindow_Login):
         self.users.connecta()    # <-- Conecta ao banco de dados
         self.setWindowTitle("Login do Sistema")
         self.tema = Temas()
+
 
         self.menu_btn_opcoes_extras = QMenu(self.btn_opcoes_extras)
         self.btn_opcoes_extras.setMenu(self.menu_btn_opcoes_extras)
@@ -100,10 +102,13 @@ class Login(QMainWindow, Ui_Mainwindow_Login):
         senha = self.txt_senha.text()
 
         tipo_usuario = self.users.check_user(usuario_ou_email, senha)
+        
+        nome_completo = self.users.obter_nome_completo_usuario(usuario_ou_email)
+
 
         if tipo_usuario:
             manter_conectado = self.btn_manter_conectado.isChecked()
-            self.config.salvar_configuracoes(usuario_ou_email,senha, manter_conectado)
+            self.config.salvar_configuracoes(nome_completo,usuario_ou_email,senha, manter_conectado)
             print(f"Usuário salvo: {self.config.usuario}")  # DEBUG
             print(f"Senha salva: {self.config.senha}") # DEBUG
 
@@ -211,21 +216,21 @@ class Login(QMainWindow, Ui_Mainwindow_Login):
                 subprocess.Popen([python, script] + sys.argv[1:])
                 sys.exit()
 
-class PrimeiroAcesso(QMainWindow):  
+class PrimeiroAcesso(QDialog):  
     def __init__(self, parent=None):
         super(PrimeiroAcesso, self).__init__(parent)
         self.setWindowTitle("Primeiro Acesso")
         self.tema = Temas()
         self.users = DataBase()  # Defina self.users aqui
         self.users.connecta()    # <-- Conecta ao banco de dados
+
         
         self.setMinimumWidth(400)
         self.setMinimumHeight(400)
         
-        self.central_widget = QWidget()
-        self.setCentralWidget(self.central_widget)
         
-        self.layout = QVBoxLayout(self.central_widget)
+        self.layout = QVBoxLayout(self)
+        self.setLayout(self.layout)
 
         # Carregar tema
         config = self.tema.carregar_config_arquivo()
@@ -591,11 +596,15 @@ class PrimeiroAcesso(QMainWindow):
         self.layout.addWidget(self.btn_cadastrar)
 
         # Exibir a mensagem assim que a janela de primeiro acesso for exibida
-        QMessageBox.information(self,
-            "Informação",
-            "O usuário será cadastrado com  informações temporárias\n"
-            "assim que logado no sistema, ir em Cadastrar Usuário e incluir/alterar todas as informações necessárias. ",
+        QMessageBox.information(
+            self,
+            "Primeiro acesso",
+            "Você está realizando seu primeiro acesso ao sistema.\n\n"
+            "Seu cadastro será criado com informações temporárias. "
+            "Depois do login, acesse 'Cadastrar Usuário' para revisar "
+            "e atualizar seus dados."
         )
+
         
     def inserir_usuario_no_banco_de_dados(self):   
         # Realizar as verificações de campos
@@ -608,6 +617,19 @@ class PrimeiroAcesso(QMainWindow):
         segredo = "Não Cadastrado"
         usuario_logado = "Primeiro Acesso"
         data_ultima_troca = "Não Cadastrado"
+        cep = "Não Cadastrado" 
+        endereco = "Não Cadastrado" 
+        numero = "Não Cadastrado" 
+        cidade = "Não Cadastrado" 
+        bairro = "Não Cadastrado"
+        estado = "Não Cadastrado" 
+        complemento = "Não Cadastrado" 
+        telefone = "Não Cadastrado" 
+        email = "Não Cadastrado" 
+        data_de_nascimento = "Não Cadastrado" 
+        rg = "Não Cadastrado" 
+        cpf = "Não Cadastrado" 
+        cnpj = "Não Cadastrado"
 
         # Verificar se os campos obrigatórios estão preenchidos
         if not (nome and usuario and senha and confirmar_senha):
@@ -620,43 +642,54 @@ class PrimeiroAcesso(QMainWindow):
             return
 
         if self.combobox_acesso.currentText() == "Administrador":
-            QMessageBox.warning(self,
-                "Erro",
-                "Para primeiro acesso o usuário pode ser cadastrado somente como Convidado ou Usuário comum.\n" 
-                "O tipo de acesso para usuário administrador só pode ser realizado por outro administrador.\n"
-                "Por favor, entre em contato com seu administrador para revogar seu privilégio.\n"
-                "Se o erro persistir, entre em contato com o desenvolvedor do sistema.",        
+            QMessageBox.warning(
+                self,
+                "Acesso não permitido",
+                "Este é um cadastro de primeiro acesso.\n\n"
+                "Neste momento, o usuário pode ser cadastrado apenas como "
+                "Convidado ou Usuário comum.\n\n"
+                "Perfis com acesso de Administrador só podem ser atribuídos "
+                "por outro administrador do sistema.\n\n"
+                "Caso necessite desse nível de acesso, entre em contato com o administrador responsável."
             )
             return
 
+
         # Conectar ao banco de dados e inserir os dados
         try:
-            with self.users.connection as cn:
-                cursor = cn.cursor()
+            cursor = self.users.connection.cursor()
 
-                # Verificar se o usuário já existe
-                cursor.execute("SELECT * FROM users WHERE Usuário = ?", (usuario,))
-                existing_user = cursor.fetchone()
-                if existing_user:
-                    QMessageBox.warning(self,"Erro", "Já existe um usuário cadastrado no sistema! ")
-                    return
+            # Verificar se o usuário já existe
+            cursor.execute("SELECT * FROM users WHERE Usuário = ?", (usuario,))
+            existing_user = cursor.fetchone()
+            if existing_user:
+                QMessageBox.warning(self,"Erro", "Já existe um usuário cadastrado no sistema! ")
+                return
 
-                # Inserir o novo usuário no banco de dados
-                cursor.execute("""
-                        INSERT INTO users(
-                            Nome, Usuário, Senha, "Confirmar Senha",Acesso,
-                            "Última Troca de Senha","Data da Senha Cadastrada",
-                            "Data da Inclusão do Usuário",Segredo, "Usuário Logado"
-                        )
-                        VALUES (?,?,?,?,?,?,?,?,?,?)
-                """,(nome, usuario,senha,confirmar_senha,acesso,data_ultima_troca,
-                    data_atual,data_atual,segredo,usuario_logado))
-                cn.commit()
-                
+            # Inserir o novo usuário no banco de dados
+            cursor.execute("""
+                INSERT INTO users(
+                    Nome, "Usuário", Senha, "Confirmar Senha", Acesso,
+                    "Última Troca de Senha", "Data da Senha Cadastrada",
+                    "Data da Inclusão do Usuário", Segredo, "Usuário Logado",
+                    CEP, "Endereço", "Número",
+                    Cidade, Bairro, Estado, Complemento, Telefone,
+                    Email, "Data de Nascimento", RG, CPF, CNPJ
+                )
+                VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+            """, (
+                nome, usuario, senha, confirmar_senha, acesso,
+                data_ultima_troca, data_atual, data_atual,
+                segredo, usuario_logado, cep, endereco, numero,
+                cidade, bairro, estado, complemento, telefone,
+                email, data_de_nascimento, rg, cpf, cnpj
+            ))
 
-                # Mensagem de sucesso
-                QMessageBox.information(self,"Sucesso", "Usuário cadastrado com sucesso!")
-                self.close()  # Fecha a janela de cadastro
+            self.users.connection.commit()
+            
+            # Mensagem de sucesso
+            QMessageBox.information(self,"Sucesso", "Usuário cadastrado com sucesso!")
+            self.close()  # Fecha a janela de cadastro
 
         except sqlite3.Error as e:
             print(f"Erro ao salvar o usuário: {e}")

@@ -360,6 +360,7 @@ class Pagina_Usuarios(QWidget):
 
             for linha_index, linha_data in enumerate(usuarios):
                 self.table_ativos.insertRow(linha_index)
+                
                 for col, value in enumerate(linha_data):
                     item = self.formatar_texto(str(value))
                     self.table_ativos.setItem(linha_index, col, item)

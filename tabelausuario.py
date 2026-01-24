@@ -45,9 +45,6 @@ class TabelaUsuario(QMainWindow):
         
         self.coluna_checkboxes_adicionada = False  # Variável para controlar se a coluna de checkbox foi adicionada
 
-       
-
-        self.limpar_campos_de_texto()
 
         config = self.temas.carregar_config_arquivo()
         self.tema = config.get("tema", "claro")
@@ -129,7 +126,7 @@ class TabelaUsuario(QMainWindow):
 
         # Inicializar a tabela e limpar campos
         self.limpar_campos_de_texto()
-        self.preencher_tabela_usuario()
+        self.carregar_tabela_usuarios()
 
 
         # Conectar sinais dos botões
@@ -675,7 +672,7 @@ class TabelaUsuario(QMainWindow):
         return estilo_completo
 
     
-    def preencher_tabela_usuario(self):
+    def carregar_tabela_usuarios(self):
         self.table_widget.setRowCount(0)
 
         column_titles = [
@@ -699,7 +696,7 @@ class TabelaUsuario(QMainWindow):
 
 
                 for i, dado in enumerate(usuario):
-                    item = QTableWidgetItem(str(dado))
+                    item = self.formatar_texto(str(dado))
                     self.table_widget.setItem(row_position, i, item)
          
 
@@ -1371,9 +1368,12 @@ class TabelaUsuario(QMainWindow):
         item.setTextAlignment(Qt.AlignCenter)
 
         # Define a cor com base no tema atual
-        if self.tema == "claro":
+        if self.tema == "escuro":
+            cor = QColor("white")
+            
+        elif self.tema == "claro":
             cor = QColor("black")
-        else:  # Para "escuro" e "clássico"
+        else: #clássico
             cor = QColor("white")
 
         item.setForeground(QBrush(cor))

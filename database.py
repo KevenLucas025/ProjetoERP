@@ -101,7 +101,8 @@ class DataBase:
                     RG TEXT,
                     CPF TEXT,
                     CNPJ TEXT,
-                    Imagem BLOB,
+                    "Imagem Original" TEXT,
+                    "Imagem Usuário" TEXT,
                     "Última Troca de Senha" TEXT,
                     "Data da Senha Cadastrada" TEXT,
                     "Data da Inclusão do Usuário" TEXT,
@@ -591,7 +592,7 @@ class DataBase:
 
             cursor.execute("""
                 INSERT INTO users(Nome, Usuário, Senha, "Confirmar Senha", CEP, Endereço, Número, Cidade, Bairro, Estado, Complemento,
-                                Telefone, Email, "Data de Nascimento", RG, CPF, CNPJ, Imagem, "Última Troca de Senha",
+                                Telefone, Email, "Data de Nascimento", RG, CPF, CNPJ, "Imagem Original", "Última Troca de Senha",
                                 "Data da Senha Cadastrada", "Data da Inclusão do Usuário", Segredo, "Usuário Logado", Acesso)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """, (
@@ -725,6 +726,24 @@ class DataBase:
         except Exception as e:
             print(f"Erro ao executar a consulta: {str(e)}")
             return None
+        
+    def salvar_imagem_usuario(self, usuario, caminho_imagem):
+        cursor = self.connection.cursor()
+        cursor.execute("""
+            UPDATE users
+            SET "Imagem Usuário" = ?
+            WHERE "Usuário" = ?
+        """, (caminho_imagem, usuario))
+        self.connection.commit()
+        
+    def obter_imagem_usuario(self, usuario):
+        cursor = self.connection.cursor()
+        cursor.execute("""
+            SELECT "Imagem Usuário" FROM users WHERE "Usuário" = ?
+        """, (usuario,))
+        row = cursor.fetchone()
+        return row[0] if row and row[0] else None
+
 
 
     def obter_produtos_base(self):
@@ -842,6 +861,15 @@ class DataBase:
         finally:
             if cursor:
                 cursor.close()
+                
+    def obter_nome_completo_usuario(self, usuario_login):
+        cursor = self.connection.cursor()
+        cursor.execute("""
+            SELECT Nome FROM users WHERE Usuário = ?
+        """, (usuario_login,))
+        resultado = cursor.fetchone()
+        return resultado[0] if resultado else None
+
 
     def recuperar_usuario_por_id(self, id_usuario):
         self.garantir_conexao()
@@ -914,6 +942,7 @@ class DataBase:
 
 if __name__ == "__main__":
     db = DataBase()
+    db.create_table_users()
     db.close_connection()
     
     

@@ -7,6 +7,7 @@ class Configuracoes_Login:
     def __init__(self, main_window):
         self.main_window = main_window
         self.tamanho_fonte_percentual = 100  # valor padrão
+        self.nome_usuario = None
         self.usuario = None
         self.senha = None
         self.mantem_conectado = False
@@ -65,6 +66,7 @@ class Configuracoes_Login:
 
                 config = json.loads(conteudo)
 
+                self.nome_usuario = config.get("nome_usuario","")
                 self.usuario = config.get("usuario", "")
                 self.senha = config.get("senha", "")
                 self.mantem_conectado = config.get("mantem_conectado", False)
@@ -93,8 +95,10 @@ class Configuracoes_Login:
             self.tamanho_fonte_percentual = 100 
 
 
-    def salvar(self, usuario=None, senha=None, mantem_conectado=None, tamanho_fonte_percentual=None):
+    def salvar(self,nome_usuario=None, usuario=None, senha=None, mantem_conectado=None, tamanho_fonte_percentual=None):
         # Atualiza atributos da instância
+        if nome_usuario is not None:
+            self.nome_usuario = nome_usuario
         if usuario is not None:
             self.usuario = usuario
         if senha is not None:
@@ -105,6 +109,7 @@ class Configuracoes_Login:
             self.tamanho_fonte_percentual = tamanho_fonte_percentual
 
         config = {
+            "nome_usuario": self.nome_usuario or "",
             "usuario": self.usuario or "",
             "senha": self.senha or "",
             "mantem_conectado": self.mantem_conectado,
@@ -126,7 +131,12 @@ class Configuracoes_Login:
     def salvar_atalho(self, acao, tecla):
         """Salva/atualiza um atalho específico e persiste no JSON"""
         self.atalhos[acao] = tecla
-        self.salvar(self.usuario, self.senha, self.mantem_conectado)
+        self.salvar(
+            nome_usuario=self.nome_usuario,
+            usuario=self.usuario,
+            senha=self.senha,
+            mantem_conectado=self.mantem_conectado)
+
 
     def obter_atalho(self, acao):
         """Retorna o atalho de uma ação, ou None"""
@@ -137,13 +147,14 @@ class Configuracoes_Login:
         return self.atalhos
 
 
-    def salvar_configuracoes(self, usuario, senha, mantem_conectado):
+    def salvar_configuracoes(self,nome_usuario=None,usuario=None,senha=None,mantem_conectado=False ):
         """Atualiza as variáveis e salva no JSON."""
+        self.nome_usuario = nome_usuario
         self.usuario = usuario
         self.senha = senha
         self.mantem_conectado = mantem_conectado
         print(f"Salvando configurações: Usuário - {usuario}, Senha - {senha}")
-        self.salvar(usuario, senha, mantem_conectado)
+        self.salvar(nome_usuario,usuario, senha, mantem_conectado)
 
     def salvar_percentual_fonte(self, percentual):
         """Salva apenas o percentual de fonte no JSON"""
@@ -157,6 +168,7 @@ class Configuracoes_Login:
         self.nao_mostrar_mensagem_arquivo_excel_fisicos = False
         self.nao_mostrar_aviso_atualizacoes = False
         self.salvar(None, None, False)
+        self.nome_usuario = ""
         self.usuario = ""
         self.senha = None
         self.mantem_conectado = False
@@ -182,6 +194,11 @@ class Configuracoes_Login:
         self.carregar()
         # Ajustado para pegar o usuário diretamente do JSON e não de um método get
         return self.usuario if self.usuario else None
+    
+    def obter_nome_completo_usuario(self):
+        self.carregar()
+        # Ajustado para pegar o nome completo do usuário diretamente do JSON e não de um método get
+        return self.nome_usuario if self.nome_usuario else None
 
     def carregar_historico_autocompletar(self,nome_campo):
         return self.historico_autocompletes.get(nome_campo, [])

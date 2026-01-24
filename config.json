@@ -1,4 +1,5 @@
 {
+    "nome_usuario": "Keven",
     "usuario": "Keven",
     "senha": "123",
     "mantem_conectado": false,
@@ -10,7 +11,8 @@
     "historico_autocompletes": {
         "txt_nome": [
             "Kee",
-            "Jorge Lucas"
+            "Jorge Lucas",
+            "Keven Lucas da Silva Jesus"
         ],
         "txt_usuario_cadastro": [
             "Jorge"
