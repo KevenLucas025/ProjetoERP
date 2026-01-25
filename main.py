@@ -1,14 +1,14 @@
 #*********************************************************************************************************************
 import re
 from PySide6.QtCore import (Qt, QTimer, QDate, QBuffer, QByteArray, QIODevice, Signal,
-                            QEvent,QPoint)
+                            QEvent,QPoint,QPropertyAnimation)
 from PySide6 import QtCore
 from PySide6.QtWidgets import (QMainWindow, QMessageBox, QPushButton,
                                QLabel, QFileDialog, QVBoxLayout,
                                QMenu,QTableWidgetItem,QCheckBox,QApplication,QToolButton,QHeaderView,QCompleter,
                                QComboBox,QInputDialog,QProgressDialog,QDialog,QLineEdit,QWidget,QHBoxLayout,QProgressBar,QFormLayout,QTextEdit)
 from PySide6.QtGui import (QDoubleValidator, QIcon, QColor, QPixmap,QBrush,
-                           QAction,QMovie,QImage,QShortcut,QKeySequence,QPainterPath,QPainter,QFontMetrics)
+                           QAction,QMovie,QImage,QShortcut,QKeySequence,QPainterPath,QPainter)
 from login import Login
 from mane_python import Ui_MainWindow
 from database import DataBase
@@ -23,6 +23,7 @@ from atualizarusuario import AtualizarUsuario
 from pg_configuracoes import Pagina_Configuracoes
 from estoqueprodutos import EstoqueProduto
 from historicousuario import Pagina_Usuarios
+from utils import AvatarDialog
 from utils import MostrarSenha,configurar_frame_valores,caminho_recurso
 from utils import Temas
 from clientes_juridicos import Clientes_Juridicos
@@ -35,6 +36,7 @@ from email.message import EmailMessage
 import json
 import sqlite3
 import os
+import uuid
 import datetime
 from datetime import datetime
 import base64
@@ -553,41 +555,31 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.txt_cep.editingFinished.connect(self.on_cep_editing_finished)
         
+        
         self.label_nome_usuario.setStyleSheet("""
             color: white;
             font-weight: bold;
         """)
+
+
         
         self.label_avatar.setCursor(Qt.PointingHandCursor)
         self.label_avatar.setAlignment(Qt.AlignCenter)
         self.label_avatar.setFixedSize(40, 40)
 
-        # Caminho da foto do usuário
-        self.caminho_foto_usuario = caminho_recurso("caminho/da/foto_usuario.png")
-
-        # Menu do avatar
-        self.menu_avatar = QMenu(self)
-        acao_ver_foto = QAction("👁 Ver foto", self)
-        acao_alterar_foto = QAction("🔄 Alterar foto", self)
-
-        self.menu_avatar.addAction(acao_ver_foto)
-        self.menu_avatar.addAction(acao_alterar_foto)
-
-        acao_ver_foto.triggered.connect(self.ver_foto_usuario)
-        acao_alterar_foto.triggered.connect(self.alterar_foto_usuario)
 
         # Evento de clique no avatar
         def avatar_click(event):
             if event.button() == Qt.LeftButton:
-                self.menu_avatar.exec(
-                    self.label_avatar.mapToGlobal(QPoint(0, self.label_avatar.height()))
-                )
+                self.abrir_modal_avatar()
 
         self.label_avatar.mousePressEvent = avatar_click
 
+
         # Atualizações iniciais
-        self.atualizar_avatar()
         self.atualizar_usuario_logado()
+        self.atualizar_avatar()
+
         
     def atualizar_usuario_logado(self):
         nome_completo = self.get_nome_completo_usuario()
@@ -602,14 +594,61 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         # Iniciais no avatar
         self.label_avatar.setText(self.gerar_iniciais(nome_completo))
+        
+    def animar_entrada(self):
+        self.setWindowOpacity(0)
+
+        self.anim_opacity = QPropertyAnimation(self, b"windowOpacity")
+        self.anim_opacity.setDuration(250)
+        self.anim_opacity.setStartValue(0)
+        self.anim_opacity.setEndValue(1)
+
+        self.anim_opacity.start()
+        
+    def recortar_imagem_circular(self, pixmap, size=300):
+        pixmap = pixmap.scaled(
+            size, size,
+            Qt.KeepAspectRatioByExpanding,
+            Qt.SmoothTransformation
+        )
+
+        result = QPixmap(size, size)
+        result.fill(Qt.transparent)
+
+        painter = QPainter(result)
+        painter.setRenderHint(QPainter.Antialiasing)
+
+        path = QPainterPath()
+        path.addEllipse(0, 0, size, size)
+        painter.setClipPath(path)
+
+        painter.drawPixmap(0, 0, pixmap)
+        painter.end()
+
+        return result
+    
+    def abrir_modal_avatar(self):
+        if not self.caminho_foto_usuario or not os.path.exists(self.caminho_foto_usuario):
+            QMessageBox.information(self, "Foto", "Usuário não possui foto.")
+            return
+
+        dialog = AvatarDialog(
+            parent=self,
+            caminho_imagem=self.caminho_foto_usuario
+        )
+        dialog.exec()
+
+
+
 
     def atualizar_avatar(self):
         usuario = self.get_usuario_logado()
         nome_completo = self.get_nome_completo_usuario() or "Usuário"
 
-        db = DataBase()
-        db.connecta()
-        caminho = db.obter_imagem_usuario(usuario)
+
+        caminho = self.db.obter_imagem_usuario(usuario)
+        
+        self.caminho_foto_usuario = caminho
 
         if caminho and os.path.exists(caminho):
             pixmap = QPixmap(caminho)
@@ -626,7 +665,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 font-size: 14px;
                 border-radius: 20px;
             """)
-
 
 
     def ver_foto_usuario(self):
@@ -648,7 +686,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         dialog.exec()
         
-    def alterar_foto_usuario(self):
+    def alterar_foto_usuario(self, retornar_caminho=False):
         arquivo, _ = QFileDialog.getOpenFileName(
             self,
             "Selecionar foto",
@@ -657,25 +695,31 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         )
 
         if not arquivo:
-            return
+            return None
 
         usuario = self.get_usuario_logado()
-        
+
         pasta_destino = caminho_recurso("media/usuarios")
-        os.makedirs(pasta_destino,exist_ok=True)
-        
+        os.makedirs(pasta_destino, exist_ok=True)
+
         extensao = os.path.splitext(arquivo)[1]
-        novo_caminho = os.path.join(pasta_destino, f"{usuario}{extensao}")
-        
+        nome_arquivo = f"{usuario}_{uuid.uuid4().hex}{extensao}"
+        novo_caminho = os.path.join(pasta_destino, nome_arquivo)
+
         shutil.copyfile(arquivo, novo_caminho)
 
-        # salva no banco
-        db = DataBase()
-        db.connecta()
-        db.salvar_imagem_usuario(usuario, novo_caminho)
+        caminho_antigo = self.db.obter_imagem_usuario(usuario)
+        if caminho_antigo and os.path.exists(caminho_antigo):
+            os.remove(caminho_antigo)
+
+        self.db.salvar_imagem_usuario(usuario, novo_caminho)
 
         self.caminho_foto_usuario = novo_caminho
         self.atualizar_avatar()
+
+        if retornar_caminho:
+            return novo_caminho
+
 
         
     def pixmap_circular(self, pixmap, size=40):
@@ -2145,9 +2189,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             return
 
         try:
-            db = DataBase()
-            db.connecta()
-
             # Coleta de dados dos campos
             nome = self.txt_nome.text().strip()
             usuario = self.gerar_codigo_usuarios()
@@ -2171,7 +2212,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             acesso = self.perfil_usuarios.currentText()
 
             usuario_logado = self.config.obter_usuario_logado()
-            db.salvar_usuario_logado(usuario_logado)
+            self.db.salvar_usuario_logado(usuario_logado)
 
             # Validação de campos obrigatórios
             campos_vazios = []
@@ -2215,7 +2256,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
 
             # Verificar se usuário já existe
-            campo_duplicado = db.user_exists(usuario,telefone,email,rg,cpf,cnpj)
+            campo_duplicado = self.db.user_exists(usuario,telefone,email,rg,cpf,cnpj)
             if campo_duplicado:
                 mensagens = {
                     'usuario': f"Já existe um usuário cadastrado com o login {usuario}.",
@@ -2233,7 +2274,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 
 
             # Inserir novo usuário
-            db.insert_user(
+            self.db.insert_user(
                 nome=nome,
                 usuario=usuario,
                 senha=senha,
@@ -2282,8 +2323,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.perfil_estado.setCurrentIndex(0)
             self.perfil_usuarios.setCurrentIndex(0)
             self.label_imagem_usuario.clear()
-            
-            
 
         except Exception as e:
             QMessageBox.critical(self, "Erro", f"Erro ao cadastrar usuário:\n{e}")
@@ -2784,9 +2823,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 #*********************************************************************************************************************
     def inserir_produto_no_bd(self, produto_info, registrar_historico=True):
         try:
-            db = DataBase()
-            db.connecta()
-            cursor = db.connection.cursor()
+            cursor = self.db.connection.cursor()
 
             # ===============================
             # 1️⃣ Verificar se o cliente existe
@@ -2848,7 +2885,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             # ===============================
             # 5️⃣ Inserir produto
             # ===============================
-            db.insert_product(
+            self.db.insert_product(
                 produto_info["produto"],
                 produto_info["quantidade"],
                 valor_real_formatado,
@@ -2926,7 +2963,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             # 8️⃣ Se for manual, parar aqui
             # ===============================
             if "manual" in modo:
-                db.connection.commit()
+                self.db.connection.commit()
                 return
 
             # ===============================
@@ -2945,7 +2982,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                     WHERE CPF = ?
                 """, (valor_total_formatado, produto_info["data_cadastro"], cpf_final))
 
-            db.connection.commit()
+            self.db.connection.commit()
 
             # ===============================
             # 🔁 Atualizar telas
@@ -3107,9 +3144,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             "descricao_produto": self.txt_descricao_produto_3.text()
         }
          # Verificar se o cliente existe antes de adicionar
-        db = DataBase()
-        db.connecta()
-        cursor = db.connection.cursor()
+        cursor = self.db.connection.cursor()
 
         cliente_nome = produto_info["cliente"]
         
@@ -3456,11 +3491,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         produto_descricao = self.txt_descricao_produto_3.text()
         produto_id = self.produto_id
 
-        # Conectar ao banco de dados
-        db = DataBase()
+
         try:
-            db.connecta()
-            db.atualizar_produto(
+            self.db.atualizar_produto(
                 produto_id, produto_nome, produto_quantidade,produto_valor_real,
                 produto_desconto,produto_total_sem_desconto,produto_valor_total,produto_data_cadastro,
                 produto_codigo_item, produto_cliente, produto_descricao, produto_imagem

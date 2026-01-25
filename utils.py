@@ -1,6 +1,6 @@
-from PySide6.QtWidgets import QLineEdit, QPushButton,QVBoxLayout,QLabel,QFrame,QApplication,QMessageBox
-from PySide6.QtCore import Qt, QPropertyAnimation
-from PySide6.QtGui import QIcon
+from PySide6.QtWidgets import QLineEdit, QPushButton,QVBoxLayout,QLabel,QFrame,QApplication,QDialog,QGraphicsScene,QHBoxLayout,QGraphicsView
+from PySide6.QtCore import Qt, QPropertyAnimation,Signal,QRectF
+from PySide6.QtGui import QIcon,QPixmap,QPainterPath,QPainter
 import json
 import os
 import sys
@@ -128,6 +128,152 @@ def caminho_recurso(relativo):
             base_path = os.path.abspath(".")
 
         return os.path.join(base_path, relativo)
+    
+class CropDialog(QDialog):
+    def __init__(self, pixmap_original, parent=None):
+        super().__init__(parent)
+        self.setWindowTitle("Recortar imagem")
+        self.setFixedSize(420, 460)
+
+        self.pixmap_original = pixmap_original
+
+        self.scene = QGraphicsScene(self)
+        self.view = QGraphicsView(self.scene)
+        self.view.setRenderHint(QPainter.Antialiasing)
+        self.view.setAlignment(Qt.AlignCenter)
+
+        self.view.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.view.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+
+        self.item = self.scene.addPixmap(pixmap_original)
+        self.item.setFlag(self.item.ItemIsMovable, True)
+
+        self.scene.setSceneRect(self.item.boundingRect())
+
+        btn_ok = QPushButton("✔ Confirmar")
+        btn_cancel = QPushButton("✖ Cancelar")
+
+        btn_ok.clicked.connect(self.accept)
+        btn_cancel.clicked.connect(self.reject)
+
+        btns = QHBoxLayout()
+        btns.addWidget(btn_cancel)
+        btns.addWidget(btn_ok)
+
+        layout = QVBoxLayout(self)
+        layout.addWidget(self.view)
+        layout.addLayout(btns)
+
+    def obter_pixmap_recortado(self):
+        size = 200
+        center = self.view.mapToScene(self.view.viewport().rect().center())
+
+        rect = QRectF(
+            center.x() - size / 2,
+            center.y() - size / 2,
+            size, size
+        )
+
+        cropped = QPixmap(size, size)
+        cropped.fill(Qt.transparent)
+
+        painter = QPainter(cropped)
+        painter.setRenderHint(QPainter.Antialiasing)
+
+        path = QPainterPath()
+        path.addEllipse(0, 0, size, size)
+        painter.setClipPath(path)
+
+        painter.drawPixmap(
+            QRectF(0, 0, size, size),
+            self.scene.renderToPixmap(rect)
+        )
+
+        painter.end()
+        return cropped
+    
+class AvatarDialog(QDialog):
+    imagem_alterada = Signal(str)
+
+    def __init__(self, parent, caminho_imagem):
+        super().__init__(parent)
+        
+        
+
+
+        self.parent = parent
+        self.caminho_imagem = caminho_imagem
+
+        self.setWindowTitle("Foto do usuário")
+        self.setModal(True)
+        self.setFixedSize(320, 360)
+
+        layout = QVBoxLayout(self)
+        layout.setAlignment(Qt.AlignCenter)
+        layout.setContentsMargins(20, 20, 20, 20)
+
+        self.label_foto = QLabel()
+        self.label_foto.setFixedSize(200, 200)
+        self.label_foto.setAlignment(Qt.AlignCenter)
+
+        self.atualizar_preview(caminho_imagem)
+
+        self.label_foto.setStyleSheet("""
+            QLabel {
+                border-radius: 100px;
+                background-color: #f3f4f6;
+            }
+        """)
+
+        self.btn_alterar = QPushButton("📷 Alterar foto")
+        self.btn_alterar.setFixedHeight(36)
+        self.btn_alterar.clicked.connect(self.alterar_foto)
+
+        self.btn_recortar = QPushButton("✂ Recortar imagem")
+        self.btn_recortar.setFixedHeight(36)
+        self.btn_recortar.setVisible(True)
+        self.btn_recortar.clicked.connect(self.recortar_imagem)
+
+        layout.addWidget(self.label_foto)
+        layout.addSpacing(20)
+        layout.addWidget(self.btn_alterar)
+        layout.addWidget(self.btn_recortar)
+
+
+    def atualizar_preview(self, novo_caminho):
+        pixmap = QPixmap(novo_caminho).scaled(
+            200, 200,
+            Qt.KeepAspectRatio,
+            Qt.SmoothTransformation
+        )
+        self.label_foto.setPixmap(pixmap)
+
+        
+    def alterar_foto(self):
+        novo_caminho = self.parent.alterar_foto_usuario(retornar_caminho=True)
+        if novo_caminho:
+            self.caminho_imagem = novo_caminho
+            self.atualizar_preview(novo_caminho)
+            self.btn_recortar.setVisible(True)
+
+            
+    def recortar_imagem(self):
+        pixmap = QPixmap(self.caminho_imagem)
+
+        dialog = CropDialog(pixmap, self)
+        if dialog.exec():
+            pixmap_recortado = dialog.obter_pixmap_recortado()
+            pixmap_recortado.save(self.caminho_imagem)
+
+            self.label_foto.setPixmap(pixmap_recortado)
+            self.parent.atualizar_avatar()
+
+
+
+
+
+        
+
 
 class Temas:
     def __init__(self):
@@ -1581,4 +1727,5 @@ class Temas:
             } 
             
         """)
-    
+
+
