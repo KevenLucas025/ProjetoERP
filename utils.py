@@ -1,6 +1,7 @@
-from PySide6.QtWidgets import QLineEdit, QPushButton,QVBoxLayout,QLabel,QFrame,QApplication,QDialog,QGraphicsScene,QHBoxLayout,QGraphicsView
-from PySide6.QtCore import Qt, QPropertyAnimation,Signal,QRectF
-from PySide6.QtGui import QIcon,QPixmap,QPainterPath,QPainter
+from PySide6.QtWidgets import (QLineEdit, QPushButton,QVBoxLayout,QLabel,QFrame,QApplication,QDialog,
+                               QGraphicsScene,QGraphicsView,QGraphicsPixmapItem,QGraphicsItem)
+from PySide6.QtCore import Qt, QPropertyAnimation,Signal,QRectF,QPointF,QSize
+from PySide6.QtGui import QIcon,QPixmap,QPainterPath,QPainter,QColor
 import json
 import os
 import sys
@@ -129,150 +130,409 @@ def caminho_recurso(relativo):
 
         return os.path.join(base_path, relativo)
     
-class CropDialog(QDialog):
-    def __init__(self, pixmap_original, parent=None):
-        super().__init__(parent)
-        self.setWindowTitle("Recortar imagem")
-        self.setFixedSize(420, 460)
+class VisaoRecorte(QGraphicsView):
+    def __init__(self, scene):
+        super().__init__(scene)
+        self.proporcao_margem = 0.21
+        self.setCursor(Qt.SizeAllCursor)
+        
+        # MELHORIA DE PERFORMANCE:
+        # SmartViewportUpdate é mais eficiente que FullViewportUpdate
+        self.setViewportUpdateMode(QGraphicsView.SmartViewportUpdate)
+        self.setRenderHint(QPainter.Antialiasing)
+        self.setRenderHint(QPainter.SmoothPixmapTransform)
+        
+        # Removemos mousePress/Move/Release daqui para não dar conflito
 
-        self.pixmap_original = pixmap_original
+    def resizeEvent(self, event):
+        super().resizeEvent(event)
+        self.centerOn(0, 0)
 
-        self.scene = QGraphicsScene(self)
-        self.view = QGraphicsView(self.scene)
-        self.view.setRenderHint(QPainter.Antialiasing)
-        self.view.setAlignment(Qt.AlignCenter)
+    def diametro_recorte(self):
+        viewport = self.viewport().rect()
+        tamanho = min(viewport.width(), viewport.height())
+        return tamanho * (1 - self.proporcao_margem)
 
-        self.view.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-        self.view.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-
-        self.item = self.scene.addPixmap(pixmap_original)
-        self.item.setFlag(self.item.ItemIsMovable, True)
-
-        self.scene.setSceneRect(self.item.boundingRect())
-
-        btn_ok = QPushButton("✔ Confirmar")
-        btn_cancel = QPushButton("✖ Cancelar")
-
-        btn_ok.clicked.connect(self.accept)
-        btn_cancel.clicked.connect(self.reject)
-
-        btns = QHBoxLayout()
-        btns.addWidget(btn_cancel)
-        btns.addWidget(btn_ok)
-
-        layout = QVBoxLayout(self)
-        layout.addWidget(self.view)
-        layout.addLayout(btns)
-
-    def obter_pixmap_recortado(self):
-        size = 200
-        center = self.view.mapToScene(self.view.viewport().rect().center())
-
-        rect = QRectF(
-            center.x() - size / 2,
-            center.y() - size / 2,
-            size, size
-        )
-
-        cropped = QPixmap(size, size)
-        cropped.fill(Qt.transparent)
-
-        painter = QPainter(cropped)
-        painter.setRenderHint(QPainter.Antialiasing)
+    def drawForeground(self, painter, rect):
+        # O desenho do overlay (a parte escura)
+        painter.save()
+        diametro = self.diametro_recorte()
+        centro = QPointF(0, 0)
 
         path = QPainterPath()
-        path.addEllipse(0, 0, size, size)
-        painter.setClipPath(path)
+        path.addRect(rect) # Fundo escuro total
+        
+        # "Fura" o círculo no meio
+        path.addEllipse(centro, diametro/2, diametro/2)
 
-        painter.drawPixmap(
-            QRectF(0, 0, size, size),
-            self.scene.renderToPixmap(rect)
+        painter.setBrush(QColor(0, 0, 0, 170))
+        painter.setPen(Qt.NoPen)
+        painter.drawPath(path)
+        painter.restore()
+
+
+        
+class ItemPixmapMovel(QGraphicsPixmapItem):
+    def __init__(self, pixmap):
+        super().__init__(pixmap)
+        self.setFlag(QGraphicsItem.ItemSendsScenePositionChanges)
+        # Ativamos a flag nativa de movimento, mas controlaremos o delta para precisão
+        self.setFlag(QGraphicsItem.ItemIsMovable, False) 
+        
+        
+        self._arrastando = False
+        self._ultima_pos_mouse = QPointF()
+        
+    def wheelEvent(self, event):
+        
+        # 1. Define a intensidade do zoom (1.1 aumenta, 0.9 diminui)
+        fator_zoom = 1.1 if event.delta() > 0 else 0.9
+        nova_escala = self.scale() * fator_zoom
+        
+        # 2. Calcula a escala mínima para a imagem NUNCA ficar menor que o círculo
+        view = self.scene().views()[0]
+        diametro = view.diametro_recorte()
+        react_item = self.boundingRect()
+        
+        # A escala mínima é o que for necessário para cobrir o diâmetro em ambos os eixos
+        escala_minima = max(diametro / react_item.width(), diametro / react_item.height())
+
+        # 3. Aplica travas (mínimo para cobrir o círculo e máximo de 5x para não pixelar demais)
+        if nova_escala < escala_minima:
+            nova_escala = escala_minima
+        elif nova_escala > 5.0:
+            nova_escala = 5.0
+
+        # 4. Aplica a escala
+        self.setScale(nova_escala)
+
+        # 5. IMPORTANTE: Ao mudar a escala, a posição pode ficar inválida (frestas aparecendo).
+        # Chamamos setPos nela mesma para disparar o 'itemChange' e corrigir os limites.
+        self.setPos(self.pos())
+        
+        event.accept()
+
+    def mousePressEvent(self, event):
+        # Muda o cursor para "fechado" ao segurar (estilo grab)
+        if event.button() == Qt.LeftButton:
+            self.scene().views()[0].setCursor(Qt.SizeAllCursor)
+            self._arrastando = True
+            self._ultima_pos_mouse = event.scenePos()
+            event.accept()
+            
+            
+
+    def mouseMoveEvent(self, event):
+        if self._arrastando:
+            # Cálculo de delta direto na cena (mais rápido)
+            pos_atual = event.scenePos()
+            delta = pos_atual - self._ultima_pos_mouse
+            
+            self.setPos(self.pos() + delta)
+            self._ultima_pos_mouse = pos_atual
+            event.accept()
+
+    def mouseReleaseEvent(self, event):
+        self._arrastando = False
+        self.scene().views()[0].setCursor(Qt.SizeAllCursor)
+        event.accept()
+
+    def itemChange(self, alteracao, valor):
+        if alteracao == QGraphicsItem.ItemPositionChange and self.scene():
+            return self.tratar_limites(valor)
+        return super().itemChange(alteracao, valor)
+
+    def tratar_limites(self, nova_pos):
+        # Mantém a lógica de não deixar o fundo aparecer
+        view = self.scene().views()[0]
+        raio = view.diametro_recorte() / 2
+        
+        escala = self.scale()
+        br = self.boundingRect()
+        largura = br.width() * escala
+        altura = br.height() * escala
+
+        # Limites (ajustados para o centro 0,0)
+        max_x = -raio
+        min_x = raio - largura
+        max_y = -raio
+        min_y = raio - altura
+
+        x = max(min(nova_pos.x(), max_x), min_x)
+        y = max(min(nova_pos.y(), max_y), min_y)
+
+        return QPointF(x, y)
+
+ 
+class DialogoRecorteImagem(QDialog):
+    def __init__(self, pixmap, parent=None):
+        super().__init__(parent)
+        self.setWindowTitle("Recortar imagem")
+        self.setFixedSize(520, 560)
+
+        if parent and hasattr(parent, 'temas'):
+            self.temas = parent.temas
+        else:
+            self.temas = Temas()
+
+        self.temas = Temas()
+        self.config = self.temas.config
+        tema = self.config.get("tema", "classico")
+        
+        if tema == "escuro":
+            botao_style = """
+                QPushButton {
+                border-radius: 28px;
+                background: qlineargradient(
+                    x1:0, y1:0, x2:0, y2:1,
+                    stop:0 rgb(60, 60, 60),   /* topo */
+                    stop:1 rgb(100, 100, 100) /* base */
+                );      
+                min-height: 24px;  /* Adicione esta linha */
+            }
+
+            QPushButton:hover {
+                background-color: #444444;
+            }
+
+            QPushButton:pressed {
+                background-color: #555555;
+                border: 2px solid #888888;
+            }
+            """
+        elif tema == "claro":
+            botao_style = """
+            /* Botões gerais  */
+            QPushButton {
+                border-radius: 8px;
+                background: qlineargradient(
+                    x1:0, y1:0, x2:0, y2:1,
+                    stop:0 rgb(220, 220, 220),  /* topo */
+                    stop:1 rgb(245, 245, 245)   /* base */
+                );
+                font-size: 14px;
+                color: #000000; /* texto escuro */
+            }
+
+            QPushButton:hover {
+                background-color: #e0e0e0;
+            }
+
+            QPushButton:pressed {
+                background-color: #d0d0d0;
+                border: 2px solid #aaaaaa;
+            }
+            """
+        else:
+            botao_style = """
+            QPushButton{
+                color: rgb(255, 255, 255);
+                border-radius: 8px;
+                font-size: 16px;
+                background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */
+                border: 4px solid transparent;
+            }
+            
+            QPushButton:hover{
+                background: qlineargradient(x1:0, y1:0, x2:0, y2:1, 
+                stop:0 rgb(100, 180, 255), 
+                stop:1 rgb(150, 220, 255)); /* Gradiente de azul mais claro para azul ainda mais claro */
+                color: black;
+            }
+            
+            """
+
+        # 1. Setup da Cena e View
+        self.cena = QGraphicsScene(self)
+        self.visao = VisaoRecorte(self.cena)
+        
+        # 2. Layout Principal (para a View ocupar tudo)
+        layout_principal = QVBoxLayout(self)
+        layout_principal.setContentsMargins(0, 0, 0, 0) # Sem bordas
+        layout_principal.addWidget(self.visao)
+
+        # Configurações da View
+        self.visao.setRenderHints(QPainter.Antialiasing | QPainter.SmoothPixmapTransform)
+        self.visao.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.visao.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.visao.setFrameShape(QFrame.NoFrame) # Remove a borda da moldura
+
+        # 3. Configurações da Imagem
+        self.item_imagem = ItemPixmapMovel(pixmap)
+        self.cena.addItem(self.item_imagem)
+
+        # 4. Cálculo da Escala (Usando o tamanho fixo do diálogo)
+        # Como o diálogo é fixo 520x560, usamos isso para o cálculo inicial
+        rect_visao_w = 520
+        rect_visao_h = 520 # Usamos a parte quadrada para a imagem
+        rect_item = self.item_imagem.boundingRect()
+
+        escala = max(
+            rect_visao_w / rect_item.width(),
+            rect_visao_h / rect_item.height()
+        )
+        self.item_imagem.setScale(escala)
+
+        # 5. Centralização
+        centro = rect_item.center()
+        self.item_imagem.setPos(
+            -centro.x() * escala,
+            -centro.y() * escala
         )
 
+        self.cena.setSceneRect(-2000, -2000, 4000, 4000)
+        self.visao.centerOn(0, 0)
+
+        # --- Botão Confirmar (Flutuante) ---
+        # Criamos o botão com 'self' como pai para ele flutuar sobre o layout
+        self.botao_confirmar = QPushButton(self)
+        self.botao_confirmar.setFixedSize(60, 60)
+        self.botao_confirmar.clicked.connect(self.accept)
+        
+        icone = QIcon("imagens/verificado.png")
+        self.botao_confirmar.setIcon(icone)
+        self.botao_confirmar.setIconSize(QSize(28, 28))
+        self.botao_confirmar.setCursor(Qt.PointingHandCursor)
+
+        self.botao_confirmar.setStyleSheet(botao_style)
+
+        # Posicionamento absoluto do botão
+        self.posicionar_botao()
+        
+        # Garante que o botão fique na frente de tudo
+        self.botao_confirmar.raise_()
+        
+        self.item_imagem.moveBy(0.001, 0)
+        self.item_imagem.moveBy(-0.001, 0)
+
+    def posicionar_botao(self):
+        # Move o botão para o canto inferior direito
+        margem = 25
+        x = self.width() - self.botao_confirmar.width() - margem
+        y = self.height() - self.botao_confirmar.height() - margem
+        self.botao_confirmar.move(x, y)
+
+    # Caso a janela mude de tamanho (mesmo sendo Fixed, é uma boa prática)
+    def resizeEvent(self, event):
+        super().resizeEvent(event)
+        self.posicionar_botao()
+
+
+    #  Nome em PT-BR (método seu, não é virtual do Qt)
+    def obter_pixmap_recortado(self):
+        visao = self.visao
+        diametro = visao.diametro_recorte()
+        raio = diametro / 2
+
+        # 1. Área do recorte na cena (fixa em 0,0)
+        retangulo_cena = QRectF(-raio, -raio, diametro, diametro)
+
+        # 2. Converter da cena para a imagem
+        poligono_item = self.item_imagem.mapFromScene(retangulo_cena)
+        retangulo_item = poligono_item.boundingRect()
+
+        # 3. Recorte da imagem original
+        pixmap_original = self.item_imagem.pixmap()
+        pixmap_recortado = pixmap_original.copy(retangulo_item.toRect())
+
+        # 4. Resultado final circular
+        resultado_final = QPixmap(int(diametro), int(diametro))
+        resultado_final.fill(Qt.transparent)
+
+        painter = QPainter(resultado_final)
+        painter.setRenderHint(QPainter.Antialiasing)
+        painter.setRenderHint(QPainter.SmoothPixmapTransform)
+
+        caminho = QPainterPath()
+        caminho.addEllipse(0, 0, diametro, diametro)
+        painter.setClipPath(caminho)
+
+        painter.drawPixmap(
+            0, 0,
+            diametro, diametro,
+            pixmap_recortado
+        )
         painter.end()
-        return cropped
-    
-class AvatarDialog(QDialog):
+
+        return resultado_final
+
+class DialogoAvatar(QDialog):
     imagem_alterada = Signal(str)
 
     def __init__(self, parent, caminho_imagem):
         super().__init__(parent)
-        
-        
 
-
-        self.parent = parent
+        self.janela_pai = parent
         self.caminho_imagem = caminho_imagem
 
         self.setWindowTitle("Foto do usuário")
         self.setModal(True)
         self.setFixedSize(320, 360)
 
-        layout = QVBoxLayout(self)
-        layout.setAlignment(Qt.AlignCenter)
-        layout.setContentsMargins(20, 20, 20, 20)
+        layout_principal = QVBoxLayout(self)
+        layout_principal.setAlignment(Qt.AlignCenter)
+        layout_principal.setContentsMargins(20, 20, 20, 20)
 
         self.label_foto = QLabel()
         self.label_foto.setFixedSize(200, 200)
         self.label_foto.setAlignment(Qt.AlignCenter)
 
-        self.atualizar_preview(caminho_imagem)
+        if caminho_imagem and os.path.exists(caminho_imagem):
+            self.atualizar_previa(caminho_imagem)
+        else:
+            self.mostrar_placeholder()
 
+        self.botao_alterar = QPushButton("📷 Alterar foto")
+        self.botao_alterar.setFixedHeight(36)
+        self.botao_alterar.clicked.connect(self.alterar_foto)
+
+        layout_principal.addWidget(self.label_foto)
+        layout_principal.addSpacing(20)
+        layout_principal.addWidget(self.botao_alterar)
+
+    def mostrar_placeholder(self):
+        # Pega o nome do usuário pela janela principal
+        nome = self.janela_pai.get_nome_completo_usuario() or "Usuário"
+        iniciais = self.janela_pai.gerar_iniciais(nome)
+
+        self.label_foto.setText(iniciais)
+        self.label_foto.setAlignment(Qt.AlignCenter)
         self.label_foto.setStyleSheet("""
             QLabel {
                 border-radius: 100px;
-                background-color: #f3f4f6;
+                background-color: #4f46e5;
+                color: white;
+                font-weight: bold;
+                font-size: 48px;
             }
         """)
 
-        self.btn_alterar = QPushButton("📷 Alterar foto")
-        self.btn_alterar.setFixedHeight(36)
-        self.btn_alterar.clicked.connect(self.alterar_foto)
+    def atualizar_previa(self, novo_caminho):
+        if not novo_caminho or not os.path.exists(novo_caminho):
+            self.mostrar_placeholder()
+            return
 
-        self.btn_recortar = QPushButton("✂ Recortar imagem")
-        self.btn_recortar.setFixedHeight(36)
-        self.btn_recortar.setVisible(True)
-        self.btn_recortar.clicked.connect(self.recortar_imagem)
-
-        layout.addWidget(self.label_foto)
-        layout.addSpacing(20)
-        layout.addWidget(self.btn_alterar)
-        layout.addWidget(self.btn_recortar)
-
-
-    def atualizar_preview(self, novo_caminho):
         pixmap = QPixmap(novo_caminho).scaled(
             200, 200,
             Qt.KeepAspectRatio,
             Qt.SmoothTransformation
         )
-        self.label_foto.setPixmap(pixmap)
 
-        
+        self.label_foto.setText("")  # importante
+        self.label_foto.setPixmap(pixmap)
+        self.label_foto.setStyleSheet("""
+            QLabel {
+                border-radius: 100px;
+                background-color: transparent;
+            }
+        """)
+
     def alterar_foto(self):
-        novo_caminho = self.parent.alterar_foto_usuario(retornar_caminho=True)
+        novo_caminho = self.janela_pai.alterar_foto_usuario(retornar_caminho=True)
         if novo_caminho:
             self.caminho_imagem = novo_caminho
-            self.atualizar_preview(novo_caminho)
-            self.btn_recortar.setVisible(True)
+            self.atualizar_previa(novo_caminho)
 
-            
-    def recortar_imagem(self):
-        pixmap = QPixmap(self.caminho_imagem)
-
-        dialog = CropDialog(pixmap, self)
-        if dialog.exec():
-            pixmap_recortado = dialog.obter_pixmap_recortado()
-            pixmap_recortado.save(self.caminho_imagem)
-
-            self.label_foto.setPixmap(pixmap_recortado)
-            self.parent.atualizar_avatar()
-
-
-
-
-
-        
 
 
 class Temas:

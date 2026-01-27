@@ -813,7 +813,7 @@ class TabelaUsuario(QMainWindow):
             connection = self.db.connecta()
             if connection:
                 cursor = connection.cursor()
-                cursor.execute("SELECT Imagem FROM users WHERE id = ?", (id_usuario,))
+                cursor.execute('SELECT "Imagem Original" FROM users WHERE id = ?', (id_usuario,))
                 result = cursor.fetchone()
 
                 if result:

@@ -23,7 +23,8 @@ from atualizarusuario import AtualizarUsuario
 from pg_configuracoes import Pagina_Configuracoes
 from estoqueprodutos import EstoqueProduto
 from historicousuario import Pagina_Usuarios
-from utils import AvatarDialog
+from utils import DialogoAvatar
+from utils import DialogoRecorteImagem
 from utils import MostrarSenha,configurar_frame_valores,caminho_recurso
 from utils import Temas
 from clientes_juridicos import Clientes_Juridicos
@@ -560,13 +561,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             color: white;
             font-weight: bold;
         """)
-
-
         
         self.label_avatar.setCursor(Qt.PointingHandCursor)
         self.label_avatar.setAlignment(Qt.AlignCenter)
         self.label_avatar.setFixedSize(40, 40)
-
 
         # Evento de clique no avatar
         def avatar_click(event):
@@ -599,7 +597,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.setWindowOpacity(0)
 
         self.anim_opacity = QPropertyAnimation(self, b"windowOpacity")
-        self.anim_opacity.setDuration(250)
+        self.anim_opacity.setDuration(230)
         self.anim_opacity.setStartValue(0)
         self.anim_opacity.setEndValue(1)
 
@@ -628,17 +626,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         return result
     
     def abrir_modal_avatar(self):
-        if not self.caminho_foto_usuario or not os.path.exists(self.caminho_foto_usuario):
-            QMessageBox.information(self, "Foto", "Usuário não possui foto.")
-            return
-
-        dialog = AvatarDialog(
+        dialog = DialogoAvatar(
             parent=self,
             caminho_imagem=self.caminho_foto_usuario
+            if self.caminho_foto_usuario and os.path.exists(self.caminho_foto_usuario)
+            else None
         )
         dialog.exec()
-
-
 
 
     def atualizar_avatar(self):
@@ -686,39 +680,50 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         dialog.exec()
         
-    def alterar_foto_usuario(self, retornar_caminho=False):
+    def alterar_foto_usuario(self,retornar_caminho=False):
         arquivo, _ = QFileDialog.getOpenFileName(
-            self,
-            "Selecionar foto",
-            "",
-            "Imagens (*.png *.jpg *.jpeg)"
+        self,
+        "Selecionar foto",
+        "",
+        "Imagens (*.png *.jpg *.jpeg)"
         )
 
         if not arquivo:
-            return None
+            return
 
+        pixmap = QPixmap(arquivo)
+        if pixmap.isNull():
+            return
+
+        # 🔥 abre o preview + recorte
+        dialog = DialogoRecorteImagem(pixmap, self)
+        if not dialog.exec():
+            return
+
+        pixmap_recortado = dialog.obter_pixmap_recortado()
+
+        # salva imagem
         usuario = self.get_usuario_logado()
+        pasta = caminho_recurso("media/usuarios")
+        os.makedirs(pasta, exist_ok=True)
 
-        pasta_destino = caminho_recurso("media/usuarios")
-        os.makedirs(pasta_destino, exist_ok=True)
+        nome_arquivo = f"{usuario}_{uuid.uuid4().hex}.png"
+        caminho_final = os.path.join(pasta, nome_arquivo)
+        pixmap_recortado.save(caminho_final)
 
-        extensao = os.path.splitext(arquivo)[1]
-        nome_arquivo = f"{usuario}_{uuid.uuid4().hex}{extensao}"
-        novo_caminho = os.path.join(pasta_destino, nome_arquivo)
-
-        shutil.copyfile(arquivo, novo_caminho)
-
+        # remove imagem antiga
         caminho_antigo = self.db.obter_imagem_usuario(usuario)
         if caminho_antigo and os.path.exists(caminho_antigo):
             os.remove(caminho_antigo)
 
-        self.db.salvar_imagem_usuario(usuario, novo_caminho)
+        self.db.salvar_imagem_usuario(usuario, caminho_final)
 
-        self.caminho_foto_usuario = novo_caminho
+        # atualiza estados
+        self.caminho_imagem = caminho_final
         self.atualizar_avatar()
-
+        
         if retornar_caminho:
-            return novo_caminho
+            return caminho_final
 
 
         
@@ -1796,7 +1801,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 UPDATE users 
                 SET Nome=?, Telefone=?, Endereço=?, Número=?, Cidade=?, Bairro=?, Complemento=?, 
                     Email=?, "Data de Nascimento"=?, RG=?, CPF=?, CNPJ=?, CEP=?, Estado=?, 
-                    Senha=?, Imagem=?, "Confirmar Senha"=?,Acesso=?
+                    Senha=?, "Imagem Original" =?, "Confirmar Senha"=?,Acesso=?
                 WHERE id=?
             """
             valores = (
