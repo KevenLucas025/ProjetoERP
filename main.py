@@ -27,6 +27,7 @@ from utils import DialogoAvatar
 from utils import DialogoRecorteImagem
 from utils import MostrarSenha,configurar_frame_valores,caminho_recurso
 from utils import Temas
+from utils import salvar_imagem_otimizada
 from clientes_juridicos import Clientes_Juridicos
 from clientes_fisicos import Clientes_Fisicos
 from dialogos import EscolherPlanilhaDialog
@@ -702,14 +703,19 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         pixmap_recortado = dialog.obter_pixmap_recortado()
 
-        # salva imagem
         usuario = self.get_usuario_logado()
         pasta = caminho_recurso("media/usuarios")
         os.makedirs(pasta, exist_ok=True)
 
-        nome_arquivo = f"{usuario}_{uuid.uuid4().hex}.png"
+        nome_arquivo = f"{usuario}_{uuid.uuid4().hex}.jpg"
         caminho_final = os.path.join(pasta, nome_arquivo)
-        pixmap_recortado.save(caminho_final)
+
+        salvar_imagem_otimizada(
+            pixmap_recortado,
+            caminho_final,
+            tamanho_max=512,
+            qualidade=75
+        )
 
         # remove imagem antiga
         caminho_antigo = self.db.obter_imagem_usuario(usuario)
@@ -746,6 +752,33 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         painter.end()
 
         return result
+    
+    def remover_foto_usuario(self):
+        usuario = self.get_nome_completo_usuario()
+        if not usuario:
+            return
+        
+        caminho = self.db.obter_imagem_usuario(usuario)
+        
+        if caminho and os.path.exists(caminho):
+            try:
+                os.remove(caminho)
+            except Exception as e:
+                QMessageBox.warning(
+                    self,
+                    "Erro",
+                    f"Não foi possível remover a imagem:\n {e}"
+                )
+                return
+            
+            
+        # Remove do banco (salva NULL / vazio)
+        self.db.salvar_imagem_usuario(usuario,None)
+        
+        # Limpa estado local
+        self.caminho_foto_usuario = None
+        
+        self.atualizar_avatar()
 #*********************************************************************************************************************        
     def atualizar_usuario_logado(self):
         nome_completo = self.get_nome_completo_usuario()

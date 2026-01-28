@@ -1,5 +1,5 @@
 from PySide6.QtWidgets import (QLineEdit, QPushButton,QVBoxLayout,QLabel,QFrame,QApplication,QDialog,
-                               QGraphicsScene,QGraphicsView,QGraphicsPixmapItem,QGraphicsItem)
+                               QGraphicsScene,QGraphicsView,QGraphicsPixmapItem,QGraphicsItem,QMessageBox,QGraphicsDropShadowEffect)
 from PySide6.QtCore import Qt, QPropertyAnimation,Signal,QRectF,QPointF,QSize
 from PySide6.QtGui import QIcon,QPixmap,QPainterPath,QPainter,QColor
 import json
@@ -130,6 +130,40 @@ def caminho_recurso(relativo):
 
         return os.path.join(base_path, relativo)
     
+def salvar_imagem_otimizada(
+    pixmap: QPixmap,
+    caminho_destino: str,
+    tamanho_max: int = 512,
+    qualidade: int = 80
+    ):
+    """
+    Salva uma imagem otimizada para avatar/perfil.
+
+    - Redimensiona mantendo proporção
+    - Converte para JPEG
+    - Aplica compressão controlada
+    """
+
+    if pixmap.isNull():
+        return False
+
+    # QPixmap → QImage (melhor para processamento e salvamento)
+    imagem = pixmap.toImage()
+
+    imagem = imagem.scaled(
+        tamanho_max,
+        tamanho_max,
+        Qt.KeepAspectRatio,
+        Qt.SmoothTransformation
+    )
+
+    # Garante que o diretório exista
+    os.makedirs(os.path.dirname(caminho_destino), exist_ok=True)
+
+    # Salva como JPEG comprimido
+    return imagem.save(caminho_destino, "JPEG", qualidade)
+
+    
 class VisaoRecorte(QGraphicsView):
     def __init__(self, scene):
         super().__init__(scene)
@@ -184,33 +218,43 @@ class ItemPixmapMovel(QGraphicsPixmapItem):
         self._ultima_pos_mouse = QPointF()
         
     def wheelEvent(self, event):
-        
-        # 1. Define a intensidade do zoom (1.1 aumenta, 0.9 diminui)
-        fator_zoom = 1.1 if event.delta() > 0 else 0.9
-        nova_escala = self.scale() * fator_zoom
-        
-        # 2. Calcula a escala mínima para a imagem NUNCA ficar menor que o círculo
+
+        fator = 1.1 if event.delta() > 0 else 0.9
+        escala_atual = self.scale()
+        nova_escala = escala_atual * fator
+
+        # View e limites
         view = self.scene().views()[0]
         diametro = view.diametro_recorte()
-        react_item = self.boundingRect()
-        
-        # A escala mínima é o que for necessário para cobrir o diâmetro em ambos os eixos
-        escala_minima = max(diametro / react_item.width(), diametro / react_item.height())
+        br = self.boundingRect()
 
-        # 3. Aplica travas (mínimo para cobrir o círculo e máximo de 5x para não pixelar demais)
+        escala_minima = max(
+            diametro / br.width(),
+            diametro / br.height()
+        )
+
         if nova_escala < escala_minima:
             nova_escala = escala_minima
         elif nova_escala > 5.0:
             nova_escala = 5.0
 
-        # 4. Aplica a escala
+        # 🎯 Centro fixo da cena
+        centro_cena = QPointF(0, 0)
+        
+        ponto_na_imagem = self.mapFromScene(centro_cena)
+        
         self.setScale(nova_escala)
-
-        # 5. IMPORTANTE: Ao mudar a escala, a posição pode ficar inválida (frestas aparecendo).
-        # Chamamos setPos nela mesma para disparar o 'itemChange' e corrigir os limites.
+        
+        ponto_pos_zoom = self.mapToScene(ponto_na_imagem)
+        
+        delta = ponto_pos_zoom - centro_cena
+        
+        self.setPos(self.pos() - delta)
+        
         self.setPos(self.pos())
         
         event.accept()
+
 
     def mousePressEvent(self, event):
         # Muda o cursor para "fechado" ao segurar (estilo grab)
@@ -424,37 +468,20 @@ class DialogoRecorteImagem(QDialog):
         diametro = visao.diametro_recorte()
         raio = diametro / 2
 
-        # 1. Área do recorte na cena (fixa em 0,0)
+        # Área do recorte na cena (fixa no centro 0,0)
         retangulo_cena = QRectF(-raio, -raio, diametro, diametro)
 
-        # 2. Converter da cena para a imagem
+        # Converter da cena para o sistema do item (imagem)
         poligono_item = self.item_imagem.mapFromScene(retangulo_cena)
         retangulo_item = poligono_item.boundingRect()
 
-        # 3. Recorte da imagem original
+        # Recorte direto da imagem ORIGINAL (SEM círculo)
         pixmap_original = self.item_imagem.pixmap()
         pixmap_recortado = pixmap_original.copy(retangulo_item.toRect())
 
-        # 4. Resultado final circular
-        resultado_final = QPixmap(int(diametro), int(diametro))
-        resultado_final.fill(Qt.transparent)
+        # 🔥 Retornamos SOMENTE o quadrado
+        return pixmap_recortado
 
-        painter = QPainter(resultado_final)
-        painter.setRenderHint(QPainter.Antialiasing)
-        painter.setRenderHint(QPainter.SmoothPixmapTransform)
-
-        caminho = QPainterPath()
-        caminho.addEllipse(0, 0, diametro, diametro)
-        painter.setClipPath(caminho)
-
-        painter.drawPixmap(
-            0, 0,
-            diametro, diametro,
-            pixmap_recortado
-        )
-        painter.end()
-
-        return resultado_final
 
 class DialogoAvatar(QDialog):
     imagem_alterada = Signal(str)
@@ -482,13 +509,27 @@ class DialogoAvatar(QDialog):
         else:
             self.mostrar_placeholder()
 
-        self.botao_alterar = QPushButton("📷 Alterar foto")
+        self.botao_alterar = QPushButton("Alterar foto")
         self.botao_alterar.setFixedHeight(36)
         self.botao_alterar.clicked.connect(self.alterar_foto)
+        self.botao_alterar.setCursor(Qt.PointingHandCursor)
+        
+        self.botao_mostrar_foto = QPushButton("Mostrar foto")
+        self.botao_mostrar_foto.setFixedHeight(36)
+        self.botao_mostrar_foto.clicked.connect(self.ver_foto)
+        self.botao_mostrar_foto.setCursor(Qt.PointingHandCursor)
+        
+        self.botao_remover_foto = QPushButton("Remover foto")
+        self.botao_remover_foto.setFixedHeight(36)
+        self.botao_remover_foto.clicked.connect(self.remover_foto)
+        self.botao_remover_foto.setCursor(Qt.PointingHandCursor)
+        
 
         layout_principal.addWidget(self.label_foto)
         layout_principal.addSpacing(20)
         layout_principal.addWidget(self.botao_alterar)
+        layout_principal.addWidget(self.botao_mostrar_foto)
+        layout_principal.addWidget(self.botao_remover_foto)
 
     def mostrar_placeholder(self):
         # Pega o nome do usuário pela janela principal
@@ -512,26 +553,81 @@ class DialogoAvatar(QDialog):
             self.mostrar_placeholder()
             return
 
-        pixmap = QPixmap(novo_caminho).scaled(
-            200, 200,
-            Qt.KeepAspectRatio,
-            Qt.SmoothTransformation
-        )
+        pixmap = QPixmap(novo_caminho)
+        pixmap_circular = self.janela_pai.pixmap_circular(pixmap, 200)
 
-        self.label_foto.setText("")  # importante
-        self.label_foto.setPixmap(pixmap)
-        self.label_foto.setStyleSheet("""
-            QLabel {
-                border-radius: 100px;
-                background-color: transparent;
-            }
-        """)
+        self.label_foto.setText("")
+        self.label_foto.setPixmap(pixmap_circular)
+
+        # ✨ SOMBRA SUAVE
+        sombra = QGraphicsDropShadowEffect(self)
+        sombra.setBlurRadius(20)        # quão difusa é a sombra
+        sombra.setOffset(0, 4)          # deslocamento (baixo)
+        sombra.setColor(QColor(0, 0, 0, 120))  # preto translúcido
+
+        self.label_foto.setGraphicsEffect(sombra)
+
+        self.label_foto.setStyleSheet("background-color: transparent;")
+
+
 
     def alterar_foto(self):
         novo_caminho = self.janela_pai.alterar_foto_usuario(retornar_caminho=True)
         if novo_caminho:
             self.caminho_imagem = novo_caminho
             self.atualizar_previa(novo_caminho)
+            
+    def ver_foto(self):
+        if not self.caminho_imagem or not os.path.exists(self.caminho_imagem):
+            QMessageBox.warning(self,"Aviso","Não há uma imagem para ser exibida")
+            return
+            
+        dialogo_visor = QDialog(self)
+        dialogo_visor.setWindowTitle("Visualizar foto")
+        dialogo_visor.setFixedSize(600, 600) # Forçamos a janela a ser 600x600
+        
+        layout = QVBoxLayout(dialogo_visor)
+        layout.setContentsMargins(0, 0, 0, 0)
+        
+        label_visor = QLabel()
+        label_visor.setAlignment(Qt.AlignCenter)
+        
+        pixmap_original = QPixmap(self.caminho_imagem)
+        
+        pixmap_grande = pixmap_original.scaled(
+            600,600,
+            Qt.KeepAspectRatioByExpanding,
+            Qt.SmoothTransformation
+        )
+        
+        pixmap_final = pixmap_grande.copy(
+            (pixmap_grande.width() - 600) // 2,
+            (pixmap_grande.height() - 600) // 2,
+            600, 600
+        )
+        
+        label_visor.setPixmap(pixmap_final)
+        layout.addWidget(label_visor)
+        
+        dialogo_visor.exec()
+        
+    def remover_foto(self):
+        resposta = QMessageBox.question(
+            self,
+            "Remover foto",
+            "Deseja realmente remover a foto do usuário?",
+            QMessageBox.Yes | QMessageBox.No
+        )
+        
+        if resposta != QMessageBox.Yes:
+            return
+
+        # Delegamos a remoção para a janela principal
+        self.janela_pai.remover_foto_usuario()
+
+        # Atualiza o estado local do diálogo
+        self.caminho_imagem = None
+        self.mostrar_placeholder()
 
 
 

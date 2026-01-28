@@ -136,7 +136,7 @@ class DataBase:
                     RG TEXT NOT NULL,   
                     CPF TEXT NOT NULL,
                     CNPJ TEXT NOT NULL,
-                    Imagem BLOB,
+                    "Imagem Original" TEXT,
                     'Última Troca de Senha' TEXT,
                     'Data da Senha Cadastrada' TEXT,
                     'Data da Inclusão do Usuário' TEXT,
@@ -201,7 +201,7 @@ class DataBase:
                     "Descrição do Produto",
                     Usuário TEXT,
                     'Status da Saída' TEXT,
-                    Imagem BLOB
+                    Imagem TEXT
                 )
             """)
             self.connection.commit()  # Confirmar a transação
