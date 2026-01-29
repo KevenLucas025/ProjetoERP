@@ -850,7 +850,7 @@ class TabelaProdutos(QMainWindow):
             self.label_sem_produto.hide()
 #*******************************************************************************************************
     def recuperar_imagem_do_banco(self, produto_id):
-        imagem_blob = None
+        caminho_imagem = None
         
         try:
             connection = self.db.connecta()
@@ -860,7 +860,7 @@ class TabelaProdutos(QMainWindow):
                 result = cursor.fetchone()
 
                 if result:
-                    imagem_blob = result[0]
+                    caminho_imagem = result[0]
                 else:
                     print(f"Imagem não encontrada para o produto: {produto_id}")
                     return None
@@ -869,17 +869,13 @@ class TabelaProdutos(QMainWindow):
             print(f"Erro ao recuperar imagem do banco de dados: {str(e)}")
             return None
 
-        if imagem_blob and isinstance(imagem_blob,str) and imagem_blob.strip().lower() != "não cadastrado":
-            try:
-                imagem_data = base64.b64decode(imagem_blob)
-                return imagem_data  # Retorna bytes decodificados
-                
-            except Exception as e:
-                print(f"Erro ao decodificar imagem: {str(e)}")
-                return None
+        # Verifica se o caminho é válido
+        if caminho_imagem and caminho_imagem.strip().lower() != "não cadastrado" and os.path.exists(caminho_imagem):
+            return caminho_imagem  # Retorna o caminho do arquivo
         else:
             print(f"Imagem não cadastrada ou inválida para o produto: {produto_id}")
             return None
+
 #*******************************************************************************************************
     def atualizar_tabela_produtos_filtrada(self, produtos):
     # Limpar a tabela antes de preencher com os produtos filtrados
@@ -1384,16 +1380,13 @@ class TabelaProdutos(QMainWindow):
 
 
             if imagem_data:
-                try:
-                    pixmap = QPixmap()
-                    pixmap.loadFromData(imagem_data)
-
+                if os.path.exists(imagem_data):
+                    pixmap = QPixmap(imagem_data)  # lê direto do arquivo
                     if pixmap.isNull():
                         QMessageBox.warning(self, "Aviso", "Não foi possível carregar a imagem.")
                         return
                     else:
                         print("Pixmap carregado com sucesso.")
-                        print("Pixmap carregado pelo botão EDITAR: ", pixmap)
 
                     self.label_imagem = QLabel(self.main_window.frame_imagem_produto_3)
                     frame_size = self.main_window.frame_imagem_produto_3.size()
@@ -1404,8 +1397,8 @@ class TabelaProdutos(QMainWindow):
                     self.label_imagem.show()
                     self.label_imagem.repaint()
 
-                except Exception as e:
-                    print(f"Erro ao processar imagem: {str(e)}")
+                else:
+                    print("Arquivo de imagem não encontrado:", imagem_data)
             else:
                 print("Imagem não encontrada no banco de dados.")
                 if self.main_window.frame_imagem_produto_3.layout():
@@ -1613,7 +1606,6 @@ class TabelaProdutos(QMainWindow):
         # Se a coluna de checkboxes está ativa, usar os checkboxes para saber os selecionados
         if self.coluna_checkboxes_produtos_adicionada:
             selecionados = [i for i, cb in enumerate(self.checkboxes) if cb.isChecked()]
-        
             
             if not selecionados:
                 QMessageBox.warning(self, "Aviso", "Nenhum produto selecionado para visualizar a imagem.")
@@ -1644,38 +1636,23 @@ class TabelaProdutos(QMainWindow):
             QMessageBox.warning(self, "Erro", "ID de produto inválido.")
             return
 
-        imagem_data = self.recuperar_imagem_do_banco(produto_id)
+        # Recupera o caminho da imagem
+        caminho_imagem = self.recuperar_imagem_do_banco(produto_id)
             
-        if imagem_data:
+        if caminho_imagem and os.path.exists(caminho_imagem):
             try:
-                print("Dados da imagem recuperados com sucesso para visualização.")
+                print("Imagem encontrada:", caminho_imagem)
                 
-                pixmap = QPixmap()
-                pixmap.loadFromData(imagem_data)
-                
-                if pixmap.isNull():
-                    print("Aviso: pixmap é nulo")
-                    QMessageBox.warning(self, "Aviso", "Não foi possível carregar a imagem.")
-                    return
-                else:
-                    print("Pixmap carregado com sucesso para visualização.")
-                    
-                # Salvar imagem temporariamente para visualização
-                caminho_pasta = "imagens_temporarias"
-                os.makedirs(caminho_pasta,exist_ok=True)  # Cria a pasta se não existir
-
-                caminho_arquivo = os.path.join(caminho_pasta, "imagem_produto.png")
-
-                with open(caminho_arquivo, 'wb') as f:
-                    f.write(imagem_data)
-                
-                # Tentar abrir o arquivo com um visualizador de imagens padrão
-                os.startfile(caminho_arquivo)
+                # Abre diretamente o arquivo com o visualizador padrão
+                os.startfile(caminho_imagem)  # Windows
+                # No Linux ou Mac você precisaria de algo como subprocess.run(["xdg-open", caminho_imagem])
                 
             except Exception as e:
-                print(f"Erro ao processar imagem: {str(e)}")
+                print(f"Erro ao abrir a imagem: {str(e)}")
+                QMessageBox.warning(self, "Erro", "Não foi possível abrir a imagem.")
         else:
-            QMessageBox.warning(self, "Aviso", "Imagem não encontrada.")
+            QMessageBox.warning(self, "Aviso", "Imagem não encontrada ou arquivo inexistente.")
+
 #*******************************************************************************************************
     def get_label_imagem(self):
         label_imagem = None

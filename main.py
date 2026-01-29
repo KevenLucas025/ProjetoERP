@@ -256,6 +256,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.produto_original = {}
         self.produtos_pendentes = []
         self.imagem_carregada_produto = None
+        self.imagem_usuario_carregada = None
     
         # Variáveis para armazenar o estado de edição e o ID do usuário selecionado
         self.is_editing = False
@@ -704,7 +705,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         pixmap_recortado = dialog.obter_pixmap_recortado()
 
         usuario = self.get_usuario_logado()
-        pasta = caminho_recurso("media/usuarios")
+        pasta = caminho_recurso("media/usuarios/perfil")
         os.makedirs(pasta, exist_ok=True)
 
         nome_arquivo = f"{usuario}_{uuid.uuid4().hex}.jpg"
@@ -1818,18 +1819,25 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
 
         # Obter imagem, se houver
-        usuario_imagem = None
+        usuario_imagem_original = None
         if tem_imagem:
             pixmap = self.label_imagem_usuario.pixmap()
             if pixmap:
-                byte_array = QByteArray()
-                buffer = QBuffer(byte_array)
-                buffer.open(QIODevice.WriteOnly)
-                pixmap.save(buffer, "PNG")
-                usuario_imagem = str(byte_array.toBase64(), encoding='utf-8')
+                usuario = self.get_usuario_logado()
+                pasta = caminho_recurso("media/usuarios/original")
+                os.makedirs(pasta, exist_ok=True)  # garante que a pasta exista
+                
+                # Nome único para a imagem
+                nome_arquivo = f"{usuario}_{uuid.uuid4().hex}.jpg"
+                caminho_final = os.path.join(pasta, nome_arquivo)
+                
+                # Salvar imagem otimizada
+                salvar_imagem_otimizada(pixmap, caminho_final, tamanho_max=512, qualidade=75)
+                
+                usuario_imagem_original = caminho_final
 
         # SQL e valores
-        if usuario_imagem:
+        if usuario_imagem_original:
             sql = """
                 UPDATE users 
                 SET Nome=?, Telefone=?, Endereço=?, Número=?, Cidade=?, Bairro=?, Complemento=?, 
@@ -1840,7 +1848,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             valores = (
                 usuario_nome, usuario_telefone, usuario_endereco, usuario_numero, usuario_cidade, usuario_bairro, usuario_complemento,
                 usuario_email, usuario_data_nascimento, usuario_rg, usuario_cpf, usuario_cnpj, usuario_cep, usuario_estado,
-                usuario_senha, usuario_imagem, usuario_confirmar_senha,usuario_acesso, self.selected_user_id
+                usuario_senha, usuario_imagem_original, usuario_confirmar_senha,usuario_acesso, self.selected_user_id
             )
         else:
             sql = """
@@ -2064,25 +2072,47 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 #*********************************************************************************************************************
     def carregar_imagem_usuario(self):
         # Abrir uma caixa de diálogo de seleção de arquivo
-        file_dialog = QFileDialog(self)
-        file_dialog.setNameFilter("Imagens (*.png *.jpg *.jpeg *.gif)")
-        file_dialog.setViewMode(QFileDialog.Detail)
-        file_dialog.setFileMode(QFileDialog.ExistingFile)
+        options = QFileDialog.Options()
+        fileName, _ = QFileDialog.getOpenFileName(self, "Selecionar Imagem", "", "Imagens (*.png *.xpm *.jpg *.gif);;Todos os Arquivos (*)", options=options)
  
-        if file_dialog.exec():
-            # Obter o caminho do arquivo selecionado
-            file_paths = file_dialog.selectedFiles()[0]
-            pixmap = QPixmap(file_paths)
-            if file_paths:
-                # Carregar a imagem selecionada no caminho do arquivo
-                if not pixmap.isNull():
-                    # Redimensionar a imagem para o tamanho do QLabel
-                    pixmap = pixmap.scaled(self.frame_imagem_cadastro.size(), Qt.KeepAspectRatio)
-                    # Definir a imagem no QLabel
-                    self.label_imagem_usuario.setPixmap(pixmap)
+        if fileName:
+            pixmap = QPixmap(fileName)
+            if not pixmap.isNull():
+                self.limpar_imagem_usuario()  # Limpar qualquer QLabel existente no frame
+                 # Verificar se já existe um QLabel para a imagem
+                label_imagem_usuario = None
+                for widget in self.frame_imagem_cadastro.children():
+                    if isinstance(widget, QLabel):
+                        label_imagem_usuario = widget
+                        break
+                # Se não houver QLabel, criar um novo
+                if label_imagem_usuario is None:
+                    label_imagem_usuario = QLabel(self.frame_imagem_cadastro)
+                    label_imagem_usuario.setObjectName("label_imagem_usuario")
+                    
+                # Definir tamanho do QLabel para ser o mesmo que o QFrame
+                frame_size = self.frame_imagem_cadastro.size()
+                label_imagem_usuario.setFixedSize(frame_size.width(), frame_size.height())
+                
+                # Redimensionar o pixmap para se ajustar ao QLabel
+                pixmap = pixmap.scaled(label_imagem_usuario.width(), label_imagem_usuario.height(), Qt.KeepAspectRatio)
+                
+                # Definir o pixmap no QLabel
+                label_imagem_usuario.setPixmap(pixmap)
 
-                else:
-                    QMessageBox.warning(self, "Aviso", "Não foi possível carregar a imagem.")
+                # Ajustar o alinhamento da imagem no QLabel
+                label_imagem_usuario.setAlignment(Qt.AlignCenter)
+
+                # Mostrar o QLabel
+                label_imagem_usuario.show()
+                self.imagem_usuario_carregada = True
+
+                # Salvar a imagem carregada para o atributo nova_imagem
+                self.nova_imagem = fileName
+            else:
+                QMessageBox.warning(self, "Aviso", "Não foi possível carregar a imagem.")
+        else:
+            pass
 #*********************************************************************************************************************
     def avancar_pagina(self):
         # Armazenar a página atual no histórico de páginas
@@ -2482,7 +2512,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 else:
                     print("Pixmap está nulo. Imagem pode estar corrompida.")
             except Exception as e:
-                print("Erro ao decodificar imagem:", e)
+                print("Erro ao decodificar imagem do usuário:", e)
         else:
             print("Imagem base64 vazia ou inválida.")
 #*********************************************************************************************************************
@@ -2909,14 +2939,20 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             # ===============================
             # 4️⃣ Converter imagem
             # ===============================
-            imagem_bytes = None
+            caminho_imagem = None
             if self.imagem_carregada_produto:
-                pixmap = self.label_imagem_produto.pixmap()
-                byte_array = QByteArray()
-                buffer = QBuffer(byte_array)
-                buffer.open(QIODevice.WriteOnly)
-                pixmap.save(buffer, "PNG")
-                imagem_bytes = byte_array.toBase64().data().decode()
+                pasta = caminho_recurso("media/produtos")
+                os.makedirs(pasta, exist_ok=True)
+                
+                nome_arquivo = f"produto_{uuid.uuid4().hex}.jpg"
+                caminho_imagem = os.path.join(pasta, nome_arquivo)
+                
+                salvar_imagem_otimizada(
+                    self.label_imagem_produto.pixmap(),
+                    caminho_imagem,
+                    tamanho_max=600,
+                    qualidade=80
+                )
 
             usuario_logado = self.get_usuario_logado()
 
@@ -2937,7 +2973,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 usuario_logado,
                 cnpj_final,
                 cpf_final,
-                imagem_bytes
+                caminho_imagem  
             )
 
             # ===============================
@@ -3427,6 +3463,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 widget.setPixmap(QPixmap())
                 widget.hide()  # Esconder o QLabel para garantir que não fique visível
         self.imagem_carregada_produto = False
+#*********************************************************************************************************************  
+    def limpar_imagem_usuario(self):
+        for widget in self.frame_imagem_cadastro.children():
+            if isinstance(widget, QLabel):
+                widget.clear()
+                widget.setPixmap(QPixmap())
+                widget.hide()  # Esconder o QLabel para garantir que não fique visível
+        self.imagem_usuario_carregada = False
 #*********************************************************************************************************************
     def carregar_nova_imagem_produto(self, nova_imagem):
         # Este método simula o carregamento de uma nova imagem no QLabel dentro do frame_imagem_produto

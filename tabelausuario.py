@@ -807,7 +807,7 @@ class TabelaUsuario(QMainWindow):
             QMessageBox.warning(self, "Aviso", "Nenhuma célula selecionada ou célula vazia.")
 #*******************************************************************************************************
     def recuperar_imagem_do_banco_usuarios(self, id_usuario):
-        imagem_blob = None
+        caminho_imagem_usuario = None
         
         try:
             connection = self.db.connecta()
@@ -817,23 +817,18 @@ class TabelaUsuario(QMainWindow):
                 result = cursor.fetchone()
 
                 if result:
-                    imagem_blob = result[0]
+                    caminho_imagem_usuario = result[0]
                 else:
                     print(f"Imagem não encontrada para o usuário: {id_usuario}")
                     return None
 
         except Exception as e:
-            print(f"Erro ao recuperar imagem do banco de dados: {str(e)}")
+            print(f"Erro ao recuperar imagem do usuário do banco de dados: {str(e)}")
             return None
 
-        if imagem_blob and isinstance(imagem_blob,str) and imagem_blob.strip().lower() != "não cadastrado":
-            try:
-                imagem_data = base64.b64decode(imagem_blob)
-                return imagem_data  # Retorna bytes decodificados
-                
-            except Exception as e:
-                print(f"Erro ao decodificar imagem: {str(e)}")
-                return None
+        if caminho_imagem_usuario and caminho_imagem_usuario.strip().lower() != "não cadastrado" and os.path.exists(caminho_imagem_usuario):
+            return caminho_imagem_usuario
+          
         else:
             print(f"Imagem não cadastrada ou inválida para o usuário: {id_usuario}")
             return None
@@ -891,22 +886,35 @@ class TabelaUsuario(QMainWindow):
         self.main_window.usuario_tem_imagem_salva = bool(imagem_data)
 
         if imagem_data:
-            try:
-                image = QImage.fromData(imagem_data)
-                if not image.isNull():
-                    pixmap = QPixmap.fromImage(image)
+            if os.path.exists(imagem_data):
+                    pixmap = QPixmap(imagem_data)  # lê direto do arquivo
+                    if pixmap.isNull():
+                        QMessageBox.warning(self, "Aviso", "Não foi possível carregar a imagem.")
+                        return
+                    else:
+                        print("Pixmap carregado com sucesso.")
 
-                    # Redimensionar a imagem para o tamanho do QLabel
-                    pixmap = pixmap.scaled(self.label_imagem_usuario.size(), Qt.KeepAspectRatio)
-
-                    # Definir a imagem no QLabel
+                    # Cria o QLabel dentro do frame do usuário
+                    self.label_imagem_usuario = QLabel(self.main_window.frame_imagem_cadastro)
+                    
+                    # Define o tamanho fixo do frame (300x300)
+                    self.label_imagem_usuario.setFixedSize(300, 300)
+                    
+                    # Escala o pixmap mantendo proporção
+                    pixmap = pixmap.scaled(
+                        self.label_imagem_usuario.width(),
+                        self.label_imagem_usuario.height(),
+                        Qt.KeepAspectRatio,
+                        Qt.SmoothTransformation
+                    )
+                    
+                    # Define no QLabel
                     self.label_imagem_usuario.setPixmap(pixmap)
+                    self.label_imagem_usuario.setAlignment(Qt.AlignCenter)
+                    self.label_imagem_usuario.show()
                     self.label_imagem_usuario.repaint()
-                    print("Imagem definida no QLabel")
-                else:
-                    print("Erro: Imagem está vazia")
-            except Exception as e:
-                print(f"Erro ao processar imagem: {str(e)}")
+            else:
+                print("Arquivo de imagem não encontrado no banco usuário:", imagem_data)
         else:
             print("Imagem não encontrada no banco de dados.")
 
