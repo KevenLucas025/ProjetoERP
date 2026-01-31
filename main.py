@@ -3381,8 +3381,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                     widget.setPixmap(QPixmap())  # Definir um pixmap vazio ou padrão
                     widget.hide()  # Esconder o QLabel para garantir que não fique visível
                     print("Imagem removida com sucesso")
-                    msg_box = QMessageBox(self, "Sucesso", "Imagem removida com sucesso")
-                    msg_box.exec()
+                    QMessageBox.information(self, "Sucesso", "Imagem removida com sucesso")
                     return
         print("Não há imagem do produto para remover.")
         msg_box = QMessageBox(self)
@@ -3401,8 +3400,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                     widget.hide()
                     self.imagem_removida_usuario = True
                     print("Imagem removida do usuário com sucesso")
-                    msg_box = QMessageBox(self, "Sucesso", "Imagem removida do usuário com sucesso")
-                    msg_box.exec()
+                    QMessageBox.information(self, "Sucesso", "Imagem removida do usuário com sucesso")
                     return
         print("Não há imagem do usuário para remover.")
         msg_box = QMessageBox(self, "Erro", "Não há imagem do usuário para remover")
@@ -3526,14 +3524,27 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         imagem_alterada = False
         produto_imagem = None
         if hasattr(self, 'nova_imagem') and self.nova_imagem:
-            pixmap = QPixmap(self.nova_imagem)
-            if not pixmap.isNull():
+           if os.path.exists(self.nova_imagem):
                 imagem_alterada = True
-                byte_array = QByteArray()
-                buffer = QBuffer(byte_array)
-                buffer.open(QIODevice.WriteOnly)
-                pixmap.save(buffer, "PNG")
-                produto_imagem = byte_array.toBase64().data().decode()
+                pasta = caminho_recurso("media/produtos")
+                os.makedirs(pasta, exist_ok=True)
+                
+                nome_arquivo = f"produto_{uuid.uuid4().hex}.jpg"
+                caminho_final = os.path.join(pasta, nome_arquivo)
+                
+                pixmap = QPixmap(self.nova_imagem)
+                if pixmap.isNull():
+                    QMessageBox.warning(self,"Aviso","Imagem do produto inválida")
+                    return
+                
+                salvar_imagem_otimizada(
+                    pixmap,
+                    caminho_final,
+                    tamanho_max=512,
+                    qualidade=80
+                )
+                
+                produto_imagem = caminho_final  # 🔥 SALVA O CAMINHO
 
         # Verificar se os campos foram alterados
         alteracao_campo = False

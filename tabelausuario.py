@@ -66,7 +66,7 @@ class TabelaUsuario(QMainWindow):
 
         # Criar QLabel para imagem
         self.label_imagem_usuario = QLabel()
-        self.label_imagem_usuario.setScaledContents(True)
+        self.label_imagem_usuario.setScaledContents(False)
         layout_usuario = QVBoxLayout()
         layout_usuario.addWidget(self.label_imagem_usuario)
         self.main_window.frame_imagem_cadastro.setLayout(layout_usuario)
@@ -887,32 +887,34 @@ class TabelaUsuario(QMainWindow):
 
         if imagem_data:
             if os.path.exists(imagem_data):
-                    pixmap = QPixmap(imagem_data)  # lê direto do arquivo
-                    if pixmap.isNull():
-                        QMessageBox.warning(self, "Aviso", "Não foi possível carregar a imagem.")
-                        return
-                    else:
-                        print("Pixmap carregado com sucesso.")
+                pixmap = QPixmap(imagem_data)
+                if pixmap.isNull():
+                    QMessageBox.warning(self, "Aviso", "Não foi possível carregar a imagem.")
+                    return
 
-                    # Cria o QLabel dentro do frame do usuário
-                    self.label_imagem_usuario = QLabel(self.main_window.frame_imagem_cadastro)
-                    
-                    # Define o tamanho fixo do frame (300x300)
-                    self.label_imagem_usuario.setFixedSize(300, 300)
-                    
-                    # Escala o pixmap mantendo proporção
-                    pixmap = pixmap.scaled(
-                        self.label_imagem_usuario.width(),
-                        self.label_imagem_usuario.height(),
-                        Qt.KeepAspectRatio,
-                        Qt.SmoothTransformation
-                    )
-                    
-                    # Define no QLabel
-                    self.label_imagem_usuario.setPixmap(pixmap)
-                    self.label_imagem_usuario.setAlignment(Qt.AlignCenter)
-                    self.label_imagem_usuario.show()
-                    self.label_imagem_usuario.repaint()
+                # Use o label que já existe, não crie um novo QLabel(...)
+                label = self.label_imagem_usuario 
+                
+                # Garante que o frame processou o tamanho atual
+                self.main_window.frame_imagem_cadastro.repaint() 
+                frame_size = self.main_window.frame_imagem_cadastro.size()
+                
+                # Se o frame vier com tamanho 0 (comum em layouts dinâmicos antes de exibir)
+                # defina um tamanho padrão ou use o width/height disponível
+                target_w = frame_size.width() if frame_size.width() > 10 else 300
+                target_h = frame_size.height() if frame_size.height() > 10 else 300
+
+                # REDIMENSIONAMENTO DE ALTA QUALIDADE
+                pixmap_redimensionado = pixmap.scaled(
+                    target_w,
+                    target_h,
+                    Qt.KeepAspectRatio,
+                    Qt.SmoothTransformation  # <--- Isso garante a nitidez
+                )
+                
+                label.setPixmap(pixmap_redimensionado)
+                label.setAlignment(Qt.AlignCenter)
+                label.show()
             else:
                 print("Arquivo de imagem não encontrado no banco usuário:", imagem_data)
         else:
@@ -1232,25 +1234,17 @@ class TabelaUsuario(QMainWindow):
             QMessageBox.warning(None, "Erro", "ID de usuário inválido.")
             return
 
-        imagem_data = self.recuperar_imagem_do_banco_usuarios(id_usuario)
+        caminho_imagem_usuario = self.recuperar_imagem_do_banco_usuarios(id_usuario)
 
-        if imagem_data:
+        if caminho_imagem_usuario and os.path.exists(caminho_imagem_usuario):
             try:
                 print("Dados da imagem recuperados com sucesso para visualização.")
 
-                pixmap = QPixmap()
-                pixmap.loadFromData(imagem_data)
-
-                if pixmap.isNull():
-                    print("Aviso: pixmap é nulo")
-                    QMessageBox.warning(None, "Aviso", "Não foi possível carregar a imagem.")
-                    return
-
-                # Tentar abrir o arquivo com um visualizador de imagens padrão
-                os.startfile("imagem_temporaria.png")
+                os.startfile(caminho_imagem_usuario)
 
             except Exception as e:
-                print(f"Erro ao processar imagem: {str(e)}")
+                print(f"Erro ao abrir a imagem do usuário: {str(e)}")
+                QMessageBox.warning(self, "Erro", "Não foi possível abrir a imagem do usuário.")
         else:
             QMessageBox.warning(None, "Aviso", "Imagem não encontrada.")
 
