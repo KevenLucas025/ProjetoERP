@@ -585,7 +585,7 @@ class DataBase:
             rg = tratar(rg)
             cpf = tratar(cpf)
             cnpj = tratar(cnpj)
-            imagem = tratar(imagem)
+            imagem = imagem.strip() if isinstance(imagem, str) else "Não Cadastrado"
             segredo = tratar(segredo)
             usuario_logado = tratar(usuario_logado)
             acesso = tratar(acesso)

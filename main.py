@@ -2072,47 +2072,65 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 #*********************************************************************************************************************
     def carregar_imagem_usuario(self):
         # Abrir uma caixa de diálogo de seleção de arquivo
-        options = QFileDialog.Options()
-        fileName, _ = QFileDialog.getOpenFileName(self, "Selecionar Imagem", "", "Imagens (*.png *.xpm *.jpg *.gif);;Todos os Arquivos (*)", options=options)
+        fileName, _ = QFileDialog.getOpenFileName(
+                self,
+                "Selecionar Imagem",
+                "",
+                "Imagens (*.png *.jpg *.jpeg *.gif)"
+            )
  
-        if fileName:
-            pixmap = QPixmap(fileName)
-            if not pixmap.isNull():
-                self.limpar_imagem_usuario()  # Limpar qualquer QLabel existente no frame
-                 # Verificar se já existe um QLabel para a imagem
-                label_imagem_usuario = None
-                for widget in self.frame_imagem_cadastro.children():
-                    if isinstance(widget, QLabel):
-                        label_imagem_usuario = widget
-                        break
-                # Se não houver QLabel, criar um novo
-                if label_imagem_usuario is None:
-                    label_imagem_usuario = QLabel(self.frame_imagem_cadastro)
-                    label_imagem_usuario.setObjectName("label_imagem_usuario")
-                    
-                # Definir tamanho do QLabel para ser o mesmo que o QFrame
-                frame_size = self.frame_imagem_cadastro.size()
-                label_imagem_usuario.setFixedSize(frame_size.width(), frame_size.height())
+        if not fileName:
+            return
+        
+        pixmap = QPixmap(fileName)
+        if pixmap.isNull():
+            QMessageBox.warning(self, "Aviso", "Não foi possível carregar a imagem.")
+            return
+        
+        # ===============================
+        # 📁 Pasta padrão do sistema
+        # ===============================
+        pasta = caminho_recurso("media/usuarios/original")
+        os.makedirs(pasta,exist_ok=True)
+        
+        nome_arquivo = f"{uuid.uuid4().hex}.jpg"
+        caminho_final = os.path.join(pasta,nome_arquivo)
+        
+        salvar_imagem_otimizada(
+            pixmap,
+            caminho_final,
+            tamanho_max=300,
+            qualidade=80
+        )
+        
+         # 🔥 ESTE É O ESTADO QUE O CADASTRO PRECISA
+        self.caminho_imagem = caminho_final
+
+        # ===============================
+        # 🖼️ Atualizar QLabel
+        # ===============================
+        self.limpar_imagem_usuario()
+        
+        self.label_imagem_usuario = QLabel(self.frame_imagem_cadastro)
+        self.label_imagem_usuario.setObjectName("label_imagem_usuario")
+
+        frame_size = self.frame_imagem_cadastro.size()
+        self.label_imagem_usuario.setFixedSize(frame_size.width(), frame_size.height())
+
+        pixmap = pixmap.scaled(
+            self.label_imagem_usuario.width(),
+            self.label_imagem_usuario.height(),
+            Qt.KeepAspectRatio,
+            Qt.SmoothTransformation
+        )
+
+        self.label_imagem_usuario.setPixmap(pixmap)
+        self.label_imagem_usuario.setAlignment(Qt.AlignCenter)
+        self.label_imagem_usuario.show()
+
+        self.imagem_usuario_carregada = True
                 
-                # Redimensionar o pixmap para se ajustar ao QLabel
-                pixmap = pixmap.scaled(label_imagem_usuario.width(), label_imagem_usuario.height(), Qt.KeepAspectRatio)
-                
-                # Definir o pixmap no QLabel
-                label_imagem_usuario.setPixmap(pixmap)
-
-                # Ajustar o alinhamento da imagem no QLabel
-                label_imagem_usuario.setAlignment(Qt.AlignCenter)
-
-                # Mostrar o QLabel
-                label_imagem_usuario.show()
-                self.imagem_usuario_carregada = True
-
-                # Salvar a imagem carregada para o atributo nova_imagem
-                self.nova_imagem = fileName
-            else:
-                QMessageBox.warning(self, "Aviso", "Não foi possível carregar a imagem.")
-        else:
-            pass
+        
 #*********************************************************************************************************************
     def avancar_pagina(self):
         # Armazenar a página atual no histórico de páginas
@@ -2340,7 +2358,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 QMessageBox.warning(self, "Erro de Cadastro", mensagens[campo_duplicado])
                 return
                 
-
             # Inserir novo usuário
             self.db.insert_user(
                 nome=nome,
@@ -2482,39 +2499,42 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         QMessageBox.information(self,"Sucesso","Todos os campos foram limpos com sucesso! ")
 #*********************************************************************************************************************
     def converter_imagem_usuario(self):
-        # Verificar se há uma imagem carregada no QLabel
-        if self.label_imagem_usuario.pixmap():
-            # Obter o pixmap da imagem
-            pixmap = self.label_imagem_usuario.pixmap()
-            # Obter a imagem como uma sequência de bytes
-            bytes_array = QByteArray()
-            buffer = QBuffer(bytes_array)
-            buffer.open(QIODevice.WriteOnly)
-            pixmap.save(buffer, "PNG")  # Salvar a imagem como PNG
-            # Retornar a sequência de bytes da imagem
-            return bytes_array.toBase64().data().decode("utf-8")
+        """
+        Retorna o caminho da imagem do usuário (TEXT),
+        compatível com o novo modelo.
+        """
+        if hasattr(self, "caminho_imagem") and self.caminho_imagem:
+            if os.path.exists(self.caminho_imagem):
+                return self.caminho_imagem
 
-        return None  # Retornar None se não houver imagem carregada
+        return "Não Cadastrado"
 #*********************************************************************************************************************    
-    def exibir_imagem_em_label_usuario(self, imagem_base64):
-        if imagem_base64:
-            try:
-                imagem_bytes = base64.b64decode(imagem_base64)
-                imagem = QImage.fromData(imagem_bytes)
-                pixmap = QPixmap.fromImage(imagem)
-                if not pixmap.isNull():
-                    self.label_imagem_usuario.setPixmap(pixmap.scaled(
-                        self.label_imagem_usuario.size(),
-                        Qt.KeepAspectRatio,
-                        Qt.SmoothTransformation
-                    ))
-                    print("Imagem definida no QLabel")
-                else:
-                    print("Pixmap está nulo. Imagem pode estar corrompida.")
-            except Exception as e:
-                print("Erro ao decodificar imagem do usuário:", e)
-        else:
-            print("Imagem base64 vazia ou inválida.")
+    def exibir_imagem_em_label_usuario(self, caminho_imagem):
+        if not caminho_imagem:
+            print("Caminho da imagem vazio.")
+            return
+
+        if not os.path.exists(caminho_imagem):
+            print("Imagem não encontrada:", caminho_imagem)
+            return
+
+        pixmap = QPixmap(caminho_imagem)
+        if pixmap.isNull():
+            print("Falha ao carregar imagem:", caminho_imagem)
+            return
+        
+        tamanho = self.label_imagem_usuario.size()
+        pixmap = pixmap.scaled(
+            tamanho,
+            Qt.KeepAspectRatio,
+            Qt.SmoothTransformation
+        )
+
+        self.label_imagem_usuario.setPixmap(pixmap)
+        self.label_imagem_usuario.repaint()
+
+        print("Imagem carregada com sucesso no QLabel.")
+
 #*********************************************************************************************************************
     def erros_frames_produtos(self):
         # Definir os campos obrigatórios e seus respectivos frames de erro
