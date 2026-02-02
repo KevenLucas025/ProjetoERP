@@ -2,7 +2,8 @@ from PySide6.QtWidgets import (QWidget,QMenu, QVBoxLayout,
                                QProgressBar,QApplication,QDialog,QMessageBox,
                                QToolButton,QMainWindow,QPushButton,QLabel,
                                QLineEdit,QTableWidget,QTextEdit,QAbstractItemView,
-                               QStyledItemDelegate,QStyleOptionViewItem,QTableWidgetItem,QAbstractScrollArea,QScrollArea)
+                               QStyledItemDelegate,QStyleOptionViewItem,QTableWidgetItem,
+                               QAbstractScrollArea,QScrollArea,QHBoxLayout,QFrame,QSizePolicy,QComboBox)
 from PySide6.QtCore import Qt, QTimer,QRect
 from PySide6.QtGui import (QIcon,QKeySequence,QColor,
                            QTextDocument,QPainter,QFontMetrics,QTextCursor,QTextCharFormat,QPalette,QPixmap)
@@ -13,12 +14,15 @@ from dialogos import ComboDialog,DialogoEstilizado
 from ui_login_4 import Ui_Mainwindow_Login
 from utils import caminho_recurso
 from mane_python import Ui_MainWindow
+from pagamentos import MercadoPagoService
 from packaging import version
 import subprocess
 from utils import Temas
 import re
 import string
 import requests
+from database import DataBase
+import base64
 
 
 
@@ -68,6 +72,8 @@ class Pagina_Configuracoes(QWidget):
         self.frame_quantidade = frame_quantidade
         self.historico_erros = {}
         self.login_window = login_window
+        self.db = DataBase()
+        self.mp_service = MercadoPagoService()
         
         self.login_window.label_foto_sistema.setPixmap(QPixmap(caminho_recurso("imagens/Imagem2.png")))
 
@@ -313,6 +319,7 @@ class Pagina_Configuracoes(QWidget):
         menu_tema.addAction("Alterar para o modo claro", self.aplicar_modo_claro)
         menu_tema.addAction("Alterar para o modo clássico", self.aplicar_modo_classico)
         menu_tema.addAction("Feedback",self.main_window.mostrar_sugestao)
+        menu_tema.addAction("Assinatura",self.aplicar_assinatura)
         btn_tema.setMenu(menu_tema)
         self.layout.addWidget(btn_tema)
 
@@ -385,6 +392,233 @@ class Pagina_Configuracoes(QWidget):
 
         # Mostrar janela
         self.janela_config.show()
+        
+    def criar_card_plano(self, titulo, preco, beneficios, callback, destaque=False):
+        card = QFrame()
+        card.setFixedSize(311, 300)
+        card.setObjectName("cardPlano")
+
+        layout = QVBoxLayout(card)
+        layout.setSpacing(6)
+        layout.setContentsMargins(12, 12, 12, 12)
+
+        # TÍTULO
+        lbl_titulo = QLabel(titulo)
+        lbl_titulo.setStyleSheet("font-size: 18px; font-weight: bold;")
+        lbl_titulo.setWordWrap(True)
+
+        # PREÇO
+        lbl_preco = QLabel(preco)
+        lbl_preco.setStyleSheet("font-size: 14px; color: gray;")
+        lbl_preco.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Fixed)
+
+        layout.addWidget(lbl_titulo)
+        layout.addWidget(lbl_preco)
+
+        # 🔹 INCLUSÃO DE MODALIDADES (sempre logo abaixo do preço)
+        lbl_modalidades = QLabel("Inclusão de modalidades")
+        lbl_modalidades.setStyleSheet("font-size: 16px; font-weight: bold;")
+        lbl_modalidades.setWordWrap(True)
+        lbl_modalidades.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Fixed)
+
+        layout.addWidget(lbl_modalidades)
+
+
+        # 🔹 DEMAIS BENEFÍCIOS
+        for b in beneficios:
+            texto = b.strip()
+
+            if "inclusão de modalidades" in texto.lower():
+                continue  # já exibido acima
+
+            label = QLabel(f"• {texto}")
+            label.setStyleSheet("font-size: 14px;")
+            label.setWordWrap(True)
+            label.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Fixed)
+
+            layout.addWidget(label)
+
+        layout.addStretch()
+
+        # BOTÃO
+        btn = QPushButton("Selecionar plano")
+        btn.clicked.connect(callback)
+        btn.setCursor(Qt.PointingHandCursor)
+        layout.addWidget(btn)
+
+        # BORDA DO CARD
+        if destaque:
+            card.setStyleSheet("""
+                QFrame#cardPlano {
+                    border: 2px solid #4f46e5;
+                    border-radius: 10px;
+                }
+            """)
+        else:
+            card.setStyleSheet("""
+                QFrame#cardPlano {
+                    border: 1px solid #ccc;
+                    border-radius: 10px;
+                }
+            """)
+
+        return card
+
+
+        
+    def aplicar_assinatura(self):
+        self.janela_assinatura = QMainWindow(self)
+        self.janela_assinatura.setWindowTitle("Escolha seu plano")
+        self.janela_assinatura.resize(760, 560)
+
+        central = QWidget()
+        self.janela_assinatura.setCentralWidget(central)
+
+        layout = QHBoxLayout(central)
+        layout.setSpacing(20)
+
+        plano_basico = self.criar_card_plano(
+            titulo="Plano Básico / Gratuito",
+            preco="R$ 0,00",
+            beneficios=[
+                "Inclusão de modalidades",
+                "Assistência a correções de erros"
+            ],
+            callback=self.realizar_cobranca_plano_basico
+            
+        )
+
+        plano_pro = self.criar_card_plano(
+            titulo="Plano Pro",
+            preco="R$ 0,50",
+            beneficios=[
+                "Inclusão de modalidades",
+                "Acesso ao cadastramento em massa de usuários",
+                "Acesso ao cadastramento em massa de produtos",
+                "Acesso a planilha de exemplos",
+                "Assistência a correções de erros"
+            ],
+            callback=self.realizar_cobranca_plano_pro,
+            destaque=True
+        )
+
+        layout.addStretch()
+        layout.addWidget(plano_basico)
+        layout.addWidget(plano_pro)
+        layout.addStretch()
+
+        self.janela_assinatura.show()
+        
+    def realizar_cobranca_plano_pro(self):
+        email = self.config.obter_email_usuario()
+
+        if not email:
+            QMessageBox.warning(
+                self,
+                "E-mail necessário",
+                "Cadastre um e-mail válido para continuar com o pagamento."
+            )
+            return
+
+        # Cria o pagamento
+        pagamento = self.mp_service.criar_pagamento_pix(
+            valor=0.50,
+            descricao="Plano Pro",
+            email_cliente=email
+        )
+
+        # Pega só o ID do pagamento
+        pagamento_id = pagamento.get("id")
+        if not pagamento_id:
+            QMessageBox.critical(
+                self,
+                "Erro no pagamento",
+                "Não foi possível criar o pagamento.\nVerifique as credenciais ou o e-mail."
+            )
+            return
+
+        # Abre a janela de pagamento com o ID
+        self.abrir_janela_pagamento(pagamento_id)
+
+
+        
+    def realizar_cobranca_plano_basico(self):
+        self.config.definir_plano("basico")
+        QMessageBox.information(self, "Plano ativado", "Plano Básico ativado com sucesso.")
+        
+    def abrir_janela_pagamento(self, pagamento_id):
+        dialog = QDialog(self)
+        dialog.setWindowTitle("Pagamento - Plano Pro")
+        dialog.setFixedSize(320, 400)
+
+        layout = QVBoxLayout(dialog)
+
+        lbl = QLabel("Selecione a forma de pagamento:")
+        lbl.setStyleSheet("font-size: 14px; font-weight: bold;")
+        layout.addWidget(lbl)
+
+        combo = QComboBox(self)
+        combo.addItems(["Débito", "Crédito", "PIX"])
+        layout.addWidget(combo)
+
+        qr_label = QLabel()
+        layout.addWidget(qr_label)
+
+        progress = QProgressBar()
+        progress.setRange(0, 0)  # Indeterminado
+        progress.hide()
+        layout.addWidget(progress)
+
+        btn_confirmar = QPushButton("Confirmar pagamento")
+        layout.addWidget(btn_confirmar)
+
+        def gerar_pix():
+            if combo.currentText() != "PIX":
+                QMessageBox.information(self, "Info", "Pagamento via PIX não selecionado.")
+                return
+
+            # Obter pagamento atualizado
+            pagamento = self.mp_service.obter_pagamento(pagamento_id)
+
+            # ⚡ Checa se point_of_interaction existe
+            try:
+                qr_code_base64 = pagamento["point_of_interaction"]["transaction_data"]["qr_code_base64"]
+            except KeyError:
+                QMessageBox.critical(self, "Erro", "QR Code não disponível para este pagamento.")
+                return
+
+            pixmap = QPixmap()
+            pixmap.loadFromData(base64.b64decode(qr_code_base64))
+            qr_label.setPixmap(pixmap.scaled(250, 250, Qt.KeepAspectRatio))
+
+            progress.show()
+            btn_confirmar.setEnabled(False)
+
+            # Timer para verificar pagamento
+            timer = QTimer()
+            timer.setInterval(3000)
+            def checar_pagamento():
+                status = self.mp_service.obter_pagamento(pagamento_id).get("status")
+                if status == "approved":
+                    timer.stop()
+                    progress.hide()
+                    self.db.atualizar_plano_usuario(self.main_window.get_usuario_logado(), "Pro")
+                    QMessageBox.information(self, "Pagamento aprovado", "Plano Pro ativado com sucesso!")
+                    dialog.accept()
+                elif status in ["cancelled", "rejected"]:
+                    timer.stop()
+                    progress.hide()
+                    QMessageBox.warning(self, "Pagamento", "Pagamento não aprovado ou cancelado.")
+                    btn_confirmar.setEnabled(True)
+
+            timer.timeout.connect(checar_pagamento)
+            timer.start()
+
+
+        btn_confirmar.clicked.connect(gerar_pix)
+        dialog.exec()
+
+
 
     def verificar_atualizacoes(self):
         try:

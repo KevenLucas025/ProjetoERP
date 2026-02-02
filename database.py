@@ -108,7 +108,8 @@ class DataBase:
                     "Data da Inclusão do Usuário" TEXT,
                     Segredo TEXT,
                     "Usuário Logado" TEXT,
-                    Acesso TEXT NOT NULL
+                    Acesso TEXT NOT NULL,
+                    Plano TEXT
                 )
             """)
         except Exception as e:
@@ -143,7 +144,8 @@ class DataBase:
                     'Data da Inatividade do Usuário' TEXT,
                     Segredo TEXT,
                     'Usuário Logado' TEXT NOT NULL,
-                    Acesso TEXT NOT NULL
+                    Acesso TEXT NOT NULL,
+                    Plano TEXT
                                     
                 )
             """)
@@ -606,6 +608,34 @@ class DataBase:
 
         except Exception as e:
             print("Erro ao inserir usuário:", e)
+            
+    def atualizar_plano_usuario(self, usuario, novo_plano):
+        try:
+            self.garantir_conexao()
+            cursor = self.connection.cursor()
+
+            cursor.execute("""
+                UPDATE users
+                SET Plano = ?
+                WHERE Usuário = ?
+            """, (novo_plano, usuario))
+
+            self.connection.commit()
+            print(f"Plano atualizado para {novo_plano}")
+
+        except Exception as e:
+            print("Erro ao atualizar plano:", e)
+            
+    def obter_email_usuario(self, usuario_ou_email):
+        cursor = self.connection.cursor()
+        cursor.execute(
+            'SELECT Email FROM users WHERE "Usuário" = ? OR email = ?',
+            (usuario_ou_email, usuario_ou_email)
+        )
+        row = cursor.fetchone()
+        return row[0] if row else None
+
+
 #*********************************************************************************************************************        
     def atualizar_usuario(self,id,nome=None, usuario=None, senha=None, confirmar_senha=None,
                       cep=None, endereco=None, numero=None, cidade=None, bairro=None, estado=None,
@@ -942,7 +972,6 @@ class DataBase:
 
 if __name__ == "__main__":
     db = DataBase()
-    db.create_table_users()
     db.close_connection()
     
     

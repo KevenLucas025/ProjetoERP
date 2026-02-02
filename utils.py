@@ -530,6 +530,18 @@ class DialogoAvatar(QDialog):
         layout_principal.addWidget(self.botao_alterar)
         layout_principal.addWidget(self.botao_mostrar_foto)
         layout_principal.addWidget(self.botao_remover_foto)
+        
+        self.animar_entrada()
+        
+    def animar_entrada(self):
+        self.setWindowOpacity(0)
+
+        self.anim_opacity = QPropertyAnimation(self, b"windowOpacity")
+        self.anim_opacity.setDuration(230)
+        self.anim_opacity.setStartValue(0)
+        self.anim_opacity.setEndValue(1)
+
+        self.anim_opacity.start()
 
     def mostrar_placeholder(self):
         # Pega o nome do usuário pela janela principal

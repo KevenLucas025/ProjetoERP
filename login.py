@@ -94,7 +94,7 @@ class Login(QMainWindow, Ui_Mainwindow_Login):
         if hasattr(self, "autenticando") and self.autenticando:
             return
         
-        self.autenticacao = True
+        
         self.users = DataBase()
         self.users.connecta()
 
@@ -108,7 +108,23 @@ class Login(QMainWindow, Ui_Mainwindow_Login):
 
         if tipo_usuario:
             manter_conectado = self.btn_manter_conectado.isChecked()
-            self.config.salvar_configuracoes(nome_completo,usuario_ou_email,senha, manter_conectado)
+            email = self.users.obter_email_usuario(usuario_ou_email)
+            
+            if not email:
+                QMessageBox.warning(
+                    self,
+                    "Erro",
+                    "Usuário sem e-mail cadastrado. Não será possível realizar pagamentos."
+                )
+                return
+            self.config.salvar_configuracoes(
+                nome_usuario=nome_completo,
+                usuario=usuario_ou_email,
+                senha=senha,
+                email=email,
+                mantem_conectado=manter_conectado
+            )
+
             print(f"Usuário salvo: {self.config.usuario}")  # DEBUG
             print(f"Senha salva: {self.config.senha}") # DEBUG
 

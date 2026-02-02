@@ -41,7 +41,6 @@ import os
 import uuid
 import datetime
 from datetime import datetime
-import base64
 import random
 import string
 import subprocess
@@ -559,6 +558,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.txt_cep.editingFinished.connect(self.on_cep_editing_finished)
         
         
+        
+        
         self.label_nome_usuario.setStyleSheet("""
             color: white;
             font-weight: bold;
@@ -594,16 +595,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         # Iniciais no avatar
         self.label_avatar.setText(self.gerar_iniciais(nome_completo))
-        
-    def animar_entrada(self):
-        self.setWindowOpacity(0)
-
-        self.anim_opacity = QPropertyAnimation(self, b"windowOpacity")
-        self.anim_opacity.setDuration(230)
-        self.anim_opacity.setStartValue(0)
-        self.anim_opacity.setEndValue(1)
-
-        self.anim_opacity.start()
         
     def recortar_imagem_circular(self, pixmap, size=300):
         pixmap = pixmap.scaled(
@@ -697,7 +688,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if pixmap.isNull():
             return
 
-        # 🔥 abre o preview + recorte
+        #  abre o preview + recorte
         dialog = DialogoRecorteImagem(pixmap, self)
         if not dialog.exec():
             return
@@ -789,10 +780,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.label_avatar.setText("")
             return
 
-        # 👉 TEXTO AO LADO = NOME COMPLETO
+        #  TEXTO AO LADO = NOME COMPLETO
         self.label_nome_usuario.setText(nome_completo)
 
-        # 👉 AVATAR = INICIAIS
+        #  AVATAR = INICIAIS
         iniciais = self.gerar_iniciais(nome_completo)
         self.label_avatar.setText(iniciais)
 #*********************************************************************************************************************
@@ -2228,8 +2219,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             return ""
 #*********************************************************************************************************************            
     def carregar_configuracoes(self):
-        self.txt_usuario_cadastro.setText(self.config.usuario if self.config.usuario else "")
-        self.login_window.btn_manter_conectado.setChecked(self.config.mantem_conectado)
+        self.txt_usuario_cadastro.setText(self.config.usuario or "")
+        self.login_window.btn_manter_conectado.setChecked(
+            bool(self.config.mantem_conectado)
+        )
+
 #*********************************************************************************************************************
     def formatar_porcentagem(self):
         valor = self.txt_desconto_3.text()
@@ -4470,7 +4464,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.btn_ver_usuario.setIcon(
             QIcon(caminho_recurso("imagens/74472.png"))
         )
-            
+        self.label_icone_wpp.setPixmap(QPixmap(caminho_recurso("imagens/icone_whatsapp.png")))
+        self.label_icone_email.setPixmap(QPixmap(caminho_recurso("imagens/icone_email.png")))
+             
     def closeEvent(self, event):
         event.accept()
         

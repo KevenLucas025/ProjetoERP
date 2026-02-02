@@ -1,7 +1,8 @@
 {
-    "nome_usuario": "Keven",
-    "usuario": "123",
-    "senha": "",
+    "nome_usuario": "Keven Lucas da Silva Jesus",
+    "usuario": "Keven",
+    "senha": "123",
+    "email": "keven.lucas00@hotmail.com",
     "mantem_conectado": false,
     "nao_mostrar_mensagem_boas_vindas": true,
     "nao_mostrar_aviso_irreversivel": false,
@@ -213,5 +214,6 @@
     "tema": "escuro",
     "tamanho_fonte_percentual": 100,
     "atalhos": {},
+    "plano": "pro",
     "atualizacoes_automaticas": false
 }

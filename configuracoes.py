@@ -10,6 +10,7 @@ class Configuracoes_Login:
         self.nome_usuario = None
         self.usuario = None
         self.senha = None
+        self.email = None
         self.mantem_conectado = False
         self.nao_mostrar_mensagem_boas_vindas = False
         self.nao_mostrar_aviso_irreversivel = False
@@ -18,7 +19,8 @@ class Configuracoes_Login:
         self.nao_mostrar_aviso_atualizacoes = False
         self.atualizacoes_automaticas = False
         self.historico_autocompletes = {}
-        self.tema = "classico"
+        self.tema = "classico" # padrão
+        self.plano = "basico" # padrão
         self.atalhos = {}
         self.carregar()
         
@@ -69,7 +71,8 @@ class Configuracoes_Login:
                 self.nome_usuario = config.get("nome_usuario","")
                 self.usuario = config.get("usuario", "")
                 self.senha = config.get("senha", "")
-                self.mantem_conectado = config.get("mantem_conectado", False)
+                self.email = config.get("email", "")
+                self.mantem_conectado = bool(config.get("mantem_conectado", False))
                 self.nao_mostrar_mensagem_boas_vindas = config.get("nao_mostrar_mensagem_boas_vindas", False)
                 self.nao_mostrar_aviso_irreversivel = config.get("nao_mostrar_aviso_irreversivel", False)
                 self.nao_mostrar_mensagem_arquivo_excel = config.get("nao_mostrar_mensagem_arquivo_excel", False)
@@ -77,6 +80,7 @@ class Configuracoes_Login:
                 self.nao_mostrar_aviso_atualizacoes = config.get("nao_mostrar_aviso_atualizacoes", False)
                 self.historico_autocompletes = config.get("historico_autocompletes", {})
                 self.atalhos = config.get("atalhos", {})
+                self.plano = config.get("plano","basico")
                 self.atualizacoes_automaticas = config.get("atualizacoes_automaticas",False)
                 
 
@@ -95,7 +99,7 @@ class Configuracoes_Login:
             self.tamanho_fonte_percentual = 100 
 
 
-    def salvar(self,nome_usuario=None, usuario=None, senha=None, mantem_conectado=None, tamanho_fonte_percentual=None):
+    def salvar(self,nome_usuario=None, usuario=None, senha=None,email=None,mantem_conectado=None, tamanho_fonte_percentual=None):
         # Atualiza atributos da instância
         if nome_usuario is not None:
             self.nome_usuario = nome_usuario
@@ -103,6 +107,8 @@ class Configuracoes_Login:
             self.usuario = usuario
         if senha is not None:
             self.senha = senha
+        if email is not None:
+            self.email = email
         if mantem_conectado is not None:
             self.mantem_conectado = mantem_conectado
         if tamanho_fonte_percentual is not None:
@@ -112,6 +118,7 @@ class Configuracoes_Login:
             "nome_usuario": self.nome_usuario or "",
             "usuario": self.usuario or "",
             "senha": self.senha or "",
+            "email": self.email or "",
             "mantem_conectado": self.mantem_conectado,
             "nao_mostrar_mensagem_boas_vindas": self.nao_mostrar_mensagem_boas_vindas,
             "nao_mostrar_aviso_irreversivel": self.nao_mostrar_aviso_irreversivel,
@@ -122,11 +129,23 @@ class Configuracoes_Login:
             "tema": self.tema,
             "tamanho_fonte_percentual": self.tamanho_fonte_percentual,
             "atalhos": self.atalhos,
+            "plano": self.plano,
             "atualizacoes_automaticas": self.atualizacoes_automaticas
         }
 
         with open(self.caminho_config_json(), "w", encoding="utf-8") as f:
             json.dump(config, f, indent=4, ensure_ascii=False)
+            
+    def definir_plano(self, plano):
+        if plano not in ("basico", "pro"):
+            return
+        self.plano = plano
+        self.salvar()
+
+    def obter_plano(self):
+        self.carregar()
+        return self.plano
+
             
     def salvar_atalho(self, acao, tecla):
         """Salva/atualiza um atalho específico e persiste no JSON"""
@@ -147,14 +166,42 @@ class Configuracoes_Login:
         return self.atalhos
 
 
-    def salvar_configuracoes(self,nome_usuario=None,usuario=None,senha=None,mantem_conectado=False ):
+    def salvar_configuracoes(
+        self,
+        nome_usuario=None,
+        usuario=None,
+        senha=None,
+        email=None,
+        mantem_conectado=False
+    ):
         """Atualiza as variáveis e salva no JSON."""
-        self.nome_usuario = nome_usuario
-        self.usuario = usuario
-        self.senha = senha
+
+        if nome_usuario is not None:
+            self.nome_usuario = nome_usuario
+
+        if usuario is not None:
+            self.usuario = usuario
+
+        if senha is not None:
+            self.senha = senha
+
+        # 👇 NÃO sobrescreve o e-mail se vier None
+        if email:
+            self.email = email
+
         self.mantem_conectado = mantem_conectado
-        print(f"Salvando configurações: Usuário - {usuario}, Senha - {senha}")
-        self.salvar(nome_usuario,usuario, senha, mantem_conectado)
+
+        print(f"Salvando configurações: Usuário - {self.usuario}")
+        print(f"E-mail salvo: {self.email}")
+
+        self.salvar(
+            nome_usuario=self.nome_usuario,
+            usuario=self.usuario,
+            senha=self.senha,
+            email=self.email,
+            mantem_conectado=self.mantem_conectado
+        )
+
 
     def salvar_percentual_fonte(self, percentual):
         """Salva apenas o percentual de fonte no JSON"""
@@ -210,4 +257,15 @@ class Configuracoes_Login:
             self.historico_autocompletes[nome_campo] = []
         if texto not in self.historico_autocompletes[nome_campo]:
             self.historico_autocompletes[nome_campo].append(texto)
-            self.salvar(self.usuario,self.senha,self.mantem_conectado)
+            self.salvar(
+            nome_usuario=self.nome_usuario,
+            usuario=self.usuario,
+            senha=self.senha,
+            email=self.email,
+            mantem_conectado=self.mantem_conectado
+        )
+
+            
+    def obter_email_usuario(self):
+        self.carregar()
+        return self.email if self.email else None
