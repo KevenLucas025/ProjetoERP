@@ -161,7 +161,7 @@ class Clientes_Juridicos(QWidget):
 
                     valor = str(dado)
 
-                    # 🔹 Tradução do Modo Valor Gasto para a interface
+                    #  Tradução do Modo Valor Gasto para a interface
                     if cursor.description[coluna_idx][0] == "Modo Valor Gasto":
                         if valor == "automatico":
                             valor = "Automático (somar produtos)"

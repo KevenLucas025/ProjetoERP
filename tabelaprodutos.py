@@ -1003,11 +1003,13 @@ class TabelaProdutos(QMainWindow):
     def atualizar_valores_frames_apos_recuperar(self, valor_total, valor_com_desconto, valor_do_desconto, quantidade):
         # Verificar e formatar os valores corretamente
         valor_total_formatado = locale.currency(valor_total, grouping=True)
+    
+        # Se não houver desconto, o valor final é o valor total
+        if valor_do_desconto == 0:
+            valor_com_desconto_formatado = locale.currency(valor_total, grouping=True)
+        else:
+            valor_com_desconto_formatado = locale.currency(valor_com_desconto, grouping=True)
 
-        # Valor com desconto: se não houver desconto, mostrar "Sem desconto"
-        valor_com_desconto_formatado = (
-            "Sem desconto" if valor_do_desconto == 0 else locale.currency(valor_com_desconto, grouping=True)
-        )
 
         # Valor do desconto: se for numérico e maior que 0, formatar
         if isinstance(valor_do_desconto, (int, float)) and valor_do_desconto > 0:
@@ -1361,10 +1363,16 @@ class TabelaProdutos(QMainWindow):
                 produto_quantidade = int(quantidade_str)
 
             # Converter desconto para float e tratá-lo como porcentagem
-            desconto_str = produto_desconto.replace('%', '').replace(',', '.').strip()
-            
-            # Aqui, fazemos a conversão correta para percentual
-            produto_desconto = float(desconto_str)  if desconto_str else 0
+            desconto_str = produto_desconto.replace('%', '').replace(',', '.').strip().lower()
+
+            if desconto_str in ("", "sem desconto"):
+                produto_desconto = 0.0
+            else:
+                try:
+                    produto_desconto = float(desconto_str)
+                except ValueError:
+                    produto_desconto = 0.0
+
 
             # Calcular valores
             valor_total = produto_valor_real * produto_quantidade

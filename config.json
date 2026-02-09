@@ -90,7 +90,8 @@
             "12",
             "45",
             "2",
-            "1"
+            "1",
+            "16"
         ],
         "txt_cliente_3": [
             "dsadasdas",
@@ -139,7 +140,9 @@
             "dcvxz",
             "dsac",
             "asdfc",
-            "sdsd"
+            "sdsd",
+            "sdsa",
+            "vsz"
         ],
         "txt_descricao_produto_3": [
             "Pizza",
@@ -184,7 +187,8 @@
             "dsad",
             "sdac",
             "asdace",
-            "sdavc"
+            "sdavc",
+            "tyf"
         ],
         "txt_produto": [
             "Maça",
@@ -208,7 +212,12 @@
             "1",
             "13",
             "14",
-            "16"
+            "16",
+            "20",
+            "25",
+            "22",
+            "100",
+            "80"
         ]
     },
     "tema": "escuro",

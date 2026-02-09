@@ -273,10 +273,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.btn_retroceder.setGeometry(5, 5, 30, 30) 
         self.btn_retroceder.setToolTip("Retroceder") # Adiciona uma dica de ferramenta
         
-        
-        '''self.update_thread = UpdateCheckThread(VERSAO_ATUAL)
-        self.update_thread.update_disponivel.connect(self.notificar_atualizacao)
-        self.update_thread.start()'''
+    
 
         # Criar o menu dentro do botão btn_opcoes
         self.menu_opcoes = QMenu(self.btn_mais_opcoes)
@@ -430,7 +427,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.carregar_configuracoes()
         
-        #self.pagina_configuracoes_atualizacao = UpdateCheckThread(VERSAO_ATUAL)
         
 
         self.pagina_usuarios = Pagina_Usuarios(self, self.btn_cadastrar_novo_usuario,
@@ -3513,7 +3509,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                     qualidade=80
                 )
                 
-                produto_imagem = caminho_final  # 🔥 SALVA O CAMINHO
+                produto_imagem = caminho_final  # SALVA O CAMINHO
 
         # Verificar se os campos foram alterados
         alteracao_campo = False
@@ -3532,19 +3528,28 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         produto_desconto = self.txt_desconto_3.text().strip()
 
         valor_real = float(produto_valor_real.replace('R$', '').replace('.', '').replace(',', '.').strip())
+        
         quantidade = int(produto_quantidade)
 
         total_sem_desconto = valor_real * quantidade
 
-        if produto_desconto and produto_desconto != "Não Cadastrado":
-            desconto_float = float(produto_desconto.replace("%", "").replace(",", "."))
-            produto_valor_total = total_sem_desconto * (1 - desconto_float / 100)
-        else:
-            produto_valor_total = total_sem_desconto
+        desconto_float = 0.0
+        
+        if produto_desconto:
+            desconto_limpo = (
+                produto_desconto
+                .replace("%","")
+                .replace(",",".")
+                .strip()
+            )
+            
+            if desconto_limpo.replace(".","",1).isdigit():
+                desconto_float = float(desconto_limpo)
+        
+        produto_valor_total = total_sem_desconto * (1 - desconto_float / 100)
 
-        produto_total_sem_desconto = f"{total_sem_desconto:.2f}".replace(".", ",")
-        produto_valor_total = f"{produto_valor_total:.2f}".replace(".", ",")
-
+        produto_total_sem_desconto = f"R$ {total_sem_desconto:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
+        produto_valor_total = f"R$ {produto_valor_total:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
 
 
         produto_data_cadastro = self.dateEdit_3.date().toString("dd/MM/yyyy")
@@ -3560,6 +3565,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 produto_desconto,produto_total_sem_desconto,produto_valor_total,produto_data_cadastro,
                 produto_codigo_item, produto_cliente, produto_descricao, produto_imagem
             )
+            
+            self.db.atualizar_valor_gasto_cliente(produto_cliente)
             QMessageBox.information(self, "Sucesso", "Produto atualizado com sucesso!")
             self.limpar_imagem_produto_após_atualizar()
             self.limpar_campos_produtos()
@@ -3567,6 +3574,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.selected_produto_id = None
             if hasattr(self, 'produto_original'):
                 del self.produto_original
+            if hasattr(self,'pagina_clientes_juridicos'):
+                self.pagina_clientes_juridicos.carregar_clientes_juridicos()
         except Exception as e:
             QMessageBox.critical(self, "Erro", f"Erro ao atualizar o produto: {str(e)}")
 
