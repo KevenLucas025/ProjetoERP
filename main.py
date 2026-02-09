@@ -558,13 +558,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.txt_cep.editingFinished.connect(self.on_cep_editing_finished)
         
         
-        
-        
-        self.label_nome_usuario.setStyleSheet("""
-            color: white;
-            font-weight: bold;
-        """)
-        
         self.label_avatar.setCursor(Qt.PointingHandCursor)
         self.label_avatar.setAlignment(Qt.AlignCenter)
         self.label_avatar.setFixedSize(40, 40)
@@ -587,14 +580,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         if not nome_completo:
             self.label_nome_usuario.setText("Nenhum usuário logado")
-            self.label_avatar.setText("")
             return
 
-        # Nome completo ao lado
         self.label_nome_usuario.setText(nome_completo)
 
-        # Iniciais no avatar
-        self.label_avatar.setText(self.gerar_iniciais(nome_completo))
         
     def recortar_imagem_circular(self, pixmap, size=300):
         pixmap = pixmap.scaled(
@@ -632,18 +621,18 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         usuario = self.get_usuario_logado()
         nome_completo = self.get_nome_completo_usuario() or "Usuário"
 
-
         caminho = self.db.obter_imagem_usuario(usuario)
-        
         self.caminho_foto_usuario = caminho
+
+        self.label_avatar.clear()
+        self.label_avatar.setAlignment(Qt.AlignCenter)
+        self.label_avatar.setStyleSheet("")
 
         if caminho and os.path.exists(caminho):
             pixmap = QPixmap(caminho)
             pixmap = self.pixmap_circular(pixmap, 40)
             self.label_avatar.setPixmap(pixmap)
-            self.label_avatar.setText("")
         else:
-            self.label_avatar.setPixmap(QPixmap())
             self.label_avatar.setText(self.gerar_iniciais(nome_completo))
             self.label_avatar.setStyleSheet("""
                 background-color: #4f46e5;
@@ -652,6 +641,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 font-size: 14px;
                 border-radius: 20px;
             """)
+
+        self.label_avatar.repaint()
 
 
     def ver_foto_usuario(self):
@@ -744,48 +735,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         painter.end()
 
         return result
-    
-    def remover_foto_usuario(self):
-        usuario = self.get_nome_completo_usuario()
-        if not usuario:
-            return
-        
-        caminho = self.db.obter_imagem_usuario(usuario)
-        
-        if caminho and os.path.exists(caminho):
-            try:
-                os.remove(caminho)
-            except Exception as e:
-                QMessageBox.warning(
-                    self,
-                    "Erro",
-                    f"Não foi possível remover a imagem:\n {e}"
-                )
-                return
-            
-            
-        # Remove do banco (salva NULL / vazio)
-        self.db.salvar_imagem_usuario(usuario,None)
-        
-        # Limpa estado local
-        self.caminho_foto_usuario = None
-        
-        self.atualizar_avatar()
-#*********************************************************************************************************************        
-    def atualizar_usuario_logado(self):
-        nome_completo = self.get_nome_completo_usuario()
-
-        if not nome_completo:
-            self.label_nome_usuario.setText("Nenhum usuário logado")
-            self.label_avatar.setText("")
-            return
-
-        #  TEXTO AO LADO = NOME COMPLETO
-        self.label_nome_usuario.setText(nome_completo)
-
-        #  AVATAR = INICIAIS
-        iniciais = self.gerar_iniciais(nome_completo)
-        self.label_avatar.setText(iniciais)
 #*********************************************************************************************************************
     def gerar_iniciais(self,nome):
         partes = nome.strip().split()
@@ -810,7 +759,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         env_path = os.path.join(base_path, ".env")
         load_dotenv(env_path)
-            
+#*********************************************************************************************************************            
     def caminho_historico_atualizacoes(self):
         if getattr(sys, "frozen", False):
             return os.path.join(
@@ -822,17 +771,16 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 self.pasta_do_sistema(),
                 "historico_atualizacoes.log"
             )
-
-    
+#*********************************************************************************************************************   
     def pasta_do_sistema(self):
         return os.path.dirname(sys.executable) if getattr(sys, 'frozen', False) else os.getcwd()
-    
+#*********************************************************************************************************************    
     def pasta_estado(self):
         base = os.getenv("APPDATA")
         pasta = os.path.join(base, "SistemaGerenciamento")
         os.makedirs(pasta, exist_ok=True)
         return pasta
-
+#*********************************************************************************************************************
     def aplicar_atualizacao_automatica(self):
         try:
             caminho_estado = self.pasta_estado()
@@ -891,7 +839,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             except:
                 pass
 
-
+#*********************************************************************************************************************
     def verificar_atualizacao_automatica(self):
         try:
             url = "https://github.com/KevenLucas025/Sistema-Atualizador/raw/refs/heads/main/versao.json"
@@ -913,7 +861,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                             self,
                             "Atualização disponível",
                             f"Uma nova versão ({versao_remota}) está disponível!\n\n"
-                            "Vá em Configurações > Verificar atualizações."
+                            "Vá em Mais opções > Configurações > Atualizações > Verificar se há atualizações para baixar."
                         )
                     return
 
@@ -1654,24 +1602,31 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         janela.setCentralWidget(central_widget)
         janela.show()
 
-        
+    def versao_do_sistema(self):
+        return self.versao_instalada_local()
     
 
     def show_mensagem_sistema(self):
+        versao_atual = self.versao_do_sistema()
+        
         msg = QMessageBox(self)
         msg.setIcon(QMessageBox.Information)
-        msg.setWindowTitle("Informação")
-        msg.setText(f"Versão do Sistema: {VERSAO_ATUAL}\n"
-                    "Desenvolvedor: Keven Lucas\n"
-                    "Sistema liberado para uso privado e público\n"
-                    "Sua versão é gratuita\n"
-                    "Todos os direitos reservados\n"
-                    "Para quaisquer uso não autorizado de código fonte e/ou tentativa de usa-ló sem autorização prévia do desenvolvedor"
-                    " o mesmo estará sujeito a penalização por crime de origem cibernética. O sistema detecta  uso de pessoas não autorizado"
-                    " ocasionando no bloqueio temporário e conforme insistência permanente do acesso. Em versão disto, saliento que o uso do sistema"
-                    " seja feito de forma responsável. ")
-                    
+        msg.setWindowTitle("Informações do Sistema")
+        msg.setText(
+            f"Versão do Sistema: {versao_atual}\n"
+            "Bem-vindo ao Sistema de Gerenciamento!\n\n"
+            "Novidades nesta versão:\n"
+            "- Cadastro de produtos simplificado\n"
+            "- Agora é possível logar no sistema utilizando E-mail ou CPF\n"
+            "- Melhorias na performance de relatórios\n"
+            "- Suporte a múltiplos usuários simultâneos\n\n"
+            "Dicas de uso:\n"
+            "- Use o menu lateral para acessar rapidamente todas as funcionalidades\n"
+            "- Faça backups regulares dos seus dados\n"
+            "- Entre em contato com o suporte na aba Configurações > Sistema > Feedback para quaisquer dúvidas ou sugestões!"
+        )
         msg.exec()
+
 
     def mostrar_page_estoque(self):
         # Navegar para a página de estoque

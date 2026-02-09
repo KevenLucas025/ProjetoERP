@@ -14,7 +14,6 @@ from dialogos import ComboDialog,DialogoEstilizado
 from ui_login_4 import Ui_Mainwindow_Login
 from utils import caminho_recurso
 from mane_python import Ui_MainWindow
-from pagamentos import MercadoPagoService
 from packaging import version
 import subprocess
 from utils import Temas
@@ -22,7 +21,6 @@ import re
 import string
 import requests
 from database import DataBase
-import base64
 
 
 
@@ -73,7 +71,6 @@ class Pagina_Configuracoes(QWidget):
         self.historico_erros = {}
         self.login_window = login_window
         self.db = DataBase()
-        self.mp_service = MercadoPagoService()
         
         self.login_window.label_foto_sistema.setPixmap(QPixmap(caminho_recurso("imagens/Imagem2.png")))
 
@@ -149,42 +146,67 @@ class Pagina_Configuracoes(QWidget):
         progress_dialog = ProgressDialog("Escuro", self)
         progress_dialog.show()
 
-        def update_progress(value):
-            progress_dialog.update_progress(value)
+        progress_dialog.set_status("Aplicando modo Escuro...")
+        progress_dialog.update_progress(10)
 
-        update_progress(10)
-        QTimer.singleShot(1000, lambda: update_progress(50))
-        QTimer.singleShot(2000, lambda: update_progress(80))
-        QTimer.singleShot(3000, lambda: update_progress(100))
-
-        QTimer.singleShot(3000, lambda: self.finalizar_aplicacao_modo_escuro(progress_dialog))
-
-
-    def finalizar_aplicacao_modo_escuro(self, progress_dialog):
-        if self.config.tema == "escuro":
-            # Já está no modo escuro, não precisa pedir reinício
-            return
-        if progress_dialog is not None:
-            progress_dialog.accept()
-
-        resposta = QMessageBox.question(
-            None,
-            "Reinício Necessário",
-            "Para aplicar completamente o tema Escuro, é necessário reiniciar a aplicação.\nDeseja reiniciar agora?",
-            QMessageBox.Yes | QMessageBox.No,
-            QMessageBox.No 
+        QTimer.singleShot(
+            800,
+            lambda: (
+                progress_dialog.set_status("Carregando recursos do tema Escuro..."),
+                progress_dialog.update_progress(40)
+            )
         )
 
-        if resposta == QMessageBox.Yes:
-            self.config.tema = "escuro"
-            self.config.salvar(self.config.usuario, self.config.senha, self.config.mantem_conectado)
-            self.reiniciar_sistema()
-        else:
-            QMessageBox.information(
-                None,
-                "Tema não aplicado",
-                "O tema Escuro será aplicado apenas após a reinicialização."
+        QTimer.singleShot(
+            1600,
+            lambda: (
+                progress_dialog.set_status("Ajustando interface..."),
+                progress_dialog.update_progress(70)
             )
+        )
+
+        QTimer.singleShot(
+            2400,
+            lambda: (
+                progress_dialog.set_status("Finalizando aplicação do tema..."),
+                progress_dialog.update_progress(100)
+            )
+        )
+
+        QTimer.singleShot(
+            2600,
+            lambda: self.finalizar_aplicacao_modo_escuro(progress_dialog)
+        )
+
+
+
+    def finalizar_aplicacao_modo_escuro(self, progress_dialog=None):
+        if self.config.tema == "escuro":
+            if progress_dialog:
+                progress_dialog.accept()
+            return
+
+        # SEMPRE salva o tema
+        self.config.tema = "escuro"
+        self.config.salvar(
+            self.config.usuario,
+            self.config.senha,
+            self.config.mantem_conectado
+        )
+
+        if progress_dialog:
+            progress_dialog.accept()
+
+        QMessageBox.information(
+            self,
+            "Reinício Necessário",
+            "Para aplicar o tema Escuro, o sistema será reiniciado agora."
+        )
+
+        self.reiniciar_sistema()
+
+
+
 
     # --- Modos na inicialização (sem progress) ---
     def aplicar_modo_escuro_sem_progress(self):
@@ -211,88 +233,133 @@ class Pagina_Configuracoes(QWidget):
         if self.config.tema == "claro":
             QMessageBox.information(self, "Tema", "Você já está no modo Claro.")
             return
+
         progress_dialog = ProgressDialog("Claro", self)
         progress_dialog.show()
 
-        def update_progress(value):
-            progress_dialog.update_progress(value)
+        progress_dialog.set_status("Aplicando modo Claro...")
+        progress_dialog.update_progress(10)
 
-        update_progress(10)
-        QTimer.singleShot(1000, lambda: update_progress(50))
-        QTimer.singleShot(2000, lambda: update_progress(80))
-        QTimer.singleShot(3000, lambda: update_progress(100))
+        QTimer.singleShot(
+            800,
+            lambda: (
+                progress_dialog.set_status("Carregando recursos do tema Claro..."),
+                progress_dialog.update_progress(40)
+            )
+        )
 
-        QTimer.singleShot(3000, lambda: self.finalizar_aplicacao_modo_claro(progress_dialog))
+        QTimer.singleShot(
+            1600,
+            lambda: (
+                progress_dialog.set_status("Ajustando interface..."),
+                progress_dialog.update_progress(70)
+            )
+        )
 
-    def finalizar_aplicacao_modo_claro(self,progress_dialog):
+        QTimer.singleShot(
+            2400,
+            lambda: (
+                progress_dialog.set_status("Finalizando aplicação do tema..."),
+                progress_dialog.update_progress(100)
+            )
+        )
+
+        QTimer.singleShot(
+            2600,
+            lambda: self.finalizar_aplicacao_modo_claro(progress_dialog)
+        )
+
+
+    def finalizar_aplicacao_modo_claro(self, progress_dialog=None):
         if self.config.tema == "claro":
-            # Já está no modo classico, não precisa pedir reinício
+            if progress_dialog:
+                progress_dialog.accept()
             return
-        if progress_dialog is not None:
-            progress_dialog.accept()
 
-        resposta = QMessageBox.question(
-            None,
-            "Reinício Necessário",
-            "Para aplicar completamente o tema Claro, é necessário reiniciar a aplicação.\nDeseja reiniciar agora?",
-            QMessageBox.Yes | QMessageBox.No,
-            QMessageBox.No 
+        self.config.tema = "claro"
+        self.config.salvar(
+            self.config.usuario,
+            self.config.senha,
+            self.config.mantem_conectado
         )
 
-        if resposta == QMessageBox.Yes:
-            self.config.tema = "claro"
-            self.config.salvar(self.config.usuario, self.config.senha, self.config.mantem_conectado)
-            self.reiniciar_sistema()
-        else:
-            QMessageBox.information(
-                None,
-                "Tema não aplicado",
-                "O tema Clássico será aplicado apenas após a reinicialização."
-            )
+        if progress_dialog:
+            progress_dialog.accept()
 
+        QMessageBox.information(
+            self,
+            "Reinício Necessário",
+            "Para aplicar o tema Claro, o sistema será reiniciado agora."
+        )
 
-    def finalizar_aplicacao_modo_classico(self, progress_dialog):
+        self.reiniciar_sistema()
+
+    def finalizar_aplicacao_modo_classico(self, progress_dialog=None):
         if self.config.tema == "classico":
-            # Já está no modo classico, não precisa pedir reinício
+            if progress_dialog:
+                progress_dialog.accept()
             return
-        if progress_dialog is not None:
-            progress_dialog.accept()
 
-        resposta = QMessageBox.question(
-            None,
-            "Reinício Necessário",
-            "Para aplicar completamente o tema Clássico, é necessário reiniciar a aplicação.\nDeseja reiniciar agora?",
-            QMessageBox.Yes | QMessageBox.No,
-            QMessageBox.No 
+        self.config.tema = "classico"
+        self.config.salvar(
+            self.config.usuario,
+            self.config.senha,
+            self.config.mantem_conectado
         )
 
-        if resposta == QMessageBox.Yes:
-            self.config.tema = "classico"
-            self.config.salvar(self.config.usuario, self.config.senha, self.config.mantem_conectado)
-            self.reiniciar_sistema()
-        else:
-            QMessageBox.information(
-                None,
-                "Tema não aplicado",
-                "O tema Clássico será aplicado apenas após a reinicialização."
-            )
+        if progress_dialog:
+            progress_dialog.accept()
+
+        QMessageBox.information(
+            self,
+            "Reinício Necessário",
+            "Para aplicar o tema Clássico, o sistema será reiniciado agora."
+        )
+
+        self.reiniciar_sistema()
+
+
 
     def aplicar_modo_classico(self):
         if self.config.tema == "classico":
             QMessageBox.information(self, "Tema", "Você já está no modo Clássico.")
             return
+
         progress_dialog = ProgressDialog("Clássico", self)
         progress_dialog.show()
 
-        def update_progress(value):
-            progress_dialog.update_progress(value)
+        progress_dialog.set_status("Aplicando modo Clássico...")
+        progress_dialog.update_progress(10)
 
-        update_progress(10)
-        QTimer.singleShot(1000, lambda: update_progress(50))
-        QTimer.singleShot(2000, lambda: update_progress(80))
-        QTimer.singleShot(3000, lambda: update_progress(100))
+        QTimer.singleShot(
+            800,
+            lambda: (
+                progress_dialog.set_status("Carregando recursos do tema Clássico..."),
+                progress_dialog.update_progress(40)
+            )
+        )
 
-        QTimer.singleShot(3000, lambda: self.finalizar_aplicacao_modo_classico(progress_dialog))
+        QTimer.singleShot(
+            1600,
+            lambda: (
+                progress_dialog.set_status("Ajustando interface..."),
+                progress_dialog.update_progress(70)
+            )
+        )
+
+        QTimer.singleShot(
+            2400,
+            lambda: (
+                progress_dialog.set_status("Finalizando aplicação do tema..."),
+                progress_dialog.update_progress(100)
+            )
+        )
+
+        QTimer.singleShot(
+            2600,
+            lambda: self.finalizar_aplicacao_modo_classico(progress_dialog)
+        )
+
 
     def aplicar_tema_classico(self):
         # Iterar sobre todos os widgets da aplicação e aplicar o estilo
@@ -319,7 +386,6 @@ class Pagina_Configuracoes(QWidget):
         menu_tema.addAction("Alterar para o modo claro", self.aplicar_modo_claro)
         menu_tema.addAction("Alterar para o modo clássico", self.aplicar_modo_classico)
         menu_tema.addAction("Feedback",self.main_window.mostrar_sugestao)
-        menu_tema.addAction("Assinatura",self.aplicar_assinatura)
         btn_tema.setMenu(menu_tema)
         self.layout.addWidget(btn_tema)
 
@@ -392,233 +458,6 @@ class Pagina_Configuracoes(QWidget):
 
         # Mostrar janela
         self.janela_config.show()
-        
-    def criar_card_plano(self, titulo, preco, beneficios, callback, destaque=False):
-        card = QFrame()
-        card.setFixedSize(311, 300)
-        card.setObjectName("cardPlano")
-
-        layout = QVBoxLayout(card)
-        layout.setSpacing(6)
-        layout.setContentsMargins(12, 12, 12, 12)
-
-        # TÍTULO
-        lbl_titulo = QLabel(titulo)
-        lbl_titulo.setStyleSheet("font-size: 18px; font-weight: bold;")
-        lbl_titulo.setWordWrap(True)
-
-        # PREÇO
-        lbl_preco = QLabel(preco)
-        lbl_preco.setStyleSheet("font-size: 14px; color: gray;")
-        lbl_preco.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Fixed)
-
-        layout.addWidget(lbl_titulo)
-        layout.addWidget(lbl_preco)
-
-        # 🔹 INCLUSÃO DE MODALIDADES (sempre logo abaixo do preço)
-        lbl_modalidades = QLabel("Inclusão de modalidades")
-        lbl_modalidades.setStyleSheet("font-size: 16px; font-weight: bold;")
-        lbl_modalidades.setWordWrap(True)
-        lbl_modalidades.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Fixed)
-
-        layout.addWidget(lbl_modalidades)
-
-
-        # 🔹 DEMAIS BENEFÍCIOS
-        for b in beneficios:
-            texto = b.strip()
-
-            if "inclusão de modalidades" in texto.lower():
-                continue  # já exibido acima
-
-            label = QLabel(f"• {texto}")
-            label.setStyleSheet("font-size: 14px;")
-            label.setWordWrap(True)
-            label.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Fixed)
-
-            layout.addWidget(label)
-
-        layout.addStretch()
-
-        # BOTÃO
-        btn = QPushButton("Selecionar plano")
-        btn.clicked.connect(callback)
-        btn.setCursor(Qt.PointingHandCursor)
-        layout.addWidget(btn)
-
-        # BORDA DO CARD
-        if destaque:
-            card.setStyleSheet("""
-                QFrame#cardPlano {
-                    border: 2px solid #4f46e5;
-                    border-radius: 10px;
-                }
-            """)
-        else:
-            card.setStyleSheet("""
-                QFrame#cardPlano {
-                    border: 1px solid #ccc;
-                    border-radius: 10px;
-                }
-            """)
-
-        return card
-
-
-        
-    def aplicar_assinatura(self):
-        self.janela_assinatura = QMainWindow(self)
-        self.janela_assinatura.setWindowTitle("Escolha seu plano")
-        self.janela_assinatura.resize(760, 560)
-
-        central = QWidget()
-        self.janela_assinatura.setCentralWidget(central)
-
-        layout = QHBoxLayout(central)
-        layout.setSpacing(20)
-
-        plano_basico = self.criar_card_plano(
-            titulo="Plano Básico / Gratuito",
-            preco="R$ 0,00",
-            beneficios=[
-                "Inclusão de modalidades",
-                "Assistência a correções de erros"
-            ],
-            callback=self.realizar_cobranca_plano_basico
-            
-        )
-
-        plano_pro = self.criar_card_plano(
-            titulo="Plano Pro",
-            preco="R$ 0,50",
-            beneficios=[
-                "Inclusão de modalidades",
-                "Acesso ao cadastramento em massa de usuários",
-                "Acesso ao cadastramento em massa de produtos",
-                "Acesso a planilha de exemplos",
-                "Assistência a correções de erros"
-            ],
-            callback=self.realizar_cobranca_plano_pro,
-            destaque=True
-        )
-
-        layout.addStretch()
-        layout.addWidget(plano_basico)
-        layout.addWidget(plano_pro)
-        layout.addStretch()
-
-        self.janela_assinatura.show()
-        
-    def realizar_cobranca_plano_pro(self):
-        email = self.config.obter_email_usuario()
-
-        if not email:
-            QMessageBox.warning(
-                self,
-                "E-mail necessário",
-                "Cadastre um e-mail válido para continuar com o pagamento."
-            )
-            return
-
-        # Cria o pagamento
-        pagamento = self.mp_service.criar_pagamento_pix(
-            valor=0.50,
-            descricao="Plano Pro",
-            email_cliente=email
-        )
-
-        # Pega só o ID do pagamento
-        pagamento_id = pagamento.get("id")
-        if not pagamento_id:
-            QMessageBox.critical(
-                self,
-                "Erro no pagamento",
-                "Não foi possível criar o pagamento.\nVerifique as credenciais ou o e-mail."
-            )
-            return
-
-        # Abre a janela de pagamento com o ID
-        self.abrir_janela_pagamento(pagamento_id)
-
-
-        
-    def realizar_cobranca_plano_basico(self):
-        self.config.definir_plano("basico")
-        QMessageBox.information(self, "Plano ativado", "Plano Básico ativado com sucesso.")
-        
-    def abrir_janela_pagamento(self, pagamento_id):
-        dialog = QDialog(self)
-        dialog.setWindowTitle("Pagamento - Plano Pro")
-        dialog.setFixedSize(320, 400)
-
-        layout = QVBoxLayout(dialog)
-
-        lbl = QLabel("Selecione a forma de pagamento:")
-        lbl.setStyleSheet("font-size: 14px; font-weight: bold;")
-        layout.addWidget(lbl)
-
-        combo = QComboBox(self)
-        combo.addItems(["Débito", "Crédito", "PIX"])
-        layout.addWidget(combo)
-
-        qr_label = QLabel()
-        layout.addWidget(qr_label)
-
-        progress = QProgressBar()
-        progress.setRange(0, 0)  # Indeterminado
-        progress.hide()
-        layout.addWidget(progress)
-
-        btn_confirmar = QPushButton("Confirmar pagamento")
-        layout.addWidget(btn_confirmar)
-
-        def gerar_pix():
-            if combo.currentText() != "PIX":
-                QMessageBox.information(self, "Info", "Pagamento via PIX não selecionado.")
-                return
-
-            # Obter pagamento atualizado
-            pagamento = self.mp_service.obter_pagamento(pagamento_id)
-
-            # ⚡ Checa se point_of_interaction existe
-            try:
-                qr_code_base64 = pagamento["point_of_interaction"]["transaction_data"]["qr_code_base64"]
-            except KeyError:
-                QMessageBox.critical(self, "Erro", "QR Code não disponível para este pagamento.")
-                return
-
-            pixmap = QPixmap()
-            pixmap.loadFromData(base64.b64decode(qr_code_base64))
-            qr_label.setPixmap(pixmap.scaled(250, 250, Qt.KeepAspectRatio))
-
-            progress.show()
-            btn_confirmar.setEnabled(False)
-
-            # Timer para verificar pagamento
-            timer = QTimer()
-            timer.setInterval(3000)
-            def checar_pagamento():
-                status = self.mp_service.obter_pagamento(pagamento_id).get("status")
-                if status == "approved":
-                    timer.stop()
-                    progress.hide()
-                    self.db.atualizar_plano_usuario(self.main_window.get_usuario_logado(), "Pro")
-                    QMessageBox.information(self, "Pagamento aprovado", "Plano Pro ativado com sucesso!")
-                    dialog.accept()
-                elif status in ["cancelled", "rejected"]:
-                    timer.stop()
-                    progress.hide()
-                    QMessageBox.warning(self, "Pagamento", "Pagamento não aprovado ou cancelado.")
-                    btn_confirmar.setEnabled(True)
-
-            timer.timeout.connect(checar_pagamento)
-            timer.start()
-
-
-        btn_confirmar.clicked.connect(gerar_pix)
-        dialog.exec()
-
-
 
     def verificar_atualizacoes(self):
         try:
@@ -784,8 +623,8 @@ class Pagina_Configuracoes(QWidget):
             table_view_style = """
                 /* QTableView com seleção diferenciada */
                 QTableView {
-                    background-color: #ffffff;
-                    color: black;
+                    background-color: #2b2b2b;
+                    color: white;
                     gridline-color: #555555;
                     selection-background-color: #7a7a7a;
                     selection-color: white;
@@ -1225,6 +1064,7 @@ class Pagina_Configuracoes(QWidget):
             "O sistema ainda avisará quando houver nova versão,\n"
             "mas não irá baixar automaticamente."
         )
+        
     def configurar_notificacao(self, nome_notificacao, attr_config):
         desativada = getattr(self.config, attr_config)
         
@@ -1234,8 +1074,15 @@ class Pagina_Configuracoes(QWidget):
         
         if desativada:
             msg_box.setText(
-                f"A notificação {nome_notificacao} está ATIVADA.\n\n"
-                "Deseja DESATIVAR essa notificação?"
+                "Essa notificação está DESATIVADA\n"
+                "Deseja ATIVAR está notificação?"
+            
+            )
+        else:
+            msg_box.setText(
+                "Essa notificação está ATIVADA\n"
+                "Deseja DESATIVAR está notificação?"
+            
             )
             
             
@@ -1246,14 +1093,15 @@ class Pagina_Configuracoes(QWidget):
         resposta = msg_box.exec()
 
         if resposta == QMessageBox.Yes:
-            setattr(self.config, attr_config, not desativada)
+            novo_estado = not desativada
+            setattr(self.config, attr_config, novo_estado)
             self.config.salvar()
 
             mensagem = (
-                f"Notificação {nome_notificacao} ATIVADA com sucesso!"
+                f"Notificação sobre {nome_notificacao} ATIVADA com sucesso!"
                 if desativada
                 else
-                f"Notificação {nome_notificacao} DESATIVADA com sucesso!"
+                f"Notificação sobre {nome_notificacao} DESATIVADA com sucesso!"
             )
 
             QMessageBox.information(self, "Configuração Salva", mensagem)
@@ -1329,33 +1177,33 @@ class Pagina_Configuracoes(QWidget):
 
     def definir_nao_mostrar_mensagem_arquivo_excel(self):
         self.configurar_notificacao(
-        "de aviso Excel para clientes jurídicos",
+        "aviso Excel para clientes jurídicos",
         "nao_mostrar_mensagem_arquivo_excel"
         )
 
     def definir_nao_mostrar_mensagem_arquivo_excel_fisicos(self):
         self.configurar_notificacao(
-            "de aviso Excel para clientes físicos",
+            "aviso Excel para clientes físicos",
             "nao_mostrar_mensagem_arquivo_excel_fisicos"
         )
 
 
     def definir_aviso_irreversilvel(self):
         self.configurar_notificacao(
-            "de aviso irreversível",
+            "aviso irreversível",
             "nao_mostrar_aviso_irreversivel"
         )
 
 
     def definir_notificacao_boas_vindas(self):
         self.configurar_notificacao(
-            "de boas-vindas",
+            "aviso de boas-vindas",
             "nao_mostrar_mensagem_boas_vindas"
         )
 
     def definir_notificacao_atualizacoes(self):
         self.configurar_notificacao(
-            "de aviso atualização disponível",
+            "aviso de atualização disponível",
             "nao_mostrar_aviso_atualizacoes"
         )
 
@@ -1854,9 +1702,6 @@ class Pagina_Configuracoes(QWidget):
         # --- Recursão ---
         for child in widget.findChildren(QWidget, options=Qt.FindDirectChildrenOnly):
             self.buscar_todos_resultados(child, texto, case_sensitive)
-
-
-
         
     def destacar_resultado_atual(self, resultado):
         """Destaca uma ocorrência específica (única posição) em QLabel, tabela ou QTextEdit."""
@@ -1985,8 +1830,6 @@ class Pagina_Configuracoes(QWidget):
             self.rolar_para_widget(edit)
             return
 
-
-        
     def proximo_resultado(self):
         if not self.resultados_encontrados:
             return
@@ -2276,34 +2119,38 @@ class CustomTableDelegate(QStyledItemDelegate):
 class ProgressDialog(QDialog):
     def __init__(self, tema="Escuro", parent=None):
         super().__init__(parent)
+        
+        self.tema = tema.lower()
+        
         self.setWindowTitle(f"Aplicando Modo {tema}")
         self.setWindowModality(Qt.ApplicationModal)
-        self.setFixedSize(300, 100)
+        self.setFixedSize(320, 120)
 
         layout = QVBoxLayout(self)
+        layout.setSpacing(12)
+        
+        self.label_status = QLabel(f"Aplicando modo {tema}...")
+        self.label_status.setAlignment(Qt.AlignCenter)
+        self.label_status.setObjectName("label_status_progress")
+
+
         
         self.progress_bar = QProgressBar(self)
         self.progress_bar.setRange(0, 100)
         self.progress_bar.setTextVisible(True)
-        self.progress_bar.setStyleSheet("""
-            QProgressBar {
-                background-color: #eeeeee;
-                border: 1px solid #aaaaaa;
-                border-radius: 5px;
-                height: 10px;
-                text-align: center;
-            }
-            QProgressBar::chunk {
-                background-color: #4caf50;
-                border-radius: 5px;
-            }
-        """)
+        self.progress_bar.setFormat("%p%")
         self.progress_bar.setValue(0)
-
+        
+        layout.addWidget(self.label_status)
         layout.addWidget(self.progress_bar)
+        
 
     def update_progress(self, value):
         self.progress_bar.setValue(value)
+        QApplication.processEvents()
+        
+    def set_status(self,texto):
+        self.label_status.setText(texto)
         QApplication.processEvents()
 
 class TeclaLineEdit(QLineEdit):

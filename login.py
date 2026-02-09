@@ -8,11 +8,8 @@ import sys
 from PySide6.QtCore import Qt,QTimer
 from configuracoes import Configuracoes_Login
 from utils import Temas
-from PySide6.QtCore import Signal
 from PySide6 import QtCore
-from PySide6.QtGui import QPixmap,QAction
-import pyotp
-import qrcode
+from PySide6.QtGui import QAction
 import os
 import sqlite3
 from datetime import datetime
@@ -102,24 +99,16 @@ class Login(QMainWindow, Ui_Mainwindow_Login):
         senha = self.txt_senha.text()
 
         tipo_usuario = self.users.check_user(usuario_ou_email, senha)
-        
-        nome_completo = self.users.obter_nome_completo_usuario(usuario_ou_email)
+        nome_completo = self.users.obter_nome_completo_usuario(tipo_usuario)
+        email = self.users.obter_email_usuario(tipo_usuario)
 
 
         if tipo_usuario:
             manter_conectado = self.btn_manter_conectado.isChecked()
-            email = self.users.obter_email_usuario(usuario_ou_email)
-            
-            if not email:
-                QMessageBox.warning(
-                    self,
-                    "Erro",
-                    "Usuário sem e-mail cadastrado. Não será possível realizar pagamentos."
-                )
-                return
+
             self.config.salvar_configuracoes(
                 nome_usuario=nome_completo,
-                usuario=usuario_ou_email,
+                usuario=tipo_usuario,
                 senha=senha,
                 email=email,
                 mantem_conectado=manter_conectado
@@ -177,22 +166,12 @@ class Login(QMainWindow, Ui_Mainwindow_Login):
             self.mostrarMensagem("Erro", "Não foi possível autenticar automaticamente.", QMessageBox.Warning)
 
 
-    '''def closeEvent(self, event):
-        # Garantir que o banco de dados seja fechado corretamente
-        if hasattr(self, 'users'):
-            self.users.close_connection()
-
-        # Apagar configurações do usuário ao sair
-        self.config.usuario = None
-        self.config.salvar_configuracoes(None,"", False)  # Garantir que não está armazenando sessão'''
-
     def limpar_campos(self):
         # Limpar os campos de login e senha
         self.txt_usuario.clear()
         self.txt_senha.clear()
 
     def usuario_logado(self):
-        print(f"Função usuario_logado(): {self.config.usuario}")
         return self.config.usuario if self.config.usuario else None
 
     def carregar_configuracoes(self):
@@ -294,6 +273,12 @@ class PrimeiroAcesso(QDialog):
                 color: #bbbbbb; /* placeholder em cinza claro */
             }
                 
+            """
+            label_style = """
+                QLabel{
+                    color: white;
+                    background: transparent;
+                }
             """
             combobox_style = """
                 QComboBox {
@@ -403,6 +388,12 @@ class PrimeiroAcesso(QDialog):
                 background-color: #f0f8ff; /* Leve destaque no fundo */
             }
             """
+            label_style = """
+                QLabel{
+                    color: black;
+                    background: transparent;
+                }
+            """
             combobox_style = """
                 QComboBox {
                     background-color: white;
@@ -497,6 +488,12 @@ class PrimeiroAcesso(QDialog):
                 color: black; /* Cor do texto do placeholder */
             }
             """
+            label_style = """
+                QLabel{
+                    color: black;
+                    background: transparent;
+                }
+            """
             combobox_style = """
                 QComboBox {
                     background-color: white;
@@ -557,6 +554,7 @@ class PrimeiroAcesso(QDialog):
          # Nome
         hbox_nome = QHBoxLayout()
         self.label_nome = QLabel("Nome: ")
+        self.label_nome.setStyleSheet(label_style)
         self.txt_nome = QLineEdit()
         self.txt_nome.setStyleSheet(lineedit_style)
         hbox_nome.addWidget(self.label_nome)
@@ -566,6 +564,7 @@ class PrimeiroAcesso(QDialog):
         # Usuário
         hbox_usuario = QHBoxLayout()
         self.label_usuario = QLabel("Usuário: ")
+        self.label_usuario.setStyleSheet(label_style)
         self.txt_usuario = QLineEdit()
         self.txt_usuario.setStyleSheet(lineedit_style)
         hbox_usuario.addWidget(self.label_usuario)
@@ -575,6 +574,7 @@ class PrimeiroAcesso(QDialog):
         # Senha
         hbox_senha = QHBoxLayout()
         self.label_senha = QLabel("Senha: ")
+        self.label_senha.setStyleSheet(label_style)
         self.txt_senha = QLineEdit()
         self.txt_senha.setStyleSheet(lineedit_style)
         self.txt_senha.setEchoMode(QLineEdit.Password)  # Ocultar senha
@@ -586,6 +586,7 @@ class PrimeiroAcesso(QDialog):
          # Confirmar Senha
         hbox_confirmar_senha = QHBoxLayout()
         self.label_confirmar_senha = QLabel("Confirmar senha: ")
+        self.label_confirmar_senha.setStyleSheet(label_style)
         self.txt_confirmar_senha = QLineEdit()
         self.txt_confirmar_senha.setEchoMode(QLineEdit.Password)
         self.txt_confirmar_senha.setStyleSheet(lineedit_style)
@@ -596,6 +597,7 @@ class PrimeiroAcesso(QDialog):
         # ComboBox de Acesso
         hbox_acesso = QHBoxLayout()
         self.label_acesso = QLabel("Tipo de acesso: ")
+        self.label_acesso.setStyleSheet(label_style)
         hbox_acesso.addWidget(self.label_acesso)
         self.combobox_acesso = QComboBox()
         self.combobox_acesso.addItem("Convidado")
@@ -608,6 +610,7 @@ class PrimeiroAcesso(QDialog):
 
         self.btn_cadastrar = QPushButton("Realizar cadastro")
         self.btn_cadastrar.setStyleSheet(button_style)
+        self.btn_cadastrar.setCursor(Qt.PointingHandCursor)
         self.btn_cadastrar.clicked.connect(self.inserir_usuario_no_banco_de_dados)
         self.layout.addWidget(self.btn_cadastrar)
 

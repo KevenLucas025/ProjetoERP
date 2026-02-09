@@ -1,5 +1,5 @@
 import sqlite3
-from datetime import datetime
+from datetime import datetime,timedelta
 import os
 import sys
 
@@ -380,11 +380,16 @@ class DataBase:
         except Exception as e:
             print("Erro ao inserir produto:", e)
 #*********************************************************************************************************************
-    def check_user(self, usuario, senha):
+    def check_user(self, usuario_email_cpf, senha):
         try:
-            query = "SELECT Usuário FROM users WHERE Usuário = ? AND Senha = ? COLLATE NOCASE"
+            query = """
+                SELECT "Usuário"
+                FROM users
+                WHERE (Usuário = ? OR Email = ? OR CPF = ? ) 
+                AND Senha = ? COLLATE NOCASE
+            """
             cursor = self.connection.cursor()  # Usar a conexão já existente
-            cursor.execute(query, (usuario, senha))
+            cursor.execute(query, (usuario_email_cpf,usuario_email_cpf,usuario_email_cpf, senha))
             result = cursor.fetchone()
             return result[0] if result else None
         except Exception as e:
@@ -626,11 +631,11 @@ class DataBase:
         except Exception as e:
             print("Erro ao atualizar plano:", e)
             
-    def obter_email_usuario(self, usuario_ou_email):
+    def obter_email_usuario(self, usuario_email_cpf):
         cursor = self.connection.cursor()
         cursor.execute(
-            'SELECT Email FROM users WHERE "Usuário" = ? OR email = ?',
-            (usuario_ou_email, usuario_ou_email)
+            'SELECT Email FROM users WHERE "Usuário" = ? OR Email = ? OR CPF = ?',
+            (usuario_email_cpf, usuario_email_cpf,usuario_email_cpf)
         )
         row = cursor.fetchone()
         return row[0] if row else None
@@ -756,7 +761,7 @@ class DataBase:
         except Exception as e:
             print(f"Erro ao executar a consulta: {str(e)}")
             return None
-        
+#*********************************************************************************************************************        
     def salvar_imagem_usuario(self, usuario, caminho_imagem):
         cursor = self.connection.cursor()
         cursor.execute("""
@@ -765,7 +770,7 @@ class DataBase:
             WHERE "Usuário" = ?
         """, (caminho_imagem, usuario))
         self.connection.commit()
-        
+#*********************************************************************************************************************        
     def obter_imagem_usuario(self, usuario):
         cursor = self.connection.cursor()
         cursor.execute("""
@@ -968,10 +973,50 @@ class DataBase:
             FROM clientes_fisicos 
         """)
         return cursor.fetchall()
+    
+    def atualizar_primeiro_acesso_para_comum(self):
+        try:
+            self.garantir_conexao()
+            cursor = self.connection.cursor()
+            
+            cursor.execute("""
+                SELECT id, "Data da Inclusão do Usuário","Usuário"
+                FROM users
+                WHERE "Usuário Logado" = "Primeiro Acesso"
+            """)
+            usuarios = cursor.fetchall()
+            
+            atualizados = []
+            
+            for id_usuario,data_inclusao, usuario in usuarios:
+                try:
+                    data_inclusao_dt = datetime.strptime(data_inclusao, "%d/%m/%Y %H:%M")
+                except:
+                    continue
+                
+                if datetime.now() - data_inclusao_dt >= timedelta(days=1):
+                    cursor.execute("""
+                     UPDATE users
+                     SET "Usuário Logado" = 'Comum'
+                     WHERE id = ?
+                    """, (id_usuario,))
+                    atualizados.append(usuario)
+                    
+            self.connection.commit()
+            return atualizados
+        
+        except Exception as e:
+            print(f"Erro ao atualizar Primeiro Acesso para Comum: {e}")
+            return []
 
 
 if __name__ == "__main__":
     db = DataBase()
+    
+    usuarios_atualizados = db.atualizar_primeiro_acesso_para_comum()
+    if usuarios_atualizados:
+        print("Usuário atualizado para 'Comum':", usuarios_atualizados)
+    
     db.close_connection()
     
     

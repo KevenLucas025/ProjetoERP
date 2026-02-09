@@ -5,6 +5,7 @@ from PySide6.QtGui import QIcon,QPixmap,QPainterPath,QPainter,QColor
 import json
 import os
 import sys
+from database import DataBase
 
 
 
@@ -16,6 +17,7 @@ class MostrarSenha:
         self.botao_exibir_senha()
         self.main_window = main_window  
         self.atualizar_icone()
+        
 
     def botao_exibir_senha(self):
         # Criar botão dentro do QLineEdit
@@ -433,7 +435,7 @@ class DialogoRecorteImagem(QDialog):
         self.botao_confirmar.setFixedSize(60, 60)
         self.botao_confirmar.clicked.connect(self.accept)
         
-        icone = QIcon("imagens/verificado.png")
+        icone = QIcon(caminho_recurso("imagens/verificado.png"))
         self.botao_confirmar.setIcon(icone)
         self.botao_confirmar.setIconSize(QSize(28, 28))
         self.botao_confirmar.setCursor(Qt.PointingHandCursor)
@@ -479,7 +481,7 @@ class DialogoRecorteImagem(QDialog):
         pixmap_original = self.item_imagem.pixmap()
         pixmap_recortado = pixmap_original.copy(retangulo_item.toRect())
 
-        # 🔥 Retornamos SOMENTE o quadrado
+        #  Retornamos SOMENTE o quadrado
         return pixmap_recortado
 
 
@@ -491,6 +493,7 @@ class DialogoAvatar(QDialog):
 
         self.janela_pai = parent
         self.caminho_imagem = caminho_imagem
+        self.db = DataBase()
 
         self.setWindowTitle("Foto do usuário")
         self.setModal(True)
@@ -571,7 +574,7 @@ class DialogoAvatar(QDialog):
         self.label_foto.setText("")
         self.label_foto.setPixmap(pixmap_circular)
 
-        # ✨ SOMBRA SUAVE
+        #  SOMBRA SUAVE
         sombra = QGraphicsDropShadowEffect(self)
         sombra.setBlurRadius(20)        # quão difusa é a sombra
         sombra.setOffset(0, 4)          # deslocamento (baixo)
@@ -624,22 +627,46 @@ class DialogoAvatar(QDialog):
         dialogo_visor.exec()
         
     def remover_foto(self):
+        usuario = self.janela_pai.get_usuario_logado() 
+
+        if not usuario:
+            return
+
         resposta = QMessageBox.question(
             self,
             "Remover foto",
             "Deseja realmente remover a foto do usuário?",
             QMessageBox.Yes | QMessageBox.No
         )
-        
+
         if resposta != QMessageBox.Yes:
             return
 
-        # Delegamos a remoção para a janela principal
-        self.janela_pai.remover_foto_usuario()
+        caminho = self.db.obter_imagem_usuario(usuario)
 
-        # Atualiza o estado local do diálogo
+        # Remove arquivo físico
+        if caminho and os.path.exists(caminho):
+            try:
+                os.remove(caminho)
+            except Exception as e:
+                QMessageBox.warning(
+                    self,
+                    "Erro",
+                    f"Não foi possível remover a imagem:\n{e}"
+                )
+                return
+
+        #  REMOVE DO BANCO
+        self.db.salvar_imagem_usuario(usuario, None)
+
+        # Atualiza estado global
+        self.janela_pai.caminho_foto_usuario = None
+        self.janela_pai.atualizar_avatar()
+
+        # Atualiza preview do diálogo
         self.caminho_imagem = None
         self.mostrar_placeholder()
+
 
 
 
@@ -1038,6 +1065,11 @@ class Temas:
                 border: 1px solid #444444;
                 border-radius: 10px;
             }
+            QLabel#label_status_progress {
+                background: transparent;
+                color: white;
+            }
+
             QLabel#label_foto_sistema{
                 border: none;
                 background: transparent;
@@ -1143,16 +1175,18 @@ class Temas:
                 width: 0px;    /* remove o espaço reservado */
             }
             QProgressBar {
-                color: white;                        /* texto branco */
-                border: 3px solid #ffffff;           /* borda branca  */
-                border-radius: 13px;                 /* bordas arredondadas */
-                background-color: #2b2b2b;           /* fundo escuro */
-                text-align: center;                   /* centraliza o texto do progresso */
+                color: white;
+                border: 3px solid #ffffff;
+                border-radius: 13px;
+                background-color: #2b2b2b; 
+                text-align: center;
+                padding: 0px;         
             }
 
             QProgressBar::chunk {
-                background-color: #4682b4;           /* azul do progresso preenchido */
-                border-radius: 12px;                  /* mantém arredondado */
+                background-color: #4682b4;
+                border-radius: 12px;
+                margin: 0px;
             }
             QFrame#frame_page_verificar_usuarios,
             QFrame#frame_pag_estoque,
@@ -1405,6 +1439,10 @@ class Temas:
                 border: 2px solid #005a9e; /* Azul mais escuro ao focar */
                 background-color: #f0f8ff; /* Leve destaque no fundo */
             }
+            QLabel#label_status_progress {
+                background: transparent;
+                color: black;
+            }
             QLabel#label_foto_sistema{
                 border: none;
                 background: transparent;
@@ -1542,13 +1580,22 @@ class Temas:
                 border-radius: 15px;
             
             }
-            QLabel{
-                background-color: transparent;
+            QProgressBar {
+                color: black;
+                border: 2px solid black;
+                border-radius: 13px;
+                background-color: #ffffff;
+                text-align: center;
+                padding: 0px;
+            }
+
+            QProgressBar::chunk {
+                background-color: #4682b4;
+                border-radius: 12px;
+                margin: 0px;
             }
             QProgressBar#progress_massa_produtos,
-            QProgressBar#progress_massa_usuarios,
-            QProgressBar#progress_excel_usuarios,
-            QProgressBar#progress_excel{
+            QProgressBar#progress_massa_usuarios{
                 border-radius: 13px;
                 text-align: center; /* centraliza o texto */
                 font-size: 14px;
@@ -1561,9 +1608,7 @@ class Temas:
             }
             /* Parte preenchida da barra */
             QProgressBar#progress_massa_produtos::chunk,
-            QProgressBar#progress_massa_usuarios::chunk,
-            QProgressBar#progress_excel_usuarios::chunk,
-            QProgressBar#progress_excel::chunk {
+            QProgressBar#progress_massa_usuarios::chunk{
                 border-radius: 13px;
                 background: qlineargradient(
                     x1:0, y1:0, x2:1, y2:0,
@@ -1983,6 +2028,10 @@ class Temas:
                 background-color: rgb(100, 200, 100); 
                 border-radius: 10px;
             }
+            QLabel#label_status_progress {
+                background: transparent;
+                color: black;
+            }
             QLabel#label_foto_sistema{
                 border: none;
                 background: transparent;
@@ -2006,14 +2055,17 @@ class Temas:
             QProgressBar {
                 color: black;
                 border: 3px solid rgb(50,150,250);
-                border-radius: 13px;  /* Aumentei o valor para deixar a borda mais redonda */
-                background-color: #f0f0f0;  /* Cor cinza claro */
-                min-height: 10px;  
+                border-radius: 13px; 
+                background-color: #f0f0f0;  
+                min-height: 10px;
+                text-align: center;
+                padding: 0px;
             }
 
             QProgressBar::chunk {
-                background-color: #4682b4;  /* Cor do progresso preenchido (azul) */
-                border-radius: 12px;  /* Faz com que o progresso também tenha bordas arredondadas */
+                background-color: #4682b4;  
+                border-radius: 12px;  
+                margin: 0px;
             }
             QToolButton#btn_classe_atalhos{
                 font-size: 14px;
