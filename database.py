@@ -445,7 +445,7 @@ class DataBase:
             print("Usuário removido com sucesso!")
         except Exception as e:
             print("Erro ao apagar usuário do banco de dados:", e)
-            
+#*********************************************************************************************************************            
     def atualizar_valor_gasto_cliente(self, nome_cliente):
         cursor = self.connection.cursor()
 
@@ -478,7 +478,39 @@ class DataBase:
         ))
 
         self.connection.commit()
+#*********************************************************************************************************************       
+    def atualizar_valor_gasto_cliente_fisico(self, nome_cliente):
+            cursor = self.connection.cursor()
 
+            # Soma todos os valores finais dos produtos do cliente
+            cursor.execute("""
+                SELECT SUM(
+                    REPLACE(
+                        REPLACE(
+                            REPLACE("Valor Total", 'R$', ''),
+                        '.', ''),
+                    ',', '.')
+                )
+                FROM products
+                WHERE Cliente = ?
+            """, (nome_cliente,))
+
+            total = cursor.fetchone()[0] or 0
+
+            cursor.execute("""
+                UPDATE clientes_fisicos
+                SET 
+                    "Valor Gasto Total" = ?,
+                    "Modo Valor Gasto" = 'automatico',
+                    "Última Compra" = ?
+                WHERE "Nome do Cliente" = ?
+            """, (
+                f"R$ {total:,.2f}".replace(",", "X").replace(".", ",").replace("X", "."),
+                datetime.now().strftime("%d/%m/%Y %H:%M"),
+                nome_cliente
+            ))
+
+            self.connection.commit()
 #*********************************************************************************************************************
     def atualizar_produto(
         self, produto_id, produto=None, quantidade=None, 

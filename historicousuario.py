@@ -114,7 +114,98 @@ class Pagina_Usuarios(QWidget):
             for col_index, data in enumerate(row_data):
                 item = self.formatar_texto(str(data))
                 self.table_ativos.setItem(row_index,col_index,item)
+    def confirmar_saida_usuarios(self):
+        configuracoes = Configuracoes_Login(self.main_window)
+        if configuracoes.nao_mostrar_aviso_irreversivel:
+            pass
+        else:
+            # Cria a mensagem de aviso com o checkbox
+            msg_aviso_irreversivel = QMessageBox(self)
+            msg_aviso_irreversivel.setIcon(QMessageBox.Warning)  # Ícone de aviso
+            msg_aviso_irreversivel.setWindowTitle("Aviso de Saída Irreversível")  # Título da janela
+            msg_aviso_irreversivel.setText("A função de saída de usuário é irreversível.\n\nUsuários removidos não poderão ser restaurados.")  # Texto do aviso
+            msg_aviso_irreversivel.setStandardButtons(QMessageBox.Ok)  # Botão Ok
+            msg_aviso_irreversivel.setStyleSheet("""
+                QMessageBox {
+                    background-color: qlineargradient(
+                        x1:0, y1:0, x2:0, y2:1,
+                        stop:0 #FFD54F,   /* amarelo */
+                        stop:1 #8D6E63    /* marrom */
+                    );
+                    color: black;  /* cor do texto */
+                    font: bold 11pt "Segoe UI";
+                }
 
+                QMessageBox QLabel {
+                    background: transparent;                             
+                    color: black;
+                }
+
+                QMessageBox QPushButton {
+                    background-color: #6D4C41;
+                    color: white;
+                    border-radius: 6px;
+                    padding: 4px 12px;
+                }
+
+                QMessageBox QPushButton:hover {
+                    background-color: #8D6E63;
+                }
+
+                QMessageBox QPushButton:pressed {
+                    background-color: #5D4037;
+                }
+                QMessageBox QCheckBox{
+                    background: transparent;
+                    color: black;
+                }
+            """)
+
+
+            # Adiciona o checkbox à caixa de mensagem
+            checkbox = QCheckBox("Não mostrar esta mensagem novamente")
+            msg_aviso_irreversivel.setCheckBox(checkbox)
+
+
+            # Exibe a mensagem de aviso
+            msg_aviso_irreversivel.exec()
+
+            # Verifica se o usuário marcou a opção para não mostrar novamente
+            if checkbox.isChecked():
+                configuracoes.nao_mostrar_aviso_irreversivel = True  # Define que o usuário não quer mais ver este aviso
+                configuracoes.salvar(configuracoes.usuario, configuracoes.senha,configuracoes.mantem_conectado)
+
+        # Verifica a linha diretamente selecionada pelo usuário
+        selecionar_linhas = self.main_window.table_ativos.selectionModel().selectedRows()
+        usuarios_selecionados = [row.row() for row in selecionar_linhas]
+
+        # Verifica se existe uma linha selecionada diretamente pelo clique
+        if usuarios_selecionados:
+            mensagem = "Tem certeza de que deseja gerar a saída do usuário selecionado?"
+
+            caixa_dialogo = QMessageBox(self)
+            caixa_dialogo.setWindowTitle("Confirmar Saída")
+            caixa_dialogo.setText(mensagem)
+            caixa_dialogo.setIcon(QMessageBox.Question)
+            caixa_dialogo.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
+            caixa_dialogo.setDefaultButton(QMessageBox.Yes)
+
+            # Personalizando o texto dos botões
+            botao_nao = caixa_dialogo.button(QMessageBox.No)
+            botao_nao.setText("Não")
+            botao_sim = caixa_dialogo.button(QMessageBox.Yes)
+            botao_sim.setText("Sim")
+
+            resposta = caixa_dialogo.exec()
+            if resposta == QMessageBox.Yes:
+                self.gerar_saida_usuarios(usuarios_selecionados)
+
+        else:
+            msg_box = QMessageBox(self)
+            msg_box.setIcon(QMessageBox.Information)
+            msg_box.setWindowTitle("Aviso")
+            msg_box.setText("Nenhum usuário selecionado para gerar saída")
+            msg_box.exec()
     
     def gerar_saida_usuarios(self, usuarios_selecionados):
         saida_usuarios = []
@@ -189,7 +280,7 @@ class Pagina_Usuarios(QWidget):
             cursor.execute("""
                 INSERT OR REPLACE INTO users_inativos (
                     Nome, Usuário, Senha, "Confirmar Senha", CEP, Endereço, Número, Cidade, Bairro, Estado,
-                    Complemento, Telefone, Email, "Data de Nascimento", RG, CPF, CNPJ, Imagem,
+                    Complemento, Telefone, Email, "Data de Nascimento", RG, CPF, CNPJ, "Imagem Original",
                     "Última Troca de Senha", "Data da Senha Cadastrada", "Data da Inclusão do Usuário",
                     "Data da Inatividade do Usuário", Segredo, "Usuário Logado", Acesso
                 ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
@@ -239,7 +330,7 @@ class Pagina_Usuarios(QWidget):
      # Função para recuperar imagem de um produto com base no código do produto
     def recuperar_imagem_usuario_bd_users(self, id_usuario):
         cursor = self.db.connection.cursor()
-        cursor.execute("SELECT Imagem FROM users WHERE Usuário = ?", (id_usuario,))
+        cursor.execute('SELECT "Imagem Original" FROM users WHERE Usuário = ?', (id_usuario,))
         
         resultado = cursor.fetchone()  # Tenta buscar uma linha
         
@@ -250,99 +341,6 @@ class Pagina_Usuarios(QWidget):
         
         return imagem_blob
 
-
-    def confirmar_saida_usuarios(self):
-        configuracoes = Configuracoes_Login(self.main_window)
-        if configuracoes.nao_mostrar_aviso_irreversivel:
-            pass
-        else:
-            # Cria a mensagem de aviso com o checkbox
-            msg_aviso_irreversivel = QMessageBox(self)
-            msg_aviso_irreversivel.setIcon(QMessageBox.Warning)  # Ícone de aviso
-            msg_aviso_irreversivel.setWindowTitle("Aviso de Saída Irreversível")  # Título da janela
-            msg_aviso_irreversivel.setText("A função de saída de usuário é irreversível.\n\nUsuários removidos não poderão ser restaurados.")  # Texto do aviso
-            msg_aviso_irreversivel.setStandardButtons(QMessageBox.Ok)  # Botão Ok
-            msg_aviso_irreversivel.setStyleSheet("""
-                QMessageBox {
-                    background-color: qlineargradient(
-                        x1:0, y1:0, x2:0, y2:1,
-                        stop:0 #FFD54F,   /* amarelo */
-                        stop:1 #8D6E63    /* marrom */
-                    );
-                    color: black;  /* cor do texto */
-                    font: bold 11pt "Segoe UI";
-                }
-
-                QMessageBox QLabel {
-                    background: transparent;                             
-                    color: black;
-                }
-
-                QMessageBox QPushButton {
-                    background-color: #6D4C41;
-                    color: white;
-                    border-radius: 6px;
-                    padding: 4px 12px;
-                }
-
-                QMessageBox QPushButton:hover {
-                    background-color: #8D6E63;
-                }
-
-                QMessageBox QPushButton:pressed {
-                    background-color: #5D4037;
-                }
-                QMessageBox QCheckBox{
-                    background: transparent;
-                    color: black;
-                }
-            """)
-
-
-            # Adiciona o checkbox à caixa de mensagem
-            checkbox = QCheckBox("Não mostrar esta mensagem novamente")
-            msg_aviso_irreversivel.setCheckBox(checkbox)
-
-
-            # Exibe a mensagem de aviso
-            msg_aviso_irreversivel.exec()
-
-            # Verifica se o usuário marcou a opção para não mostrar novamente
-            if checkbox.isChecked():
-                configuracoes.nao_mostrar_aviso_irreversivel = True  # Define que o usuário não quer mais ver este aviso
-                configuracoes.salvar(configuracoes.usuario, configuracoes.senha,configuracoes.mantem_conectado)
-
-        # Verifica a linha diretamente selecionada pelo usuário
-        selecionar_linhas = self.main_window.table_ativos.selectionModel().selectedRows()
-        usuarios_selecionados = [row.row() for row in selecionar_linhas]
-
-        # Verifica se existe uma linha selecionada diretamente pelo clique
-        if usuarios_selecionados:
-            mensagem = "Tem certeza de que deseja gerar a saída do usuário selecionado?"
-
-            caixa_dialogo = QMessageBox()
-            caixa_dialogo.setWindowTitle("Confirmar Saída")
-            caixa_dialogo.setText(mensagem)
-            caixa_dialogo.setIcon(QMessageBox.Question)
-            caixa_dialogo.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
-            caixa_dialogo.setDefaultButton(QMessageBox.Yes)
-
-            # Personalizando o texto dos botões
-            botao_nao = caixa_dialogo.button(QMessageBox.No)
-            botao_nao.setText("Não")
-            botao_sim = caixa_dialogo.button(QMessageBox.Yes)
-            botao_sim.setText("Sim")
-
-            resposta = caixa_dialogo.exec()
-            if resposta == QMessageBox.Yes:
-                self.gerar_saida_usuarios(usuarios_selecionados)
-
-        else:
-            msg_box = QMessageBox(self)
-            msg_box.setIcon(QMessageBox.Information)
-            msg_box.setWindowTitle("Aviso")
-            msg_box.setText("Nenhum usuário selecionado para gerar saída")
-            msg_box.exec()
 
 
     def atualizar_ativos(self):

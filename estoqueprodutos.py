@@ -13,6 +13,7 @@ import csv
 from reportlab.lib import colors
 from reportlab.lib.pagesizes import letter,landscape,A4
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle
+from decimal import Decimal, ROUND_HALF_UP
 from reportlab.pdfgen import canvas
 from configuracoes import Configuracoes_Login
 import json
@@ -52,6 +53,9 @@ class EstoqueProduto(QWidget):
         self.progress_massa_produtos = progress_massa_produtos
         self.line_edit_massa_produtos = line_edit_massa_produtos
         self.table_base.horizontalHeader().setSectionResizeMode(QHeaderView.Interactive)
+        
+        self.configurar_limpar_selecao()
+
 
 
         self.btn_gerar_pdf.clicked.connect(self.exibir_pdf)
@@ -66,6 +70,7 @@ class EstoqueProduto(QWidget):
         self.btn_abrir_planilha_massa_produtos.clicked.connect(self.abrir_planilha_em_massa_produtos)
         self.main_window.table_base.viewport().installEventFilter(self)
         self.main_window.table_saida.viewport().installEventFilter(self)
+        
         
 
             
@@ -175,7 +180,7 @@ class EstoqueProduto(QWidget):
                 msg_box = QMessageBox(self)
                 msg_box.setIcon(QMessageBox.Warning)
                 msg_box.setWindowTitle("Estorno inválido")
-                msg_box.setText(None,f"O produto '{produto}' tem quantidade 0 e não pode ser estornado.")
+                msg_box.setText(f"O produto '{produto}' tem quantidade 0 e não pode ser estornado.")
                 msg_box.exec()
                 continue
 
@@ -192,14 +197,12 @@ class EstoqueProduto(QWidget):
             else:
                 quantidade_saida = 1
 
-            valor_total_float = float(
-                valor_total_str.replace("R$", "").replace(" ", "").replace(".", "").replace(",", ".")
-            )
+            valor_total = self.parse_brl(valor_total_str)
             
 
-            valor_unitario = valor_total_float / quantidade
-            valor_saida = valor_unitario * quantidade_saida
-            novo_valor_total = valor_total_float - valor_saida
+            valor_unitario = valor_total  / Decimal(quantidade)
+            valor_saida = (valor_unitario * Decimal(quantidade_saida)).quantize(Decimal("0.01"),rounding=ROUND_HALF_UP)
+            novo_valor_total = (valor_total - valor_saida).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
             nova_quantidade = quantidade - quantidade_saida
 
             atualizacoes_produtos.append(
@@ -214,7 +217,7 @@ class EstoqueProduto(QWidget):
                 valor_produto,
                 desconto,
                 total_sem_desconto,
-                f"{valor_saida:.2f}".replace(".", ","),
+                self.formatar_brl(valor_saida),
                 data_saida,
                 data_cadastro,
                 codigo_produto,
@@ -238,7 +241,7 @@ class EstoqueProduto(QWidget):
                         UPDATE products
                         SET Quantidade = ?, "Valor Total" = ?, "Status da Saída" = 1
                         WHERE "Código_Item" = ?
-                    """, (nova_qtd, f"{novo_valor:.2f}", codigo))
+                    """, (nova_qtd, self.formatar_brl(novo_valor), codigo))
                 else:
                     cursor.execute("""
                         DELETE FROM products WHERE "Código_Item" = ?
@@ -297,7 +300,17 @@ class EstoqueProduto(QWidget):
 
         QMessageBox.information(self, "Aviso", "Saída gerada com sucesso!")
 
+    def parse_brl(self,valor: str) -> Decimal:
+        # Aceita "R$ 1.234,56" ou "1.234,56" etc.
+        v = valor.replace("R$", "").replace(" ", "").replace(".", "").replace(",", ".")
+        return Decimal(v)
 
+    def formatar_brl(self,valor: Decimal) -> str:
+        # Formata como "R$ 1.234,56"
+        valor = valor.quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+        s = f"{valor:,.2f}"               # "1,234.56"
+        s = s.replace(",", "X").replace(".", ",").replace("X", ".")  # "1.234,56"
+        return f"R$ {s}"
 
     def reindex_table_base(self):
         cursor = self.db.connection.cursor()
@@ -389,21 +402,29 @@ class EstoqueProduto(QWidget):
         return imagem_blob
 
     def criar_estorno(self):
-        selected_rows = self.main_window.table_base.selectionModel().selectedRows()
+        selected_rows = self.main_window.table_saida.selectionModel().selectedRows()
         produtos_selecionados = [row.row() for row in selected_rows]
         historicos = []
         
         row_count = self.main_window.table_saida.rowCount()
+        
+        if not produtos_selecionados:
+            msg_box = QMessageBox(self)
+            msg_box.setIcon(QMessageBox.Information)
+            msg_box.setWindowTitle("Aviso")
+            msg_box.setText("Nenhum produto selecionado para gerar estorno!")
+            msg_box.exec()
+            return
 
         if row_count == 0:
-            msg_box = QMessageBox(self)
+            msg_box = QMessageBox(self) 
             msg_box.setIcon(QMessageBox.Warning)
             msg_box.setWindowTitle("ERRO")
             msg_box.setText("Não há nenhum dado disponível na tabela para gerar estorno!")
             msg_box.exec()
             return
 
-        for row in range(row_count):
+        for row in sorted(produtos_selecionados, reverse=True):
             produto_item = self.main_window.table_saida.item(row, 0)             # Produto
             quantidade_item = self.main_window.table_saida.item(row, 1)          # Quantidade
             valor_real_item = self.main_window.table_saida.item(row, 2)          # Valor do Produto
@@ -469,13 +490,34 @@ class EstoqueProduto(QWidget):
             resultado = cursor.fetchone()
 
             if resultado:
+                cursor.execute('SELECT Quantidade, "Valor Total", "Total Sem Desconto" FROM products WHERE Código_Item = ?',(codigo_produto,))
+                qtd_atual,valor_total_str,total_sem_desc_atual_str = cursor.fetchone()
+                
+                qtd_atual = int(qtd_atual or 0)
+                valor_total_atual = self.parse_brl(valor_total_str or "0")
+                total_sem_desc_atual = self.parse_brl(total_sem_desc_atual_str or "0")
+                
+                valor_total_saida = self.parse_brl(valor_total  or "0")
+                qtd_saida = int(quantidade)
+                
+                # unitário com desconto baseado no registro da saída
+                valor_unit_desc = (valor_total_saida / Decimal(qtd_saida)).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+                valor_a_voltar = (valor_unit_desc * Decimal(quantidade_estorno)).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+                
+                 # unitário sem desconto baseado no valor_real
+                valor_unit_cheio = self.parse_brl(valor_real or "0")
+                total_sem_desc_a_voltar = (valor_unit_cheio * Decimal(quantidade_estorno)).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+
+                nova_quantidade = qtd_atual + quantidade_estorno
+                novo_valor_total = (valor_total_atual + valor_a_voltar).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+                novo_total_sem_desc = (total_sem_desc_atual + total_sem_desc_a_voltar).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+                
                 # Atualiza a quantidade somando a estornada
-                nova_quantidade = int(resultado[0]) + quantidade_estorno
                 cursor.execute("""
                     UPDATE products
-                    SET Quantidade = ?
+                    SET Quantidade = ?, "Valor Total" = ?
                     WHERE Código_Item = ?
-                """, (nova_quantidade, codigo_produto))
+                """, (nova_quantidade, self.formatar_brl(novo_valor_total),codigo_produto))
             else:
                 # Insere como novo produto
                 cursor.execute("""
@@ -489,6 +531,8 @@ class EstoqueProduto(QWidget):
                 cursor.execute("""
                     DELETE FROM products_saida WHERE "Código do Produto" = ?
                 """, (codigo_produto,))
+                
+                self.main_window.table_saida.removeRow(row)
 
             # Deleta da tabela de saída
             else:
@@ -504,7 +548,7 @@ class EstoqueProduto(QWidget):
             # Verifica se o item já está na table_base visualmente
             linha_existente = None
             for linha in range(self.main_window.table_base.rowCount()):
-                codigo_existente = self.main_window.table_base.item(linha,5)
+                codigo_existente = self.main_window.table_base.item(linha,7)
                 if codigo_existente and codigo_existente.text() == codigo_produto:
                     linha_existente = linha
                     break
@@ -540,13 +584,11 @@ class EstoqueProduto(QWidget):
             
         self.db.connection.commit()
         
-        # 📝 Agora pode registrar histórico sem erro
+        # Agora pode registrar histórico sem erro
         for texto in historicos:
             self.main_window.registrar_historico("Estorno do Produto", texto)
-        
-        # Limpar a tabela de saída
-        self.main_window.table_saida.clearContents()
-        self.main_window.table_saida.setRowCount(0)
+            
+        self.carregar_tabela_estoque()
 
         # Mensagem de sucesso
         msg_box = QMessageBox(self)
@@ -2497,6 +2539,29 @@ class EstoqueProduto(QWidget):
 
         except Exception as e:
             QMessageBox.critical(self, "Erro", f"Erro ao cadastrar produtos em massa:\n{e}")
+
+    def configurar_limpar_selecao(self):
+        # Aplica o comportamento de limpar seleção ao clicar fora da linha
+        for tabela in (self.main_window.table_base, self.main_window.table_saida):
+            manipulador_original = tabela.viewport().mousePressEvent
+            tabela.viewport().mousePressEvent = self._envolver_limpeza_selecao(
+                tabela,
+                manipulador_original
+            )
+
+    def _envolver_limpeza_selecao(self, tabela, manipulador_original):
+        def ao_clicar(evento):
+            indice = tabela.indexAt(evento.pos())
+
+            # Se clicou fora de qualquer célula, limpa a seleção
+            if not indice.isValid():
+                tabela.clearSelection()
+                tabela.setCurrentCell(-1, -1)
+
+            # Mantém o comportamento padrão do Qt
+            return manipulador_original(evento)
+
+        return ao_clicar
 
 
     

@@ -3567,6 +3567,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             )
             
             self.db.atualizar_valor_gasto_cliente(produto_cliente)
+            self.db.atualizar_valor_gasto_cliente_fisico(produto_cliente)
             QMessageBox.information(self, "Sucesso", "Produto atualizado com sucesso!")
             self.limpar_imagem_produto_após_atualizar()
             self.limpar_campos_produtos()
@@ -3576,6 +3577,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 del self.produto_original
             if hasattr(self,'pagina_clientes_juridicos'):
                 self.pagina_clientes_juridicos.carregar_clientes_juridicos()
+            if hasattr(self, 'paginas_clientes_fisicos'):
+                self.pagina_clientes_fisicos.carregar_clientes_fisicos()
+                
+                
         except Exception as e:
             QMessageBox.critical(self, "Erro", f"Erro ao atualizar o produto: {str(e)}")
 
