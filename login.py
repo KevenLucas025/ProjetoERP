@@ -25,7 +25,8 @@ class Login(QMainWindow, Ui_Mainwindow_Login):
         super(Login, self).__init__() 
         self.tentativas = 0
         self.config = Configuracoes_Login(self)
-        self.config.carregar()   
+        self.config.carregar() 
+         
         self.setupUi(self)
         if self.config.mantem_conectado:
             QTimer.singleShot(0, self.fazerLoginAutomatico)
@@ -33,6 +34,7 @@ class Login(QMainWindow, Ui_Mainwindow_Login):
         self.login_window = login_window
         self.users = DataBase()  # Defina self.users aqui
         self.users.connecta()    # <-- Conecta ao banco de dados
+        self.users.criar_tabelas() 
         self.setWindowTitle("Login do Sistema")
         self.tema = Temas()
         

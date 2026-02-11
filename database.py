@@ -9,7 +9,23 @@ class DataBase:
         self.connection = None
         self.db_path = self.obter_caminho_banco()
         self.connecta()  # Tente conectar ao banco ao instanciar
+        self.criar_tabelas()
         
+        
+    def criar_tabelas(self):
+        self.garantir_conexao()
+        self.create_table_users()
+        self.create_table_users_inativos()
+        self.create_table_products()
+        self.create_table_products_saida()
+        self.create_table_historico()
+        self.create_table_historico_usuario()
+        self.create_table_clientes_juridicos()
+        self.create_table_clientes_fisicos()
+        self.create_table_historico_fisico()
+        self.create_table_historico_juridico()
+        self.connection.commit()
+
 #*********************************************************************************************************************       
     def obter_caminho_banco(self):
         # Detecta se está rodando como um executável criado pelo PyInstaller
@@ -108,9 +124,10 @@ class DataBase:
                     "Data da Inclusão do Usuário" TEXT,
                     Segredo TEXT,
                     "Usuário Logado" TEXT,
-                    Acesso TEXT NOT NULL,
+                    Acesso TEXT NOT NULL
                 )
             """)
+            self.connection.commit()
         except Exception as e:
             print("Erro ao criar tabela de usuários:", e)
 #*********************************************************************************************************************
@@ -147,6 +164,7 @@ class DataBase:
                                     
                 )
             """)
+            self.connection.commit()
          except Exception as e:
              print("Erro ao criar a tabela users_inativos", e)
 

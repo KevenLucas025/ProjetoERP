@@ -133,7 +133,6 @@ class Configuracoes_Login:
         with open(self.caminho_config_json(), "w", encoding="utf-8") as f:
             json.dump(config, f, indent=4, ensure_ascii=False)
 
-
             
     def salvar_atalho(self, acao, tecla):
         """Salva/atualiza um atalho específico e persiste no JSON"""

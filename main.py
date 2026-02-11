@@ -154,17 +154,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         
         self.carregar_env()
 
-        #Cria as tabelas no banco de dados sempre que executar o sistema em um novo ambiente
-        self.db.create_table_products()
-        self.db.create_table_products_saida()
-        self.db.create_table_users()
-        self.db.create_table_historico()
-        self.db.create_table_users_inativos()
-        self.db.create_table_historico_usuario()
-        self.db.create_table_clientes_juridicos()
-        self.db.create_table_clientes_fisicos()
-        self.db.create_table_historico_fisico()
-        self.db.create_table_historico_juridico()
 
         # Mapeia os campos com identificadores únicos
         self.campos_com_autocomplete = {
