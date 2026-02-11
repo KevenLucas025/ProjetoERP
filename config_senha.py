@@ -383,9 +383,9 @@ class TrocarSenha(QDialog):
 
     
     def trocar_senha(self):
-        usuario = self.usuario_line_edit.line_edit.text()
-        email = self.email_line_edit.line_edit.text()
-        telefone = self.telefone_line_edit.line_edit.text()
+        usuario = self.usuario_line_edit.line_edit.text().strip()
+        email = self.email_line_edit.line_edit.text().strip()
+        telefone = self.telefone_line_edit.line_edit.text().strip()
         nova_senha = self.nova_senha_line_edit.text()
         confirmar_nova_senha = self.confirmar_senha_line_edit.text()
         data_atual = datetime.now().strftime("%d/%m/%Y")
@@ -395,27 +395,44 @@ class TrocarSenha(QDialog):
             QMessageBox.warning(self, "Erro", "Por favor, preencha todos os campos.")
             return
 
-        if self.verificar_usuario(usuario):
-            dias_passados = self.verificar_tempo_ultima_troca(usuario)
-            if not self.verificar_email(email):
-                QMessageBox.warning(self, "Erro", "E-mail incorreto, \nPor favor digite o mesmo e-mail cadastrado no sistema.")
-                return
-
-            if not self.verificar_telefone(telefone):
-                QMessageBox.warning(self, "Erro", "Telefone incorreto. \nPor favor digite o mesmo telefone cadastrado no sistema.")
-                return
-            if dias_passados is None or dias_passados >= 15:
-                if self.atualizar_senha_usuario(usuario, nova_senha, confirmar_nova_senha, data_atual):
-                    QMessageBox.information(self, "Sucesso", "Senha atualizada com sucesso.")
-                    self.close()
-                else:
-                    QMessageBox.warning(self, "Erro", "Erro ao atualizar a senha.")
-            else:
-                QMessageBox.warning(self, "Erro", f"Você só pode trocar a senha a cada 15 dias. \n\t Dias passados: {dias_passados}")
-        else:
+        # Verifica se usuário existe (mensagem mais específica)
+        if not self.verificar_usuario(usuario):
             QMessageBox.warning(self, "Erro", "Usuário não encontrado.")
+            return
+
+        # Verifica se os dados pertencem ao MESMO usuário
+        if not self.verificar_dados_usuario(usuario, email, telefone):
+            QMessageBox.warning(
+                self,
+                "Erro",
+                "Dados incorretos.\nVerifique usuário, e-mail e telefone cadastrados."
+            )
+            return
+
+        dias_passados = self.verificar_tempo_ultima_troca(usuario)
+
+        if dias_passados is None or dias_passados >= 15:
+            if self.atualizar_senha_usuario(usuario, nova_senha, confirmar_nova_senha, data_atual):
+                QMessageBox.information(self, "Sucesso", "Senha atualizada com sucesso.")
+                self.close()
+            else:
+                QMessageBox.warning(self, "Erro", "Erro ao atualizar a senha.")
+        else:
+            QMessageBox.warning(
+                self,
+                "Erro",
+                f"Você só pode trocar a senha a cada 15 dias.\nDias passados: {dias_passados}"
+            )
+
         
-        
+    def verificar_dados_usuario(self, usuario, email, telefone):
+        cursor = self.db.connection.cursor()
+        cursor.execute("""
+            SELECT 1
+            FROM users
+            WHERE Usuário = ? AND Email = ? AND Telefone = ?
+        """, (usuario, email, telefone))
+        return cursor.fetchone() is not None
 
 
     def atualizar_senha_usuario(self, usuario, nova_senha, confirmar_senha, data_atual):

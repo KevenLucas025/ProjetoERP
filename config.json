@@ -1,7 +1,7 @@
 {
-    "nome_usuario": "Keven Lucas da Silva Jesus",
-    "usuario": "Keven",
-    "senha": "123",
+    "nome_usuario": "",
+    "usuario": "",
+    "senha": "",
     "email": "keven.lucas00@hotmail.com",
     "mantem_conectado": false,
     "nao_mostrar_mensagem_boas_vindas": true,
@@ -13,18 +13,24 @@
         "txt_nome": [
             "Kee",
             "Jorge Lucas",
-            "Keven Lucas da Silva Jesus"
+            "Keven Lucas da Silva Jesus",
+            "Pedro",
+            "Jorge"
         ],
         "txt_usuario_cadastro": [
             "Jorge",
             "Jddj",
-            "ds"
+            "ds",
+            "asdasd",
+            "sd"
         ],
         "txt_senha_cadastro": [
             "Jorge",
             "Jorge12!",
             "Lucas14!",
-            "Lucas1425!"
+            "Lucas1425!",
+            "Pedro25!",
+            "from shiboken6 import isValid"
         ],
         "txt_confirmar_senha": [
             "Jorge12!",
@@ -38,14 +44,18 @@
         "txt_telefone": [
             "19982018869",
             "(19) 98201-8869",
-            "(19) 98201-8868"
+            "(19) 98201-8868",
+            "(19) 98201-8867",
+            "(19) 98201-8864"
         ],
         "txt_email": [
             "keven.lucas00@hotmail.com",
             "keven.lucas00@hotmail.gov",
             "keven.lucas00@hofdsds.com",
             "keven.lucas00@fdfdfd.com",
-            "keven.lucas00@hotmail.con"
+            "keven.lucas00@hotmail.con",
+            "keven.lucas00@gmail.com",
+            "kevin.lucas00@hotmail.com"
         ],
         "txt_data_nascimento": [
             "26/01/2000"
@@ -56,21 +66,27 @@
             "25.040.540-0",
             "61.163.161-6",
             "52.554.252-5",
-            "52.991.559-4"
+            "52.991.559-4",
+            "52.991.559-0",
+            "52.991.559-9"
         ],
         "txt_cpf": [
             "50679677810",
             "506.796.778-10",
             "131.603.160-12",
             "313.131.313-13",
-            "506.796.778-11"
+            "506.796.778-11",
+            "506.796.778-19",
+            "506.796.778-08"
         ],
         "txt_cnpj": [
             "000000000000",
             "00.000.000/0000-00",
             "00.000.012/0000-00",
             "00.000.000/0000-21",
-            "00.000.002/2101-01"
+            "00.000.002/2101-01",
+            "00.000.000/0000-07",
+            "00.000.000/0000-08"
         ],
         "txt_numero": [
             "465"
@@ -92,14 +108,16 @@
             "2",
             "1",
             "16",
-            "123"
+            "123",
+            "15,25"
         ],
         "txt_cliente_3": [
             "dsadasdas",
             "Keven Lucas da Silva Jesus",
             "Não Cadastrado",
             "Gabriela Ignacio Silva",
-            "Jorge Lucas"
+            "Jorge Lucas",
+            "K"
         ],
         "txt_codigo_item": [
             "a Jesu",
@@ -146,7 +164,9 @@
             "vsz",
             "dsdc",
             "dcx",
-            "dcXZX1"
+            "dcXZX1",
+            "dczx",
+            "cvmslk"
         ],
         "txt_descricao_produto_3": [
             "Pizza",
@@ -195,7 +215,10 @@
             "tyf",
             "dsaqwq",
             "sacx",
-            "ewfd"
+            "ewfd",
+            "dsadca",
+            "abbs",
+            "asdasda"
         ],
         "txt_produto": [
             "Maça",
@@ -206,7 +229,9 @@
             "Tomate",
             "sdsd",
             "Carne",
-            "Torta 2"
+            "Torta 2",
+            "Água",
+            "Cigarro"
         ],
         "txt_quantidade": [
             "12",
@@ -228,7 +253,7 @@
             "50"
         ]
     },
-    "tema": "escuro",
+    "tema": "claro",
     "tamanho_fonte_percentual": 100,
     "atalhos": {},
     "plano": "pro",

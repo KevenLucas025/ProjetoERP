@@ -72,7 +72,6 @@ class Pagina_Configuracoes(QWidget):
         self.login_window = login_window
         self.db = DataBase()
         
-        self.login_window.label_foto_sistema.setPixmap(QPixmap(caminho_recurso("imagens/Imagem2.png")))
 
         # Criar a janela de configurações
         self.main_window.janela_config = QMainWindow()

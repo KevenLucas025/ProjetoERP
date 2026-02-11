@@ -20,7 +20,6 @@ class Configuracoes_Login:
         self.atualizacoes_automaticas = False
         self.historico_autocompletes = {}
         self.tema = "classico" # padrão
-        self.plano = "basico" # padrão
         self.atalhos = {}
         self.carregar()
         
@@ -80,7 +79,6 @@ class Configuracoes_Login:
                 self.nao_mostrar_aviso_atualizacoes = config.get("nao_mostrar_aviso_atualizacoes", False)
                 self.historico_autocompletes = config.get("historico_autocompletes", {})
                 self.atalhos = config.get("atalhos", {})
-                self.plano = config.get("plano","basico")
                 self.atualizacoes_automaticas = config.get("atualizacoes_automaticas",False)
                 
 
@@ -129,22 +127,12 @@ class Configuracoes_Login:
             "tema": self.tema,
             "tamanho_fonte_percentual": self.tamanho_fonte_percentual,
             "atalhos": self.atalhos,
-            "plano": self.plano,
             "atualizacoes_automaticas": self.atualizacoes_automaticas
         }
 
         with open(self.caminho_config_json(), "w", encoding="utf-8") as f:
             json.dump(config, f, indent=4, ensure_ascii=False)
-            
-    def definir_plano(self, plano):
-        if plano not in ("basico", "pro"):
-            return
-        self.plano = plano
-        self.salvar()
 
-    def obter_plano(self):
-        self.carregar()
-        return self.plano
 
             
     def salvar_atalho(self, acao, tecla):
@@ -231,7 +219,7 @@ class Configuracoes_Login:
 
     def obter_senha_salva(self):
         try:
-            with open(self.caminho_config_json(), "r") as f:
+            with open(self.caminho_config_json(), "r",encoding="utf-8") as f:
                 config = json.load(f)
                 return config.get("senha", "")
         except FileNotFoundError:

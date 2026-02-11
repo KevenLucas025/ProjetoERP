@@ -6,10 +6,12 @@ from ui_login_4 import Ui_Mainwindow_Login
 from database import DataBase
 import sys
 from PySide6.QtCore import Qt,QTimer
+from PySide6.QtGui import QPixmap
 from configuracoes import Configuracoes_Login
 from utils import Temas
 from PySide6 import QtCore
 from PySide6.QtGui import QAction
+from utils import caminho_recurso
 import os
 import sqlite3
 from datetime import datetime
@@ -25,11 +27,19 @@ class Login(QMainWindow, Ui_Mainwindow_Login):
         self.config = Configuracoes_Login(self)
         self.config.carregar()   
         self.setupUi(self)
+        if self.config.mantem_conectado:
+            QTimer.singleShot(0, self.fazerLoginAutomatico)
+
         self.login_window = login_window
         self.users = DataBase()  # Defina self.users aqui
         self.users.connecta()    # <-- Conecta ao banco de dados
         self.setWindowTitle("Login do Sistema")
         self.tema = Temas()
+        
+        
+        self.label_foto_sistema.setPixmap(QPixmap(caminho_recurso("imagens/Imagem2.png")))
+
+
 
 
         self.menu_btn_opcoes_extras = QMenu(self.btn_opcoes_extras)

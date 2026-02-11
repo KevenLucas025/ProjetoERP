@@ -23,6 +23,7 @@ from atualizarusuario import AtualizarUsuario
 from pg_configuracoes import Pagina_Configuracoes
 from estoqueprodutos import EstoqueProduto
 from historicousuario import Pagina_Usuarios
+from shiboken6 import isValid
 from utils import DialogoAvatar
 from utils import DialogoRecorteImagem
 from utils import MostrarSenha,configurar_frame_valores,caminho_recurso
@@ -220,8 +221,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         # Inicializar as configurações antes de chamar fazer_login_automatico
         self.config = Configuracoes_Login(self)
-        self.config.carregar()
-        self.fazer_login_automatico()
+        '''self.config.carregar()
+        self.fazer_login_automatico()'''
 
         for acao,tecla in self.config.obter_todos_atalhos().items():
             self.registrar_atalhos(acao,tecla)
@@ -1609,19 +1610,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         msg.setIcon(QMessageBox.Information)
         msg.setWindowTitle("Informações do Sistema")
         msg.setText(
-            f"Versão do Sistema: {versao_atual}\n"
-            "Bem-vindo ao Sistema de Gerenciamento!\n\n"
-            "Novidades nesta versão:\n"
-            "- Cadastro de produtos simplificado\n"
-            "- Agora é possível logar no sistema utilizando E-mail ou CPF\n"
-            "- Melhorias na performance de relatórios\n"
-            "- Suporte a múltiplos usuários simultâneos\n\n"
-            "Dicas de uso:\n"
-            "- Use o menu lateral para acessar rapidamente todas as funcionalidades\n"
-            "- Faça backups regulares dos seus dados\n"
-            "- Entre em contato com o suporte na aba Configurações > Sistema > Feedback para quaisquer dúvidas ou sugestões!"
+            f"Bem-vindo ao Sistema de Gerenciamento!\n\n"
+            f"Versão atual: {versao_atual}\n\n"
+            "Sempre que possível, realize sugestões de melhorias para que possamos "
+            "evoluir continuamente o sistema."
         )
         msg.exec()
+
 
 
     def mostrar_page_estoque(self):
@@ -2105,46 +2100,50 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 #*********************************************************************************************************************
     
 #*********************************************************************************************************************
-    def desconectarUsuario(self):   
+    def desconectarUsuario(self):
         msgBox = QMessageBox(self)
         msgBox.setIcon(QMessageBox.Question)
         msgBox.setText("Tem certeza que deseja sair?")
         msgBox.setWindowTitle("Aviso")
-        
-        # Definindo os botões em português
-        msgBox.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
-        
-        yes_button = msgBox.button(QMessageBox.Yes)
-        yes_button.setText("Sim")
-        
-        
-        no_button = msgBox.button(QMessageBox.No)
-        no_button.setText("Não")
 
-        # Mostrar mensagem de confirmação
+        msgBox.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
+
+        botao_sim = msgBox.button(QMessageBox.Yes)
+        botao_sim.setText("Sim")
+
+        botao_nao = msgBox.button(QMessageBox.No)
+        botao_nao.setText("Não")
+
         resposta = msgBox.exec()
 
-        if resposta == QMessageBox.Yes:
-            # Limpar configurações de login
-            self.login_window.config.salvar_configuracoes("","",False)
+        if resposta != QMessageBox.Yes:
+            return
 
-            # Limpar os campos de login e desmarcar "Manter conectado"
+        #  Limpa as configurações direto pelo self.config (não depende do login_window)
+        self.config.salvar_configuracoes(
+            nome_usuario="",
+            usuario="",
+            senha="",
+            email="",
+            mantem_conectado=False
+        )
+
+        # Fecha a janela principal
+        self.close()
+
+        # ✅ Abre a tela de login novamente (cria uma nova se não existir)
+        if self.login_window is None:
+            from login import Login
+            self.login_window = Login(login_window=None)
+
+        # Garante que não fica nada preenchido
+        if hasattr(self.login_window, "limpar_campos"):
             self.login_window.limpar_campos()
+        if hasattr(self.login_window, "btn_manter_conectado"):
             self.login_window.btn_manter_conectado.setChecked(False)
 
-            # Fechar a janela principal e abrir a janela de login
-            self.close()
-            self.login_window.show()
-#*********************************************************************************************************************
-    def fazer_login_automatico(self):
-        if self.config.verificar_credenciais_salvas():
-            usuario = self.config.usuario
-            senha = self.config.obter_senha_salva()
-            tipo_usuario = self.db.check_user(usuario, senha)
-            if tipo_usuario:
-                print("Login automático bem sucedido!")
-                self.fechar_janela_login_signal.emit(tipo_usuario)
-                self.show()  # Mostra a janela principal atual  
+        self.login_window.show()
+
 #*********************************************************************************************************************
     def fechar_janela_login_delay(self):
         if self.login_window.isVisible():
@@ -2171,9 +2170,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 #*********************************************************************************************************************            
     def carregar_configuracoes(self):
         self.txt_usuario_cadastro.setText(self.config.usuario or "")
-        self.login_window.btn_manter_conectado.setChecked(
-            bool(self.config.mantem_conectado)
-        )
+
+        # Se a tela de login existir (login manual), atualiza o checkbox nela
+        if self.login_window is not None:
+            self.login_window.btn_manter_conectado.setChecked(
+                bool(self.config.mantem_conectado)
+            )
 
 #*********************************************************************************************************************
     def formatar_porcentagem(self):
@@ -2333,26 +2335,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
 
             # Limpar campos após cadastro
-            self.txt_nome.clear()
-            self.txt_usuario_cadastro.clear()
-            self.txt_senha_cadastro.clear()
-            self.txt_confirmar_senha.clear()
-            self.txt_cpf.clear()
-            self.txt_cnpj.clear()
-            self.txt_email.clear()
-            self.txt_numero.clear()
-            self.txt_endereco.clear()
-            self.txt_bairro.clear()
-            self.txt_cidade.clear()
-            self.txt_cnpj.clear()
-            self.txt_cep.clear()
-            self.txt_complemento.clear()
-            self.txt_rg.clear()
-            self.txt_telefone.clear()
-            self.txt_data_nascimento.clear()
-            self.perfil_estado.setCurrentIndex(0)
-            self.perfil_usuarios.setCurrentIndex(0)
-            self.label_imagem_usuario.clear()
+            self.eliminar_campos_usuarios()
 
         except Exception as e:
             QMessageBox.critical(self, "Erro", f"Erro ao cadastrar usuário:\n{e}")
@@ -2439,9 +2422,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                        
             else:
                 QMessageBox.warning(self, "Erro","Não foi possível remover a imagem do usuário\n"
-                                                "Tente remover pelo botão  remover imagem")
-
-        QMessageBox.information(self,"Sucesso","Todos os campos foram limpos com sucesso! ")
+                                                "Tente remover pelo botão remover imagem")
 #*********************************************************************************************************************
     def converter_imagem_usuario(self):
         """
@@ -2823,7 +2804,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.limpar_campos_produtos()
         
         # Limpar a imagem
-        self.label_imagem_produto.clear()
+        # Limpar a imagem (sem estourar erro se o QLabel já tiver sido destruído)
+        if hasattr(self, "label_imagem_produto") and isValid(self.label_imagem_produto):
+            self.label_imagem_produto.clear()
+
         self.imagem_carregada_produto = None
 
         self.dateEdit_3.setDate(QDate.currentDate())  # Define a data atual
@@ -4442,6 +4426,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
 
 # Função principal
+# Função principal
 if __name__ == '__main__':
     app = QApplication(sys.argv)
 
@@ -4451,17 +4436,35 @@ if __name__ == '__main__':
     temas = Temas()
     temas.aplicar_tema_global(app)
 
-    login_window = Login(login_window=None)
-    main_window = MainWindow(
-        user=None,
-        tipo_usuario=None,
-        login_window=login_window,
-        app=app
-    )
+    # Carrega configurações ANTES de criar janelas
+    config = Configuracoes_Login(None)
+    config.carregar()
 
+    # Tenta login automático sem criar/mostrar a tela de login
+    tipo_usuario = None
+    if config.mantem_conectado and config.usuario:
+        senha_salva = config.obter_senha_salva()
+        if senha_salva:
+            db = DataBase("banco_de_dados.db")
+            db.connecta()
+            tipo_usuario = db.check_user(config.usuario, senha_salva)
 
-    login_window.show()
+    if tipo_usuario:
+        # ✅ Abre direto a MainWindow (login nem aparece)
+        main_window = MainWindow(
+            user=tipo_usuario.lower(),
+            tipo_usuario=tipo_usuario,
+            login_window=None,
+            app=app
+        )
+        main_window.show()
+    else:
+        # ✅ Cai no fluxo normal: mostra login
+        login_window = Login(login_window=None)
+        login_window.show()
+
     sys.exit(app.exec())
+
 
 
 
