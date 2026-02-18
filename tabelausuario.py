@@ -76,6 +76,7 @@ class TabelaUsuario(QMainWindow):
         self.btn_editar_usuario = QPushButton("Atualizar Usuário")
         self.btn_filtrar_usuario = QPushButton("Filtrar Usuários")
         self.checkbox_selecionar = QCheckBox("Selecionar")
+        self.checkbox_selecionar.setObjectName("checkbox_selecionar_usuarios")
         self.btn_ordenar_usuario = QPushButton("Ordenar Usuários")
         self.btn_visualizar_imagem = QPushButton("Visualizar Imagem")
         self.btn_atualizar_tabela = QPushButton("Atualizar Tabela")
@@ -342,8 +343,9 @@ class TabelaUsuario(QMainWindow):
                     stop:0 rgb(220, 220, 220),  /* topo */
                     stop:1 rgb(245, 245, 245)   /* base */
                 );
-                font-size: 14px;
+                font-size: 12px;
                 color: #000000; /* texto escuro */
+                padding: 3px;
                 }
 
                 QPushButton:hover {
@@ -521,6 +523,7 @@ class TabelaUsuario(QMainWindow):
                     font-size: 12px;
                     background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */
                     border: 4px solid transparent;
+                    padding: 3px;
                 }
 
                 QPushButton:hover {

@@ -67,7 +67,7 @@ class AtualizarUsuario(QDialog):
             """
             dialog_style = """
                 QDialog {
-                    background-color: #005079;
+                    background-color: #ffffff;
                     color: black;
                 }
             """

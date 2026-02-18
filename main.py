@@ -486,7 +486,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.label_quantidade,
         ]:
             label.setAlignment(Qt.AlignCenter)
-            label.setStyleSheet("font-size: 20px; color: white; font-family: 'Arial'; font-weight: bold;")
 
         validator = QDoubleValidator()
         validator.setNotation(QDoubleValidator.StandardNotation)  

@@ -3,7 +3,7 @@
     "usuario": "Keven",
     "senha": "123",
     "email": "Não Cadastrado",
-    "mantem_conectado": false,
+    "mantem_conectado": true,
     "nao_mostrar_mensagem_boas_vindas": true,
     "nao_mostrar_aviso_irreversivel": true,
     "nao_mostrar_mensagem_arquivo_excel": true,
@@ -58,7 +58,7 @@
             "comer"
         ]
     },
-    "tema": "classico",
+    "tema": "claro",
     "tamanho_fonte_percentual": 100,
     "atalhos": {},
     "atualizacoes_automaticas": false,

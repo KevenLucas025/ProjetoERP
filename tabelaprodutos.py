@@ -101,6 +101,7 @@ class TabelaProdutos(QMainWindow):
         layout.addWidget(self.btn_duplicar_produto)
 
         self.checkbox_selecionar_produtos = QCheckBox("Selecionar")
+        self.checkbox_selecionar_produtos.setObjectName("checkbox_selecionar_produtos")
         layout.addWidget(self.checkbox_selecionar_produtos)
 
         # Adicionar a tabela ao layout
@@ -380,6 +381,8 @@ class TabelaProdutos(QMainWindow):
                         stop:1 rgb(245, 245, 245)   /* base */
                     );
                     color: #000000; /* texto escuro */
+                    font-size: 12px;
+                    padding: 3px;
                 }
 
                 QPushButton:hover {
@@ -586,6 +589,7 @@ class TabelaProdutos(QMainWindow):
                     font-size: 12px;
                     background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */
                     border: 4px solid transparent;
+                    padding: 3px;
                 }
 
                 QPushButton:hover {

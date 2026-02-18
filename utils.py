@@ -1742,7 +1742,9 @@ class Temas:
                 background-color: #005079;
                 color: #ffffff;
             }
-            QCheckBox#btn_manter_conectado{
+            QCheckBox#btn_manter_conectado,
+            QCheckBox#checkbox_selecionar_produtos,
+            QCheckBox#checkbox_selecionar_usuarios{
                 color: white;
             }
             QMessageBox {
@@ -1886,7 +1888,9 @@ class Temas:
             QLineEdit#line_edit_massa_usuarios,
             QLineEdit#line_edit_massa_produtos,
             QLineEdit#line_excel_usuarios,
-            QLineEdit#line_excel{
+            QLineEdit#line_excel,
+            QLineEdit#line_clientes,
+            QLineEdit#line_clientes_fisicos{
                 color: black;
                 background-color: rgb(240, 240, 240); /* Cor de fundo cinza claro */
                 border: 2px solid rgb(50, 150, 250);  /* Borda azul */
@@ -1920,7 +1924,9 @@ class Temas:
             QLineEdit#line_edit_massa_produtos::placeholderText,
             QLineEdit#line_excel_usuarios::placeholderText,
             QLineEdit#line_excel::placeholderText,
-            QLineEdit#txt_descricao_produto_3::placeholderText {
+            QLineEdit#txt_descricao_produto_3::placeholderText,
+            QLineEdit#line_clientes:placeholderText,
+            QLineEdit#line_clientes_fisicos:placeholderText{
                 color: black; /* Cor do texto do placeholder */
             }
                 

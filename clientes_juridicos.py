@@ -328,7 +328,7 @@ class Clientes_Juridicos(QWidget):
         self.preencher_resultado_busca(resultados)
 
     def buscar_cliente_juridico_manual(self):
-        texto = self.line_clientes_fisicos.text().strip()
+        texto = self.line_clientes.text().strip()
         if not texto:
             self.preencher_resultado_busca(self._listar_todos_clientes())
             return
@@ -1002,7 +1002,8 @@ class Clientes_Juridicos(QWidget):
                     stop:0 rgb(220, 220, 220),  /* topo */
                     stop:1 rgb(245, 245, 245)   /* base */
                 );
-                font-size: 14px;
+                font-size: 12px;
+                padding: 3px;
                 color: #000000; /* texto escuro */
                 }
 
@@ -1084,6 +1085,7 @@ class Clientes_Juridicos(QWidget):
                 font-size: 12px;
                 background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */
                 border: 4px solid transparent;
+                padding: 3px;
             }
 
             QPushButton:hover {
@@ -2468,6 +2470,7 @@ class Clientes_Juridicos(QWidget):
                     font-size: 12px;
                     background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(50, 150, 250), stop:1 rgb(100, 200, 255)); /* Gradiente de azul claro para azul mais claro */
                     border: 4px solid transparent;
+                    padding: 3px;
                 }
 
                 QPushButton:hover {
