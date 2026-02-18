@@ -250,26 +250,6 @@ class Ui_MainWindow(object):
         self.gridLayout_6.setHorizontalSpacing(5)
         self.gridLayout_6.setVerticalSpacing(7)
         self.gridLayout_6.setContentsMargins(9, 9, 8, 8)
-        self.btn_gerar_estorno = QPushButton(self.frame_pag_estoque)
-        self.btn_gerar_estorno.setObjectName(u"btn_gerar_estorno")
-        sizePolicy.setHeightForWidth(self.btn_gerar_estorno.sizePolicy().hasHeightForWidth())
-        self.btn_gerar_estorno.setSizePolicy(sizePolicy)
-        self.btn_gerar_estorno.setMaximumSize(QSize(130, 30))
-        self.btn_gerar_estorno.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
-        self.btn_gerar_estorno.setStyleSheet(u"")
-
-        self.gridLayout_6.addWidget(self.btn_gerar_estorno, 3, 1, 1, 1)
-
-        self.btn_importar = QPushButton(self.frame_pag_estoque)
-        self.btn_importar.setObjectName(u"btn_importar")
-        sizePolicy.setHeightForWidth(self.btn_importar.sizePolicy().hasHeightForWidth())
-        self.btn_importar.setSizePolicy(sizePolicy)
-        self.btn_importar.setMaximumSize(QSize(130, 30))
-        self.btn_importar.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
-        self.btn_importar.setStyleSheet(u"")
-
-        self.gridLayout_6.addWidget(self.btn_importar, 3, 4, 1, 1)
-
         self.label_saida = QLabel(self.frame_pag_estoque)
         self.label_saida.setObjectName(u"label_saida")
         sizePolicy.setHeightForWidth(self.label_saida.sizePolicy().hasHeightForWidth())
@@ -279,6 +259,16 @@ class Ui_MainWindow(object):
 
         self.gridLayout_6.addWidget(self.label_saida, 3, 0, 1, 1)
 
+        self.btn_gerar_estorno = QPushButton(self.frame_pag_estoque)
+        self.btn_gerar_estorno.setObjectName(u"btn_gerar_estorno")
+        sizePolicy.setHeightForWidth(self.btn_gerar_estorno.sizePolicy().hasHeightForWidth())
+        self.btn_gerar_estorno.setSizePolicy(sizePolicy)
+        self.btn_gerar_estorno.setMaximumSize(QSize(130, 30))
+        self.btn_gerar_estorno.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
+        self.btn_gerar_estorno.setStyleSheet(u"")
+
+        self.gridLayout_6.addWidget(self.btn_gerar_estorno, 3, 2, 1, 1)
+
         self.label_estoque = QLabel(self.frame_pag_estoque)
         self.label_estoque.setObjectName(u"label_estoque")
         sizePolicy.setHeightForWidth(self.label_estoque.sizePolicy().hasHeightForWidth())
@@ -286,7 +276,11 @@ class Ui_MainWindow(object):
         self.label_estoque.setMaximumSize(QSize(130, 40))
         self.label_estoque.setStyleSheet(u"")
 
-        self.gridLayout_6.addWidget(self.label_estoque, 1, 0, 1, 2)
+        self.gridLayout_6.addWidget(self.label_estoque, 1, 0, 1, 3)
+
+        self.horizontalSpacer = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+
+        self.gridLayout_6.addItem(self.horizontalSpacer, 3, 1, 1, 1)
 
         self.frame_14 = QFrame(self.frame_pag_estoque)
         self.frame_14.setObjectName(u"frame_14")
@@ -336,15 +330,15 @@ class Ui_MainWindow(object):
 
         self.verticalLayout.addWidget(self.btn_historico)
 
-        self.btn_gerar_pdf = QPushButton(self.frame_14)
-        self.btn_gerar_pdf.setObjectName(u"btn_gerar_pdf")
-        sizePolicy.setHeightForWidth(self.btn_gerar_pdf.sizePolicy().hasHeightForWidth())
-        self.btn_gerar_pdf.setSizePolicy(sizePolicy)
-        self.btn_gerar_pdf.setMaximumSize(QSize(163, 30))
-        self.btn_gerar_pdf.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
-        self.btn_gerar_pdf.setStyleSheet(u"")
+        self.btn_gerar_excel = QPushButton(self.frame_14)
+        self.btn_gerar_excel.setObjectName(u"btn_gerar_excel")
+        sizePolicy.setHeightForWidth(self.btn_gerar_excel.sizePolicy().hasHeightForWidth())
+        self.btn_gerar_excel.setSizePolicy(sizePolicy)
+        self.btn_gerar_excel.setMaximumSize(QSize(163, 30))
+        self.btn_gerar_excel.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
+        self.btn_gerar_excel.setStyleSheet(u"")
 
-        self.verticalLayout.addWidget(self.btn_gerar_pdf)
+        self.verticalLayout.addWidget(self.btn_gerar_excel)
 
         self.btn_limpar_tabelas = QPushButton(self.frame_14)
         self.btn_limpar_tabelas.setObjectName(u"btn_limpar_tabelas")
@@ -357,17 +351,15 @@ class Ui_MainWindow(object):
         self.verticalLayout.addWidget(self.btn_limpar_tabelas)
 
 
-        self.gridLayout_6.addWidget(self.frame_14, 0, 8, 5, 1)
+        self.gridLayout_6.addWidget(self.frame_14, 0, 7, 5, 1)
 
-        self.btn_gerar_saida = QPushButton(self.frame_pag_estoque)
-        self.btn_gerar_saida.setObjectName(u"btn_gerar_saida")
-        sizePolicy.setHeightForWidth(self.btn_gerar_saida.sizePolicy().hasHeightForWidth())
-        self.btn_gerar_saida.setSizePolicy(sizePolicy)
-        self.btn_gerar_saida.setMaximumSize(QSize(130, 30))
-        self.btn_gerar_saida.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
-        self.btn_gerar_saida.setStyleSheet(u"")
+        self.horizontalSpacer_2 = QSpacerItem(26, 8, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
 
-        self.gridLayout_6.addWidget(self.btn_gerar_saida, 3, 7, 1, 1)
+        self.gridLayout_6.addItem(self.horizontalSpacer_2, 3, 5, 1, 1)
+
+        self.horizontalSpacer_4 = QSpacerItem(26, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+
+        self.gridLayout_6.addItem(self.horizontalSpacer_4, 3, 3, 1, 1)
 
         self.table_base = QTableWidget(self.frame_pag_estoque)
         if (self.table_base.columnCount() < 12):
@@ -401,23 +393,7 @@ class Ui_MainWindow(object):
         self.table_base.setFrameShape(QFrame.NoFrame)
         self.table_base.setCornerButtonEnabled(True)
 
-        self.gridLayout_6.addWidget(self.table_base, 2, 0, 1, 8)
-
-        self.horizontalSpacer_2 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
-
-        self.gridLayout_6.addItem(self.horizontalSpacer_2, 3, 6, 1, 1)
-
-        self.horizontalSpacer_4 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
-
-        self.gridLayout_6.addItem(self.horizontalSpacer_4, 3, 2, 1, 1)
-
-        self.horizontalSpacer = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
-
-        self.gridLayout_6.addItem(self.horizontalSpacer, 3, 5, 1, 1)
-
-        self.horizontalSpacer_3 = QSpacerItem(40, 20, QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
-
-        self.gridLayout_6.addItem(self.horizontalSpacer_3, 3, 3, 1, 1)
+        self.gridLayout_6.addWidget(self.table_base, 2, 0, 1, 7)
 
         self.table_saida = QTableWidget(self.frame_pag_estoque)
         if (self.table_saida.columnCount() < 13):
@@ -453,7 +429,17 @@ class Ui_MainWindow(object):
         self.table_saida.setFrameShape(QFrame.NoFrame)
         self.table_saida.setCornerButtonEnabled(True)
 
-        self.gridLayout_6.addWidget(self.table_saida, 4, 0, 1, 8)
+        self.gridLayout_6.addWidget(self.table_saida, 4, 0, 1, 7)
+
+        self.btn_gerar_saida = QPushButton(self.frame_pag_estoque)
+        self.btn_gerar_saida.setObjectName(u"btn_gerar_saida")
+        sizePolicy.setHeightForWidth(self.btn_gerar_saida.sizePolicy().hasHeightForWidth())
+        self.btn_gerar_saida.setSizePolicy(sizePolicy)
+        self.btn_gerar_saida.setMaximumSize(QSize(130, 30))
+        self.btn_gerar_saida.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
+        self.btn_gerar_saida.setStyleSheet(u"")
+
+        self.gridLayout_6.addWidget(self.btn_gerar_saida, 3, 4, 1, 1)
 
 
         self.gridLayout_5.addWidget(self.frame_pag_estoque, 0, 0, 1, 1)
@@ -766,8 +752,8 @@ class Ui_MainWindow(object):
         self.frame_valor_total_produtos.setObjectName(u"frame_valor_total_produtos")
         sizePolicy.setHeightForWidth(self.frame_valor_total_produtos.sizePolicy().hasHeightForWidth())
         self.frame_valor_total_produtos.setSizePolicy(sizePolicy)
-        self.frame_valor_total_produtos.setMinimumSize(QSize(321, 102))
-        self.frame_valor_total_produtos.setMaximumSize(QSize(321, 102))
+        self.frame_valor_total_produtos.setMinimumSize(QSize(0, 102))
+        self.frame_valor_total_produtos.setMaximumSize(QSize(16777215, 102))
         self.frame_valor_total_produtos.setStyleSheet(u"")
         self.frame_valor_total_produtos.setFrameShape(QFrame.StyledPanel)
         self.frame_valor_total_produtos.setFrameShadow(QFrame.Raised)
@@ -779,7 +765,7 @@ class Ui_MainWindow(object):
         sizePolicy.setHeightForWidth(self.frame_valor_do_desconto.sizePolicy().hasHeightForWidth())
         self.frame_valor_do_desconto.setSizePolicy(sizePolicy)
         self.frame_valor_do_desconto.setMinimumSize(QSize(0, 102))
-        self.frame_valor_do_desconto.setMaximumSize(QSize(321, 102))
+        self.frame_valor_do_desconto.setMaximumSize(QSize(16777215, 102))
         self.frame_valor_do_desconto.setStyleSheet(u"")
         self.frame_valor_do_desconto.setFrameShape(QFrame.StyledPanel)
         self.frame_valor_do_desconto.setFrameShadow(QFrame.Raised)
@@ -791,7 +777,7 @@ class Ui_MainWindow(object):
         sizePolicy.setHeightForWidth(self.frame_valor_com_desconto1.sizePolicy().hasHeightForWidth())
         self.frame_valor_com_desconto1.setSizePolicy(sizePolicy)
         self.frame_valor_com_desconto1.setMinimumSize(QSize(0, 102))
-        self.frame_valor_com_desconto1.setMaximumSize(QSize(321, 102))
+        self.frame_valor_com_desconto1.setMaximumSize(QSize(16777215, 102))
         self.frame_valor_com_desconto1.setStyleSheet(u"")
         self.frame_valor_com_desconto1.setFrameShape(QFrame.StyledPanel)
         self.frame_valor_com_desconto1.setFrameShadow(QFrame.Raised)
@@ -803,7 +789,7 @@ class Ui_MainWindow(object):
         sizePolicy.setHeightForWidth(self.frame_quantidade.sizePolicy().hasHeightForWidth())
         self.frame_quantidade.setSizePolicy(sizePolicy)
         self.frame_quantidade.setMinimumSize(QSize(0, 102))
-        self.frame_quantidade.setMaximumSize(QSize(321, 102))
+        self.frame_quantidade.setMaximumSize(QSize(16777215, 102))
         self.frame_quantidade.setStyleSheet(u"")
         self.frame_quantidade.setFrameShape(QFrame.StyledPanel)
         self.frame_quantidade.setFrameShadow(QFrame.Raised)
@@ -817,7 +803,7 @@ class Ui_MainWindow(object):
         self.frame_remover_e_carregar_imagem.setObjectName(u"frame_remover_e_carregar_imagem")
         sizePolicy.setHeightForWidth(self.frame_remover_e_carregar_imagem.sizePolicy().hasHeightForWidth())
         self.frame_remover_e_carregar_imagem.setSizePolicy(sizePolicy)
-        self.frame_remover_e_carregar_imagem.setMaximumSize(QSize(200, 89))
+        self.frame_remover_e_carregar_imagem.setMaximumSize(QSize(203, 89))
         self.frame_remover_e_carregar_imagem.setFrameShape(QFrame.NoFrame)
         self.frame_remover_e_carregar_imagem.setFrameShadow(QFrame.Raised)
         self.verticalLayout_13 = QVBoxLayout(self.frame_remover_e_carregar_imagem)
@@ -826,7 +812,8 @@ class Ui_MainWindow(object):
         self.btn_remover_imagem.setObjectName(u"btn_remover_imagem")
         sizePolicy.setHeightForWidth(self.btn_remover_imagem.sizePolicy().hasHeightForWidth())
         self.btn_remover_imagem.setSizePolicy(sizePolicy)
-        self.btn_remover_imagem.setMaximumSize(QSize(180, 30))
+        self.btn_remover_imagem.setMinimumSize(QSize(0, 33))
+        self.btn_remover_imagem.setMaximumSize(QSize(16777215, 16777215))
         self.btn_remover_imagem.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.btn_remover_imagem.setStyleSheet(u"")
         icon = QIcon()
@@ -839,8 +826,8 @@ class Ui_MainWindow(object):
         self.btn_carregar_imagem.setObjectName(u"btn_carregar_imagem")
         sizePolicy.setHeightForWidth(self.btn_carregar_imagem.sizePolicy().hasHeightForWidth())
         self.btn_carregar_imagem.setSizePolicy(sizePolicy)
-        self.btn_carregar_imagem.setMinimumSize(QSize(153, 0))
-        self.btn_carregar_imagem.setMaximumSize(QSize(180, 30))
+        self.btn_carregar_imagem.setMinimumSize(QSize(0, 33))
+        self.btn_carregar_imagem.setMaximumSize(QSize(16777215, 16777215))
         self.btn_carregar_imagem.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.btn_carregar_imagem.setStyleSheet(u"")
         icon1 = QIcon()
@@ -865,6 +852,8 @@ class Ui_MainWindow(object):
         self.verticalLayout_11.setObjectName(u"verticalLayout_11")
         self.frame_produto = QFrame(self.frame_line_cadastro_produtos)
         self.frame_produto.setObjectName(u"frame_produto")
+        sizePolicy.setHeightForWidth(self.frame_produto.sizePolicy().hasHeightForWidth())
+        self.frame_produto.setSizePolicy(sizePolicy)
         self.frame_produto.setMaximumSize(QSize(328, 50))
         self.frame_produto.setFrameShape(QFrame.NoFrame)
         self.frame_produto.setFrameShadow(QFrame.Raised)
@@ -874,6 +863,8 @@ class Ui_MainWindow(object):
         self.horizontalLayout.setObjectName(u"horizontalLayout")
         self.label_produto = QLabel(self.frame_produto)
         self.label_produto.setObjectName(u"label_produto")
+        sizePolicy.setHeightForWidth(self.label_produto.sizePolicy().hasHeightForWidth())
+        self.label_produto.setSizePolicy(sizePolicy)
         self.label_produto.setStyleSheet(u"")
 
         self.horizontalLayout.addWidget(self.label_produto)
@@ -890,6 +881,8 @@ class Ui_MainWindow(object):
 
         self.frame_erro_produto = QFrame(self.frame_produto)
         self.frame_erro_produto.setObjectName(u"frame_erro_produto")
+        sizePolicy.setHeightForWidth(self.frame_erro_produto.sizePolicy().hasHeightForWidth())
+        self.frame_erro_produto.setSizePolicy(sizePolicy)
         self.frame_erro_produto.setMaximumSize(QSize(21, 21))
         self.frame_erro_produto.setFrameShape(QFrame.NoFrame)
         self.frame_erro_produto.setFrameShadow(QFrame.Raised)
@@ -904,6 +897,8 @@ class Ui_MainWindow(object):
 
         self.frame_quantidade_2 = QFrame(self.frame_line_cadastro_produtos)
         self.frame_quantidade_2.setObjectName(u"frame_quantidade_2")
+        sizePolicy.setHeightForWidth(self.frame_quantidade_2.sizePolicy().hasHeightForWidth())
+        self.frame_quantidade_2.setSizePolicy(sizePolicy)
         self.frame_quantidade_2.setMaximumSize(QSize(328, 50))
         self.frame_quantidade_2.setFrameShape(QFrame.NoFrame)
         self.frame_quantidade_2.setFrameShadow(QFrame.Raised)
@@ -913,6 +908,8 @@ class Ui_MainWindow(object):
         self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
         self.label_quantidade = QLabel(self.frame_quantidade_2)
         self.label_quantidade.setObjectName(u"label_quantidade")
+        sizePolicy.setHeightForWidth(self.label_quantidade.sizePolicy().hasHeightForWidth())
+        self.label_quantidade.setSizePolicy(sizePolicy)
         self.label_quantidade.setStyleSheet(u"")
 
         self.horizontalLayout_2.addWidget(self.label_quantidade)
@@ -929,6 +926,8 @@ class Ui_MainWindow(object):
 
         self.frame_erro_quantidade = QFrame(self.frame_quantidade_2)
         self.frame_erro_quantidade.setObjectName(u"frame_erro_quantidade")
+        sizePolicy.setHeightForWidth(self.frame_erro_quantidade.sizePolicy().hasHeightForWidth())
+        self.frame_erro_quantidade.setSizePolicy(sizePolicy)
         self.frame_erro_quantidade.setMaximumSize(QSize(21, 21))
         self.frame_erro_quantidade.setFrameShape(QFrame.NoFrame)
         self.frame_erro_quantidade.setFrameShadow(QFrame.Raised)
@@ -943,6 +942,8 @@ class Ui_MainWindow(object):
 
         self.frame_valor_produto = QFrame(self.frame_line_cadastro_produtos)
         self.frame_valor_produto.setObjectName(u"frame_valor_produto")
+        sizePolicy.setHeightForWidth(self.frame_valor_produto.sizePolicy().hasHeightForWidth())
+        self.frame_valor_produto.setSizePolicy(sizePolicy)
         self.frame_valor_produto.setMaximumSize(QSize(328, 50))
         self.frame_valor_produto.setStyleSheet(u"")
         self.frame_valor_produto.setFrameShape(QFrame.NoFrame)
@@ -953,6 +954,8 @@ class Ui_MainWindow(object):
         self.horizontalLayout_3.setObjectName(u"horizontalLayout_3")
         self.label_valor_produto_3 = QLabel(self.frame_valor_produto)
         self.label_valor_produto_3.setObjectName(u"label_valor_produto_3")
+        sizePolicy.setHeightForWidth(self.label_valor_produto_3.sizePolicy().hasHeightForWidth())
+        self.label_valor_produto_3.setSizePolicy(sizePolicy)
         self.label_valor_produto_3.setStyleSheet(u"")
 
         self.horizontalLayout_3.addWidget(self.label_valor_produto_3)
@@ -969,6 +972,8 @@ class Ui_MainWindow(object):
 
         self.frame_erro_valor_produto = QFrame(self.frame_valor_produto)
         self.frame_erro_valor_produto.setObjectName(u"frame_erro_valor_produto")
+        sizePolicy.setHeightForWidth(self.frame_erro_valor_produto.sizePolicy().hasHeightForWidth())
+        self.frame_erro_valor_produto.setSizePolicy(sizePolicy)
         self.frame_erro_valor_produto.setMaximumSize(QSize(21, 21))
         self.frame_erro_valor_produto.setFrameShape(QFrame.NoFrame)
         self.frame_erro_valor_produto.setFrameShadow(QFrame.Raised)
@@ -983,6 +988,8 @@ class Ui_MainWindow(object):
 
         self.frame_desconto = QFrame(self.frame_line_cadastro_produtos)
         self.frame_desconto.setObjectName(u"frame_desconto")
+        sizePolicy.setHeightForWidth(self.frame_desconto.sizePolicy().hasHeightForWidth())
+        self.frame_desconto.setSizePolicy(sizePolicy)
         self.frame_desconto.setMaximumSize(QSize(328, 50))
         self.frame_desconto.setStyleSheet(u"")
         self.frame_desconto.setFrameShape(QFrame.NoFrame)
@@ -993,6 +1000,8 @@ class Ui_MainWindow(object):
         self.horizontalLayout_4.setObjectName(u"horizontalLayout_4")
         self.label_desconto_3 = QLabel(self.frame_desconto)
         self.label_desconto_3.setObjectName(u"label_desconto_3")
+        sizePolicy.setHeightForWidth(self.label_desconto_3.sizePolicy().hasHeightForWidth())
+        self.label_desconto_3.setSizePolicy(sizePolicy)
         self.label_desconto_3.setStyleSheet(u"")
 
         self.horizontalLayout_4.addWidget(self.label_desconto_3)
@@ -1015,6 +1024,8 @@ class Ui_MainWindow(object):
 
         self.frame_data_compra = QFrame(self.frame_line_cadastro_produtos)
         self.frame_data_compra.setObjectName(u"frame_data_compra")
+        sizePolicy.setHeightForWidth(self.frame_data_compra.sizePolicy().hasHeightForWidth())
+        self.frame_data_compra.setSizePolicy(sizePolicy)
         self.frame_data_compra.setMaximumSize(QSize(328, 50))
         self.frame_data_compra.setStyleSheet(u"")
         self.frame_data_compra.setFrameShape(QFrame.NoFrame)
@@ -1045,6 +1056,8 @@ class Ui_MainWindow(object):
 
         self.frame_erro_data_cadastro = QFrame(self.frame_data_compra)
         self.frame_erro_data_cadastro.setObjectName(u"frame_erro_data_cadastro")
+        sizePolicy.setHeightForWidth(self.frame_erro_data_cadastro.sizePolicy().hasHeightForWidth())
+        self.frame_erro_data_cadastro.setSizePolicy(sizePolicy)
         self.frame_erro_data_cadastro.setMaximumSize(QSize(21, 21))
         self.frame_erro_data_cadastro.setFrameShape(QFrame.NoFrame)
         self.frame_erro_data_cadastro.setFrameShadow(QFrame.Raised)
@@ -1059,6 +1072,8 @@ class Ui_MainWindow(object):
 
         self.frame_codigo_item = QFrame(self.frame_line_cadastro_produtos)
         self.frame_codigo_item.setObjectName(u"frame_codigo_item")
+        sizePolicy.setHeightForWidth(self.frame_codigo_item.sizePolicy().hasHeightForWidth())
+        self.frame_codigo_item.setSizePolicy(sizePolicy)
         self.frame_codigo_item.setMaximumSize(QSize(328, 50))
         self.frame_codigo_item.setFrameShape(QFrame.NoFrame)
         self.frame_codigo_item.setFrameShadow(QFrame.Raised)
@@ -1068,6 +1083,8 @@ class Ui_MainWindow(object):
         self.horizontalLayout_6.setObjectName(u"horizontalLayout_6")
         self.label_codigo_item_3 = QLabel(self.frame_codigo_item)
         self.label_codigo_item_3.setObjectName(u"label_codigo_item_3")
+        sizePolicy.setHeightForWidth(self.label_codigo_item_3.sizePolicy().hasHeightForWidth())
+        self.label_codigo_item_3.setSizePolicy(sizePolicy)
         self.label_codigo_item_3.setStyleSheet(u"")
 
         self.horizontalLayout_6.addWidget(self.label_codigo_item_3)
@@ -1089,6 +1106,8 @@ class Ui_MainWindow(object):
 
         self.frame_cliente = QFrame(self.frame_line_cadastro_produtos)
         self.frame_cliente.setObjectName(u"frame_cliente")
+        sizePolicy.setHeightForWidth(self.frame_cliente.sizePolicy().hasHeightForWidth())
+        self.frame_cliente.setSizePolicy(sizePolicy)
         self.frame_cliente.setMaximumSize(QSize(328, 50))
         self.frame_cliente.setFrameShape(QFrame.NoFrame)
         self.frame_cliente.setFrameShadow(QFrame.Raised)
@@ -1098,6 +1117,8 @@ class Ui_MainWindow(object):
         self.horizontalLayout_7.setObjectName(u"horizontalLayout_7")
         self.label_cliente_4 = QLabel(self.frame_cliente)
         self.label_cliente_4.setObjectName(u"label_cliente_4")
+        sizePolicy.setHeightForWidth(self.label_cliente_4.sizePolicy().hasHeightForWidth())
+        self.label_cliente_4.setSizePolicy(sizePolicy)
         self.label_cliente_4.setStyleSheet(u"")
 
         self.horizontalLayout_7.addWidget(self.label_cliente_4)
@@ -1113,6 +1134,8 @@ class Ui_MainWindow(object):
 
         self.frame_erro_cliente = QFrame(self.frame_cliente)
         self.frame_erro_cliente.setObjectName(u"frame_erro_cliente")
+        sizePolicy.setHeightForWidth(self.frame_erro_cliente.sizePolicy().hasHeightForWidth())
+        self.frame_erro_cliente.setSizePolicy(sizePolicy)
         self.frame_erro_cliente.setMaximumSize(QSize(21, 21))
         self.frame_erro_cliente.setFrameShape(QFrame.NoFrame)
         self.frame_erro_cliente.setFrameShadow(QFrame.Raised)
@@ -1127,6 +1150,8 @@ class Ui_MainWindow(object):
 
         self.frame_descricao_produto = QFrame(self.frame_line_cadastro_produtos)
         self.frame_descricao_produto.setObjectName(u"frame_descricao_produto")
+        sizePolicy.setHeightForWidth(self.frame_descricao_produto.sizePolicy().hasHeightForWidth())
+        self.frame_descricao_produto.setSizePolicy(sizePolicy)
         self.frame_descricao_produto.setMaximumSize(QSize(328, 50))
         self.frame_descricao_produto.setFrameShape(QFrame.NoFrame)
         self.frame_descricao_produto.setFrameShadow(QFrame.Raised)
@@ -1136,6 +1161,8 @@ class Ui_MainWindow(object):
         self.horizontalLayout_8.setObjectName(u"horizontalLayout_8")
         self.label_descricao_produto_3 = QLabel(self.frame_descricao_produto)
         self.label_descricao_produto_3.setObjectName(u"label_descricao_produto_3")
+        sizePolicy.setHeightForWidth(self.label_descricao_produto_3.sizePolicy().hasHeightForWidth())
+        self.label_descricao_produto_3.setSizePolicy(sizePolicy)
         self.label_descricao_produto_3.setStyleSheet(u"")
 
         self.horizontalLayout_8.addWidget(self.label_descricao_produto_3)
@@ -1152,6 +1179,8 @@ class Ui_MainWindow(object):
 
         self.frame_erro_descricao = QFrame(self.frame_descricao_produto)
         self.frame_erro_descricao.setObjectName(u"frame_erro_descricao")
+        sizePolicy.setHeightForWidth(self.frame_erro_descricao.sizePolicy().hasHeightForWidth())
+        self.frame_erro_descricao.setSizePolicy(sizePolicy)
         self.frame_erro_descricao.setMinimumSize(QSize(21, 21))
         self.frame_erro_descricao.setMaximumSize(QSize(21, 21))
         self.frame_erro_descricao.setFrameShape(QFrame.NoFrame)
@@ -1190,8 +1219,8 @@ class Ui_MainWindow(object):
         self.btn_confirmar.setObjectName(u"btn_confirmar")
         sizePolicy.setHeightForWidth(self.btn_confirmar.sizePolicy().hasHeightForWidth())
         self.btn_confirmar.setSizePolicy(sizePolicy)
-        self.btn_confirmar.setMinimumSize(QSize(0, 0))
-        self.btn_confirmar.setMaximumSize(QSize(177, 30))
+        self.btn_confirmar.setMinimumSize(QSize(0, 33))
+        self.btn_confirmar.setMaximumSize(QSize(16777215, 33))
         self.btn_confirmar.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.btn_confirmar.setStyleSheet(u"")
         icon2 = QIcon()
@@ -1204,7 +1233,7 @@ class Ui_MainWindow(object):
         self.btn_ver_clientes_juridicos.setObjectName(u"btn_ver_clientes_juridicos")
         sizePolicy.setHeightForWidth(self.btn_ver_clientes_juridicos.sizePolicy().hasHeightForWidth())
         self.btn_ver_clientes_juridicos.setSizePolicy(sizePolicy)
-        self.btn_ver_clientes_juridicos.setMaximumSize(QSize(16777215, 30))
+        self.btn_ver_clientes_juridicos.setMaximumSize(QSize(16777215, 33))
         self.btn_ver_clientes_juridicos.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.btn_ver_clientes_juridicos.setStyleSheet(u"")
         icon3 = QIcon()
@@ -1219,7 +1248,7 @@ class Ui_MainWindow(object):
         sizePolicy.setHeightForWidth(self.btn_ver_item.sizePolicy().hasHeightForWidth())
         self.btn_ver_item.setSizePolicy(sizePolicy)
         self.btn_ver_item.setMinimumSize(QSize(0, 0))
-        self.btn_ver_item.setMaximumSize(QSize(177, 30))
+        self.btn_ver_item.setMaximumSize(QSize(16777215, 33))
         self.btn_ver_item.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.btn_ver_item.setStyleSheet(u"")
         icon4 = QIcon()
@@ -1245,7 +1274,8 @@ class Ui_MainWindow(object):
         self.btn_adicionar_produto.setObjectName(u"btn_adicionar_produto")
         sizePolicy.setHeightForWidth(self.btn_adicionar_produto.sizePolicy().hasHeightForWidth())
         self.btn_adicionar_produto.setSizePolicy(sizePolicy)
-        self.btn_adicionar_produto.setMaximumSize(QSize(16777215, 30))
+        self.btn_adicionar_produto.setMinimumSize(QSize(0, 33))
+        self.btn_adicionar_produto.setMaximumSize(QSize(16777215, 33))
         self.btn_adicionar_produto.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.btn_adicionar_produto.setStyleSheet(u"")
         icon5 = QIcon()
@@ -1258,7 +1288,8 @@ class Ui_MainWindow(object):
         self.btn_editar.setObjectName(u"btn_editar")
         sizePolicy.setHeightForWidth(self.btn_editar.sizePolicy().hasHeightForWidth())
         self.btn_editar.setSizePolicy(sizePolicy)
-        self.btn_editar.setMaximumSize(QSize(16777215, 30))
+        self.btn_editar.setMinimumSize(QSize(0, 33))
+        self.btn_editar.setMaximumSize(QSize(16777215, 33))
         self.btn_editar.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.btn_editar.setStyleSheet(u"")
         icon6 = QIcon()
@@ -1271,7 +1302,8 @@ class Ui_MainWindow(object):
         self.btn_sair_modo_edicao_produtos.setObjectName(u"btn_sair_modo_edicao_produtos")
         sizePolicy.setHeightForWidth(self.btn_sair_modo_edicao_produtos.sizePolicy().hasHeightForWidth())
         self.btn_sair_modo_edicao_produtos.setSizePolicy(sizePolicy)
-        self.btn_sair_modo_edicao_produtos.setMaximumSize(QSize(16777215, 30))
+        self.btn_sair_modo_edicao_produtos.setMinimumSize(QSize(0, 33))
+        self.btn_sair_modo_edicao_produtos.setMaximumSize(QSize(16777215, 33))
         self.btn_sair_modo_edicao_produtos.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.btn_sair_modo_edicao_produtos.setStyleSheet(u"")
         icon7 = QIcon()
@@ -1285,7 +1317,8 @@ class Ui_MainWindow(object):
         self.btn_atualizar_produto.setObjectName(u"btn_atualizar_produto")
         sizePolicy.setHeightForWidth(self.btn_atualizar_produto.sizePolicy().hasHeightForWidth())
         self.btn_atualizar_produto.setSizePolicy(sizePolicy)
-        self.btn_atualizar_produto.setMaximumSize(QSize(16777215, 30))
+        self.btn_atualizar_produto.setMinimumSize(QSize(0, 33))
+        self.btn_atualizar_produto.setMaximumSize(QSize(16777215, 33))
         self.btn_atualizar_produto.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.btn_atualizar_produto.setStyleSheet(u"")
         icon8 = QIcon()
@@ -1298,7 +1331,8 @@ class Ui_MainWindow(object):
         self.btn_limpar_campos.setObjectName(u"btn_limpar_campos")
         sizePolicy.setHeightForWidth(self.btn_limpar_campos.sizePolicy().hasHeightForWidth())
         self.btn_limpar_campos.setSizePolicy(sizePolicy)
-        self.btn_limpar_campos.setMaximumSize(QSize(16777215, 30))
+        self.btn_limpar_campos.setMinimumSize(QSize(0, 33))
+        self.btn_limpar_campos.setMaximumSize(QSize(16777215, 33))
         self.btn_limpar_campos.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.btn_limpar_campos.setStyleSheet(u"")
         icon9 = QIcon()
@@ -2840,29 +2874,27 @@ class Ui_MainWindow(object):
         self.btn_mais_opcoes.setText(QCoreApplication.translate("MainWindow", u"Mais op\u00e7\u00f5es", None))
         self.label_bem_vindo.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p align=\"center\"><span style=\" font-size:24pt; font-weight:600; font-style:italic;\">Bem vindo(a) ao</span></p><p align=\"center\"><br/></p><p align=\"center\"><span style=\" font-size:24pt; font-weight:600; font-style:italic;\">Sistema de Gerenciamento do </span></p><p align=\"center\"><span style=\" font-size:24pt; font-weight:600; font-style:italic;\">controle de Estoque</span></p></body></html>", None))
         self.label_imagem_sistema.setText("")
-        self.btn_gerar_estorno.setText(QCoreApplication.translate("MainWindow", u"Gerar estorno", None))
-        self.btn_importar.setText(QCoreApplication.translate("MainWindow", u"Importar", None))
         self.label_saida.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p align=\"center\"><span style=\" font-size:16pt; font-weight:600; font-style:italic;\">SA\u00cdDA</span></p></body></html>", None))
+        self.btn_gerar_estorno.setText(QCoreApplication.translate("MainWindow", u"Gerar estorno", None))
         self.label_estoque.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p align=\"center\"><span style=\" font-size:16pt; font-weight:600; font-style:italic;\">ESTOQUE</span></p></body></html>", None))
         self.btn_novo_produto.setText(QCoreApplication.translate("MainWindow", u"Novo Produto", None))
         self.btn_atualizar_saida.setText(QCoreApplication.translate("MainWindow", u"Atualizar sa\u00edda", None))
         self.btn_atualizar_estoque.setText(QCoreApplication.translate("MainWindow", u"Atualizar estoque", None))
         self.btn_historico.setText(QCoreApplication.translate("MainWindow", u"Hist\u00f3rico", None))
-        self.btn_gerar_pdf.setText(QCoreApplication.translate("MainWindow", u"Gerar PDF", None))
+        self.btn_gerar_excel.setText(QCoreApplication.translate("MainWindow", u"Gerar Excel", None))
         self.btn_limpar_tabelas.setText(QCoreApplication.translate("MainWindow", u"Limpar Tabelas", None))
-        self.btn_gerar_saida.setText(QCoreApplication.translate("MainWindow", u"Gerar sa\u00edda", None))
         ___qtablewidgetitem = self.table_base.horizontalHeaderItem(0)
         ___qtablewidgetitem.setText(QCoreApplication.translate("MainWindow", u"Produto", None));
         ___qtablewidgetitem1 = self.table_base.horizontalHeaderItem(1)
         ___qtablewidgetitem1.setText(QCoreApplication.translate("MainWindow", u"Quantidade", None));
         ___qtablewidgetitem2 = self.table_base.horizontalHeaderItem(2)
-        ___qtablewidgetitem2.setText(QCoreApplication.translate("MainWindow", u"Valor do Produto", None));
+        ___qtablewidgetitem2.setText(QCoreApplication.translate("MainWindow", u"Valor Unit\u00e1rio", None));
         ___qtablewidgetitem3 = self.table_base.horizontalHeaderItem(3)
         ___qtablewidgetitem3.setText(QCoreApplication.translate("MainWindow", u"Desconto", None));
         ___qtablewidgetitem4 = self.table_base.horizontalHeaderItem(4)
         ___qtablewidgetitem4.setText(QCoreApplication.translate("MainWindow", u"Total Sem Desconto", None));
         ___qtablewidgetitem5 = self.table_base.horizontalHeaderItem(5)
-        ___qtablewidgetitem5.setText(QCoreApplication.translate("MainWindow", u"Valor Total", None));
+        ___qtablewidgetitem5.setText(QCoreApplication.translate("MainWindow", u"Total Com Desconto", None));
         ___qtablewidgetitem6 = self.table_base.horizontalHeaderItem(6)
         ___qtablewidgetitem6.setText(QCoreApplication.translate("MainWindow", u"Data do Cadastro", None));
         ___qtablewidgetitem7 = self.table_base.horizontalHeaderItem(7)
@@ -2880,13 +2912,13 @@ class Ui_MainWindow(object):
         ___qtablewidgetitem13 = self.table_saida.horizontalHeaderItem(1)
         ___qtablewidgetitem13.setText(QCoreApplication.translate("MainWindow", u"Quantidade", None));
         ___qtablewidgetitem14 = self.table_saida.horizontalHeaderItem(2)
-        ___qtablewidgetitem14.setText(QCoreApplication.translate("MainWindow", u"Valor do Produto", None));
+        ___qtablewidgetitem14.setText(QCoreApplication.translate("MainWindow", u"Valor Unit\u00e1rio", None));
         ___qtablewidgetitem15 = self.table_saida.horizontalHeaderItem(3)
         ___qtablewidgetitem15.setText(QCoreApplication.translate("MainWindow", u"Desconto", None));
         ___qtablewidgetitem16 = self.table_saida.horizontalHeaderItem(4)
         ___qtablewidgetitem16.setText(QCoreApplication.translate("MainWindow", u"Total Sem Desconto", None));
         ___qtablewidgetitem17 = self.table_saida.horizontalHeaderItem(5)
-        ___qtablewidgetitem17.setText(QCoreApplication.translate("MainWindow", u"Valor Total", None));
+        ___qtablewidgetitem17.setText(QCoreApplication.translate("MainWindow", u"Total Com Desconto", None));
         ___qtablewidgetitem18 = self.table_saida.horizontalHeaderItem(6)
         ___qtablewidgetitem18.setText(QCoreApplication.translate("MainWindow", u"Data da Sa\u00edda", None));
         ___qtablewidgetitem19 = self.table_saida.horizontalHeaderItem(7)
@@ -2901,6 +2933,7 @@ class Ui_MainWindow(object):
         ___qtablewidgetitem23.setText(QCoreApplication.translate("MainWindow", u"Usu\u00e1rio", None));
         ___qtablewidgetitem24 = self.table_saida.horizontalHeaderItem(12)
         ___qtablewidgetitem24.setText(QCoreApplication.translate("MainWindow", u"Status da Sa\u00edda", None));
+        self.btn_gerar_saida.setText(QCoreApplication.translate("MainWindow", u"Gerar sa\u00edda", None))
         ___qtablewidgetitem25 = self.table_inativos.horizontalHeaderItem(0)
         ___qtablewidgetitem25.setText(QCoreApplication.translate("MainWindow", u"Nome", None));
         ___qtablewidgetitem26 = self.table_inativos.horizontalHeaderItem(1)
@@ -3014,7 +3047,7 @@ class Ui_MainWindow(object):
         self.btn_carregar_imagem.setText(QCoreApplication.translate("MainWindow", u"CARREGAR IMAGEM", None))
         self.label_produto.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p><span style=\" font-weight:600;\">Produto</span></p></body></html>", None))
         self.label_quantidade.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p><span style=\" font-weight:600;\">Quantidade</span></p></body></html>", None))
-        self.label_valor_produto_3.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p><span style=\" font-weight:600;\">Valor do produto</span></p></body></html>", None))
+        self.label_valor_produto_3.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p><span style=\" font-weight:600;\">Valor Unit\u00e1rio</span></p></body></html>", None))
         self.label_desconto_3.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p><span style=\" font-weight:600;\">Desconto</span></p></body></html>", None))
         self.txt_desconto_3.setPlaceholderText(QCoreApplication.translate("MainWindow", u"Opcional", None))
         self.label_data_cadastro.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p><span style=\" font-weight:600;\">Data do Cadastro</span></p></body></html>", None))

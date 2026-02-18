@@ -589,7 +589,29 @@
            <property name="verticalSpacing">
             <number>7</number>
            </property>
-           <item row="3" column="1">
+           <item row="3" column="0">
+            <widget class="QLabel" name="label_saida">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>110</width>
+               <height>40</height>
+              </size>
+             </property>
+             <property name="styleSheet">
+              <string notr="true"/>
+             </property>
+             <property name="text">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:16pt; font-weight:600; font-style:italic;&quot;&gt;SAÍDA&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="2">
             <widget class="QPushButton" name="btn_gerar_estorno">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
@@ -614,54 +636,7 @@
              </property>
             </widget>
            </item>
-           <item row="3" column="4">
-            <widget class="QPushButton" name="btn_importar">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="maximumSize">
-              <size>
-               <width>130</width>
-               <height>30</height>
-              </size>
-             </property>
-             <property name="cursor">
-              <cursorShape>PointingHandCursor</cursorShape>
-             </property>
-             <property name="styleSheet">
-              <string notr="true"/>
-             </property>
-             <property name="text">
-              <string>Importar</string>
-             </property>
-            </widget>
-           </item>
-           <item row="3" column="0">
-            <widget class="QLabel" name="label_saida">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="maximumSize">
-              <size>
-               <width>110</width>
-               <height>40</height>
-              </size>
-             </property>
-             <property name="styleSheet">
-              <string notr="true"/>
-             </property>
-             <property name="text">
-              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:16pt; font-weight:600; font-style:italic;&quot;&gt;SAÍDA&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="0" colspan="2">
+           <item row="1" column="0" colspan="3">
             <widget class="QLabel" name="label_estoque">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
@@ -683,7 +658,20 @@
              </property>
             </widget>
            </item>
-           <item row="0" column="8" rowspan="5">
+           <item row="3" column="1">
+            <spacer name="horizontalSpacer">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>40</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+           <item row="0" column="7" rowspan="5">
             <widget class="QFrame" name="frame_14">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
@@ -799,7 +787,7 @@
                </widget>
               </item>
               <item>
-               <widget class="QPushButton" name="btn_gerar_pdf">
+               <widget class="QPushButton" name="btn_gerar_excel">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
                   <horstretch>0</horstretch>
@@ -819,7 +807,7 @@
                  <string notr="true"/>
                 </property>
                 <property name="text">
-                 <string>Gerar PDF</string>
+                 <string>Gerar Excel</string>
                 </property>
                </widget>
               </item>
@@ -851,32 +839,33 @@
              </layout>
             </widget>
            </item>
-           <item row="3" column="7">
-            <widget class="QPushButton" name="btn_gerar_saida">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
+           <item row="3" column="5">
+            <spacer name="horizontalSpacer_2">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
              </property>
-             <property name="maximumSize">
+             <property name="sizeHint" stdset="0">
               <size>
-               <width>130</width>
-               <height>30</height>
+               <width>26</width>
+               <height>8</height>
               </size>
              </property>
-             <property name="cursor">
-              <cursorShape>PointingHandCursor</cursorShape>
-             </property>
-             <property name="styleSheet">
-              <string notr="true"/>
-             </property>
-             <property name="text">
-              <string>Gerar saída</string>
-             </property>
-            </widget>
+            </spacer>
            </item>
-           <item row="2" column="0" colspan="8">
+           <item row="3" column="3">
+            <spacer name="horizontalSpacer_4">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>26</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+           <item row="2" column="0" colspan="7">
             <widget class="QTableWidget" name="table_base">
              <property name="styleSheet">
               <string notr="true"/>
@@ -899,7 +888,7 @@
              </column>
              <column>
               <property name="text">
-               <string>Valor do Produto</string>
+               <string>Valor Unitário</string>
               </property>
              </column>
              <column>
@@ -914,7 +903,7 @@
              </column>
              <column>
               <property name="text">
-               <string>Valor Total</string>
+               <string>Total Com Desconto</string>
               </property>
              </column>
              <column>
@@ -949,59 +938,7 @@
              </column>
             </widget>
            </item>
-           <item row="3" column="6">
-            <spacer name="horizontalSpacer_2">
-             <property name="orientation">
-              <enum>Qt::Horizontal</enum>
-             </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>40</width>
-               <height>20</height>
-              </size>
-             </property>
-            </spacer>
-           </item>
-           <item row="3" column="2">
-            <spacer name="horizontalSpacer_4">
-             <property name="orientation">
-              <enum>Qt::Horizontal</enum>
-             </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>40</width>
-               <height>20</height>
-              </size>
-             </property>
-            </spacer>
-           </item>
-           <item row="3" column="5">
-            <spacer name="horizontalSpacer">
-             <property name="orientation">
-              <enum>Qt::Horizontal</enum>
-             </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>40</width>
-               <height>20</height>
-              </size>
-             </property>
-            </spacer>
-           </item>
-           <item row="3" column="3">
-            <spacer name="horizontalSpacer_3">
-             <property name="orientation">
-              <enum>Qt::Horizontal</enum>
-             </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>40</width>
-               <height>20</height>
-              </size>
-             </property>
-            </spacer>
-           </item>
-           <item row="4" column="0" colspan="8">
+           <item row="4" column="0" colspan="7">
             <widget class="QTableWidget" name="table_saida">
              <property name="styleSheet">
               <string notr="true"/>
@@ -1024,7 +961,7 @@
              </column>
              <column>
               <property name="text">
-               <string>Valor do Produto</string>
+               <string>Valor Unitário</string>
               </property>
              </column>
              <column>
@@ -1039,7 +976,7 @@
              </column>
              <column>
               <property name="text">
-               <string>Valor Total</string>
+               <string>Total Com Desconto</string>
               </property>
              </column>
              <column>
@@ -1077,6 +1014,31 @@
                <string>Status da Saída</string>
               </property>
              </column>
+            </widget>
+           </item>
+           <item row="3" column="4">
+            <widget class="QPushButton" name="btn_gerar_saida">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>130</width>
+               <height>30</height>
+              </size>
+             </property>
+             <property name="cursor">
+              <cursorShape>PointingHandCursor</cursorShape>
+             </property>
+             <property name="styleSheet">
+              <string notr="true"/>
+             </property>
+             <property name="text">
+              <string>Gerar saída</string>
+             </property>
             </widget>
            </item>
           </layout>
@@ -1842,13 +1804,13 @@
                 </property>
                 <property name="minimumSize">
                  <size>
-                  <width>321</width>
+                  <width>0</width>
                   <height>102</height>
                  </size>
                 </property>
                 <property name="maximumSize">
                  <size>
-                  <width>321</width>
+                  <width>16777215</width>
                   <height>102</height>
                  </size>
                 </property>
@@ -1879,7 +1841,7 @@
                 </property>
                 <property name="maximumSize">
                  <size>
-                  <width>321</width>
+                  <width>16777215</width>
                   <height>102</height>
                  </size>
                 </property>
@@ -1910,7 +1872,7 @@
                 </property>
                 <property name="maximumSize">
                  <size>
-                  <width>321</width>
+                  <width>16777215</width>
                   <height>102</height>
                  </size>
                 </property>
@@ -1941,7 +1903,7 @@
                 </property>
                 <property name="maximumSize">
                  <size>
-                  <width>321</width>
+                  <width>16777215</width>
                   <height>102</height>
                  </size>
                 </property>
@@ -1969,7 +1931,7 @@
              </property>
              <property name="maximumSize">
               <size>
-               <width>200</width>
+               <width>203</width>
                <height>89</height>
               </size>
              </property>
@@ -1988,10 +1950,16 @@
                   <verstretch>0</verstretch>
                  </sizepolicy>
                 </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>0</width>
+                  <height>33</height>
+                 </size>
+                </property>
                 <property name="maximumSize">
                  <size>
-                  <width>180</width>
-                  <height>30</height>
+                  <width>16777215</width>
+                  <height>16777215</height>
                  </size>
                 </property>
                 <property name="cursor">
@@ -2019,14 +1987,14 @@
                 </property>
                 <property name="minimumSize">
                  <size>
-                  <width>153</width>
-                  <height>0</height>
+                  <width>0</width>
+                  <height>33</height>
                  </size>
                 </property>
                 <property name="maximumSize">
                  <size>
-                  <width>180</width>
-                  <height>30</height>
+                  <width>16777215</width>
+                  <height>16777215</height>
                  </size>
                 </property>
                 <property name="cursor">
@@ -2079,6 +2047,12 @@
              <layout class="QVBoxLayout" name="verticalLayout_11">
               <item>
                <widget class="QFrame" name="frame_produto">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
                 <property name="maximumSize">
                  <size>
                   <width>328</width>
@@ -2096,6 +2070,12 @@
                   <layout class="QHBoxLayout" name="horizontalLayout">
                    <item>
                     <widget class="QLabel" name="label_produto">
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
+                     </property>
                      <property name="styleSheet">
                       <string notr="true"/>
                      </property>
@@ -2131,6 +2111,12 @@
                    </item>
                    <item>
                     <widget class="QFrame" name="frame_erro_produto">
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
+                     </property>
                      <property name="maximumSize">
                       <size>
                        <width>21</width>
@@ -2152,6 +2138,12 @@
               </item>
               <item>
                <widget class="QFrame" name="frame_quantidade_2">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
                 <property name="maximumSize">
                  <size>
                   <width>328</width>
@@ -2169,6 +2161,12 @@
                   <layout class="QHBoxLayout" name="horizontalLayout_2">
                    <item>
                     <widget class="QLabel" name="label_quantidade">
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
+                     </property>
                      <property name="styleSheet">
                       <string notr="true"/>
                      </property>
@@ -2204,6 +2202,12 @@
                    </item>
                    <item>
                     <widget class="QFrame" name="frame_erro_quantidade">
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
+                     </property>
                      <property name="maximumSize">
                       <size>
                        <width>21</width>
@@ -2225,6 +2229,12 @@
               </item>
               <item>
                <widget class="QFrame" name="frame_valor_produto">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
                 <property name="maximumSize">
                  <size>
                   <width>328</width>
@@ -2245,11 +2255,17 @@
                   <layout class="QHBoxLayout" name="horizontalLayout_3">
                    <item>
                     <widget class="QLabel" name="label_valor_produto_3">
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
+                     </property>
                      <property name="styleSheet">
                       <string notr="true"/>
                      </property>
                      <property name="text">
-                      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Valor do produto&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Valor Unitário&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                      </property>
                     </widget>
                    </item>
@@ -2280,6 +2296,12 @@
                    </item>
                    <item>
                     <widget class="QFrame" name="frame_erro_valor_produto">
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
+                     </property>
                      <property name="maximumSize">
                       <size>
                        <width>21</width>
@@ -2301,6 +2323,12 @@
               </item>
               <item>
                <widget class="QFrame" name="frame_desconto">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
                 <property name="maximumSize">
                  <size>
                   <width>328</width>
@@ -2321,6 +2349,12 @@
                   <layout class="QHBoxLayout" name="horizontalLayout_4">
                    <item>
                     <widget class="QLabel" name="label_desconto_3">
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
+                     </property>
                      <property name="styleSheet">
                       <string notr="true"/>
                      </property>
@@ -2364,6 +2398,12 @@
               </item>
               <item>
                <widget class="QFrame" name="frame_data_compra">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
                 <property name="maximumSize">
                  <size>
                   <width>328</width>
@@ -2435,6 +2475,12 @@
                    </item>
                    <item>
                     <widget class="QFrame" name="frame_erro_data_cadastro">
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
+                     </property>
                      <property name="maximumSize">
                       <size>
                        <width>21</width>
@@ -2456,6 +2502,12 @@
               </item>
               <item>
                <widget class="QFrame" name="frame_codigo_item">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
                 <property name="maximumSize">
                  <size>
                   <width>328</width>
@@ -2473,6 +2525,12 @@
                   <layout class="QHBoxLayout" name="horizontalLayout_6">
                    <item>
                     <widget class="QLabel" name="label_codigo_item_3">
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
+                     </property>
                      <property name="styleSheet">
                       <string notr="true"/>
                      </property>
@@ -2507,6 +2565,12 @@
               </item>
               <item>
                <widget class="QFrame" name="frame_cliente">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
                 <property name="maximumSize">
                  <size>
                   <width>328</width>
@@ -2524,6 +2588,12 @@
                   <layout class="QHBoxLayout" name="horizontalLayout_7">
                    <item>
                     <widget class="QLabel" name="label_cliente_4">
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
+                     </property>
                      <property name="styleSheet">
                       <string notr="true"/>
                      </property>
@@ -2553,6 +2623,12 @@
                    </item>
                    <item>
                     <widget class="QFrame" name="frame_erro_cliente">
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
+                     </property>
                      <property name="maximumSize">
                       <size>
                        <width>21</width>
@@ -2574,6 +2650,12 @@
               </item>
               <item>
                <widget class="QFrame" name="frame_descricao_produto">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
                 <property name="maximumSize">
                  <size>
                   <width>328</width>
@@ -2591,6 +2673,12 @@
                   <layout class="QHBoxLayout" name="horizontalLayout_8">
                    <item>
                     <widget class="QLabel" name="label_descricao_produto_3">
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
+                     </property>
                      <property name="styleSheet">
                       <string notr="true"/>
                      </property>
@@ -2626,6 +2714,12 @@
                    </item>
                    <item>
                     <widget class="QFrame" name="frame_erro_descricao">
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
+                     </property>
                      <property name="minimumSize">
                       <size>
                        <width>21</width>
@@ -2708,13 +2802,13 @@
                 <property name="minimumSize">
                  <size>
                   <width>0</width>
-                  <height>0</height>
+                  <height>33</height>
                  </size>
                 </property>
                 <property name="maximumSize">
                  <size>
-                  <width>177</width>
-                  <height>30</height>
+                  <width>16777215</width>
+                  <height>33</height>
                  </size>
                 </property>
                 <property name="cursor">
@@ -2743,7 +2837,7 @@
                 <property name="maximumSize">
                  <size>
                   <width>16777215</width>
-                  <height>30</height>
+                  <height>33</height>
                  </size>
                 </property>
                 <property name="cursor">
@@ -2783,8 +2877,8 @@
                 </property>
                 <property name="maximumSize">
                  <size>
-                  <width>177</width>
-                  <height>30</height>
+                  <width>16777215</width>
+                  <height>33</height>
                  </size>
                 </property>
                 <property name="cursor">
@@ -2840,10 +2934,16 @@
                   <verstretch>0</verstretch>
                  </sizepolicy>
                 </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>0</width>
+                  <height>33</height>
+                 </size>
+                </property>
                 <property name="maximumSize">
                  <size>
                   <width>16777215</width>
-                  <height>30</height>
+                  <height>33</height>
                  </size>
                 </property>
                 <property name="cursor">
@@ -2869,10 +2969,16 @@
                   <verstretch>0</verstretch>
                  </sizepolicy>
                 </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>0</width>
+                  <height>33</height>
+                 </size>
+                </property>
                 <property name="maximumSize">
                  <size>
                   <width>16777215</width>
-                  <height>30</height>
+                  <height>33</height>
                  </size>
                 </property>
                 <property name="cursor">
@@ -2898,10 +3004,16 @@
                   <verstretch>0</verstretch>
                  </sizepolicy>
                 </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>0</width>
+                  <height>33</height>
+                 </size>
+                </property>
                 <property name="maximumSize">
                  <size>
                   <width>16777215</width>
-                  <height>30</height>
+                  <height>33</height>
                  </size>
                 </property>
                 <property name="cursor">
@@ -2933,10 +3045,16 @@
                   <verstretch>0</verstretch>
                  </sizepolicy>
                 </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>0</width>
+                  <height>33</height>
+                 </size>
+                </property>
                 <property name="maximumSize">
                  <size>
                   <width>16777215</width>
-                  <height>30</height>
+                  <height>33</height>
                  </size>
                 </property>
                 <property name="cursor">
@@ -2962,10 +3080,16 @@
                   <verstretch>0</verstretch>
                  </sizepolicy>
                 </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>0</width>
+                  <height>33</height>
+                 </size>
+                </property>
                 <property name="maximumSize">
                  <size>
                   <width>16777215</width>
-                  <height>30</height>
+                  <height>33</height>
                  </size>
                 </property>
                 <property name="cursor">
@@ -4672,7 +4796,7 @@
               <enum>QTabWidget::Rounded</enum>
              </property>
              <property name="currentIndex">
-              <number>1</number>
+              <number>0</number>
              </property>
              <widget class="QWidget" name="tab_clientes">
               <property name="styleSheet">

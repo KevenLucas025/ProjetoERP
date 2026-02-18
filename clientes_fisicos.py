@@ -12,7 +12,7 @@ from configuracoes import Configuracoes_Login
 from dialogos import ComboDialog,DialogoSenha
 from datetime import datetime
 from utils import Temas
-from utils import caminho_recurso
+from utils import caminho_recurso,abrir_dialogo_memoria,salvar_dialogo_memoria
 import csv
 from reportlab.lib import colors
 from reportlab.lib.pagesizes import letter
@@ -1446,7 +1446,7 @@ class Clientes_Fisicos(QWidget):
                 
             # --- CALCULAR VALOR GASTO TOTAL SE JÁ EXISTIREM PRODUTOS ---
             cursor.execute("""
-                SELECT "Valor Total", "Data do Cadastro"
+                SELECT "Total Com Desconto", "Data do Cadastro"
                 FROM products
                 WHERE CNPJ = ?
             """, (cpf,))
@@ -1603,7 +1603,7 @@ class Clientes_Fisicos(QWidget):
             #  Se o modo for automático, recalcular Valor Gasto Total
             if "automatico" in dados_atualizados["Modo Valor Gasto"].lower():
                 cursor.execute("""
-                    SELECT "Valor Total"
+                    SELECT "Total Com Desconto"
                     FROM products
                     WHERE CPF = ?
                 """, (cpf_original,))
@@ -3185,20 +3185,20 @@ class Clientes_Fisicos(QWidget):
             QMessageBox.warning(self, "Aviso", "Nenhum histórico encontrado para gerar arquivo CSV.")
             return  # Se a tabela estiver vazia, encerra a função sem prosseguir
 
-        nome_arquivo, _ = QFileDialog.getSaveFileName(
+        caminho = salvar_dialogo_memoria(
             self,
-            "Salvar Arquivo CSV",
-            "historico.csv",
-            "Arquivos CSV (*.csv)"
-
+            chave="excel_csv_fisicos",
+            titulo="Salvar CSV Clientes Físicos",
+            nome_padrao="CSV Clientes Físicos",
+            filtro="CSV (*.csv)"
         )
 
-        if not nome_arquivo:
+        if not caminho:
             return
         
         #Criar o arquivo CSV
         try:
-            with open(nome_arquivo, mode="w",newline="",encoding="utf-8-sig") as arquivo_csv:
+            with open(caminho, mode="w",newline="",encoding="utf-8-sig") as arquivo_csv:
                 escritor = csv.writer(arquivo_csv, delimiter=";")
 
                  # Adicionar cabeçalhos ao CSV
@@ -3214,7 +3214,7 @@ class Clientes_Fisicos(QWidget):
                     ]
                     escritor.writerow(dados_linhas)
 
-                    QMessageBox.information(self, "Sucesso", f"Arquivo CSV salvo com sucesso em:\n{nome_arquivo}")
+                    QMessageBox.information(self, "Sucesso", f"Arquivo CSV salvo com sucesso em:\n{caminho}")
 
         except Exception as e:
             QMessageBox.critical(self, "Erro", f"Falha ao salvar o arquivo CSV:\n{str(e)}")
@@ -3228,20 +3228,20 @@ class Clientes_Fisicos(QWidget):
             QMessageBox.warning(self, "Aviso", "Nenhum histórico encontrado para gerar arquivo Excel.")
             return  # Se a tabela estiver vazia, encerra a função sem prosseguir
         
-        nome_arquivo, _ = QFileDialog.getSaveFileName(
+        caminho = salvar_dialogo_memoria(
             self,
-            "Salvar Arquivo Excel",
-            "historico.xlsx",
-            "Arquivos Excel (*.xlsx)"
-
+            chave="excel_fisicos",
+            titulo="Salvar Excel Clientes Físicos",
+            nome_padrao="Excel Clientes Físicos",
+            filtro="Excel (*.xlsx)"
         )
 
-        if not nome_arquivo:
+        if not caminho:
             return
         
         # Garantir que o arquivo tenha extensão .xlsx
-        if not nome_arquivo.endswith(".xlsx"):
-            nome_arquivo += ".xlsx"
+        if not caminho.endswith(".xlsx"):
+            caminho += ".xlsx"
 
         # Criar uma lista para armazenar os dados da tabela
         dados = []
@@ -3262,8 +3262,8 @@ class Clientes_Fisicos(QWidget):
             df = pd.DataFrame(dados, columns=cabecalhos)
 
             # Exportar para Excel
-            df.to_excel(nome_arquivo, index=False,engine="openpyxl")
-            QMessageBox.information(self, "Sucesso",f"Arquivo Excel gerado com sucesso em: \n{nome_arquivo}")
+            df.to_excel(caminho, index=False,engine="openpyxl")
+            QMessageBox.information(self, "Sucesso",f"Arquivo Excel gerado com sucesso em: \n{caminho}")
         except Exception as e:
             QMessageBox.critical(self, "Erro",f"Erro ao salvar arquivo Excel: {str(e)}")
 
@@ -3276,19 +3276,20 @@ class Clientes_Fisicos(QWidget):
             QMessageBox.warning(self, "Aviso", "Nenhum histórico encontrado para gerar arquivo PDF.")
             return  # Se a tabela estiver vazia, encerra a função sem prosseguir
 
-        nome_arquivo, _ = QFileDialog.getSaveFileName(
+        caminho = salvar_dialogo_memoria(
             self,
-            "Salvar Arquivo PDF",
-            "historico.pdf",
-            "Arquivos PDF (*.pdf)"
+            chave="pdf_fisicos",
+            titulo="Salvar PDF Clientes Físicos",
+            nome_padrao="PDF Clientes Físicos",
+            filtro="PDF (*.pdf)"
         )
 
-        if not nome_arquivo:
+        if not caminho:
             return
 
         # Garantir que o arquivo tenha extensão .pdf
-        if not nome_arquivo.endswith(".pdf"):
-            nome_arquivo += ".pdf"
+        if not caminho.endswith(".pdf"):
+            caminho += ".pdf"
 
         # Criar uma lista para armazenar os dados da tabela
         dados = []
@@ -3307,7 +3308,7 @@ class Clientes_Fisicos(QWidget):
 
         try:
             # Criar o PDF
-            pdf = SimpleDocTemplate(nome_arquivo, pagesize=landscape(letter))
+            pdf = SimpleDocTemplate(caminho, pagesize=landscape(letter))
             tabela = Table(dados)
 
             # Adicionar estilo à tabela
@@ -3324,7 +3325,7 @@ class Clientes_Fisicos(QWidget):
 
             # Gerar o PDF
             pdf.build([tabela])
-            QMessageBox.information(self, "Sucesso", f"Arquivo PDF gerado com sucesso em: \n{nome_arquivo}")
+            QMessageBox.information(self, "Sucesso", f"Arquivo PDF gerado com sucesso em: \n{caminho}")
 
         except Exception as e:
             QMessageBox.critical(self, "Erro", f"Erro ao salvar arquivo PDF: {str(e)}")
@@ -4024,7 +4025,7 @@ class Clientes_Fisicos(QWidget):
             AND (
                 `Última Compra` = 'Não Cadastrado' OR
                 (
-                    length(`Última Compra`) = 10 AND
+                    length(`Última Compra`) >= 10 AND
                     substr(`Última Compra`, 3, 1) = '/' AND
                     substr(`Última Compra`, 6, 1) = '/' AND
                     substr(`Última Compra`, 7, 4) || '-' || 
@@ -4037,7 +4038,8 @@ class Clientes_Fisicos(QWidget):
 
         params.append(data_de.strftime("%Y-%m-%d"))
         params.append(data_ate.strftime("%Y-%m-%d"))
-
+        print(sql)
+        print(params)
         try:
             cursor = self.db.connection.cursor()
             cursor.execute(sql, params)
@@ -4050,14 +4052,15 @@ class Clientes_Fisicos(QWidget):
             QMessageBox.information(self, "Aviso", "Nenhum cliente encontrado com os filtros aplicados")
             return
 
-        caminho_pdf, _ = QFileDialog.getSaveFileName(
+        caminho = salvar_dialogo_memoria(
             self,
-            "Salvar Relatório",
-            "relatorio_clientes_fisicos.pdf",
-            "Arquivos PDF (*.pdf)"
+            chave="pdf_relatorio_clientes_fisicos",
+            titulo="Salvar Relatório PDF Clientes Físicos",
+            nome_padrao="PDF Relatório Clientes Físicos",
+            filtro="PDF (*.pdf)"
         )
 
-        if not caminho_pdf:
+        if not caminho:
             return
 
         try:
@@ -4126,7 +4129,7 @@ class Clientes_Fisicos(QWidget):
                         max_altura = altura
                     pdf.set_xy(x + largura, y)
                 pdf.set_y(y_inicial + max_altura)
-            pdf.output(caminho_pdf)
+            pdf.output(caminho)
             QMessageBox.information(self, "Sucesso", "Relatório gerado com sucesso.")
 
         except Exception as e:
@@ -4189,7 +4192,7 @@ class Clientes_Fisicos(QWidget):
             AND (
                 `Última Compra` = 'Não Cadastrado' OR
                 (
-                    length(`Última Compra`) = 10 AND
+                    length(`Última Compra`) >= 10 AND
                     substr(`Última Compra`, 3, 1) = '/' AND
                     substr(`Última Compra`, 6, 1) = '/' AND
                     substr(`Última Compra`, 7, 4) || '-' || 
@@ -4214,14 +4217,16 @@ class Clientes_Fisicos(QWidget):
             QMessageBox.information(self, "Aviso", "Nenhum cliente encontrado com os filtros aplicados")
             return
 
-        caminho_excel, _ = QFileDialog.getSaveFileName(
+        caminho = salvar_dialogo_memoria(
             self,
-            "Salvar Relatório",
-            "relatorio_clientes_fisicos.xlsx",
-            "Arquivos Excel (*.xlsx)"
+            chave="excel_clientes_fisicos_relatorio",
+            titulo="Salvar Relatório Excel Clientes Físicos",
+            nome_padrao="Relatório Excel Clientes Físicos",
+            filtro="Excel (*.xlsx)"
         )
 
-        if not caminho_excel:
+
+        if not caminho:
             return
 
         try:
@@ -4230,10 +4235,10 @@ class Clientes_Fisicos(QWidget):
             
             # Salva como Excel usando openpyxl
             sheet_name = "Relatório de Clientes Físicos"
-            df.to_excel(caminho_excel,index=False,engine='openpyxl',sheet_name=sheet_name)
+            df.to_excel(caminho,index=False,engine='openpyxl',sheet_name=sheet_name)
             
             # Reabre o Excel com openpyxl para aplicar formatações
-            wb = load_workbook(caminho_excel)
+            wb = load_workbook(caminho)
             ws = wb[sheet_name]
             
             for col in ws.columns:
@@ -4246,7 +4251,7 @@ class Clientes_Fisicos(QWidget):
                     except:
                         pass
                 ws.column_dimensions[col_letter].width = max_length + 2  # Ajusta a largura da coluna    
-            wb.save(caminho_excel)
+            wb.save(caminho)
             QMessageBox.information(self, "Sucesso", "Relatório Excel gerado com sucesso.")
         except Exception as e:
             QMessageBox.critical(self, "Erro", f"Erro ao gerar Excel:\n{e}")

@@ -26,7 +26,7 @@ from historicousuario import Pagina_Usuarios
 from shiboken6 import isValid
 from utils import DialogoAvatar
 from utils import DialogoRecorteImagem
-from utils import MostrarSenha,configurar_frame_valores,caminho_recurso
+from utils import MostrarSenha,configurar_frame_valores,caminho_recurso,salvar_dialogo_memoria,abrir_dialogo_memoria
 from utils import Temas
 from utils import salvar_imagem_otimizada
 from clientes_juridicos import Clientes_Juridicos
@@ -273,7 +273,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                                                          self.pg_cadastrar_usuario,self.frame_pag_cadastrar_usuario,
                                                          self.btn_mais_opcoes,self.btn_avancar,self.btn_retroceder,self.btn_home,self.btn_verificar_estoque,
                                                          self.btn_cadastrar_produto, self.btn_cadastrar_usuarios, self.btn_clientes,
-                                                         self.btn_importar,self.btn_gerar_saida,self.btn_gerar_estorno,
+                                                         self.btn_gerar_saida,self.btn_gerar_estorno,
                                                          self.label_cadastramento,self.label_cadastramento_produtos,self.frame_valor_total_produtos,
                                                          self.frame_valor_do_desconto,self.frame_valor_com_desconto1,self.frame_quantidade,self.login_window)
 
@@ -426,8 +426,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                                                self.btn_abrir_planilha_massa_usuarios,self.btn_fazer_cadastro_massa_usuarios,self.progress_massa_usuarios,
                                                self.line_edit_massa_usuarios)
 
-        self.estoque_produtos = EstoqueProduto(self,self.btn_gerar_pdf,self.btn_gerar_estorno,
-                                               self.btn_gerar_saida,self.btn_importar,self.btn_limpar_tabelas,
+        self.estoque_produtos = EstoqueProduto(self,self.btn_gerar_excel,self.btn_gerar_estorno,
+                                               self.btn_gerar_saida,self.btn_limpar_tabelas,
                                                self.btn_atualizar_saida,self.btn_atualizar_estoque,self.btn_historico,self.btn_fazer_cadastro_massa_produtos,
                                                self.btn_abrir_planilha_massa_produtos,self.progress_massa_produtos,self.line_edit_massa_produtos)
         
@@ -651,17 +651,18 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         dialog.exec()
         
     def alterar_foto_usuario(self,retornar_caminho=False):
-        arquivo, _ = QFileDialog.getOpenFileName(
-        self,
-        "Selecionar foto",
-        "",
-        "Imagens (*.png *.jpg *.jpeg)"
+        caminho = abrir_dialogo_memoria(
+            parent=self,
+            chave="foto_usuario",
+            titulo="Selecionar foto do usuário",
+            filtro="Imagens (*.png *.jpg *.jpeg *.webp)"
         )
 
-        if not arquivo:
+
+        if not caminho:
             return
 
-        pixmap = QPixmap(arquivo)
+        pixmap = QPixmap(caminho)
         if pixmap.isNull():
             return
 
@@ -1998,17 +1999,18 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 #*********************************************************************************************************************
     def carregar_imagem_usuario(self):
         # Abrir uma caixa de diálogo de seleção de arquivo
-        fileName, _ = QFileDialog.getOpenFileName(
-                self,
-                "Selecionar Imagem",
-                "",
-                "Imagens (*.png *.jpg *.jpeg *.gif)"
-            )
+        caminho = abrir_dialogo_memoria(
+            parent=self,
+            chave="carregar_imagem_usuario",
+            titulo="Selecionar Imagem Usuário Original",
+            filtro="Imagens (*.png *.jpg *.jpeg *.webp)"
+        )
+
  
-        if not fileName:
+        if not caminho:
             return
         
-        pixmap = QPixmap(fileName)
+        pixmap = QPixmap(caminho)
         if pixmap.isNull():
             QMessageBox.warning(self, "Aviso", "Não foi possível carregar a imagem.")
             return
@@ -3348,11 +3350,16 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         msg_box.exec()
 #*********************************************************************************************************************
     def carregar_imagem_produto(self):
-        options = QFileDialog.Options()
-        fileName, _ = QFileDialog.getOpenFileName(self, "Selecionar Imagem", "", "Imagens (*.png *.xpm *.jpg *.gif);;Todos os Arquivos (*)", options=options)
+        caminho = abrir_dialogo_memoria(
+            parent=self,
+            chave="imagem_produto",
+            titulo="Selecionar Imagem do Produto",
+            filtro="Imagens (*.png *.jpg *.jpeg *.webp)"
+        )
+
         
-        if fileName:
-            pixmap = QPixmap(fileName)
+        if caminho:
+            pixmap = QPixmap(caminho)
             if not pixmap.isNull():
                 self.limpar_imagem_produto()  # Limpar qualquer QLabel existente no frame
 
@@ -3386,7 +3393,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 self.imagem_carregada_produto = True
 
                 # Salvar a imagem carregada para o atributo nova_imagem
-                self.nova_imagem = fileName
+                self.nova_imagem = caminho
             else:
                 QMessageBox.warning(self, "Aviso", "Não foi possível carregar a imagem.")
         else:
@@ -4090,9 +4097,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             dados = {
                 "Produto": ["Exemplo 1", "Exemplo 2", "Exemplo 3", "Exemplo 4"],
                 "Quantidade": [10, 50, 5, 20],
-                "Valor do Produto": [4500.00, 150.00, 1200.00, 900.00],
+                "Valor Unitário": [4500.00, 150.00, 1200.00, 900.00],
                 "Desconto": [5, "Sem desconto", 10, "Sem desconto"],
-                "Valor Total": ["R$ 1,000.00","R$ 1,500,00","R$ 300,00","R$ 150,00"],
                 "Data do Cadastro": ["10/05/2024", "10/04/2024", "10/03/2024", "10/02/2024"],
                 "Código do Item": ["AUTO12345", "AUTO67890", "AUTO11223", "AUTO33445"],
                 "Cliente": ["João da Silva", "Maria Oliveira", "Pedro Santos", "Carla Lima"],
@@ -4130,22 +4136,24 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # Gerar a planilha com os dados corretos
         df = pd.DataFrame(dados)
 
-        file_path, _ = QFileDialog.getSaveFileName(
-            self,
-            "Salvar Planilha de Exemplo",
-            nome_sugestao,
-            "Excel Files (*.xlsx)"
+        caminho = salvar_dialogo_memoria(
+            parent=self,
+            chave="excel_planilhas_exemplos",
+            titulo="Salvar Excel",
+            nome_padrao=nome_sugestao,
+            filtro="Excel (*.xlsx)"
         )
 
-        if not file_path:
+
+        if not caminho:
             print("Operação cancelada pelo usuário.")
             return
 
         # Salvar usando openpyxl para aplicar estilos
-        df.to_excel(file_path, index=False, engine='openpyxl', sheet_name=sheet_name)
+        df.to_excel(caminho, index=False, engine='openpyxl', sheet_name=sheet_name)
 
         # Abrir a planilha para formatação
-        wb = load_workbook(file_path)
+        wb = load_workbook(caminho)
         ws = wb[sheet_name]  # Usar o nome da aba dinamicamente
 
         # Formatar as colunas
@@ -4161,12 +4169,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                     pass
                 ws.column_dimensions[col_letter].width = max_length + 2
 
-        wb.save(file_path)
+        wb.save(caminho)
 
         QMessageBox.information(
             self,
             "Sucesso",
-            f"Planilha '{escolha}' salva com sucesso em {file_path}!",
+            f"Planilha '{escolha}' salva com sucesso em {caminho}!",
             QMessageBox.Ok
         )
 

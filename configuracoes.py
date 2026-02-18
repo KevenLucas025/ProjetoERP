@@ -97,7 +97,8 @@ class Configuracoes_Login:
             self.tamanho_fonte_percentual = 100 
 
 
-    def salvar(self,nome_usuario=None, usuario=None, senha=None,email=None,mantem_conectado=None, tamanho_fonte_percentual=None):
+    def salvar(self, nome_usuario=None, usuario=None, senha=None, email=None,
+           mantem_conectado=None, tamanho_fonte_percentual=None):
         # Atualiza atributos da instância
         if nome_usuario is not None:
             self.nome_usuario = nome_usuario
@@ -112,7 +113,20 @@ class Configuracoes_Login:
         if tamanho_fonte_percentual is not None:
             self.tamanho_fonte_percentual = tamanho_fonte_percentual
 
-        config = {
+        path = self.caminho_config_json()
+
+        # 1) Carrega config existente (pra não perder chaves de outros módulos)
+        config_existente = {}
+        try:
+            if os.path.exists(path):
+                with open(path, "r", encoding="utf-8") as f:
+                    txt = f.read().strip()
+                    config_existente = json.loads(txt) if txt else {}
+        except json.JSONDecodeError:
+            config_existente = {}
+
+        # 2) Atualiza apenas as chaves do login
+        config_existente.update({
             "nome_usuario": self.nome_usuario or "",
             "usuario": self.usuario or "",
             "senha": self.senha or "",
@@ -128,10 +142,12 @@ class Configuracoes_Login:
             "tamanho_fonte_percentual": self.tamanho_fonte_percentual,
             "atalhos": self.atalhos,
             "atualizacoes_automaticas": self.atualizacoes_automaticas
-        }
+        })
 
-        with open(self.caminho_config_json(), "w", encoding="utf-8") as f:
-            json.dump(config, f, indent=4, ensure_ascii=False)
+        # 3) Salva mantendo o resto (ex: ultimos_diretorios)
+        with open(path, "w", encoding="utf-8") as f:
+            json.dump(config_existente, f, indent=4, ensure_ascii=False)
+
 
             
     def salvar_atalho(self, acao, tecla):

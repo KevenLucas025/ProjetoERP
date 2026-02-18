@@ -30,8 +30,7 @@ class Pagina_Configuracoes(QWidget):
                 main_window, paginas_sistemas, frame_botoes_navegacoes, centralwidget, 
                  frame_2, frame_page_estoque, frame_5, frame_cadastro_usuario,
                  pg_cadastro_usuario, btn_avancar, btn_retroceder, btn_opcoes, btn_home, btn_verificar_estoque,
-                 btn_cadastrar_produto, btn_cadastro_usuario, btn_clientes,
-                 btn_importar, btn_gerar_saida, btn_estorno,
+                 btn_cadastrar_produto, btn_cadastro_usuario, btn_clientes,btn_gerar_saida, btn_estorno,
                  label_cadastramento, label_cadastramento_produtos,frame_valor_total_produtos,
                  frame_valor_do_desconto, frame_valor_desconto,frame_quantidade,login_window,parent=None):
         super().__init__(parent)
@@ -59,7 +58,6 @@ class Pagina_Configuracoes(QWidget):
         self.btn_cadastro_usuario = btn_cadastro_usuario
         self.btn_clientes = btn_clientes
         self.btn_cadastrar_produto = btn_cadastrar_produto
-        self.btn_importar = btn_importar
         self.btn_gerar_saida = btn_gerar_saida
         self.btn_estorno = btn_estorno
         self.label_cadastramento = label_cadastramento

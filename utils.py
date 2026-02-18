@@ -1,5 +1,5 @@
 from PySide6.QtWidgets import (QLineEdit, QPushButton,QVBoxLayout,QLabel,QFrame,QApplication,QDialog,
-                               QGraphicsScene,QGraphicsView,QGraphicsPixmapItem,QGraphicsItem,QMessageBox,QGraphicsDropShadowEffect)
+                               QGraphicsScene,QGraphicsView,QGraphicsPixmapItem,QGraphicsItem,QFileDialog,QMessageBox,QGraphicsDropShadowEffect)
 from PySide6.QtCore import Qt, QPropertyAnimation,Signal,QRectF,QPointF,QSize
 from PySide6.QtGui import QIcon,QPixmap,QPainterPath,QPainter,QColor
 import json
@@ -108,15 +108,111 @@ def configurar_frame_valores(frame: QFrame, titulo: str, valor_monetario: bool =
     label_titulo = QLabel(titulo)
     label_titulo.setAlignment(Qt.AlignCenter)
     label_titulo.setObjectName("label_titulo")
-
+    
     label_valor = QLabel("R$ 0,00" if valor_monetario else "")
     label_valor.setAlignment(Qt.AlignCenter)
     label_valor.setObjectName("label_valor")
+
 
     layout.addWidget(label_titulo)
     layout.addWidget(label_valor)
 
     return label_valor  # você salva essa referência depois para atualizar o texto
+
+def rodando_como_exe() -> bool:
+    return getattr(sys, "frozen",False)
+
+def pasta_configuracao_app() -> str:
+    """
+    - EXE: %APPDATA%\\SistemaGerenciamento
+    - Python: pasta atual do projeto
+    """
+    if rodando_como_exe():
+        return os.path.join(os.getenv("APPDATA") or os.getcwd(), "SistemaGerenciamento")
+    return os.getcwd()
+
+def caminho_config_json() -> str:
+    pasta = pasta_configuracao_app()
+    os.makedirs(pasta, exist_ok=True)
+    return os.path.join(pasta, "config.json")
+
+def carregar_config() -> dict:
+    path = caminho_config_json()
+    if not os.path.exists(path):
+        return {}
+    try:
+        with open(path, "r", encoding="utf-8") as f:
+            txt = f.read().strip()
+            return json.loads(txt) if txt else {}
+    except:
+        return {}
+
+def salvar_configs(cfg: dict) -> None:
+    path = caminho_config_json()
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    with open(path, "w", encoding="utf-8") as f:
+        json.dump(cfg, f, indent=4, ensure_ascii=False)
+        
+def pegar_ultimo_diretorio(chave: str, default_dir: str = "") -> str:
+    """
+    Retorna a última pasta usada para uma chave (ex: "excel", "pdf").
+    """
+    cfg = carregar_config()
+    ult = cfg.get("ultimos_diretorios", {})
+    p = (ult.get(chave) or "").strip()
+
+    if p and os.path.isdir(p):
+        return p
+
+    if default_dir and os.path.isdir(default_dir):
+        return default_dir
+
+    return ""
+
+def obter_ultimo_diretorio(chave: str, caminho_arquivo: str) -> None:
+    """
+    Salva a pasta do arquivo escolhido como última pasta daquela chave.
+    """
+    pasta = os.path.dirname(caminho_arquivo) if caminho_arquivo else ""
+    if not pasta or not os.path.isdir(pasta):
+        return
+
+    cfg = carregar_config()
+    ult = cfg.get("ultimos_diretorios", {})
+    ult[chave] = pasta
+    cfg["ultimos_diretorios"] = ult
+    salvar_configs(cfg)
+    
+def salvar_dialogo_memoria(parent, chave: str, titulo: str, nome_padrao: str, filtro: str, default_dir: str = "") -> str:
+    """
+    Abre o diálogo SALVAR lembrando a última pasta por chave.
+    Ex:
+        caminho = save_dialog_mem(self, "excel", "Salvar Excel", "Relatório Tabela Base.xlsx", "Excel (*.xlsx)")
+    """
+    last_dir = pegar_ultimo_diretorio(chave, default_dir=default_dir)
+
+    sugestao = os.path.join(last_dir, nome_padrao) if last_dir else nome_padrao
+
+    caminho, _ = QFileDialog.getSaveFileName(parent, titulo, sugestao, filtro)
+    
+    if not caminho:
+        return ""
+
+    obter_ultimo_diretorio(chave, caminho)
+    return caminho
+
+def abrir_dialogo_memoria(parent, chave: str, titulo: str, filtro: str, default_dir: str = "") -> str:
+    """
+    Abre o diálogo ABRIR lembrando a última pasta por chave.
+    """
+    last_dir = pegar_ultimo_diretorio(chave, default_dir=default_dir)
+
+    caminho, _ = QFileDialog.getOpenFileName(parent, titulo, last_dir or "", filtro)
+    if not caminho:
+        return ""
+
+    obter_ultimo_diretorio(chave, caminho)
+    return caminho
 
 def caminho_recurso(relativo):
         """
@@ -1208,13 +1304,11 @@ class Temas:
         """)
         elif tema == "claro":
             app.setStyleSheet("""
-            QMainWindow, QStackedWidget {
+            QMainWindow, QStackedWidget,QFrame  {
                 background-color: #ffffff;
                 color: #000000;
             }
-            QWidget{
-                background-color: #ffffff;
-            }
+            
             /* QTableView com seleção diferenciada */
             QTableView {
                 background-color: #ffffff;
@@ -1438,6 +1532,14 @@ class Temas:
             QLineEdit:focus {
                 border: 2px solid #005a9e; /* Azul mais escuro ao focar */
                 background-color: #f0f8ff; /* Leve destaque no fundo */
+            }
+            
+            QLabel#label_titulo,
+            QLabel#label_valor{
+                font-size: 16px;
+                background: transparent;
+                color: black; 
+                
             }
             QLabel#label_status_progress {
                 background: transparent;

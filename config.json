@@ -1,11 +1,88 @@
 {
-    "tema": "classico",
-    "usuario": "",
-    "senha": "",
+    "nome_usuario": "Keven",
+    "usuario": "Keven",
+    "senha": "123",
+    "email": "Não Cadastrado",
     "mantem_conectado": false,
-    "nao_mostrar_mensagem_boas_vindas": false,
-    "nao_mostrar_aviso_irreversivel": false,
-    "nao_mostrar_mensagem_arquivo_excel": false,
-    "nao_mostrar_mensagem_arquivo_excel_fisicos": false,
-    "historico_autocompletes": {}
+    "nao_mostrar_mensagem_boas_vindas": true,
+    "nao_mostrar_aviso_irreversivel": true,
+    "nao_mostrar_mensagem_arquivo_excel": true,
+    "nao_mostrar_mensagem_arquivo_excel_fisicos": true,
+    "nao_mostrar_aviso_atualizacoes": false,
+    "historico_autocompletes": {
+        "txt_cep": [
+            "13179-905"
+        ],
+        "txt_endereco": [
+            "Rua José Vieira da Silva"
+        ],
+        "txt_complemento": [
+            "Bl A Ap 31"
+        ],
+        "txt_telefone": [
+            "(19) 98973-7867"
+        ],
+        "txt_email": [
+            "gabi.ignacio0909@gmail.com"
+        ],
+        "txt_data_nascimento": [
+            "09/09/2002"
+        ],
+        "txt_rg": [
+            "58.237.837-0"
+        ],
+        "txt_cpf": [
+            "524.163.958-66"
+        ],
+        "txt_cnpj": [
+            "00.000.000/0000-00"
+        ],
+        "txt_produto": [
+            "goiaba"
+        ],
+        "txt_quantidade": [
+            "5",
+            "10"
+        ],
+        "txt_valor_produto_3": [
+            "5"
+        ],
+        "txt_codigo_item": [
+            "200",
+            "dfdfd"
+        ],
+        "txt_cliente_3": [
+            "feira do seu zé"
+        ],
+        "txt_descricao_produto_3": [
+            "comer"
+        ]
+    },
+    "tema": "classico",
+    "tamanho_fonte_percentual": 100,
+    "atalhos": {},
+    "atualizacoes_automaticas": false,
+    "ultimos_diretorios": {
+        "foto_usuario": "C:/Users/KEVEN/OneDrive/Imagens",
+        "excel_csv": "C:/Users/KEVEN/OneDrive/Área de Trabalho",
+        "excel_historico_produtos": "C:/Users/KEVEN/OneDrive/Área de Trabalho",
+        "pdf_historico_produtos": "C:/Users/KEVEN/OneDrive/Área de Trabalho",
+        "excel_estoque": "C:/Users/KEVEN/OneDrive/Área de Trabalho",
+        "csv_historico_usuarios": "C:/Users/KEVEN/OneDrive/Área de Trabalho",
+        "excel_historico_usuarios": "C:/Users/KEVEN/OneDrive/Área de Trabalho",
+        "pdf_historico_usuarios": "C:/Users/KEVEN/OneDrive/Área de Trabalho",
+        "excel_csv_juridicos": "C:/Users/KEVEN/OneDrive/Área de Trabalho",
+        "excel_juridicos": "C:/Users/KEVEN/OneDrive/Área de Trabalho",
+        "pdf_juridicos": "C:/Users/KEVEN/OneDrive/Área de Trabalho",
+        "pdf_clientes_juridicos": "C:/Users/KEVEN/OneDrive/Área de Trabalho",
+        "excel_juridicos_relatorios": "C:/Users/KEVEN/OneDrive/Área de Trabalho",
+        "excel_csv_fisicos": "C:/Users/KEVEN/OneDrive/Área de Trabalho",
+        "excel_fisicos": "C:/Users/KEVEN/OneDrive/Área de Trabalho",
+        "pdf_fisicos": "C:/Users/KEVEN/OneDrive/Área de Trabalho",
+        "pdf_relatorio_clientes_fisicos": "C:/Users/KEVEN/OneDrive/Área de Trabalho",
+        "excel_clientes_fisicos_relatorio": "C:/Users/KEVEN/OneDrive/Área de Trabalho",
+        "imagem_produto": "C:/Users/KEVEN/OneDrive/Imagens",
+        "carregar_imagem_usuario": "C:/Users/KEVEN/OneDrive/Imagens",
+        "excel_tabela_usuarios": "C:/Users/KEVEN/OneDrive/Área de Trabalho"
+    }
 }

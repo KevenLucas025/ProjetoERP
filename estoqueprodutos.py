@@ -1,26 +1,28 @@
 from PySide6.QtGui import QColor, QBrush,QGuiApplication
 from PySide6.QtWidgets import (QWidget, QTableWidget, QTableWidgetItem, 
                                QMessageBox,QCheckBox,QVBoxLayout,QDialog,QPushButton,QMainWindow,QHBoxLayout,
-                               QLineEdit,QGroupBox,QRadioButton,QFileDialog,QHeaderView)
+                               QLineEdit,QGroupBox,QRadioButton,QFileDialog,QHeaderView,QInputDialog)
 from PySide6.QtCore import Qt,QTimer,QEvent
 import sqlite3
 import pandas as pd
 from datetime import datetime
 from database import DataBase
 from dialogos import ComboDialog,ConfirmacaoDialog
-from utils import Temas
+from utils import Temas, salvar_dialogo_memoria,abrir_dialogo_memoria
 import csv
 from reportlab.lib import colors
 from reportlab.lib.pagesizes import letter,landscape,A4
+from openpyxl import Workbook
+from openpyxl.styles import Font,Alignment
+from openpyxl.utils import get_column_letter
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle
 from decimal import Decimal, ROUND_HALF_UP
-from reportlab.pdfgen import canvas
 from configuracoes import Configuracoes_Login
 import json
 
 class EstoqueProduto(QWidget):
-    def __init__(self, main_window, btn_gerar_pdf, btn_gerar_estorno, 
-                 btn_gerar_saida,btn_importar, btn_limpar_tabela, 
+    def __init__(self, main_window, btn_gerar_excel, btn_gerar_estorno, 
+                 btn_gerar_saida, btn_limpar_tabela, 
                  btn_atualizar_saida, btn_atualizar_estoque, btn_historico,
                  btn_fazer_cadastro_massa_produtos,btn_abrir_planilha_massa_produtos,progress_massa_produtos,
                  line_edit_massa_produtos,parent=None):
@@ -40,10 +42,9 @@ class EstoqueProduto(QWidget):
         self.table_base = self.main_window.table_base  # Referência para a tabela no main window
         self.table_saida = self.main_window.table_saida
         self.table_massa_produtos = self.main_window.table_massa_produtos
-        self.btn_gerar_pdf = btn_gerar_pdf
+        self.btn_gerar_excel = btn_gerar_excel
         self.btn_gerar_estorno = btn_gerar_estorno
         self.btn_gerar_saida = btn_gerar_saida
-        self.btn_importar = btn_importar
         self.btn_limpar_tabela = btn_limpar_tabela
         self.btn_atualizar_saida = btn_atualizar_saida
         self.btn_atualizar_estoque = btn_atualizar_estoque
@@ -58,10 +59,9 @@ class EstoqueProduto(QWidget):
 
 
 
-        self.btn_gerar_pdf.clicked.connect(self.exibir_pdf)
+        self.btn_gerar_excel.clicked.connect(self.exibir_excel)
         self.btn_gerar_estorno.clicked.connect(self.criar_estorno)
         self.btn_gerar_saida.clicked.connect(self.confirmar_saida)
-        self.btn_importar.clicked.connect(self.importar_produto)
         self.btn_limpar_tabela.clicked.connect(self.limpar_tabela)
         self.btn_atualizar_saida.clicked.connect(self.atualizar_saida)
         self.btn_atualizar_estoque.clicked.connect(self.atualizar_estoque)
@@ -87,7 +87,7 @@ class EstoqueProduto(QWidget):
         
         # Carregar dados da tabela "products" usando pandas
         query = """
-        SELECT Produto, Quantidade, Valor_Real, IFNULL(Desconto, 'Sem Desconto') AS Desconto,"Total Sem Desconto","Valor Total", "Data do Cadastro", 
+        SELECT Produto, Quantidade, "Valor Unitário", IFNULL(Desconto, 'Sem Desconto') AS Desconto,"Total Sem Desconto","Total Com Desconto", "Data do Cadastro", 
         Código_Item, Cliente, Descrição_Produto, Usuário, "Status da Saída"
         FROM products
         """
@@ -163,9 +163,9 @@ class EstoqueProduto(QWidget):
         for row in produtos_selecionados:
             produto = self.main_window.table_base.item(row, 0).text()
             quantidade = int(self.main_window.table_base.item(row, 1).text())
-            valor_produto = self.main_window.table_base.item(row, 2).text()
+            valor_produto_str = self.main_window.table_base.item(row, 2).text()   # valor unitário cheio
             desconto = self.main_window.table_base.item(row, 3).text()
-            total_sem_desconto = self.main_window.table_base.item(row, 4).text()
+            total_sem_desconto_str = self.main_window.table_base.item(row, 4).text()
             valor_total_str = self.main_window.table_base.item(row, 5).text()
             data_cadastro = self.main_window.table_base.item(row, 6).text()
             codigo_produto = self.main_window.table_base.item(row, 7).text().strip()
@@ -174,13 +174,13 @@ class EstoqueProduto(QWidget):
             usuario = self.main_window.table_base.item(row, 10).text()
             status_saida = 1
             data_saida = datetime.now().strftime("%d/%m/%Y %H:%M")
-            
-            #  Verifica se a quantidade é válida
-            if int(quantidade) <= 0:
+
+            # Verifica se a quantidade é válida
+            if quantidade <= 0:
                 msg_box = QMessageBox(self)
                 msg_box.setIcon(QMessageBox.Warning)
-                msg_box.setWindowTitle("Estorno inválido")
-                msg_box.setText(f"O produto '{produto}' tem quantidade 0 e não pode ser estornado.")
+                msg_box.setWindowTitle("Saída inválida")
+                msg_box.setText(f"O produto '{produto}' tem quantidade 0 e não pode ter saída.")
                 msg_box.exec()
                 continue
 
@@ -197,26 +197,34 @@ class EstoqueProduto(QWidget):
             else:
                 quantidade_saida = 1
 
-            valor_total = self.parse_brl(valor_total_str)
-            
+            # ======= CÁLCULOS =======
+            valor_total = self.parse_brl(valor_total_str)               # total com desconto (estoque)
+            valor_unit_cheio = self.parse_brl(valor_produto_str)        # unitário sem desconto
 
-            valor_unitario = valor_total  / Decimal(quantidade)
-            valor_saida = (valor_unitario * Decimal(quantidade_saida)).quantize(Decimal("0.01"),rounding=ROUND_HALF_UP)
+            # saída (com desconto)
+            valor_unit_desc = (valor_total / Decimal(quantidade)).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+            valor_saida = (valor_unit_desc * Decimal(quantidade_saida)).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
             novo_valor_total = (valor_total - valor_saida).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+
+            # saída (sem desconto)  ✅
+            total_sem_desc_saida = (valor_unit_cheio * Decimal(quantidade_saida)).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+
+            # saldo no estoque (sem desconto) ✅
             nova_quantidade = quantidade - quantidade_saida
+            novo_total_sem_desc = (valor_unit_cheio * Decimal(nova_quantidade)).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
 
             atualizacoes_produtos.append(
-                (nova_quantidade, novo_valor_total, codigo_produto)
+                (nova_quantidade, novo_valor_total, novo_total_sem_desc, codigo_produto)
             )
-            
+
             self.main_window.table_base.removeRow(row)
 
             produtos_saida.append((
                 produto,
                 str(quantidade_saida),
-                valor_produto,
+                valor_produto_str,
                 desconto,
-                total_sem_desconto,
+                self.formatar_brl(total_sem_desc_saida), 
                 self.formatar_brl(valor_saida),
                 data_saida,
                 data_cadastro,
@@ -231,25 +239,26 @@ class EstoqueProduto(QWidget):
                 f"Produto {produto} teve saída de {quantidade_saida} unidade(s)."
             )
 
-        #  BANCO DE DADOS 
+        # ======= BANCO =======
         try:
             cursor = self.db.connection.cursor()
 
-            for nova_qtd, novo_valor, codigo in atualizacoes_produtos:
+            for nova_qtd, novo_valor, novo_total_sem_desc, codigo in atualizacoes_produtos:
                 if nova_qtd > 0:
                     cursor.execute("""
                         UPDATE products
-                        SET Quantidade = ?, "Valor Total" = ?, "Status da Saída" = 1
+                        SET Quantidade = ?,
+                            "Total Com Desconto" = ?,
+                            "Total Sem Desconto" = ?,
+                            "Status da Saída" = 1
                         WHERE "Código_Item" = ?
-                    """, (nova_qtd, self.formatar_brl(novo_valor), codigo))
+                    """, (nova_qtd, self.formatar_brl(novo_valor), self.formatar_brl(novo_total_sem_desc), codigo))
                 else:
                     cursor.execute("""
                         DELETE FROM products WHERE "Código_Item" = ?
                     """, (codigo,))
 
-            
-            
-             #  INSERE NA TABELA DE SAÍDA
+            # INSERE NA TABELA DE SAÍDA
             for produto_info in produtos_saida:
                 imagem = self.recuperar_imagem_produto_bd_products(produto_info[8])
 
@@ -258,8 +267,8 @@ class EstoqueProduto(QWidget):
                     produto_info[1],
                     produto_info[2],
                     produto_info[3],
-                    produto_info[4],
-                    produto_info[5],
+                    produto_info[4],  # ✅ total sem desconto da saída
+                    produto_info[5],  # total com desconto da saída (com desconto)
                     produto_info[6],
                     produto_info[7],
                     produto_info[8],
@@ -272,13 +281,13 @@ class EstoqueProduto(QWidget):
 
                 cursor.execute("""
                     INSERT INTO products_saida (
-                        Produto, Quantidade, "Valor do Produto", Desconto,
-                        "Total Sem Desconto", "Valor Total", "Data de Saída",
+                        Produto, Quantidade, "Valor Unitário", Desconto,
+                        "Total Sem Desconto", "Total Com Desconto", "Data de Saída",
                         "Data da Criação", "Código do Produto", Cliente,
                         "Descrição do Produto", Usuário, Imagem, "Status da Saída"
                     ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """, produto_info_db)
-                
+
             self.db.connection.commit()
 
         except Exception as e:
@@ -290,8 +299,7 @@ class EstoqueProduto(QWidget):
             print("Erro ao salvar saída:", e)
             return
 
-
-        #  UI REFLETE O BANCO
+        # UI
         self.carregar_tabela_estoque()
         self.carregar_tabela_saida(produtos_saida)
 
@@ -299,6 +307,7 @@ class EstoqueProduto(QWidget):
             self.main_window.registrar_historico("Gerado Saída", log)
 
         QMessageBox.information(self, "Aviso", "Saída gerada com sucesso!")
+
 
     def parse_brl(self,valor: str) -> Decimal:
         # Aceita "R$ 1.234,56" ou "1.234,56" etc.
@@ -326,52 +335,57 @@ class EstoqueProduto(QWidget):
         for item in dados_saida:
             codigo = item[8]
             quantidade_nova = int(item[1])
-            valor_novo = float(
-                item[4]
-                .replace("R$", "")
-                .replace(" ", "")
-                .replace(".", "")
-                .replace(",", ".")
-            )
 
+            # item[4] = Total Sem Desconto, item[5] = Valor Total
+            total_sem_desc_novo = float(
+                str(item[4]).replace("R$", "").replace(" ", "").replace(".", "").replace(",", ".")
+            )
+            valor_total_novo = float(
+                str(item[5]).replace("R$", "").replace(" ", "").replace(".", "").replace(",", ".")
+            )
 
             linha_existente = None
             for row in range(self.main_window.table_saida.rowCount()):
-                if self.main_window.table_saida.item(row, 8).text() == codigo:
+                cod_item = self.main_window.table_saida.item(row, 8)
+                if cod_item and cod_item.text() == codigo:
                     linha_existente = row
                     break
 
             if linha_existente is not None:
+                # Quantidade atual
                 qtd_atual = int(self.main_window.table_saida.item(linha_existente, 1).text())
-                valor_atual = float(
+
+                # Total sem desconto atual (col 4)
+                total_sem_desc_atual = float(
                     self.main_window.table_saida.item(linha_existente, 4).text()
-                    .replace("R$", "")
-                    .replace(" ", "")
-                    .replace(".", "")
-                    .replace(",", ".")
+                    .replace("R$", "").replace(" ", "").replace(".", "").replace(",", ".")
                 )
 
+                # Valor total atual (col 5)   (antes você não somava)
+                valor_total_atual = float(
+                    self.main_window.table_saida.item(linha_existente, 5).text()
+                    .replace("R$", "").replace(" ", "").replace(".", "").replace(",", ".")
+                )
+
+                # Soma tudo
                 self.main_window.table_saida.item(linha_existente, 1).setText(
                     str(qtd_atual + quantidade_nova)
                 )
                 self.main_window.table_saida.item(linha_existente, 4).setText(
-                    f"R$ {valor_atual + valor_novo:,.2f}"
-                    .replace(",", "X").replace(".", ",").replace("X", ".")
+                    self.formatar_moeda(total_sem_desc_atual + total_sem_desc_novo)
                 )
+                self.main_window.table_saida.item(linha_existente, 5).setText(
+                    self.formatar_moeda(valor_total_atual + valor_total_novo)
+                )
+
             else:
                 row = self.main_window.table_saida.rowCount()
                 self.main_window.table_saida.insertRow(row)
 
-
-                # Copia todos os campos
                 for col, valor in enumerate(item):
-                    if col == 4 or col == 5:  # Total sem desconto e Valor Total
+                    if col in (4, 5):  # Total sem desconto e Valor Total
                         valor_float = float(
-                            str(valor)
-                            .replace("R$", "")
-                            .replace(" ", "")
-                            .replace(".", "")
-                            .replace(",", ".")
+                            str(valor).replace("R$", "").replace(" ", "").replace(".", "").replace(",", ".")
                         )
                         self.main_window.table_saida.setItem(
                             row, col, self.criar_item(self.formatar_moeda(valor_float))
@@ -381,12 +395,10 @@ class EstoqueProduto(QWidget):
                             row, col, self.criar_item(str(valor))
                         )
 
-
         self.main_window.table_saida.resizeColumnsToContents()
         self.main_window.table_saida.resizeRowsToContents()
 
     
-
     # Função para recuperar imagem de um produto com base no código do produto
     def recuperar_imagem_produto_bd_products(self, codigo_produto):
         cursor = self.db.connection.cursor()
@@ -427,10 +439,10 @@ class EstoqueProduto(QWidget):
         for row in sorted(produtos_selecionados, reverse=True):
             produto_item = self.main_window.table_saida.item(row, 0)             # Produto
             quantidade_item = self.main_window.table_saida.item(row, 1)          # Quantidade
-            valor_real_item = self.main_window.table_saida.item(row, 2)          # Valor do Produto
+            valor_unitario_item = self.main_window.table_saida.item(row, 2)      # Valor Unitário
             desconto_item = self.main_window.table_saida.item(row, 3)            # Desconto
             total_sem_deconto_item = self.main_window.table_saida.item(row, 4)   # Total Sem Desconto
-            valor_total_item = self.main_window.table_saida.item(row, 5)         # Valor Total
+            total_com_desconto_item = self.main_window.table_saida.item(row, 5)  # Total Com Desconto
             data_cadastro_item = self.main_window.table_saida.item(row, 7)       # Data do Cadastro
             codigo_item = self.main_window.table_saida.item(row, 8)              # Código do Produto
             cliente_item = self.main_window.table_saida.item(row, 9)             # Cliente
@@ -440,10 +452,10 @@ class EstoqueProduto(QWidget):
 
             produto = produto_item.text() if produto_item else ""
             quantidade = int(quantidade_item.text()) if quantidade_item else "0"
-            valor_real = valor_real_item.text() if valor_real_item else ""
+            valor_unitario = valor_unitario_item.text() if valor_unitario_item else ""
             desconto = desconto_item.text() if desconto_item else ""
             total_sem_deconto = total_sem_deconto_item.text() if total_sem_deconto_item else "Não Cadastrado"
-            valor_total = valor_total_item.text() if valor_total_item else ""
+            total_com_desconto = total_com_desconto_item.text() if total_com_desconto_item else ""
             data_cadastro = data_cadastro_item.text() if data_cadastro_item else ""
             codigo_produto = codigo_item.text() if codigo_item else ""
             cliente = cliente_item.text() if cliente_item else ""
@@ -490,22 +502,22 @@ class EstoqueProduto(QWidget):
             resultado = cursor.fetchone()
 
             if resultado:
-                cursor.execute('SELECT Quantidade, "Valor Total", "Total Sem Desconto" FROM products WHERE Código_Item = ?',(codigo_produto,))
-                qtd_atual,valor_total_str,total_sem_desc_atual_str = cursor.fetchone()
+                cursor.execute('SELECT Quantidade, "Total Com Desconto", "Total Sem Desconto" FROM products WHERE Código_Item = ?',(codigo_produto,))
+                qtd_atual,total_com_desconto_str,total_sem_desc_atual_str = cursor.fetchone()
                 
                 qtd_atual = int(qtd_atual or 0)
-                valor_total_atual = self.parse_brl(valor_total_str or "0")
+                valor_total_atual = self.parse_brl(total_com_desconto_str or "0")
                 total_sem_desc_atual = self.parse_brl(total_sem_desc_atual_str or "0")
                 
-                valor_total_saida = self.parse_brl(valor_total  or "0")
+                valor_total_saida = self.parse_brl(total_com_desconto  or "0")
                 qtd_saida = int(quantidade)
                 
                 # unitário com desconto baseado no registro da saída
                 valor_unit_desc = (valor_total_saida / Decimal(qtd_saida)).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
                 valor_a_voltar = (valor_unit_desc * Decimal(quantidade_estorno)).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
                 
-                 # unitário sem desconto baseado no valor_real
-                valor_unit_cheio = self.parse_brl(valor_real or "0")
+                # unitário sem desconto baseado no total com desconto
+                valor_unit_cheio = self.parse_brl(valor_unitario or "0")
                 total_sem_desc_a_voltar = (valor_unit_cheio * Decimal(quantidade_estorno)).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
 
                 nova_quantidade = qtd_atual + quantidade_estorno
@@ -515,16 +527,16 @@ class EstoqueProduto(QWidget):
                 # Atualiza a quantidade somando a estornada
                 cursor.execute("""
                     UPDATE products
-                    SET Quantidade = ?, "Valor Total" = ?
+                    SET Quantidade = ?, "Total Com Desconto" = ?, "Total Sem Desconto" = ?
                     WHERE Código_Item = ?
-                """, (nova_quantidade, self.formatar_brl(novo_valor_total),codigo_produto))
+                """, (nova_quantidade, self.formatar_brl(novo_valor_total), self.formatar_brl(novo_total_sem_desc), codigo_produto))
             else:
                 # Insere como novo produto
                 cursor.execute("""
                     INSERT INTO products 
-                    (Produto, Quantidade, Valor_Real, Desconto, "Total Sem Desconto","Valor Total","Data do Cadastro", Código_Item, Cliente, Descrição_Produto, Imagem, Usuário,'Status da Saída')
+                    (Produto, Quantidade, "Valor Unitário", Desconto, "Total Sem Desconto","Total Com Desconto","Data do Cadastro", Código_Item, Cliente, Descrição_Produto, Imagem, Usuário,'Status da Saída')
                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?,?,?)
-                """, (produto, str(quantidade_estorno), valor_real, desconto, total_sem_deconto,valor_total, data_cadastro, 
+                """, (produto, str(quantidade_estorno), valor_unitario, desconto, total_sem_deconto,total_com_desconto, data_cadastro, 
                         codigo_produto, cliente, descricao, imagem, usuario, 1))
 
             if quantidade_estorno >= quantidade:
@@ -537,14 +549,48 @@ class EstoqueProduto(QWidget):
             # Deleta da tabela de saída
             else:
                 nova_quantidade_saida = quantidade - quantidade_estorno
+                # ===== BANCO: atualiza a quantidade da saída =====
                 cursor.execute("""
                     UPDATE products_saida
                     SET Quantidade = ?
                     WHERE "Código do Produto" = ?
                 """, (nova_quantidade_saida, codigo_produto))
                 
-                    
+                # ===== UI: atualiza a linha na table_saida =====
+                # 1) Quantidade (coluna 1)
+                self.main_window.table_saida.setItem(row, 1, self.criar_item(str(nova_quantidade_saida)))
 
+                # 2) Recalcular totais da saída (colunas 4 e 5)
+                # valor_total (col 5) no seu código é o total COM desconto da saída atual
+                valor_total_saida_atual = self.parse_brl(total_com_desconto or "0")
+                qtd_saida_original = int(quantidade)
+
+                # unitário com desconto baseado no registro atual da saída
+                valor_unit_desc = (valor_total_saida_atual / Decimal(qtd_saida_original)).quantize(
+                    Decimal("0.01"), rounding=ROUND_HALF_UP
+                )
+                novo_valor_total_saida = (valor_unit_desc * Decimal(nova_quantidade_saida)).quantize(
+                    Decimal("0.01"), rounding=ROUND_HALF_UP
+                )
+
+                # unitário sem desconto baseado no total com desconto (unitário cheio)
+                valor_unit_cheio = self.parse_brl(valor_unitario or "0")
+                novo_total_sem_desc_saida = (valor_unit_cheio * Decimal(nova_quantidade_saida)).quantize(
+                    Decimal("0.01"), rounding=ROUND_HALF_UP
+                )
+
+
+                # Atualiza UI
+                self.main_window.table_saida.setItem(row, 4, self.criar_item(self.formatar_brl(novo_total_sem_desc_saida)))
+                self.main_window.table_saida.setItem(row, 5, self.criar_item(self.formatar_brl(novo_valor_total_saida)))
+
+                # (Opcional, mas recomendado) Atualiza o banco com os novos totais também
+                cursor.execute("""
+                    UPDATE products_saida
+                    SET "Total Sem Desconto" = ?, "Total Com Desconto" = ?
+                    WHERE "Código do Produto" = ?
+                """, (self.formatar_brl(novo_total_sem_desc_saida), self.formatar_brl(novo_valor_total_saida), codigo_produto))
+                    
             # Verifica se o item já está na table_base visualmente
             linha_existente = None
             for linha in range(self.main_window.table_base.rowCount()):
@@ -552,6 +598,7 @@ class EstoqueProduto(QWidget):
                 if codigo_existente and codigo_existente.text() == codigo_produto:
                     linha_existente = linha
                     break
+                
             if linha_existente is not None:
                 # Soma a quantidade diretamente na linha existente
                 item_quantidade = self.main_window.table_base.item(linha_existente,1)
@@ -567,10 +614,10 @@ class EstoqueProduto(QWidget):
                 self.main_window.table_base.insertRow(row_base)
                 self.main_window.table_base.setItem(row_base, 0, self.criar_item(produto))
                 self.main_window.table_base.setItem(row_base, 1, self.criar_item(str(quantidade_estorno)))
-                self.main_window.table_base.setItem(row_base, 2, self.criar_item(valor_real))
+                self.main_window.table_base.setItem(row_base, 2, self.criar_item(valor_unitario))
                 self.main_window.table_base.setItem(row_base, 3, self.criar_item(desconto))
                 self.main_window.table_base.setItem(row_base, 4, self.criar_item(total_sem_deconto))
-                self.main_window.table_base.setItem(row_base, 5, self.criar_item(valor_total))
+                self.main_window.table_base.setItem(row_base, 5, self.criar_item(total_com_desconto))
                 self.main_window.table_base.setItem(row_base, 6, self.criar_item(data_cadastro))
                 self.main_window.table_base.setItem(row_base, 7, self.criar_item(codigo_produto))
                 self.main_window.table_base.setItem(row_base, 8, self.criar_item(cliente))
@@ -580,7 +627,6 @@ class EstoqueProduto(QWidget):
 
             # Registrar histórico
             historicos.append(f"Produto '{produto}' foi estornado.")
-            
             
         self.db.connection.commit()
         
@@ -614,7 +660,6 @@ class EstoqueProduto(QWidget):
             return None
 
 
-
     def limpar_valor(self, valor):
         # Remove o símbolo 'R$' e espaços e converte para float
         return float(valor.replace('R$', '').replace('.', '').replace(',', '.').strip())
@@ -623,7 +668,6 @@ class EstoqueProduto(QWidget):
         # Método para marcar quando ocorre uma alteração
         self.alteracoes_salvas = False
 
-
     def atualizar_estoque(self):
         try:
             # Limpar a tabela antes de atualizar
@@ -631,7 +675,7 @@ class EstoqueProduto(QWidget):
 
             # Consultar todos os produtos
             query = """
-            SELECT Produto, Quantidade, Valor_Real, Desconto,"Total Sem Desconto", "Valor Total","Data do Cadastro", Código_Item, Cliente, Descrição_Produto, Usuário, "Status da Saída"
+            SELECT Produto, Quantidade, "Valor Unitário", Desconto,"Total Sem Desconto", "Total Com Desconto","Data do Cadastro", Código_Item, Cliente, Descrição_Produto, Usuário, "Status da Saída"
             FROM products
             """
             produtos = self.db.executar_query(query)
@@ -678,10 +722,10 @@ class EstoqueProduto(QWidget):
             SELECT 
                 Produto, 
                 SUM(Quantidade) as Quantidade, 
-                "Valor do Produto", 
+                "Valor Unitário", 
                 Desconto,
                 "Total Sem Desconto",
-                "Valor Total", 
+                "Total Com Desconto", 
                 "Data de Saída", 
                 "Data da Criação", 
                 "Código do Produto", 
@@ -694,10 +738,10 @@ class EstoqueProduto(QWidget):
             GROUP BY 
                 "Código do Produto",
                 Produto, 
-                "Valor do Produto", 
+                "Valor Unitário", 
                 Desconto,
                 "Total Sem Desconto",
-                "Valor Total", 
+                "Total Com Desconto", 
                 "Data de Saída", 
                 "Data da Criação", 
                 "Código do Produto", 
@@ -766,66 +810,222 @@ class EstoqueProduto(QWidget):
                 item = self.criar_item('')
                 tabela.setItem(row, col, item)
 
-    def exibir_pdf(self):
-        caminho, _ = QFileDialog.getSaveFileName(
-            None,
-            "Salvar PDF",
-            "relatorio.pdf",
-            "PDF files (*.pdf)"
+
+    def exibir_excel(self):
+        opcoes = ["Tabela Base (Estoque)", "Tabela Saída", "Tabela Base + Saída"]
+
+        dialog = ComboDialog(
+            "Exportar Excel",
+            "Qual tabela deseja exportar?",
+            opcoes,
+            parent=self
         )
+
+        if dialog.exec() != QDialog.Accepted:
+            return
+
+        escolha = dialog.combo.currentText().strip()
+
+        exportar_base = (escolha == opcoes[0]) or (escolha == opcoes[2])
+        exportar_saida = (escolha == opcoes[1]) or (escolha == opcoes[2])
+
+        base_vazia = (self.table_base.rowCount() == 0)
+        saida_vazia = (self.table_saida.rowCount() == 0)
+
+        # validações
+        if escolha == opcoes[0] and base_vazia:
+            QMessageBox.warning(self, "Aviso", "A tabela Base (Estoque) está vazia. Não há dados para exportar.")
+            return
+
+        if escolha == opcoes[1] and saida_vazia:
+            QMessageBox.warning(self, "Aviso", "A tabela Saída está vazia. Não há dados para exportar.")
+            return
+
+        if escolha == opcoes[2] and base_vazia and saida_vazia:
+            QMessageBox.warning(self, "Aviso", "As tabelas Base e Saída estão vazias. Não há dados para exportar.")
+            return
+
+        # nome padrão
+        if escolha == opcoes[0]:
+            nome_padrao = "Tabela Base.xlsx"
+        elif escolha == opcoes[1]:
+            nome_padrao = "Tabela Saída.xlsx"
+        else:
+            nome_padrao = "Tabela Base + Saída.xlsx"
+
+        caminho = salvar_dialogo_memoria(
+            parent=self,
+            chave="excel_estoque",
+            titulo="Salvar Excel",
+            nome_padrao=nome_padrao,
+            filtro="Excel (*.xlsx)"
+        )
+
         if not caminho:
             return
+
+        if not caminho.lower().endswith(".xlsx"):
+            caminho += ".xlsx"
+
         try:
-            c = canvas.Canvas(caminho, pagesize=A4)
-            width, height = A4
+            wb = Workbook()
 
-            #Título
-            c.setFont("Helvetica-Bold", 16)
-            c.drawString(50, height - 50, "Relatório de Produtos")
+            # remove aba padrão se vamos criar outras (evita sobrar “Sheet”)
+            # (só remova depois de criar pelo menos uma aba nova se preferir)
+            aba_padrao = wb.active
 
-            # Cabeçalhos
-            c.setFont("Helvetica-Bold", 11)
-            headers = ["Produto", "Quantidade", "Valor", "Desconto", 
-                       "Total Sem Desconto","Valor Total","Data", "Código", "Cliente", "Descrição", "Usuário"]
-            y = height - 80
-            for i, header in enumerate(headers):
-                c.drawString(50 + i * 60, y, header)
+            # =========================
+            # Helpers de conversão (iguais aos seus)
+            # =========================
+            def parse_brl(txt: str):
+                if not txt:
+                    return None
+                t = txt.strip()
+                if t.lower() in ("não cadastrado", "sem desconto", "-"):
+                    return None
+                t = t.replace("R$", "").strip()
+                t = " ".join(t.split())
+                if not any(ch.isdigit() for ch in t):
+                    return None
+                t = t.replace(".", "").replace(",", ".")
+                try:
+                    return float(t)
+                except:
+                    return None
 
-            # Dados da tabela
-            c.setFont("Helvetica", 9)
-            for row in range(self.main_window.table_base.rowCount()):
-                y -= 20
-                if y < 50:
-                    c.showPage()
-                    y = height - 50
-                    c.setFont("Helvetica-Bold", 10)
-                    for i, header in enumerate(headers):
-                        c.drawString(50 + i * 60, y, header)
-                    y -= 20
-                    c.setFont("Helvetica", 9)
+            def parse_percent(txt: str):
+                if not txt:
+                    return None
+                t = txt.strip()
+                if t.lower() in ("sem desconto", "não cadastrado", "-"):
+                    return 0.0
+                t = t.replace("%", "").strip().replace(",", ".")
+                if t == "":
+                    return None
+                try:
+                    return float(t) / 100.0
+                except:
+                    return None
 
-                for col in range(9):  # Assume 9 colunas
-                    item = self.main_window.table_base.item(row, col)
-                    texto = item.text() if item else ""
-                    texto = item.text() if item else ""
-                    c.drawString(50 + col * 60, y, str(texto)[:15])  # Garante que é string
+            def norm(s: str) -> str:
+                return " ".join(s.strip().lower().split())
 
+            # =========================
+            # Função que escreve 1 tabela em 1 aba
+            # =========================
+            def preencher_aba(ws, tabela):
+                linhas = tabela.rowCount()
+                colunas = tabela.columnCount()
 
-            c.save()
+                # Cabeçalhos
+                cabecalhos = []
+                for c in range(colunas):
+                    h = tabela.horizontalHeaderItem(c)
+                    cabecalhos.append(h.text().strip() if h and h.text() else f"Coluna {c+1}")
+                ws.append(cabecalhos)
 
-            # Mensagem de sucesso
-            msg = QMessageBox(self)
-            msg.setIcon(QMessageBox.Information)
-            msg.setWindowTitle("PDF Gerado")
-            msg.setText("O PDF foi gerado com sucesso!")
-            msg.exec()
+                # Mapear colunas pelo nome
+                col_map = {norm(nome): idx for idx, nome in enumerate(cabecalhos)}
+                idx_valor_unit = col_map.get("valor unitário")
+                idx_desconto = col_map.get("desconto")
+                idx_total_sem = col_map.get("total sem desconto")
+                idx_total_com = col_map.get("total com desconto")
+
+                money_cols = {i for i in [idx_valor_unit, idx_total_sem, idx_total_com] if i is not None}
+                percent_cols = {i for i in [idx_desconto] if i is not None}
+
+                # Dados
+                for r in range(linhas):
+                    row_data = []
+                    for c in range(colunas):
+                        item = tabela.item(r, c)
+                        txt = item.text().strip() if item and item.text() else ""
+
+                        if c in money_cols:
+                            row_data.append(parse_brl(txt))
+                        elif c in percent_cols:
+                            row_data.append(parse_percent(txt))
+                        else:
+                            row_data.append(txt)
+
+                    ws.append(row_data)
+
+                # Estilos
+                centro = Alignment(horizontal="center", vertical="center")
+                for row in ws.iter_rows(min_row=1, max_row=linhas + 1, min_col=1, max_col=colunas):
+                    for cell in row:
+                        cell.alignment = centro
+
+                for cell in ws[1]:
+                    cell.font = Font(bold=True)
+
+                # Formatos numéricos
+                for c in money_cols:
+                    col_excel = c + 1
+                    for r in range(2, linhas + 2):
+                        cell = ws.cell(row=r, column=col_excel)
+                        if cell.value is not None:
+                            cell.number_format = u'R$ #,##0.00'
+
+                for c in percent_cols:
+                    col_excel = c + 1
+                    for r in range(2, linhas + 2):
+                        cell = ws.cell(row=r, column=col_excel)
+                        if cell.value is not None:
+                            cell.number_format = '0%'
+
+                # Auto largura
+                for c in range(1, colunas + 1):
+                    max_len = 0
+                    col_letter = get_column_letter(c)
+
+                    for cell in ws[col_letter]:
+                        if cell.value is None:
+                            continue
+
+                        if (c - 1) in money_cols and isinstance(cell.value, (int, float)):
+                            s = f"R$ {cell.value:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
+                        elif (c - 1) in percent_cols and isinstance(cell.value, (int, float)):
+                            s = f"{cell.value * 100:.2f}%"
+                        else:
+                            s = str(cell.value)
+
+                        max_len = max(max_len, len(s))
+
+                    ws.column_dimensions[col_letter].width = min(max_len + 2, 45)
+
+            # =========================
+            # Criar abas conforme a escolha
+            # =========================
+            abas_criadas = 0
+
+            if exportar_base and not base_vazia:
+                ws_base = wb.create_sheet("Estoque")
+                preencher_aba(ws_base, self.table_base)
+                abas_criadas += 1
+
+            if exportar_saida and not saida_vazia:
+                ws_saida = wb.create_sheet("Saída")
+                preencher_aba(ws_saida, self.table_saida)
+                abas_criadas += 1
+
+            # Se por algum motivo não criou nenhuma aba, cria uma de aviso (blindagem)
+            if abas_criadas == 0:
+                ws_aviso = wb.create_sheet("Aviso")
+                ws_aviso["A1"] = "Nenhum dado para exportar."
+
+            # remove a aba padrão só depois que já garantimos outra(s)
+            if aba_padrao.title in wb.sheetnames and len(wb.sheetnames) > 1:
+                wb.remove(aba_padrao)
+
+            wb.save(caminho)
+
+            QMessageBox.information(self, "Excel Gerado", "O Excel foi gerado com sucesso!")
 
         except Exception as e:
-            msg = QMessageBox(self)
-            msg.setIcon(QMessageBox.Critical)
-            msg.setWindowTitle("Erro")
-            msg.setText(f"Erro ao gerar PDF: {str(e)}")
-            msg.exec()
+            QMessageBox.critical(self, "Erro", f"Erro ao gerar Excel: {str(e)}")
+
+
 
 
 
@@ -2116,20 +2316,20 @@ class EstoqueProduto(QWidget):
             QMessageBox.warning(self, "Aviso", "Nenhum histórico encontrado para gerar arquivo CSV.")
             return  # Se a tabela estiver vazia, encerra a função sem prosseguir
 
-        nome_arquivo, _ = QFileDialog.getSaveFileName(
-            None,
-            "Salvar Arquivo CSV",
-            "historico.csv",
-            "Arquivos CSV (*.csv)"
-
+        caminho = salvar_dialogo_memoria(
+            parent=self,
+            chave="excel_csv",
+            titulo="Salvar Excel em CSV",
+            nome_padrao="Histórico Produtos CSV",
+            filtro="Excel (*.csv)"
         )
 
-        if not nome_arquivo:
+        if not caminho:
             return
         
         #Criar o arquivo CSV
         try:
-            with open(nome_arquivo, mode="w",newline="",encoding="utf-8-sig") as arquivo_csv:
+            with open(caminho, mode="w",newline="",encoding="utf-8-sig") as arquivo_csv:
                 escritor = csv.writer(arquivo_csv, delimiter=";")
 
                  # Adicionar cabeçalhos ao CSV
@@ -2145,7 +2345,7 @@ class EstoqueProduto(QWidget):
                     ]
                     escritor.writerow(dados_linhas)
 
-                    QMessageBox.information(self, "Sucesso", f"Arquivo CSV salvo com sucesso em:\n{nome_arquivo}")
+                QMessageBox.information(self, "Sucesso", f"Arquivo CSV salvo com sucesso em:\n{caminho}")
 
         except Exception as e:
             QMessageBox.critical(self, "Erro", f"Falha ao salvar o arquivo CSV:\n{str(e)}")
@@ -2160,24 +2360,23 @@ class EstoqueProduto(QWidget):
             QMessageBox.warning(self, "Aviso", "Nenhum histórico encontrado para gerar arquivo Excel.")
             return  # Se a tabela estiver vazia, encerra a função sem prosseguir
         
-        nome_arquivo, _ = QFileDialog.getSaveFileName(
-            self,
-            "Salvar Arquivo Excel",
-            "historico.xlsx",
-            "Arquivos Excel (*.xlsx)"
-
+        caminho = salvar_dialogo_memoria(
+            parent=self,
+            chave="excel_historico_produtos",
+            titulo="Salvar Histórico de Produtos",
+            nome_padrao="Histórico Produtos",
+            filtro="Excel (*.xlsx)"
         )
 
-        if not nome_arquivo:
+        if not caminho:
             return
         
         # Garantir que o arquivo tenha extensão .xlsx
-        if not nome_arquivo.endswith(".xlsx"):
-            nome_arquivo += ".xlsx"
+        if not caminho.endswith(".xlsx"):
+            caminho += ".xlsx"
 
         # Criar uma lista para armazenar os dados da tabela
         dados = []
-
 
         for linha in range(num_linhas):
             linha_dados = []
@@ -2189,15 +2388,14 @@ class EstoqueProduto(QWidget):
         # Obter os cabeçalhos da tabela        
         cabecalhos = [self.tabela_historico.horizontalHeaderItem(coluna).text() for coluna in range (num_colunas)]
 
-        
 
         try:
             # Criar um DataFrame do pandas com os dados e cabeçalhos
             df = pd.DataFrame(dados, columns=cabecalhos)
 
             # Exportar para Excel
-            df.to_excel(nome_arquivo, index=False,engine="openpyxl")
-            QMessageBox.information(self, "Sucesso",f"Arquivo Excel gerado com sucesso em: \n{nome_arquivo}")
+            df.to_excel(caminho, index=False,engine="openpyxl")
+            QMessageBox.information(self, "Sucesso",f"Arquivo Excel gerado com sucesso em: \n{caminho}")
         except Exception as e:
             QMessageBox.critical(self, "Erro",f"Erro ao salvar arquivo Excel: {str(e)}")
 
@@ -2212,19 +2410,20 @@ class EstoqueProduto(QWidget):
             QMessageBox.warning(self, "Aviso", "Nenhum histórico encontrado para gerar arquivo PDF.")
             return  # Se a tabela estiver vazia, encerra a função sem prosseguir
 
-        nome_arquivo, _ = QFileDialog.getSaveFileName(
-            self,
-            "Salvar Arquivo PDF",
-            "historico.pdf",
-            "Arquivos PDF (*.pdf)"
+        caminho = salvar_dialogo_memoria(
+            parent=self,
+            chave="pdf_historico_produtos",
+            titulo="Salvar PDF",
+            nome_padrao="Histórico de Produtos",
+            filtro="PDF (*.pdf)"
         )
 
-        if not nome_arquivo:
+        if not caminho:
             return
 
         # Garantir que o arquivo tenha extensão .pdf
-        if not nome_arquivo.endswith(".pdf"):
-            nome_arquivo += ".pdf"
+        if not caminho.endswith(".pdf"):
+            caminho += ".pdf"
 
         # Criar uma lista para armazenar os dados da tabela
         dados = []
@@ -2243,7 +2442,7 @@ class EstoqueProduto(QWidget):
 
         try:
             # Criar o PDF
-            pdf = SimpleDocTemplate(nome_arquivo, pagesize=landscape(letter))
+            pdf = SimpleDocTemplate(caminho, pagesize=landscape(letter))
             tabela = Table(dados)
 
             # Adicionar estilo à tabela
@@ -2260,7 +2459,7 @@ class EstoqueProduto(QWidget):
 
             # Gerar o PDF
             pdf.build([tabela])
-            QMessageBox.information(self, "Sucesso", f"Arquivo PDF gerado com sucesso em: \n{nome_arquivo}")
+            QMessageBox.information(self, "Sucesso", f"Arquivo PDF gerado com sucesso em: \n{caminho}")
 
         except Exception as e:
             QMessageBox.critical(self, "Erro", f"Erro ao salvar arquivo PDF: {str(e)}")
@@ -2285,54 +2484,6 @@ class EstoqueProduto(QWidget):
         self.main_window.historico_pausado = False  # Atualiza a variável no MainWindow
         QMessageBox.information(self, "Histórico", "O registro do histórico continua ativo.")
 
-    def importar_produto(self):
-        # Verificar se a tabela está vazia
-        if self.table_base.rowCount() == 0 and self.table_saida.rowCount() == 0:
-            QMessageBox.warning(self, "Aviso", "Nenhum dado encontrado para gerar arquivo Excel.")
-            return  # Se a tabela estiver vazia, encerra a função sem prosseguir
-        
-        nome_arquivo, _ = QFileDialog.getSaveFileName(
-            None,
-            "Salvar Arquivo Excel",
-            "relatório.xlsx",
-            "Arquivos Excel (*.xlsx)"
-
-        )
-
-        if not nome_arquivo:
-            return
-        
-        # Garantir que o arquivo tenha extensão .xlsx
-        if not nome_arquivo.endswith(".xlsx"):
-            nome_arquivo += ".xlsx"
-
-        try:
-            with pd.ExcelWriter(nome_arquivo, engine="openpyxl") as writer:
-                def tabela_para_dataframe(tabela):
-                    dados = []
-                    cabecalhos = [tabela.horizontalHeaderItem(col).text() for col in range(tabela.columnCount())]
-                    for linha in range(tabela.rowCount()):
-                        linha_dados = []
-                        for coluna in range(tabela.columnCount()):
-                            item = tabela.item(linha, coluna)
-                            linha_dados.append(item.text() if item else "")
-                        dados.append(linha_dados)
-                    return pd.DataFrame(dados, columns=cabecalhos)
-                
-                # Converter e salvar a tabela de estoque
-                if self.table_base.rowCount() > 0:
-                    df_saida = tabela_para_dataframe(self.table_base)
-                    df_saida.to_excel(writer, sheet_name="Estoque", index=False)
-                
-                # Converter e salvar a tabela de saída
-                if self.table_saida.rowCount() > 0:
-                    df_estoque = tabela_para_dataframe(self.table_saida)
-                    df_estoque.to_excel(writer, sheet_name="Saída", index=False)
-        
-            QMessageBox.information(self, "Sucesso", f"Arquivo Excel gerado com sucesso em:\n{nome_arquivo}")
-        
-        except Exception as e:
-            QMessageBox.critical(self, "Erro", f"Erro ao salvar arquivo Excel: {str(e)}")
 
     # Limpa a coluna selecionada clicando em qualquer lugar da tabela
     def eventFilter(self, source, event):
@@ -2353,15 +2504,21 @@ class EstoqueProduto(QWidget):
 
     def abrir_planilha_em_massa_produtos(self):
         # Abrir o diálogo para selecionar o arquivo Excel
-        nome_arquivo, _ = QFileDialog.getOpenFileName(self, "Abrir Arquivo Excel", "", "Arquivos Excel (*.xlsx)")
+        caminho = abrir_dialogo_memoria(
+            parent=self,
+            chave="excel_planilha_produtos_massa",
+            titulo="Selecionar Planilha",
+            filtro="Excel (*.xlsx)"
+        )
+
 
         # Se o usuário cancelar a seleção do arquivo
-        if not nome_arquivo:
+        if not caminho:
             return
         
         # Alterar o texto da line_excel para "Carregando arquivo Excel..."
         self.line_edit_massa_produtos.setText("Carregando arquivo Excel...")
-        self.nome_arquivo_excel_massa = nome_arquivo
+        self.caminho_excel_massa = caminho
 
         # Inicializar a barra de progresso
         self.progress_massa_produtos.setValue(0)
@@ -2371,6 +2528,7 @@ class EstoqueProduto(QWidget):
         self.timer_excel_massa = QTimer()
         self.timer_excel_massa.timeout.connect(self.atualizar_progress_excel_massa)
         self.timer_excel_massa.start(20)
+        
 
     def atualizar_progress_excel_massa(self):
         if self.progresso_massa < 100:
@@ -2382,7 +2540,7 @@ class EstoqueProduto(QWidget):
                 df = pd.read_excel(self.nome_arquivo_excel_massa, engine="openpyxl", header=0)
                 df = df.fillna("Não informado")
 
-                coluna_table_massa_produtos = ["Produto", "Quantidade", "Valor do Produto", "Desconto", "Data da Compra",
+                coluna_table_massa_produtos = ["Produto", "Quantidade", "Valor Unitário", "Desconto", "Data do Cadastro",
                                             "Código do Item", "Cliente", "Descrição do Produto"]
                 if df.shape[1] != len(coluna_table_massa_produtos):
                     QMessageBox.warning(self, "Erro", "O número de colunas no arquivo Excel não corresponde ao número esperado.")
@@ -2400,9 +2558,9 @@ class EstoqueProduto(QWidget):
                     return
                 self.table_massa_produtos.setRowCount(0)
 
-                if df["Valor do Produto"].dtype != object or not df["Valor do Produto"].iloc[0].startswith("R$"):
-                    df["Valor do Produto"] = pd.to_numeric(df["Valor do Produto"], errors="coerce").fillna(0)
-                    df["Valor do Produto"] = df["Valor do Produto"].apply(
+                if df["Valor Unitário"].dtype != object or not df["Valor Unitário"].iloc[0].startswith("R$"):
+                    df["Valor Unitário"] = pd.to_numeric(df["Valor Unitário"], errors="coerce").fillna(0)
+                    df["Valor Unitário"] = df["Valor Unitário"].apply(
                         lambda x: f"R$ {x:,.2f}".replace(",", "_").replace(".", ",").replace("_", ".")
                     )
 
@@ -2412,10 +2570,10 @@ class EstoqueProduto(QWidget):
                     lambda x: "Sem desconto" if x == 0  else f"{x:.2f}%" if x < 1 else f"{x / 100:.2f}%"
                 )
 
-                if "Data da Compra" in df.columns:
-                    df["Data da Compra"] = pd.to_datetime(df["Data da Compra"], errors="coerce").dt.strftime('%d/%m/%Y')
+                if "Data do Cadastro" in df.columns:
+                    df["Data do Cadastro"] = pd.to_datetime(df["Data do Cadastro"], errors="coerce").dt.strftime('%d/%m/%Y')
                 else:
-                    df["Data da Compra"] = ""
+                    df["Data do Cadastro"] = ""
                 for _, row in df.iterrows():
                     row_position = self.table_massa_produtos.rowCount()
                     self.table_massa_produtos.insertRow(row_position)
@@ -2514,10 +2672,10 @@ class EstoqueProduto(QWidget):
                 produto_info = {
                     "produto": produto,
                     "quantidade": quantidade,
-                    "valor_produto": valor_produto,
+                    "valor_unitario": valor_produto,
                     "desconto": desconto,
                     "total_sem_desconto": total_sem_desconto,
-                    "valor_total": valor_total,
+                    "total_com_desconto": valor_total,
                     "data_cadastro": data_cadastro,
                     "codigo_item": codigo_aleatorio,
                     "cliente": cliente,

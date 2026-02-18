@@ -1,17 +1,17 @@
-from PySide6.QtWidgets import (QDialog, QPushButton, QVBoxLayout, QTableWidget, 
-                               QTableWidgetItem, QMessageBox, QCheckBox, QLabel, QLineEdit, 
-                               QLabel, QFrame,QMainWindow,QWidget,QComboBox,QHeaderView,
-                               QAbstractItemView,QHBoxLayout,QFileDialog)
+from PySide6.QtWidgets import (QPushButton, QVBoxLayout, QTableWidget, 
+                               QTableWidgetItem, QMessageBox, QCheckBox, QLabel, 
+                               QLabel, QFrame,QMainWindow,QWidget,QHeaderView,
+                               QHBoxLayout)
 from PySide6 import QtWidgets
-from PySide6.QtGui import QPixmap, Qt, QImage,QBrush, QColor
-from PySide6.QtCore import  Qt,QEvent,QTimer
+from PySide6.QtGui import QPixmap, Qt,QBrush, QColor
+from PySide6.QtCore import  Qt,QTimer
 from PySide6 import QtCore
 from database import DataBase, sqlite3
 import base64
 import re
 import os
 from configuracoes import Configuracoes_Login
-from utils import Temas
+from utils import Temas,salvar_dialogo_memoria
 from dialogos import FiltroUsuarioDialog
 import pandas as pd
 from openpyxl import load_workbook
@@ -1331,8 +1331,14 @@ class TabelaUsuario(QMainWindow):
         df = pd.DataFrame(dados_usuarios, columns=cabecalhos)
 
         # Abre um diálogo para salvar o arquivo
-        caminho_arquivo, _ = QFileDialog.getSaveFileName(self,"Salvar Arquivo Excel","Tabela de Usuários","Arquivo Excel(*.xlsx)")
-
+        caminho_arquivo = salvar_dialogo_memoria(
+            parent=self,
+            chave="excel_tabela_usuarios",
+            titulo="Salvar Excel",
+            nome_padrao="Tabela Usuários",
+            filtro="Excel (*.xlsx)"
+        )
+        
         if caminho_arquivo:
             # Salvao o DataFrame como um arquivo Excel
             df.to_excel(caminho_arquivo,index=False,engine="openpyxl",sheet_name=nome_pagina)
@@ -1361,7 +1367,7 @@ class TabelaUsuario(QMainWindow):
                 sheet.column_dimensions[col_letter].width = max_length + 2
         # Salvar as alterações
         openn.save(caminho_arquivo)
-        QMessageBox.information(self,"Aviso","Arquivo excel gerado com sucesso")
+        QMessageBox.information(None,"Aviso","Arquivo excel gerado com sucesso")
 
 
     # Função auxiliar para criar um QTableWidgetItem com texto centralizado e branco

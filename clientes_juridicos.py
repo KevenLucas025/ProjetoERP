@@ -10,7 +10,7 @@ import sqlite3
 import pandas as pd
 from configuracoes import Configuracoes_Login
 from utils import Temas
-from utils import caminho_recurso
+from utils import caminho_recurso,salvar_dialogo_memoria,abrir_dialogo_memoria
 from datetime import datetime
 from dialogos import ComboDialog,DialogoSenha,ConfirmacaoDialog
 import csv
@@ -1540,7 +1540,7 @@ class Clientes_Juridicos(QWidget):
             #  Se o modo for automático, recalcular Valor Gasto Total
             if "automatico" in dados_atualizados["Modo Valor Gasto"].lower():
                 cursor.execute("""
-                    SELECT "Valor Total"
+                    SELECT "Total Com Desconto"
                     FROM products
                     WHERE CNPJ = ?
                 """, (cnpj,))
@@ -1690,7 +1690,7 @@ class Clientes_Juridicos(QWidget):
                 
             # --- CALCULAR VALOR GASTO TOTAL SE JÁ EXISTIREM PRODUTOS ---
             cursor.execute("""
-                SELECT "Valor Total", "Data do Cadastro"
+                SELECT "Total Com Desconto", "Data do Cadastro"
                 FROM products
                 WHERE CNPJ = ?
             """, (cnpj,))
@@ -3300,20 +3300,21 @@ class Clientes_Juridicos(QWidget):
             QMessageBox.warning(self, "Aviso", "Nenhum histórico encontrado para gerar arquivo CSV.")
             return  # Se a tabela estiver vazia, encerra a função sem prosseguir
 
-        nome_arquivo, _ = QFileDialog.getSaveFileName(
+        caminho = salvar_dialogo_memoria(
             self,
-            "Salvar Arquivo CSV",
-            "historico.csv",
-            "Arquivos CSV (*.csv)"
-
+            chave="excel_csv_juridicos",
+            titulo="Salvar CSV Clientes Juridícos",
+            nome_padrao="CSV Juridícos",
+            filtro="CSV (*.csv)"
         )
 
-        if not nome_arquivo:
+
+        if not caminho:
             return
         
         #Criar o arquivo CSV
         try:
-            with open(nome_arquivo, mode="w",newline="",encoding="utf-8-sig") as arquivo_csv:
+            with open(caminho, mode="w",newline="",encoding="utf-8-sig") as arquivo_csv:
                 escritor = csv.writer(arquivo_csv, delimiter=";")
 
                  # Adicionar cabeçalhos ao CSV
@@ -3329,7 +3330,7 @@ class Clientes_Juridicos(QWidget):
                     ]
                     escritor.writerow(dados_linhas)
 
-                QMessageBox.information(self, "Sucesso", f"Arquivo CSV salvo com sucesso em:\n{nome_arquivo}")
+                QMessageBox.information(self, "Sucesso", f"Arquivo CSV salvo com sucesso em:\n{caminho}")
 
         except Exception as e:
             QMessageBox.critical(self, "Erro", f"Falha ao salvar o arquivo CSV:\n{str(e)}")
@@ -3343,20 +3344,21 @@ class Clientes_Juridicos(QWidget):
             QMessageBox.warning(self, "Aviso", "Nenhum histórico encontrado para gerar arquivo Excel.")
             return  # Se a tabela estiver vazia, encerra a função sem prosseguir
         
-        nome_arquivo, _ = QFileDialog.getSaveFileName(
+        caminho = salvar_dialogo_memoria(
             self,
-            "Salvar Arquivo Excel",
-            "historico.xlsx",
-            "Arquivos Excel (*.xlsx)"
-
+            chave="excel_juridicos",
+            titulo="Salvar Excel Clientes Juridícos",
+            nome_padrao="Excel Juridícos",
+            filtro="Excel (*.xlsx)"
         )
 
-        if not nome_arquivo:
+
+        if not caminho:
             return
         
         # Garantir que o arquivo tenha extensão .xlsx
-        if not nome_arquivo.endswith(".xlsx"):
-            nome_arquivo += ".xlsx"
+        if not caminho.endswith(".xlsx"):
+            caminho += ".xlsx"
 
         # Criar uma lista para armazenar os dados da tabela
         dados = []
@@ -3377,8 +3379,8 @@ class Clientes_Juridicos(QWidget):
             df = pd.DataFrame(dados, columns=cabecalhos)
 
             # Exportar para Excel
-            df.to_excel(nome_arquivo, index=False,engine="openpyxl")
-            QMessageBox.information(self, "Sucesso",f"Arquivo Excel gerado com sucesso em: \n{nome_arquivo}")
+            df.to_excel(caminho, index=False,engine="openpyxl")
+            QMessageBox.information(self, "Sucesso",f"Arquivo Excel gerado com sucesso em: \n{caminho}")
         except Exception as e:
             QMessageBox.critical(self, "Erro",f"Erro ao salvar arquivo Excel: {str(e)}")
 
@@ -3391,19 +3393,21 @@ class Clientes_Juridicos(QWidget):
             QMessageBox.warning(self, "Aviso", "Nenhum histórico encontrado para gerar arquivo PDF.")
             return  # Se a tabela estiver vazia, encerra a função sem prosseguir
 
-        nome_arquivo, _ = QFileDialog.getSaveFileName(
+        caminho = salvar_dialogo_memoria(
             self,
-            "Salvar Arquivo PDF",
-            "historico.pdf",
-            "Arquivos PDF (*.pdf)"
+            chave="pdf_juridicos",
+            titulo="Salvar PDF Clientes Juridícos",
+            nome_padrao="PDF Juridícos",
+            filtro="PDF (*.pdf)"
         )
 
-        if not nome_arquivo:
+
+        if not caminho:
             return
 
         # Garantir que o arquivo tenha extensão .pdf
-        if not nome_arquivo.endswith(".pdf"):
-            nome_arquivo += ".pdf"
+        if not caminho.endswith(".pdf"):
+            caminho += ".pdf"
 
         # Criar uma lista para armazenar os dados da tabela
         dados = []
@@ -3422,7 +3426,7 @@ class Clientes_Juridicos(QWidget):
 
         try:
             # Criar o PDF
-            pdf = SimpleDocTemplate(nome_arquivo, pagesize=landscape(letter))
+            pdf = SimpleDocTemplate(caminho, pagesize=landscape(letter))
             estilos = getSampleStyleSheet()
 
             titulo = Paragraph("<b>Histórico de Clientes Jurídicos</b>", estilos['Title'])
@@ -3446,7 +3450,7 @@ class Clientes_Juridicos(QWidget):
 
             # Construir PDF com título + espaço + tabela
             pdf.build([titulo,espacamento,tabela])
-            QMessageBox.information(self, "Sucesso", f"Arquivo PDF gerado com sucesso em: \n{nome_arquivo}")
+            QMessageBox.information(self, "Sucesso", f"Arquivo PDF gerado com sucesso em: \n{caminho}")
 
         except Exception as e:
             QMessageBox.critical(self, "Erro", f"Erro ao salvar arquivo PDF: {str(e)}")
@@ -4139,7 +4143,7 @@ class Clientes_Juridicos(QWidget):
             AND (
                 `Última Compra` = 'Não Cadastrado' OR
                 (
-                    length(`Última Compra`) = 10 AND
+                    length(`Última Compra`) >= 10 AND
                     substr(`Última Compra`, 3, 1) = '/' AND
                     substr(`Última Compra`, 6, 1) = '/' AND
                     substr(`Última Compra`, 7, 4) || '-' || 
@@ -4152,10 +4156,8 @@ class Clientes_Juridicos(QWidget):
 
         params.append(data_de.strftime("%Y-%m-%d"))
         params.append(data_ate.strftime("%Y-%m-%d"))
-
         try:
-            conn = sqlite3.connect(self.db.db_path)
-            cursor = conn.cursor()
+            cursor = self.db.connection.cursor()
             cursor.execute(sql, params)
             resultados = cursor.fetchall()
         except Exception as e:
@@ -4166,14 +4168,15 @@ class Clientes_Juridicos(QWidget):
             QMessageBox.information(self, "Aviso", "Nenhum cliente encontrado com os filtros aplicados")
             return
 
-        caminho_pdf, _ = QFileDialog.getSaveFileName(
+        caminho = salvar_dialogo_memoria(
             self,
-            "Salvar Relatório",
-            "relatorio_clientes_juridicos.pdf",
-            "Arquivos PDF (*.pdf)"
+            chave="pdf_clientes_juridicos",
+            titulo="Salvar PDF Clientes Juridícos",
+            nome_padrao="PDF Clientes Juridícos",
+            filtro="PDF (*.pdf)"
         )
 
-        if not caminho_pdf:
+        if not caminho:
             return
 
         try:
@@ -4242,7 +4245,7 @@ class Clientes_Juridicos(QWidget):
                         max_altura = altura
                     pdf.set_xy(x + largura, y)
                 pdf.set_y(y_inicial + max_altura)
-            pdf.output(caminho_pdf)
+            pdf.output(caminho)
             QMessageBox.information(self, "Sucesso", "Relatório gerado com sucesso.")
 
         except Exception as e:
@@ -4306,7 +4309,7 @@ class Clientes_Juridicos(QWidget):
             AND (
                 `Última Compra` = 'Não Cadastrado' OR
                 (
-                    length(`Última Compra`) = 10 AND
+                    length(`Última Compra`) >= 10 AND
                     substr(`Última Compra`, 3, 1) = '/' AND
                     substr(`Última Compra`, 6, 1) = '/' AND
                     substr(`Última Compra`, 7, 4) || '-' || 
@@ -4331,26 +4334,28 @@ class Clientes_Juridicos(QWidget):
             QMessageBox.information(self, "Aviso", "Nenhum cliente encontrado com os filtros aplicados")
             return
 
-        caminho_excel, _ = QFileDialog.getSaveFileName(
+        caminho = salvar_dialogo_memoria(
             self,
-            "Salvar Relatório",
-            "relatorio_clientes_juridicos.xlsx",
-            "Arquivos Excel (*.xlsx)"
+            chave="excel_juridicos_relatorios",
+            titulo="Salvar Relatório Excel Clientes Juridícos",
+            nome_padrao="Excel Relatório Juridícos",
+            filtro="Excel (*.xlsx)"
         )
 
-        if not caminho_excel:
-            return
 
+        if not caminho:
+            return
+        
         try:
             # Criar um DataFrame do pandas com os dados
             df = pd.DataFrame(resultados,columns=campos_selecionados)
             
             # Salva como Excel usando openpyxl
             sheet_name = "Relatório de Clientes Jurídicos"
-            df.to_excel(caminho_excel,index=False,engine='openpyxl',sheet_name=sheet_name)
+            df.to_excel(caminho,index=False,engine='openpyxl',sheet_name=sheet_name)
             
             # Reabre o Excel com openpyxl para aplicar formatações
-            wb = load_workbook(caminho_excel)
+            wb = load_workbook(caminho)
             ws = wb[sheet_name]
             
             for col in ws.columns:
@@ -4363,7 +4368,7 @@ class Clientes_Juridicos(QWidget):
                     except:
                         pass
                 ws.column_dimensions[col_letter].width = max_length + 2  # Ajusta a largura da coluna    
-            wb.save(caminho_excel)
+            wb.save(caminho)
             QMessageBox.information(self, "Sucesso", "Relatório Excel gerado com sucesso.")
         except Exception as e:
             QMessageBox.critical(self, "Erro", f"Erro ao gerar Excel:\n{e}")

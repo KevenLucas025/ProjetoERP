@@ -12,7 +12,7 @@ import pandas as pd
 import os
 from dialogos import ComboDialog,FiltroProdutoDialog
 from datetime import datetime
-from utils import Temas
+from utils import Temas,salvar_dialogo_memoria,abrir_dialogo_memoria
 
 
 
@@ -46,7 +46,6 @@ class TabelaProdutos(QMainWindow):
         # Variável para rastrear se a coluna de checkboxes está visível
         self.coluna_checkboxes_produtos_adicionada = False
 
-
         cursor = None
 
         config = self.temas.carregar_config_arquivo()
@@ -58,13 +57,12 @@ class TabelaProdutos(QMainWindow):
         self.table_widget.setColumnCount(13)  # Definindo o número de colunas
         self.table_widget.setObjectName("tabelaProdutos")
         self.setStyleSheet(self.aplicar_tema(self.tema))
-        self.table_widget.setHorizontalHeaderLabels(["ID", "Produto", "Quantidade", "Valor do Produto", 
-                                                     "Desconto","Total Sem Desconto","Valor Total", "Data do Cadastro", "Código do Produto", 
+        self.table_widget.setHorizontalHeaderLabels(["ID", "Produto", "Quantidade", "Valor Unitário", 
+                                                     "Desconto","Total Sem Desconto"," Total Com Desconto", "Data do Cadastro", "Código do Produto", 
                                                      "Cliente", "Descrição do Produto","Usuário","Status da Saída"])  # Definindo os rótulos das colunas
         
         self.table_widget.horizontalHeader().setSectionResizeMode(QHeaderView.Interactive)
         
-
         
          # Widget central e layout principal vertical
         widget_central = QWidget()
@@ -112,8 +110,6 @@ class TabelaProdutos(QMainWindow):
         self.setCentralWidget(widget_central)
 
         self.preencher_tabela_produtos()
-        
-        
         
 
         botoes = [
@@ -781,21 +777,19 @@ class TabelaProdutos(QMainWindow):
         # Limpar a tabela antes de preencher
         self.table_widget.setRowCount(0)
 
-        # Conectar ao banco de dados
-        db = DataBase()
         try:
-            db.connecta()
 
             # Obter os produtos do banco de dados
-            produtos = db.get_products()
+            produtos = self.db.get_products()
 
             # Preencher a tabela com os dados dos produtos
             for produto in produtos:
                 row_position = self.table_widget.rowCount()
                 self.table_widget.insertRow(row_position)
                 for col, data in enumerate(produto):
-                    item = QTableWidgetItem(str(data))
-                    self.table_widget.setItem(row_position, col, item)
+                    self.table_widget.setItem(
+                        row_position, col, self.formatar_texto(data)
+                    )
             self.table_widget.resizeColumnsToContents()  # Ajustar as colunas para o conteúdo
             self.table_widget.resizeRowsToContents()  # Ajustar as linhas para o conteúdo
 
@@ -807,8 +801,6 @@ class TabelaProdutos(QMainWindow):
 
         except Exception as e:
             QMessageBox.critical(self, "Erro", f"Erro ao acessar o banco de dados: {str(e)}")
-        finally:
-            pass
 #*******************************************************************************************************
     def exibir_mensagem_sem_produtos(self):
         if self.tema == "escuro":
@@ -970,7 +962,7 @@ class TabelaProdutos(QMainWindow):
 
     def obter_produto_por_filtro(self, campo, valor):
         query = f"""
-            SELECT id,Produto,Quantidade,Valor_Real,Desconto,"Valor Total","Data do Cadastro",
+            SELECT id,Produto,Quantidade,"Valor Unitário",Desconto,"Total Com Desconto","Data do Cadastro",
             Código_Item,Cliente,Descrição_Produto,Usuário,"Status da Saída"
             FROM products
             WHERE "{campo}" LIKE ?
@@ -1297,7 +1289,7 @@ class TabelaProdutos(QMainWindow):
         # Pegar os dados da linha selecionada da tabela
         produto_nome = self.table_widget.item(linha_produto, coluna_nome).text()
         produto_quantidade = self.table_widget.item(linha_produto, coluna_quantidade).text()
-        produto_valor_real = self.table_widget.item(linha_produto, coluna_valor).text()
+        produto_valor_unitario = self.table_widget.item(linha_produto, coluna_valor).text()
         produto_desconto = self.table_widget.item(linha_produto, coluna_desconto).text()
         produto_dateEdit = self.table_widget.item(linha_produto, coluna_dateEdit).text()
         produto_codigo_item = self.table_widget.item(linha_produto, coluna_codigo_item).text()
@@ -1322,7 +1314,7 @@ class TabelaProdutos(QMainWindow):
         self.main_window.produto_selecionado = {
             "produto": produto_nome if produto_nome.strip() else "Não Cadastrado",
             "quantidade": int(produto_quantidade) if produto_quantidade.strip() else "Não Cadastrado",
-            "valor_produto": float(produto_valor_real.replace('R$', '').replace('.', '').replace(',', '.').strip()) if produto_valor_real.strip() else "Não Cadastrado",
+            "valor_unitario": float(produto_valor_unitario.replace('R$', '').replace('.', '').replace(',', '.').strip()) if produto_valor_unitario.strip() else "Não Cadastrado",
             "desconto": desconto if desconto else "Sem desconto", # Tratado como número para cálculos
             "data_cadastro": produto_dateEdit if produto_dateEdit.strip() else "Não Cadastrado",
             "codigo_item": produto_codigo_item if produto_codigo_item.strip() else "Não Cadastrado",
@@ -1335,7 +1327,7 @@ class TabelaProdutos(QMainWindow):
         # Joga os dados nas suas respectivas posições
         self.main_window.txt_produto.setText(produto_nome)
         self.main_window.txt_quantidade.setText(produto_quantidade)
-        self.main_window.txt_valor_produto_3.setText(produto_valor_real)
+        self.main_window.txt_valor_produto_3.setText(produto_valor_unitario)
         self.date_edit.setDate(QDate.fromString(produto_dateEdit, "dd/MM/yyyy"))
         self.main_window.txt_codigo_item.setText(produto_codigo_item)
         self.main_window.txt_cliente_3.setText(produto_cliente)
@@ -1347,12 +1339,12 @@ class TabelaProdutos(QMainWindow):
 
         try:
             # Remover símbolo da moeda e converter para float
-            valor_produto_str = produto_valor_real.replace('R$', '').replace('.', '').replace(',', '.').strip()
+            valor_produto_str = produto_valor_unitario.replace('R$', '').replace('.', '').replace(',', '.').strip()
             if not valor_produto_str:
                 self.main_window.txt_valor_produto_3.setText("Não Cadastrado")
-                produto_valor_real = 0.0
+                produto_valor_unitario = 0.0
             else:
-                produto_valor_real = float(valor_produto_str)
+                produto_valor_unitario = float(valor_produto_str)
 
             # Converter quantidade para inteiro
             quantidade_str = produto_quantidade.strip()
@@ -1375,7 +1367,7 @@ class TabelaProdutos(QMainWindow):
 
 
             # Calcular valores
-            valor_total = produto_valor_real * produto_quantidade
+            valor_total = produto_valor_unitario * produto_quantidade
             valor_desconto = valor_total * (produto_desconto / 100)
             valor_com_desconto = valor_total - valor_desconto
 
@@ -1383,7 +1375,7 @@ class TabelaProdutos(QMainWindow):
             self.atualizar_valores_frames_apos_recuperar(valor_total, valor_com_desconto, valor_desconto, produto_quantidade)
 
             # Registrar a edição no histórico
-            descricao_edicao = f"Produto {produto_nome} foi editado. Novos valores: quantidade {produto_quantidade}, valor {produto_valor_real}, desconto {produto_desconto}%."
+            descricao_edicao = f"Produto {produto_nome} foi editado. Novos valores: quantidade {produto_quantidade}, valor {produto_valor_unitario}, desconto {produto_desconto}%."
             self.main_window.registrar_historico("Edição de Produto", descricao_edicao)
 
 
@@ -1696,7 +1688,7 @@ class TabelaProdutos(QMainWindow):
     
     def carregar_tabela_produtos(self):
         cursor = self.db.connection.cursor()
-        cursor.execute('SELECT id, Produto, Quantidade, Valor_Real, Desconto,"Total Sem Desconto", "Valor Total", "Data do Cadastro", '
+        cursor.execute('SELECT id, Produto, Quantidade, "Valor Unitário", Desconto,"Total Sem Desconto", "Total Com Desconto", "Data do Cadastro", '
                     'Código_Item, Cliente, Descrição_Produto, "Usuário","Status da Saída" '
                     'FROM products ORDER BY id ASC')  # Ordem crescente
 
@@ -1705,11 +1697,11 @@ class TabelaProdutos(QMainWindow):
         self.table_widget.setSortingEnabled(False)  # Impede bagunça enquanto carrega
         self.table_widget.clearContents()
         self.table_widget.setRowCount(len(registros))
-
+        
         deslocamento = 1 if self.coluna_checkboxes_produtos_adicionada else 0
         self.checkboxes = []  # Zera os checkboxes
 
-        for i, (id, produto, quantidade, valor_real, total_sem_desconto,desconto, valor_total, data_cadastro,
+        for i, (id, produto, quantidade, valor_unitario,desconto, total_sem_desconto, total_com_desconto, data_cadastro,
                 codigo_item, cliente, descricao_produto, usuario,status_da_saida) in enumerate(registros):
 
             if self.coluna_checkboxes_produtos_adicionada:
@@ -1718,23 +1710,25 @@ class TabelaProdutos(QMainWindow):
                 self.table_widget.setCellWidget(i, 0, checkbox)
                 self.checkboxes.append(checkbox)
 
-            self.table_widget.setItem(i, 0 + deslocamento, QTableWidgetItem(str(id)))
-            self.table_widget.setItem(i, 1 + deslocamento, QTableWidgetItem(produto))
-            self.table_widget.setItem(i, 2 + deslocamento, QTableWidgetItem(str(quantidade)))
-            self.table_widget.setItem(i, 3 + deslocamento, QTableWidgetItem(str(valor_real)))
-            self.table_widget.setItem(i, 4 + deslocamento, QTableWidgetItem(str(desconto)))
-            self.table_widget.setItem(i, 5 + deslocamento, QTableWidgetItem(str(total_sem_desconto)))
-            self.table_widget.setItem(i, 6 + deslocamento, QTableWidgetItem(str(valor_total)))  # Valor Total
-            self.table_widget.setItem(i, 7 + deslocamento, QTableWidgetItem(data_cadastro))
-            self.table_widget.setItem(i, 8 + deslocamento, QTableWidgetItem(codigo_item))
-            self.table_widget.setItem(i, 9 + deslocamento, QTableWidgetItem(cliente))
-            self.table_widget.setItem(i, 10 + deslocamento, QTableWidgetItem(descricao_produto))
-            self.table_widget.setItem(i, 11 + deslocamento, QTableWidgetItem(usuario))
-            self.table_widget.setItem(i,12 + deslocamento, QTableWidgetItem(status_da_saida))
+            self.table_widget.setItem(i, 0 + deslocamento, self.formatar_texto(str(id)))
+            self.table_widget.setItem(i, 1 + deslocamento, self.formatar_texto(produto))
+            self.table_widget.setItem(i, 2 + deslocamento, self.formatar_texto(str(quantidade)))
+            self.table_widget.setItem(i, 3 + deslocamento, self.formatar_texto(str(valor_unitario)))
+            self.table_widget.setItem(i, 4 + deslocamento, self.formatar_texto(str(desconto)))
+            self.table_widget.setItem(i, 5 + deslocamento, self.formatar_texto(str(total_sem_desconto)))
+            self.table_widget.setItem(i, 6 + deslocamento, self.formatar_texto(str(total_com_desconto)))  # Valor Total
+            self.table_widget.setItem(i, 7 + deslocamento, self.formatar_texto(data_cadastro))
+            self.table_widget.setItem(i, 8 + deslocamento, self.formatar_texto(codigo_item))
+            self.table_widget.setItem(i, 9 + deslocamento, self.formatar_texto(cliente))
+            self.table_widget.setItem(i, 10 + deslocamento, self.formatar_texto(descricao_produto))
+            self.table_widget.setItem(i, 11 + deslocamento, self.formatar_texto(usuario))
+            self.table_widget.setItem(i,12 + deslocamento, self.formatar_texto(status_da_saida))
 
         # Agora sim: organiza pela coluna de ID (em ordem crescente)
         self.table_widget.sortItems(0 + deslocamento, Qt.AscendingOrder)
         self.table_widget.setSortingEnabled(True)
+        
+
 
 
     def atualizar_tabela_products(self):
@@ -1770,7 +1764,14 @@ class TabelaProdutos(QMainWindow):
         df = pd.DataFrame(dados, columns=cabecalhos)
 
         # Abre um diálogo para salvar o arquivo
-        caminho_arquivo, _ = QFileDialog.getSaveFileName(self, "Salvar Arquivo Excel", "Tabela Produtos", "Arquivo Excel (*.xlsx)")
+        caminho_arquivo = salvar_dialogo_memoria(
+            parent=self,
+            chave="excel_tabela_produtos",
+            titulo="Salvar Excel",
+            nome_padrao="Tabela Produtos",
+            filtro="Excel (*.xlsx)"
+        )
+
         
         if caminho_arquivo:
             # Salva o DataFrame como um arquivo Excel
@@ -1803,10 +1804,10 @@ class TabelaProdutos(QMainWindow):
             self.db.insert_product(
                 produto_db["produto"],
                 produto_db["quantidade"],
-                produto_db["valor_real"],
+                produto_db["valor_unitario"],
                 produto_db["desconto"],
                 produto_db["total_sem_desconto"],
-                produto_db["valor_total"],
+                produto_db["total_com_desconto"],
                 produto_db["data_cadastro"],
                 produto_db["codigo_item"],
                 produto_db["cliente"],
@@ -1835,14 +1836,12 @@ class TabelaProdutos(QMainWindow):
 
     # Função auxiliar para criar um QTableWidgetItem com texto centralizado e branco
     def formatar_texto(self, text):
-        item = QTableWidgetItem(text)
+        item = QTableWidgetItem(str(text))
         item.setTextAlignment(Qt.AlignCenter)
 
         # Define a cor com base no tema atual
-        if self.tema == "claro":
-            cor = QColor("black")
-        else:  # Para "escuro" e "clássico"
-            cor = QColor("white")
+        cor = QColor("black") if self.tema == "claro" else QColor("white")
+        item.setForeground(QBrush(cor))
 
         item.setForeground(QBrush(cor))
         return item   

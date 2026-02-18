@@ -11,12 +11,10 @@ import csv
 from datetime import datetime
 from configuracoes import Configuracoes_Login
 from dialogos import ComboDialog,ConfirmacaoDialog
-from utils import Temas
+from utils import Temas,salvar_dialogo_memoria,abrir_dialogo_memoria
 from reportlab.lib.pagesizes import letter,landscape
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle
 from reportlab.lib import colors
-from openpyxl.utils import get_column_letter
-from openpyxl.styles import Alignment, Font
 import json
 
 
@@ -37,7 +35,7 @@ class Pagina_Usuarios(QWidget):
         self.coluna_checkboxes_usuarios_adicionada = False
         self.checkbox_header_usuarios = None
 
-      
+    
         
 
         self.main_window = main_window
@@ -63,7 +61,6 @@ class Pagina_Usuarios(QWidget):
         self.btn_atualizar_ativos.clicked.connect(self.atualizar_ativos)
         self.btn_atualizar_inativos.clicked.connect(self.atualizar_inativos)
         self.btn_historico_usuarios.clicked.connect(self.exibir_tabela_historico_usuario)
-        self.btn_importar_usuarios.clicked.connect(self.importar_usuario)
         self.btn_abrir_planilha_massa_usuarios.clicked.connect(self.abrir_panilha_usuarios_em_massa)
         self.btn_fazer_cadastro_massa_usuarios.clicked.connect(self.cadastrar_usuarios_em_massa)
         self.main_window.table_ativos.viewport().installEventFilter(self)
@@ -1771,13 +1768,14 @@ class Pagina_Usuarios(QWidget):
             QMessageBox.warning(self, "Aviso", "Nenhum histórico encontrado para gerar arquivo CSV.")
             return  # Se a tabela estiver vazia, encerra a função sem prosseguir
 
-        nome_arquivo, _ = QFileDialog.getSaveFileName(
-            self,
-            "Salvar Arquivo CSV",
-            "historico_usuarios.csv",
-            "Arquivos CSV (*.csv)"
-
+        nome_arquivo = salvar_dialogo_memoria(
+            parent=self,
+            chave="csv_historico_usuarios",
+            titulo="Salvar CSV",
+            nome_padrao="Histórico Usuários.csv",
+            filtro="CSV (*.csv)"
         )
+
 
         if not nome_arquivo:
             return
@@ -1815,14 +1813,14 @@ class Pagina_Usuarios(QWidget):
             QMessageBox.warning(self, "Aviso", "Nenhum histórico encontrado para gerar arquivo Excel.")
             return  # Se a tabela estiver vazia, encerra a função sem prosseguir
         
-        nome_arquivo, _ = QFileDialog.getSaveFileName(
-            self,
-            "Salvar Arquivo Excel",
-            "historico_usuarios.xlsx",
-            "Arquivos Excel (*.xlsx)"
-
+        nome_arquivo = salvar_dialogo_memoria(
+            parent=self,
+            chave="excel_historico_usuarios",
+            titulo="Salvar Excel",
+            nome_padrao="Histórico Usuários.xlsx",
+            filtro="Excel (*.xlsx)"
         )
-
+        
         if not nome_arquivo:
             return
         
@@ -1863,11 +1861,12 @@ class Pagina_Usuarios(QWidget):
             QMessageBox.warning(self, "Aviso", "Nenhum histórico encontrado para gerar arquivo PDF.")
             return  # Se a tabela estiver vazia, encerra a função sem prosseguir
 
-        nome_arquivo, _ = QFileDialog.getSaveFileName(
-            self,
-            "Salvar Arquivo PDF",
-            "historico.pdf",
-            "Arquivos PDF (*.pdf)"
+        nome_arquivo = salvar_dialogo_memoria(
+            parent=self,
+            chave="pdf_historico_usuarios",
+            titulo="Salvar PDF",
+            nome_padrao="Histórico Usuários.pdf",
+            filtro="PDF (*.pdf)"
         )
 
         if not nome_arquivo:
@@ -1937,76 +1936,6 @@ class Pagina_Usuarios(QWidget):
         QMessageBox.information(self, "Histórico", "O registro do histórico continua ativo.")
 
 
-    
-    def importar_usuario(self):
-        if self.table_ativos.rowCount() == 0 and self.table_inativos.rowCount() == 0:
-            QMessageBox.warning(self, "Aviso", "Nenhum dado encontrado para gerar arquivo Excel.")
-            return
-
-        nome_arquivo, _ = QFileDialog.getSaveFileName(
-            self,
-            "Salvar Arquivo Excel",
-            "relatório de usuários.xlsx",
-            "Arquivos Excel (*.xlsx)"
-        )
-
-        if not nome_arquivo:
-            return
-
-        if not nome_arquivo.endswith(".xlsx"):
-            nome_arquivo += ".xlsx"
-
-        try:
-            with pd.ExcelWriter(nome_arquivo, engine="openpyxl") as writer:
-                def tabela_para_dataframe(tabela):
-                    dados = []
-                    cabecalhos = [tabela.horizontalHeaderItem(col).text() for col in range(tabela.columnCount())]
-                    for linha in range(tabela.rowCount()):
-                        linha_dados = []
-                        for coluna in range(tabela.columnCount()):
-                            item = tabela.item(linha, coluna)
-                            linha_dados.append(item.text() if item else "")
-                        dados.append(linha_dados)
-                    return pd.DataFrame(dados, columns=cabecalhos)
-                
-                if self.table_ativos.rowCount() > 0:
-                    df_ativos = tabela_para_dataframe(self.table_ativos)
-                    df_ativos.to_excel(writer, sheet_name="Ativos", index=False)
-
-                if self.table_inativos.rowCount() > 0:
-                    df_inativos = tabela_para_dataframe(self.table_inativos)
-                    df_inativos.to_excel(writer, sheet_name="Inativos", index=False)
-
-            # Abrir o arquivo com openpyxl para ajustar estilos
-            from openpyxl import load_workbook
-            wb = load_workbook(nome_arquivo)
-
-            for sheet_name in wb.sheetnames:
-                ws = wb[sheet_name]
-
-                for col in ws.columns:
-                    max_length = 0
-                    column = col[0].column  # número da coluna (1, 2, ...)
-                    column_letter = get_column_letter(column)
-
-                    for cell in col:
-                        if cell.value:
-                            max_length = max(max_length, len(str(cell.value)))
-                        cell.alignment = Alignment(horizontal="center", vertical="center")
-
-                    ws.column_dimensions[column_letter].width = max_length + 2  # ajustar largura
-
-                # Negrito no cabeçalho
-                for cell in ws[1]:
-                    cell.font = Font(bold=True)
-
-            wb.save(nome_arquivo)
-
-            QMessageBox.information(self, "Sucesso", f"Arquivo Excel gerado com sucesso em:\n{nome_arquivo}")
-
-        except Exception as e:
-            QMessageBox.critical(self, "Erro", f"Erro ao salvar arquivo Excel: {str(e)}")
-
     # Limpa a coluna selecionada clicando em qualquer lugar da tabela
     def eventFilter(self, source, event):
         if event.type() == QEvent.MouseButtonPress:
@@ -2024,11 +1953,18 @@ class Pagina_Usuarios(QWidget):
     
     def abrir_panilha_usuarios_em_massa(self):
         # Abrir o diálogo para selecionar o arquivo Excel
-        nome_arquivo, _ = QFileDialog.getOpenFileName(self, "Abrir Arquivo Excel", "", "Arquivos Excel (*.xlsx)")
+        nome_arquivo = abrir_dialogo_memoria(
+            parent=self,
+            chave="excel_planilha_usuarios_massa",
+            titulo="Selecionar Planilha",
+            filtro="Excel (*.xlsx)"
+        )
+
 
         # Se o usuário cancelar a seleção do arquivo
         if not nome_arquivo:
             return
+        
         # Alterar o texto da line_excel para "Carregando arquivo Excel..."
         self.line_edit_massa_usuarios.setText("Carregando arquivo Excel...")
         self.nome_arquivo_excel_massa = nome_arquivo
