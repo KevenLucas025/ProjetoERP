@@ -1,0 +1,43 @@
+{
+    "tema": "classico",
+    "usuario": "Keven",
+    "senha": "123",
+    "mantem_conectado": false,
+    "nao_mostrar_mensagem_boas_vindas": true,
+    "nao_mostrar_aviso_irreversivel": false,
+    "nao_mostrar_mensagem_arquivo_excel": false,
+    "nao_mostrar_mensagem_arquivo_excel_fisicos": false,
+    "historico_autocompletes": {
+        "txt_produto": [
+            "Pizza"
+        ],
+        "txt_quantidade": [
+            "123"
+        ],
+        "txt_valor_produto_3": [
+            "12"
+        ],
+        "txt_codigo_item": [
+            "dcx",
+            "sdsds"
+        ],
+        "txt_cliente_3": [
+            "K",
+            "Keven Lucas da Silva Jesus"
+        ],
+        "txt_descricao_produto_3": [
+            "sdsdsdsd",
+            "dsdsasd"
+        ]
+    },
+    "nome_usuario": "Keven",
+    "email": "Não Cadastrado",
+    "nao_mostrar_aviso_atualizacoes": false,
+    "tamanho_fonte_percentual": 100,
+    "atalhos": {},
+    "atualizacoes_automaticas": false,
+    "ultimos_diretorios": {
+        "foto_usuario": "C:/Users/KEVEN/OneDrive/Imagens",
+        "imagem_produto": "C:/Users/KEVEN/OneDrive/Imagens"
+    }
+}

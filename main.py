@@ -210,8 +210,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         # Inicializar as configurações antes de chamar fazer_login_automatico
         self.config = Configuracoes_Login(self)
-        '''self.config.carregar()
-        self.fazer_login_automatico()'''
 
         for acao,tecla in self.config.obter_todos_atalhos().items():
             self.registrar_atalhos(acao,tecla)
@@ -219,16 +217,24 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         # Aplica o tamanho da fonte salvo no JSON
         self.definir_tamanho_fonte(self.config.tamanho_fonte_percentual)
+        
+        self._campos_select_all = set()
 
         # Aplica completer individual a cada campo
         for nome_campo, campo in self.campos_com_autocomplete.items():
             historico = self.config.carregar_historico_autocompletar(nome_campo)
-            completer = QCompleter(historico)
+            
+            completer = QCompleter(historico,self)
             completer.setCaseSensitivity(Qt.CaseInsensitive)
-            campo.setCompleter(completer)
-            campo.editingFinished.connect(lambda nc=nome_campo, c=campo: self.auto_completar(nc, c))
+            completer.setCompletionMode(QCompleter.PopupCompletion)
 
-            campo.mouseDoubleClickEvent = lambda event, nc=nome_campo, c=campo: self.completar_por_duplo_clique(event, nc, c)
+            campo.setCompleter(completer)
+            
+            # ✅ duplo clique = selecionar tudo (via eventFilter)
+            campo.installEventFilter(self)
+            self._campos_select_all.add(campo)
+            
+            campo.editingFinished.connect(lambda nc=nome_campo, c=campo: self.auto_completar(nc, c))
         
 
         # Caminho para o arquivo GIF
@@ -2705,9 +2711,21 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 getattr(self, label_name).hide()
 #*********************************************************************************************************************
     def eventFilter(self, obj, event):
+        # ✅ 1) Duplo clique: selecionar tudo (sem autocompletar)
+        if event.type() == QEvent.MouseButtonDblClick:
+            # Se quiser restringir só aos campos que têm completer:
+            if obj in self.campos_com_autocomplete.values():
+                # QLineEdit tem selectAll()
+                try:
+                    obj.selectAll()
+                    return True  # evento tratado
+                except Exception:
+                    pass
+
+        # ✅ 2) Seu comportamento atual: FocusIn esconde erros
         if event.type() == QEvent.FocusIn:
             # Esconder somente o erro do campo de USUÁRIO que recebeu foco
-            for campo,widget in self.campos_evento_usuarios.items():
+            for campo, widget in self.campos_evento_usuarios.items():
                 if obj is widget:
                     frame = self.frames_erros_usuarios.get(campo)
                     if frame:
@@ -2715,7 +2733,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                     label_name = f'label_asterisco_usuarios_{campo}'
                     if hasattr(self, label_name):
                         getattr(self, label_name).hide()
-                    break 
+                    break
+
             # Esconder somente o erro do campo de PRODUTO que recebeu foco
             for campo, widget in self.campos_obrigatorios.items():
                 if obj is widget:
@@ -2726,6 +2745,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                     if hasattr(self, label_name):
                         getattr(self, label_name).hide()
                     break
+
         return super().eventFilter(obj, event)
 #*********************************************************************************************************************  
     def atualizar_valores_frames_na_hora_do_cadastro(self, quantidade, valor_do_desconto, valor_com_desconto):
@@ -2939,12 +2959,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             # ===============================
             if cnpj_final:
                 cursor.execute(
-                    'SELECT "Valor Total" FROM products WHERE CNPJ = ?',
+                    'SELECT "Total Com Desconto" FROM products WHERE CNPJ = ?',
                     (cnpj_final,)
                 )
             else:
                 cursor.execute(
-                    'SELECT "Valor Total" FROM products WHERE CPF = ?',
+                    'SELECT "Total Com Desconto" FROM products WHERE CPF = ?',
                     (cpf_final,)
                 )
 
@@ -4064,18 +4084,18 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         QTimer.singleShot(100, QApplication.quit)
 
 
-
-
     def auto_completar(self, nome_campo, campo):
         texto = campo.text().strip()
-        if texto:
-            self.config.adicionar_ao_historico(nome_campo, texto)
+        if not texto:
+            return
 
-            # Atualiza o modelo do QCompleter para refletir o novo histórico
-            historico = self.config.carregar_historico_autocompletar(nome_campo)
-            novo_completer = QCompleter(historico)
-            novo_completer.setCaseSensitivity(Qt.CaseInsensitive)
-            campo.setCompleter(novo_completer)
+        self.config.adicionar_ao_historico(nome_campo, texto)
+
+        historico = self.config.carregar_historico_autocompletar(nome_campo)
+        novo_completer = QCompleter(historico, self)
+        novo_completer.setCaseSensitivity(Qt.CaseInsensitive)
+        novo_completer.setCompletionMode(QCompleter.PopupCompletion)
+        campo.setCompleter(novo_completer)
 
     # Método para tratar o duplo clique e preencher o campo
     def completar_por_duplo_clique(self, event, nome_campo, campo):
