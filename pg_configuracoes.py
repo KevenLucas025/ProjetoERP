@@ -113,7 +113,7 @@ class Pagina_Configuracoes(QWidget):
         layout_principal.addStretch()
         
         self.aplicar_tema_inicial()
-
+        
         
     def aplicar_tema_inicial(self):
         tema = self.config.tema
@@ -186,9 +186,11 @@ class Pagina_Configuracoes(QWidget):
         # SEMPRE salva o tema
         self.config.tema = "escuro"
         self.config.salvar(
-            self.config.usuario,
-            self.config.senha,
-            self.config.mantem_conectado
+            usuario=self.config.usuario,
+            senha=self.config.senha,
+            email=self.config.email,
+            mantem_conectado=self.config.mantem_conectado,
+            nome_usuario=self.config.nome_usuario
         )
 
         if progress_dialog:
@@ -202,7 +204,7 @@ class Pagina_Configuracoes(QWidget):
 
         self.reiniciar_sistema()
 
-
+    
 
 
     # --- Modos na inicialização (sem progress) ---
@@ -275,9 +277,11 @@ class Pagina_Configuracoes(QWidget):
 
         self.config.tema = "claro"
         self.config.salvar(
-            self.config.usuario,
-            self.config.senha,
-            self.config.mantem_conectado
+            usuario=self.config.usuario,
+            senha=self.config.senha,
+            email=self.config.email,
+            mantem_conectado=self.config.mantem_conectado,
+            nome_usuario=self.config.nome_usuario
         )
 
         if progress_dialog:
@@ -299,9 +303,11 @@ class Pagina_Configuracoes(QWidget):
 
         self.config.tema = "classico"
         self.config.salvar(
-            self.config.usuario,
-            self.config.senha,
-            self.config.mantem_conectado
+            usuario=self.config.usuario,
+            senha=self.config.senha,
+            email=self.config.email,
+            mantem_conectado=self.config.mantem_conectado,
+            nome_usuario=self.config.nome_usuario
         )
 
         if progress_dialog:

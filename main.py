@@ -121,7 +121,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # Carregar tema do sistema ou  configuração
         config = self.temas.carregar_config_arquivo()  # função de config do JSON
         self.tema_atual = config.get("tema", "claro")
-        
+                
         
         self.limpar_pycache_pendente()
         
@@ -546,6 +546,25 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.label_avatar.setCursor(Qt.PointingHandCursor)
         self.label_avatar.setAlignment(Qt.AlignCenter)
         self.label_avatar.setFixedSize(40, 40)
+        
+        '''botoes = [
+            self.btn_editar_cadastro,
+            self.btn_sair_modo_edicao,
+            self.btn_atualizar_cadastro,
+            self.btn_apagar_cadastro,
+            self.btn_carregar_imagem_4,
+            self.btn_remover_imagem_usuario,
+            self.btn_fazer_cadastro,
+            self.btn_ver_usuario
+        ]
+        
+        if self.tema_atual == "claro":
+            pai = botoes[0].parentWidget()          # pai do primeiro botão
+            lay = pai.layout() if pai else None     # layout desse pai
+            if lay:
+                lay.setSpacing(4)'''
+            
+                
 
         # Evento de clique no avatar
         def avatar_click(event):
@@ -4418,10 +4437,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
              
     def closeEvent(self, event):
         event.accept()
-        
 
 
-# Função principal
 # Função principal
 if __name__ == '__main__':
     app = QApplication(sys.argv)

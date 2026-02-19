@@ -172,7 +172,7 @@ class Ui_MainWindow(object):
         self.label_bem_vindo.setObjectName(u"label_bem_vindo")
         sizePolicy.setHeightForWidth(self.label_bem_vindo.sizePolicy().hasHeightForWidth())
         self.label_bem_vindo.setSizePolicy(sizePolicy)
-        self.label_bem_vindo.setMaximumSize(QSize(502, 236))
+        self.label_bem_vindo.setMaximumSize(QSize(501, 233))
         self.label_bem_vindo.setStyleSheet(u"")
         self.label_bem_vindo.setAlignment(Qt.AlignCenter)
 
@@ -1381,6 +1381,7 @@ class Ui_MainWindow(object):
         self.frame_20.setFrameShape(QFrame.NoFrame)
         self.frame_20.setFrameShadow(QFrame.Raised)
         self.verticalLayout_16 = QVBoxLayout(self.frame_20)
+        self.verticalLayout_16.setSpacing(9)
         self.verticalLayout_16.setObjectName(u"verticalLayout_16")
         self.btn_editar_cadastro = QPushButton(self.frame_20)
         self.btn_editar_cadastro.setObjectName(u"btn_editar_cadastro")

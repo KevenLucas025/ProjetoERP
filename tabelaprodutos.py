@@ -4,7 +4,7 @@ from PySide6.QtWidgets import (QDialog, QPushButton, QVBoxLayout, QTableWidget,
                                QHeaderView,QMainWindow,QApplication)
 from PySide6 import QtWidgets
 from PySide6.QtGui import QPixmap, Qt,QColor,QBrush
-from PySide6.QtCore import QDate, Qt,QTimer
+from PySide6.QtCore import QDate, Qt,QTimer,QEvent
 from database import DataBase, sqlite3
 import base64
 import locale
@@ -807,39 +807,46 @@ class TabelaProdutos(QMainWindow):
             QMessageBox.critical(self, "Erro", f"Erro ao acessar o banco de dados: {str(e)}")
 #*******************************************************************************************************
     def exibir_mensagem_sem_produtos(self):
-        if self.tema == "escuro":
-            text_cor = "white"
-        elif self.tema == "claro":
-            text_cor = "black"
-        else:
-            text_cor = "white"
-            
-        tamanho_font = "16px"
-        
+        text_cor = "black" if self.tema == "claro" else "white"
+
         style = f"""
             QLabel {{
                 color: {text_cor};
-                font-size: {tamanho_font};
+                font-size: 16px;
+                background: transparent;
             }}
-        """ 
-            
-        # Verificar se a QLabel já existe
-        if not hasattr(self, 'label_sem_produto'):
-            self.label_sem_produto = QLabel("Produtos cadastrados serão exibidos aqui...")
+        """
+
+        vp = self.table_widget.viewport()
+
+        # cria (ou move) a label para dentro do viewport
+        if not hasattr(self, "label_sem_produto") or self.label_sem_produto.parent() is not vp:
+            # se já existia em outro lugar, joga fora pra não ficar preso em layout antigo
+            if hasattr(self, "label_sem_produto"):
+                self.label_sem_produto.deleteLater()
+
+            self.label_sem_produto = QLabel("Produtos cadastrados serão exibidos aqui...", vp)
             self.label_sem_produto.setAlignment(Qt.AlignCenter)
             self.label_sem_produto.setStyleSheet(style)
-            
-            # Verificar se o widget tem um layout
-            if not self.table_widget.layout():
-                self.main_layout = QVBoxLayout(self.table_widget)
-                self.table_widget.setLayout(self.main_layout)
-            else:
-                self.main_layout = self.table_widget.layout()
+            self.label_sem_produto.setAttribute(Qt.WA_TransparentForMouseEvents, True)
 
-            self.main_layout.addWidget(self.label_sem_produto)
+            # mantém centralizado em qualquer resize do viewport
+            vp.installEventFilter(self)
 
+        # ocupa exatamente o viewport (área de dados da tabela)
+        self.label_sem_produto.setGeometry(vp.rect())
+        self.label_sem_produto.raise_()
         self.label_sem_produto.show()
-#*******************************************************************************************************
+
+
+    def eventFilter(self, obj, event):
+        # atualiza o overlay quando o viewport mudar de tamanho
+        if hasattr(self, "table_widget") and obj == self.table_widget.viewport():
+            if hasattr(self, "label_sem_produto"):
+                if event.type() == QEvent.Resize:
+                    self.label_sem_produto.setGeometry(obj.rect())
+        return super().eventFilter(obj, event)
+    #*******************************************************************************************************
     def ocultar_mensagem_sem_produtos(self):
         # Oculta a mensagem caso existam produtos na tabela
         if hasattr(self, 'label_sem_produto'):

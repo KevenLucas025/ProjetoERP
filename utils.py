@@ -1461,6 +1461,7 @@ class Temas:
             QToolButton:focus {
                 outline: none;
             }
+            
             /* Botões gerais  */
             QPushButton {
                 border-radius: 8px;
@@ -1469,8 +1470,8 @@ class Temas:
                     stop:0 rgb(220, 220, 220),  /* topo */
                     stop:1 rgb(245, 245, 245)   /* base */
                 );
-                font-size: 14px;
                 color: #000000; /* texto escuro */
+                min-height: 24px;  /* Adicione esta linha */
             }
 
             QPushButton:hover {
@@ -1481,6 +1482,44 @@ class Temas:
                 background-color: #d0d0d0;
                 border: 2px solid #aaaaaa;
             }
+            
+            /* Botões de menu principal */
+            QPushButton#btn_home,
+            QPushButton#btn_verificar_estoque,
+            QPushButton#btn_verificar_usuarios,
+            QPushButton#btn_cadastrar_produto,
+            QPushButton#btn_cadastrar_usuarios,
+            QPushButton#btn_clientes {
+                border-radius: 8px;
+                background: qlineargradient(
+                    x1:0, y1:0, x2:0, y2:1,
+                    stop:0 rgb(220, 220, 220),  /* topo */
+                    stop:1 rgb(245, 245, 245)   /* base */
+                );
+                color: #000000; /* texto escuro */
+                min-width: 130px;   /* largura mínima */
+                min-height: 21px;   /* altura mínima */
+            }
+
+            QPushButton#btn_home:hover,
+            QPushButton#btn_verificar_estoque:hover,
+            QPushButton#btn_verificar_usuarios:hover,
+            QPushButton#btn_cadastrar_produto:hover,
+            QPushButton#btn_cadastrar_usuarios:hover,
+            QPushButton#btn_clientes:hover{
+                background-color: #e0e0e0;
+            }
+
+            QPushButton#btn_home:pressed,
+            QPushButton#btn_verificar_estoque:pressed,
+            QPushButton#btn_verificar_usuarios:pressed,
+            QPushButton#btn_cadastrar_produto:pressed,
+            QPushButton#btn_cadastrar_usuarios:pressed,
+            QPushButton#btn_clientes:pressed{
+                background-color: #d0d0d0;
+                border: 2px solid #aaaaaa;
+            }
+            
             QPushButton#btn_login {
                 font-size: 16px;
                 border: 3px solid transparent;
@@ -1799,10 +1838,6 @@ class Temas:
                 height: 1px;
                 background: gray;
                 margin: 5px 10px;
-            }
-
-            QPushButton#btn_incluir_produto_sistema{
-                font-size: 12px;
             }
             QPushButton{
                 color: rgb(255, 255, 255);

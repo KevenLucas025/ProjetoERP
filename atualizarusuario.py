@@ -27,7 +27,6 @@ class AtualizarUsuario(QDialog):
                         stop:1 rgb(100, 100, 100) /* base */
                     );
                     color: white;
-                    padding: 6px;
                 }
                 QPushButton:hover {
                     background-color: #444444;
@@ -55,7 +54,6 @@ class AtualizarUsuario(QDialog):
                     );
                     font-size: 16px;
                     color: black;
-                    padding: 6px;
                 }
                 QPushButton:hover {
                     background-color: #e5e5e5;

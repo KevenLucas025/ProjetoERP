@@ -370,8 +370,8 @@
                 </property>
                 <property name="maximumSize">
                  <size>
-                  <width>502</width>
-                  <height>236</height>
+                  <width>501</width>
+                  <height>233</height>
                  </size>
                 </property>
                 <property name="styleSheet">
@@ -3190,6 +3190,9 @@
               <enum>QFrame::Raised</enum>
              </property>
              <layout class="QVBoxLayout" name="verticalLayout_16">
+              <property name="spacing">
+               <number>9</number>
+              </property>
               <item>
                <widget class="QPushButton" name="btn_editar_cadastro">
                 <property name="sizePolicy">
