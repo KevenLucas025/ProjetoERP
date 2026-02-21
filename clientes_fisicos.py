@@ -393,8 +393,15 @@ class Clientes_Fisicos(QWidget):
 
     
     def carregar_config(self):
-        with open("config.json", "r", encoding="utf-8") as f:
-            return json.load(f)
+        path = self.main_window.caminho_configuracao_json()
+        try:
+            with open(path, "r", encoding="utf-8") as f:
+                txt = f.read().strip()
+                return json.loads(txt) if txt else {}
+        except FileNotFoundError:
+            return {}
+        except json.JSONDecodeError:
+            return {}
 
     def exibir_janela_cadastro_cliente_fisico(self):
         self.campos_cliente_fisico = {}
@@ -692,7 +699,7 @@ class Clientes_Fisicos(QWidget):
 
         def add_linha(titulo, widget=None):
             label = QLabel(titulo)
-            label.setStyleSheet("color: white;")
+            label.setStyleSheet(f"color: {text_cor};")
             layout.addWidget(label)
             if widget is None:
                 widget = QLineEdit()

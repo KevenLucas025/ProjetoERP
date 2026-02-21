@@ -41,6 +41,7 @@ import sqlite3
 import os
 import uuid
 import datetime
+import traceback
 from datetime import datetime
 import random
 import string
@@ -98,6 +99,17 @@ ASSUNTOS_CONFIG = {
     }
 }
 
+PASTA_CONFIG = os.path.join(os.getenv("APPDATA") or ".", "SistemaGerenciamento")
+os.makedirs(PASTA_CONFIG, exist_ok=True)
+
+def log_excecao(tipo, valor, tb):
+    arq = os.path.join(PASTA_CONFIG, "erros.log")
+    with open(arq, "a", encoding="utf-8") as f:
+        f.write("\n" + "="*60 + "\n")
+        f.write(datetime.now().isoformat() + "\n")
+        f.write("".join(traceback.format_exception(tipo, valor, tb)))
+
+sys.excepthook = log_excecao
 
 class MainWindow(QMainWindow, Ui_MainWindow):
     fechar_janela_login_signal = Signal(str)
@@ -230,7 +242,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
             campo.setCompleter(completer)
             
-            # ✅ duplo clique = selecionar tudo (via eventFilter)
+            #  duplo clique = selecionar tudo (via eventFilter)
             campo.installEventFilter(self)
             self._campos_select_all.add(campo)
             
@@ -1072,21 +1084,31 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             "nao_mostrar_aviso_irreversivel": False,
             "nao_mostrar_mensagem_arquivo_excel": False,
             "nao_mostrar_mensagem_arquivo_excel_fisicos": False,
-            "historico_autocompletes": {}
+            "historico_autocompletes": {},
+            "nome_usuario": "",
+            "email": ""
         }
-    
-    def carregar_config_arquivo(self,caminho="config.json"):
+
+    def caminho_configuracao_json(self):
+        # Usa o MESMO caminho do Configuracoes_Login
+        return self.config.caminho_config_json()
+
+    def carregar_config_arquivo(self, caminho=None):
+        # Se não passar caminho, usa o padrão correto (AppData no EXE / cwd no Python)
+        if caminho is None:
+            caminho = self.caminho_configuracao_json()
+
         if not os.path.exists(caminho):
             print(f"Arquivo {caminho} não encontrado. Usando configuração padrão.")
             return self.carregar_config_padrao()
 
         try:
             with open(caminho, "r", encoding="utf-8") as f:
-                conteudo = f.read().strip()
-                if not conteudo:
+                txt = f.read().strip()
+                if not txt:
                     print(f"Arquivo {caminho} vazio. Usando configuração padrão.")
                     return self.carregar_config_padrao()
-                return json.loads(conteudo)
+                return json.loads(txt)
         except json.JSONDecodeError as e:
             print(f"Erro ao decodificar {caminho}: {e}. Usando configuração padrão.")
             return self.carregar_config_padrao()

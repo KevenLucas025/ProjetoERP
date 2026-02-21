@@ -797,7 +797,9 @@ class Temas:
             "nao_mostrar_aviso_irreversivel": False,
             "nao_mostrar_mensagem_arquivo_excel": False,
             "nao_mostrar_mensagem_arquivo_excel_fisicos": False,
-            "historico_autocompletes": {}
+            "historico_autocompletes": {},
+            "nome_usuario": "",
+            "email": ""
         }
 
     def carregar_config_arquivo(self):
@@ -1165,6 +1167,7 @@ class Temas:
                 background: transparent;
                 color: white;
             }
+            
 
             QLabel#label_foto_sistema{
                 border: none;
@@ -1747,6 +1750,10 @@ class Temas:
                     stop:1 rgb(245, 245, 245)   /* base */
                 );
             }
+            QDialog{
+                background-color: #f0f0f0;
+                color: black;
+            }
             /* Parte preenchida da barra */
             QProgressBar#progress_massa_produtos::chunk,
             QProgressBar#progress_massa_usuarios::chunk{
@@ -2263,6 +2270,7 @@ class Temas:
                 color: black;
                 border: 1px solid gray;
             }
+            
 
             QMenu#menu_classe_tema::item:selected,
             QMenu#menu_classe_atualizacoes::item:selected,

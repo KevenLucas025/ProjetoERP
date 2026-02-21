@@ -63,11 +63,7 @@
      <string>Reiniciar sistema</string>
     </property>
     <property name="styleSheet">
-     <string notr="true">
-
-
-
-</string>
+     <string notr="true"/>
     </property>
     <property name="text">
      <string/>
@@ -153,8 +149,7 @@
         <cursorShape>PointingHandCursor</cursorShape>
        </property>
        <property name="styleSheet">
-        <string notr="true">
-</string>
+        <string notr="true"/>
        </property>
        <property name="text">
         <string>LOGIN</string>
@@ -270,7 +265,17 @@
            <string notr="true"/>
           </property>
           <property name="text">
-           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;a href=&quot;trocar_senha&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;Esqueci a senha&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           <string>&lt;html&gt;
+&lt;head&gt;
+&lt;style&gt;
+a { color: #1E90FF; text-decoration: underline; }
+a:hover { color: #63B3FF; }
+&lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+&lt;p align=&quot;center&quot;&gt;&lt;a href=&quot;trocar_senha&quot;&gt;Esqueci a senha&lt;/a&gt;&lt;/p&gt;
+&lt;/body&gt;
+&lt;/html&gt;</string>
           </property>
          </widget>
         </item>

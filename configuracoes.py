@@ -22,6 +22,7 @@ class Configuracoes_Login:
         self.tema = "classico" # padrão
         self.atalhos = {}
         self.carregar()
+        self.migrar_config_se_necessario()
         
     def rodando_como_exe(self):
         return getattr(sys, "frozen", False)

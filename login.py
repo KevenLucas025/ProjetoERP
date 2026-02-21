@@ -5,8 +5,8 @@ from PySide6.QtWidgets import (
 from ui_login_4 import Ui_Mainwindow_Login
 from database import DataBase
 import sys
-from PySide6.QtCore import Qt,QTimer
-from PySide6.QtGui import QPixmap
+from PySide6.QtCore import Qt,QTimer,QSize
+from PySide6.QtGui import QPixmap,QIcon
 from configuracoes import Configuracoes_Login
 from utils import Temas
 from PySide6 import QtCore
@@ -17,7 +17,6 @@ import sqlite3
 from datetime import datetime
 import subprocess
 from historicousuario import Pagina_Usuarios
-
 
 
 class Login(QMainWindow, Ui_Mainwindow_Login):  
@@ -38,11 +37,12 @@ class Login(QMainWindow, Ui_Mainwindow_Login):
         self.setWindowTitle("Login do Sistema")
         self.tema = Temas()
         
-        
         self.label_foto_sistema.setPixmap(QPixmap(caminho_recurso("imagens/Imagem2.png")))
 
-
-
+        
+        self.label_trocar_senha.setTextFormat(Qt.RichText)
+        self.label_trocar_senha.setTextInteractionFlags(Qt.TextBrowserInteraction)
+        self.label_trocar_senha.setOpenExternalLinks(False)
 
         self.menu_btn_opcoes_extras = QMenu(self.btn_opcoes_extras)
         self.btn_opcoes_extras.setMenu(self.menu_btn_opcoes_extras)
@@ -238,6 +238,8 @@ class PrimeiroAcesso(QDialog):
         
         self.layout = QVBoxLayout(self)
         self.setLayout(self.layout)
+        
+        
 
         # Carregar tema
         config = self.tema.carregar_config_arquivo()
@@ -625,6 +627,8 @@ class PrimeiroAcesso(QDialog):
         self.btn_cadastrar.setCursor(Qt.PointingHandCursor)
         self.btn_cadastrar.clicked.connect(self.inserir_usuario_no_banco_de_dados)
         self.layout.addWidget(self.btn_cadastrar)
+        
+        self._setup_olhos_senha()
 
         # Exibir a mensagem assim que a janela de primeiro acesso for exibida
         QMessageBox.information(
@@ -636,6 +640,78 @@ class PrimeiroAcesso(QDialog):
             "e atualizar seus dados."
         )
 
+    def _criar_olho_senha(self, line_edit: QLineEdit, object_name: str):
+        btn = QPushButton(line_edit)
+        btn.setCursor(Qt.PointingHandCursor)
+        btn.setObjectName(object_name)
+        btn.setCheckable(True)
+
+        # ícone por tema
+        tema = self.tema.carregar_config_arquivo().get("tema", "claro")
+        if tema == "escuro":
+            icone = caminho_recurso("imagens/olho_branco.png")
+        else:
+            icone = caminho_recurso("imagens/olho_preto.png")
+
+        btn.setIcon(QIcon(icone))
+
+        # estilo igual sua lupa (só transparente)
+        btn.setStyleSheet(f"""
+            QPushButton#{object_name} {{
+                border: none;
+                background: transparent;
+                padding: 0px;
+            }}
+            QPushButton#{object_name}:hover {{
+                background: transparent;
+            }}
+            QPushButton#{object_name}:pressed {{
+                background: transparent;
+                padding-left: 1px;
+                padding-top: 1px;
+            }}
+        """)
+
+        # tamanho fixo
+        btn_size = 16
+        btn.setFixedSize(btn_size, btn_size)
+        btn.setIconSize(QSize(16, 16))
+
+        def posicionar():
+            # garante que pega o tamanho real já calculado pelo layout
+            x = line_edit.width() - btn_size - 11
+            y = (line_edit.height() - btn_size) // 4
+            btn.move(x, y)
+
+            # reserva espaço pro texto não ficar embaixo do botão
+            line_edit.setTextMargins(0, 0, btn_size + 10, 0)
+
+            btn.raise_()
+            btn.show()
+
+        # chama depois que o layout montar os tamanhos
+        QTimer.singleShot(0, posicionar)
+
+        # reposiciona sempre que redimensionar
+        old_resize = line_edit.resizeEvent
+        def resizeEvent(event):
+            if old_resize:
+                old_resize(event)
+            posicionar()
+        line_edit.resizeEvent = resizeEvent
+
+        # toggle senha
+        line_edit.setEchoMode(QLineEdit.Password)
+        btn.clicked.connect(lambda checked: line_edit.setEchoMode(
+            QLineEdit.Normal if checked else QLineEdit.Password
+        ))
+
+        # guarda referência pra não sumir
+        line_edit._btn_olho = btn
+        
+    def _setup_olhos_senha(self):
+        self._criar_olho_senha(self.txt_senha, "btn_olho_senha_1")
+        self._criar_olho_senha(self.txt_confirmar_senha, "btn_olho_senha_2")
         
     def inserir_usuario_no_banco_de_dados(self):   
         # Realizar as verificações de campos

@@ -197,7 +197,17 @@ class Ui_Mainwindow_Login(object):
         self.btn_opcoes_extras.setText("")
         self.btn_login.setText(QCoreApplication.translate("Mainwindow_Login", u"LOGIN", None))
         self.btn_manter_conectado.setText(QCoreApplication.translate("Mainwindow_Login", u"Mantenha-me conectado", None))
-        self.label_trocar_senha.setText(QCoreApplication.translate("Mainwindow_Login", u"<html><head/><body><p align=\"center\"><a href=\"trocar_senha\"><span style=\" text-decoration: underline; color:#0000ff;\">Esqueci a senha</span></a></p></body></html>", None))
+        self.label_trocar_senha.setText(QCoreApplication.translate("Mainwindow_Login", u"<html>\n"
+"<head>\n"
+"<style>\n"
+"a { color: #1E90FF; text-decoration: underline; }\n"
+"a:hover { color: #63B3FF; }\n"
+"</style>\n"
+"</head>\n"
+"<body>\n"
+"<p align=\"center\"><a href=\"trocar_senha\">Esqueci a senha</a></p>\n"
+"</body>\n"
+"</html>", None))
         self.txt_senha.setPlaceholderText(QCoreApplication.translate("Mainwindow_Login", u"Senha", None))
         self.txt_usuario.setPlaceholderText(QCoreApplication.translate("Mainwindow_Login", u"Usu\u00e1rio,email ou CPF", None))
         self.label_foto_sistema.setText("")
