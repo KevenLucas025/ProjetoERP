@@ -1,0 +1,17 @@
+PySide6
+fpdf
+reportlab
+pandas
+requests
+openpyxl
+plyer
+qrcode
+pyotp
+packaging
+pyinstaller
+matplotlib
+psutil
+pygetwindow
+pytest
+numba
+python-dotenv

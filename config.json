@@ -1,0 +1,45 @@
+{
+    "tema": "escuro",
+    "usuario": "Keven",
+    "senha": "123",
+    "mantem_conectado": true,
+    "nao_mostrar_mensagem_boas_vindas": true,
+    "nao_mostrar_aviso_irreversivel": false,
+    "nao_mostrar_mensagem_arquivo_excel": false,
+    "nao_mostrar_mensagem_arquivo_excel_fisicos": false,
+    "historico_autocompletes": {
+        "txt_cep": [
+            "13179-905"
+        ],
+        "txt_complemento": [
+            "Bloco A AP 31"
+        ],
+        "txt_telefone": [
+            "(19) 98201-8869"
+        ],
+        "txt_email": [
+            "keven.lucas00@hotmail.com"
+        ],
+        "txt_endereco": [
+            "Rua José Vieira da Silva"
+        ],
+        "txt_data_nascimento": [
+            "26/01/2000"
+        ],
+        "txt_rg": [
+            "52.991.559-5"
+        ],
+        "txt_cpf": [
+            "506.796.778-10"
+        ],
+        "txt_cnpj": [
+            "00.000.000/0000-00"
+        ]
+    },
+    "nome_usuario": "Keven",
+    "email": "Não Cadastrado",
+    "nao_mostrar_aviso_atualizacoes": false,
+    "tamanho_fonte_percentual": 100,
+    "atalhos": {},
+    "atualizacoes_automaticas": false
+}
