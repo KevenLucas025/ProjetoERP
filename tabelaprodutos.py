@@ -136,8 +136,8 @@ class TabelaProdutos(QMainWindow):
         self.btn_duplicar_produto.clicked.connect(self.duplicar_produto)
         self.btn_gerar_excel.clicked.connect(self.gerar_arquivo_excel)
         self.checkbox_selecionar_produtos.clicked.connect(self.selecionar_individual)
-
-
+        
+        
     def aplicar_tema(self, tema: str) -> str:
         # Definições de tema
         if tema == "escuro":

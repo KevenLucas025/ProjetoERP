@@ -19,6 +19,7 @@ class Configuracoes_Login:
         self.nao_mostrar_aviso_atualizacoes = False
         self.atualizacoes_automaticas = False
         self.historico_autocompletes = {}
+        self.tutoriais_vistos = {}
         self.tema = "classico" # padrão
         self.atalhos = {}
         self.carregar()
@@ -79,6 +80,7 @@ class Configuracoes_Login:
                 self.nao_mostrar_mensagem_arquivo_excel_fisicos = config.get("nao_mostrar_mensagem_arquivo_excel_fisicos", False)
                 self.nao_mostrar_aviso_atualizacoes = config.get("nao_mostrar_aviso_atualizacoes", False)
                 self.historico_autocompletes = config.get("historico_autocompletes", {})
+                self.tutoriais_vistos = config.get("tutoriais_vistos", {})
                 self.atalhos = config.get("atalhos", {})
                 self.atualizacoes_automaticas = config.get("atualizacoes_automaticas",False)
                 
@@ -141,6 +143,7 @@ class Configuracoes_Login:
             "historico_autocompletes": self.historico_autocompletes,
             "tema": self.tema,
             "tamanho_fonte_percentual": self.tamanho_fonte_percentual,
+            "tutoriais_vistos": self.tutoriais_vistos,
             "atalhos": self.atalhos,
             "atualizacoes_automaticas": self.atualizacoes_automaticas
         })
@@ -149,7 +152,12 @@ class Configuracoes_Login:
         with open(path, "w", encoding="utf-8") as f:
             json.dump(config_existente, f, indent=4, ensure_ascii=False)
 
-
+    def tutorial_ja_visto(self, chave: str) -> bool:
+        return bool(self.tutoriais_vistos.get(chave, False))
+    
+    def marcar_tutorial_visto(self, chave: str):
+        self.tutoriais_vistos[chave] = True
+        self.salvar()
             
     def salvar_atalho(self, acao, tecla):
         """Salva/atualiza um atalho específico e persiste no JSON"""

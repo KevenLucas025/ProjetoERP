@@ -8,6 +8,24 @@
     "nao_mostrar_mensagem_arquivo_excel": false,
     "nao_mostrar_mensagem_arquivo_excel_fisicos": false,
     "historico_autocompletes": {
+        "txt_produto": [
+            "Pizza"
+        ],
+        "txt_quantidade": [
+            "12"
+        ],
+        "txt_valor_produto_3": [
+            "12"
+        ],
+        "txt_codigo_item": [
+            "dsds"
+        ],
+        "txt_cliente_3": [
+            "Keven Lucas da Silva Jesus"
+        ],
+        "txt_descricao_produto_3": [
+            "Alimentos"
+        ],
         "txt_cep": [
             "13179-905"
         ],
@@ -15,25 +33,8 @@
             "Bloco A AP 31"
         ],
         "txt_telefone": [
+            "(19)",
             "(19) 98201-8869"
-        ],
-        "txt_email": [
-            "keven.lucas00@hotmail.com"
-        ],
-        "txt_endereco": [
-            "Rua José Vieira da Silva"
-        ],
-        "txt_data_nascimento": [
-            "26/01/2000"
-        ],
-        "txt_rg": [
-            "52.991.559-5"
-        ],
-        "txt_cpf": [
-            "506.796.778-10"
-        ],
-        "txt_cnpj": [
-            "00.000.000/0000-00"
         ]
     },
     "nome_usuario": "Keven",
@@ -41,5 +42,13 @@
     "nao_mostrar_aviso_atualizacoes": false,
     "tamanho_fonte_percentual": 100,
     "atalhos": {},
-    "atualizacoes_automaticas": false
+    "atualizacoes_automaticas": false,
+    "ultimos_diretorios": {
+        "imagem_produto": "C:/Users/KEVEN/Pictures",
+        "excel_tabela_produtos": "C:/Users/KEVEN/OneDrive/Área de Trabalho"
+    },
+    "tutoriais_vistos": {
+        "tutorial_pg_cadastrar_produto": true,
+        "tutorial_pg_cadastrar_usuario": true
+    }
 }

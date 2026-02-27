@@ -29,6 +29,7 @@ from utils import DialogoRecorteImagem
 from utils import MostrarSenha,configurar_frame_valores,caminho_recurso,salvar_dialogo_memoria,abrir_dialogo_memoria
 from utils import Temas
 from utils import salvar_imagem_otimizada
+from tutorial_overlay import TutorialOverlay
 from clientes_juridicos import Clientes_Juridicos
 from clientes_fisicos import Clientes_Fisicos
 from dialogos import EscolherPlanilhaDialog
@@ -525,11 +526,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
 
         self.btn_home.clicked.connect(lambda: self.paginas_sistemas.setCurrentWidget(self.home_pag))
-        self.btn_clientes.clicked.connect(lambda: self.paginas_sistemas.setCurrentWidget(self.pg_clientes))
-        self.btn_cadastrar_usuarios.clicked.connect(lambda: self.paginas_sistemas.setCurrentWidget(self.pg_cadastrar_usuario))
-        self.btn_cadastrar_produto.clicked.connect(lambda: self.paginas_sistemas.setCurrentWidget(self.pg_cadastrar_produto))
+        self.btn_clientes.clicked.connect(lambda: self.paginas_sistemas.setCurrentWidget(self.pg_clientes))      
         self.btn_ver_item.clicked.connect(lambda: self.paginas_sistemas.setCurrentWidget(self.pag_estoque))
-        self.btn_novo_produto.clicked.connect(lambda: self.paginas_sistemas.setCurrentWidget(self.pg_cadastrar_produto))
         self.btn_verificar_usuarios.clicked.connect(lambda: self.paginas_sistemas.setCurrentWidget(self.page_verificar_usuarios))
         self.btn_ver_usuario.clicked.connect(lambda: self.paginas_sistemas.setCurrentWidget(self.page_verificar_usuarios))
         self.btn_cadastrar_novo_usuario.clicked.connect(lambda: self.paginas_sistemas.setCurrentWidget(self.pg_cadastrar_usuario))
@@ -537,6 +535,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.btn_editar_massa_usuario.clicked.connect(lambda: self.paginas_sistemas.setCurrentWidget(self.pg_cadastrar_usuario))
         
 
+
+        self.btn_novo_produto.clicked.connect(self.abrir_pg_cadastrar_produto)
+        self.btn_cadastrar_usuarios.clicked.connect(self.abrir_pg_cadastro_usuario)
+        self.btn_cadastrar_produto.clicked.connect(self.abrir_pg_cadastrar_produto)
         self.btn_remover_imagem.clicked.connect(self.retirar_imagem_produto)
         self.btn_limpar_campos.clicked.connect(self.apagar_campos_produtos)
         self.btn_adicionar_produto.clicked.connect(self.adicionar_produto)
@@ -566,24 +568,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.label_avatar.setCursor(Qt.PointingHandCursor)
         self.label_avatar.setAlignment(Qt.AlignCenter)
         self.label_avatar.setFixedSize(40, 40)
-        
-        '''botoes = [
-            self.btn_editar_cadastro,
-            self.btn_sair_modo_edicao,
-            self.btn_atualizar_cadastro,
-            self.btn_apagar_cadastro,
-            self.btn_carregar_imagem_4,
-            self.btn_remover_imagem_usuario,
-            self.btn_fazer_cadastro,
-            self.btn_ver_usuario
-        ]
-        
-        if self.tema_atual == "claro":
-            pai = botoes[0].parentWidget()          # pai do primeiro botão
-            lay = pai.layout() if pai else None     # layout desse pai
-            if lay:
-                lay.setSpacing(4)'''
-            
                 
 
         # Evento de clique no avatar
@@ -1656,12 +1640,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
 
 
-    def mostrar_page_estoque(self):
-        # Navegar para a página de estoque
-        self.paginas_sistemas.setCurrentWidget(self.pag_estoque)
-        
-        # Atualizar a tabela na página de estoque
-        self.estoque_produtos.carregar_tabela_estoque()
+    
         
     def mostrar_page_clientes(self):
         # Navegar para a página de estoque
@@ -4512,7 +4491,59 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         )
         self.label_icone_wpp.setPixmap(QPixmap(caminho_recurso("imagens/icone_whatsapp.png")))
         self.label_icone_email.setPixmap(QPixmap(caminho_recurso("imagens/icone_email.png")))
-             
+    
+    def mostrar_tutorial_pagina(self, chave: str, pagina_widget, titulo: str, texto: str):
+        if self.config.tutorial_ja_visto(chave):
+            return
+
+        overlay_attr = f"_tutorial_overlay_{chave}"
+        overlay = getattr(self, overlay_attr, None)
+        if overlay is None:
+            overlay = TutorialOverlay(pagina_widget)
+            setattr(self, overlay_attr, overlay)
+
+        def on_close(nao_mostrar: bool):
+            if nao_mostrar:
+                self.config.marcar_tutorial_visto(chave)
+
+        QTimer.singleShot(0, lambda: overlay.show_tutorial(titulo, texto, on_close=on_close))
+        
+    def abrir_pg_cadastrar_produto(self):
+        self.paginas_sistemas.setCurrentWidget(self.pg_cadastrar_produto)
+
+        self.mostrar_tutorial_pagina(
+            chave="tutorial_pg_cadastrar_produto",
+            pagina_widget=self.pg_cadastrar_produto,
+            titulo="Cadastro de Produtos",
+            texto="Nesta página você cadastra produtos, edita, aplica desconto e vincula ao cliente.\n"
+                "Preencha os campos, adicione o produto e confirme para salvar no sistema."
+        )
+    def abrir_pg_cadastro_usuario(self):
+        self.paginas_sistemas.setCurrentWidget(self.pg_cadastrar_usuario)
+
+        self.mostrar_tutorial_pagina(
+            chave="tutorial_pg_cadastrar_usuario",
+            pagina_widget=self.pg_cadastrar_usuario,
+            titulo="Cadastro de Usuários",
+            texto="Nesta página você pode cadastrar, editar e atualizar usuários do sistema.\n"
+                "Preencha os campos obrigatórios, defina o nível de acesso e clique em confirmar para salvar."
+        )
+    
+    def mostrar_page_estoque(self):
+        # Navegar para a página de estoque
+        self.paginas_sistemas.setCurrentWidget(self.pg_cadastrar_usuario)
+
+        self.mostrar_tutorial_pagina(
+            chave="tutorial_pg_verificar_estoque",
+            pagina_widget=self.pag_estoque,
+            titulo="Cadastro de Usuários",
+            texto="Nesta página você acompanha o estoque, registra saídas/estornos e gera relatórios.\n"
+                 "Use 'Atualizar' para recarregar os dados e 'Gerar Excel' para exportar."
+        )
+        
+        # Atualizar a tabela na página de estoque
+        self.estoque_produtos.carregar_tabela_estoque()
+            
     def closeEvent(self, event):
         event.accept()
 
@@ -4541,7 +4572,7 @@ if __name__ == '__main__':
             tipo_usuario = db.check_user(config.usuario, senha_salva)
 
     if tipo_usuario:
-        # ✅ Abre direto a MainWindow (login nem aparece)
+        #  Abre direto a MainWindow (login nem aparece)
         main_window = MainWindow(
             user=tipo_usuario.lower(),
             tipo_usuario=tipo_usuario,
@@ -4550,9 +4581,11 @@ if __name__ == '__main__':
         )
         main_window.show()
     else:
-        # ✅ Cai no fluxo normal: mostra login
+        #  Cai no fluxo normal: mostra login
         login_window = Login(login_window=None)
         login_window.show()
+        
+    
 
     sys.exit(app.exec())
 
