@@ -1087,6 +1087,31 @@ class DataBase:
         except Exception as e:
             print(f"Erro ao atualizar Primeiro Acesso para Não Logado: {e}")
             return 0
+        
+    def obter_tipo_usuario(self, usuario_email_cpf: str) -> str | None:
+        try:
+            self.garantir_conexao()
+            cursor = self.connection.cursor()
+
+            cursor.execute("""
+                SELECT TRIM(Acesso)
+                FROM users
+                WHERE TRIM("Usuário") = TRIM(?) COLLATE NOCASE
+                OR TRIM(Email) = TRIM(?) COLLATE NOCASE
+                OR TRIM(CPF) = TRIM(?) COLLATE NOCASE
+                LIMIT 1
+            """, (usuario_email_cpf, usuario_email_cpf, usuario_email_cpf))
+
+            row = cursor.fetchone()
+
+            print("[DEBUG obter_tipo_usuario] Entrada:", usuario_email_cpf)
+            print("[DEBUG obter_tipo_usuario] Resultado bruto:", row)
+
+            return row[0] if row and row[0] else None
+
+        except Exception as e:
+            print("Erro ao obter tipo de usuário (Acesso):", e)
+            return None
 
     def contar_primeiro_acesso_pendente(self, intervalo: timedelta = timedelta(days=1)) -> int:
         """

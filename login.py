@@ -69,6 +69,8 @@ class Login(QMainWindow, Ui_Mainwindow_Login):
         
 
         self.label_trocar_senha.linkActivated.connect(self.exibir_janela_trocar_senha)
+        
+    
     
     def abrir_janela_primeiro_acesso(self):
         # Criar e abrir a janela de cadastro
@@ -109,6 +111,7 @@ class Login(QMainWindow, Ui_Mainwindow_Login):
 
         usuario_ou_email = self.txt_usuario.text()
         senha = self.txt_senha.text()
+        
 
         tipo_usuario = self.users.check_user(usuario_ou_email, senha)
         nome_completo = self.users.obter_nome_completo_usuario(tipo_usuario)
@@ -144,11 +147,16 @@ class Login(QMainWindow, Ui_Mainwindow_Login):
 
 
         self.btn_login.setEnabled(True)   # Reativa o botão após o processo
+        
+        role = self.users.obter_tipo_usuario(tipo_usuario)  # ex.: "admin", "comum", "convidado"
+        role = (role or "").strip().lower()
+        
+        
 
         # Se autenticado com sucesso, abre a tela principal
         print("Login bem-sucedido!")
         from main import MainWindow
-        self.w = MainWindow(tipo_usuario.lower(), self)
+        self.w = MainWindow(login_window=self, tipo_usuario=role)
         self.w.show()
         self.tentativas = 0
         QTimer.singleShot(2000,self.w.boas_vindas)

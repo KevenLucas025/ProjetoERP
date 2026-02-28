@@ -14,6 +14,8 @@ from database import DataBase
 import sys
 import locale
 from config_senha import TrocarSenha
+from threading import Thread
+from PySide6.QtWidgets import QSystemTrayIcon
 from atualizarprodutos import AtualizarProduto
 from tabelaprodutos import TabelaProdutos
 from configuracoes import Configuracoes_Login
@@ -55,6 +57,7 @@ import requests
 from packaging import version  # Para comparar versões
 import shutil
 import atexit
+import socket
  
 
 VERSAO_ATUAL = "1.1.11"  # O arquivo versao.json precisa ser maior que essa para chegar a atualização
@@ -135,7 +138,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # Carregar tema do sistema ou  configuração
         config = self.temas.carregar_config_arquivo()  # função de config do JSON
         self.tema_atual = config.get("tema", "claro")
-                
+        
+        self.tray = QSystemTrayIcon(self)
+        self.tray.setIcon(QIcon(caminho_recurso("imagens/favicon.ico")))
+        self.tray.setVisible(True)  # importante: tem que ficar visível
+            
+        self.tipo_usuario = (tipo_usuario or "").strip().lower()
+        
+        print("[DEBUG MainWindow __init__] tipo_usuario recebido:", tipo_usuario)
+        print("[DEBUG MainWindow __init__] self.tipo_usuario:", self.tipo_usuario)
         
         self.limpar_pycache_pendente()
         
@@ -220,7 +231,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.carregar_informacoes_tabelas()
 
         # Exibir notificação de status de conexão
-        #self.exibir_notificacao(self)
+        self.exibir_notificacao()
 
         # Inicializar as configurações antes de chamar fazer_login_automatico
         self.config = Configuracoes_Login(self)
@@ -426,14 +437,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         
 
-        # Defina a visibilidade do botão de cadastro de usuário com base no tipo de usuário
-        user = tipo_usuario.lower() if tipo_usuario else ""
-        if user in ["usuário", "user"]:
-            self.btn_cadastro_usuario.setVisible(False)
-        elif user in ["convidado", "convidado"]:
-            self.btn_cadastrar_produto.setVisible(False)
-            self.btn_cadastro_usuario.setVisible(False)
-            self.btn_clientes.setVisible(False)
+        
 
         self.carregar_configuracoes()
         
@@ -580,10 +584,52 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # Atualizações iniciais
         self.atualizar_usuario_logado()
         self.atualizar_avatar()
-
+        
+        self.aplicar_permissoes_ui(self.tipo_usuario)
+  
+            
+    def normalizar_tipo_usuario(tipo_usuario: str | None) -> str:
+        if not tipo_usuario:
+            return ""
+        return str(tipo_usuario).strip().lower()
+    
+    def aplicar_permissoes_ui(self, tipo_usuario: str | None):
+        role = (tipo_usuario or "").strip().lower()
+        
+        #Exemplo de papéis
+        admin = role in ["administrador","admin"]
+        user  = role in ["comum","usuário","usuario","user"]
+        convidado = role in ["convidado","guest"]
+        
+        print(f"[PERMISSÕES] tipo_usuario recebido: {tipo_usuario} -> role: {role!r}")
+        
+        # --- ADMIN: vê tudo ---
+        if admin:
+            return
+        
+        if user:
+            if hasattr(self, "btn_cadastrar_usuarios"):
+                self.btn_cadastrar_usuarios.setVisible(False)
+            if hasattr(self, "btn_verificar_usuarios"):
+                self.btn_verificar_usuarios.setVisible(False)
+            if hasattr(self, "btn_clientes"): 
+                self.btn_clientes.setVisible(False)
+            if hasattr(self,"btn_historico"):
+                self.btn_historico.setVisible(False)
+            self.action_em_massa_usuarios.setVisible(False)
+        if convidado:
+            if hasattr(self, "btn_cadastrar_usuarios"):
+                self.btn_cadastrar_usuarios.setVisible(False)
+            if hasattr(self, "btn_verificar_usuarios"):
+                self.btn_verificar_usuarios.setVisible(False)
+            if hasattr(self, "btn_clientes"): 
+                self.btn_clientes.setVisible(False)
+            if hasattr(self,"btn_historico"):
+                self.btn_historico.setVisible(False)
+            self.action_em_massa_usuarios.setVisible(False)
         
     def atualizar_usuario_logado(self):
-        nome_completo = self.get_nome_completo_usuario()
+        nome_completo = self.get_nome_completo_usuario() 
 
         if not nome_completo:
             self.label_nome_usuario.setText("Nenhum usuário logado")
@@ -1117,11 +1163,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if checkbox_nao_mostrar_mensagem.isChecked():
             self.config.nao_mostrar_mensagem_boas_vindas = True
             self.config.salvar_configuracoes(self.config.usuario, self.config.senha, self.config.mantem_conectado)
-
     
 
-
-    '''def verificar_conexao(self):
+    def verificar_conexao(self):
         """Verifica se há conexão com a internet."""
         try:
             # Tenta conectar ao Google para verificar a internet
@@ -1131,20 +1175,20 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             return False
  
     def exibir_notificacao(self):
-        """Exibe uma notificação de status de conexão."""
         conectado = self.verificar_conexao()
-        if conectado:
-            mensagem = "Você está conectado à internet."
-        else:
-            mensagem = "Sem conexão com a internet."
+        mensagem = (
+            "Você está conectado à internet."
+            if conectado
+            else "Sem conexão com a internet. Envio de sugestões não irá funcionar corretamente."
+        )
 
-        # Exibir notificação
-        notification.notify(
-            title="Status da Conexão",
-            message=mensagem,
-            app_name="Sistema de Gerenciamento",
-            timeout=5  # Duração em segundos
-        )'''
+        # (título, mensagem, ícone, duração ms)
+        self.tray.showMessage(
+            "Status da Conexão",
+            mensagem,
+            QSystemTrayIcon.Information,
+            5000
+        )
             
     def criar_item(self, texto):
         item = QTableWidgetItem(texto)
@@ -1704,10 +1748,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         usuario_senha = self.txt_senha_cadastro.text()
         usuario_confirmar_senha = self.txt_confirmar_senha.text()
         usuario_acesso = self.perfil_usuarios.currentText()
+        usuario_logado = self.get_usuario_logado()
+       
 
 
         # Verificar campos obrigatórios
         campos_nao_preenchidos_usuarios = []
+        
         if not usuario_nome: campos_nao_preenchidos_usuarios.append("nome")
         if not usuario_usuario: campos_nao_preenchidos_usuarios.append("usuario")
         if not usuario_telefone: campos_nao_preenchidos_usuarios.append("telefone")
@@ -1780,32 +1827,32 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 
                 usuario_imagem_original = caminho_final
 
-        # SQL e valores
+        # SQL e valores com imagem
         if usuario_imagem_original:
             sql = """
                 UPDATE users 
                 SET Nome=?, Telefone=?, Endereço=?, Número=?, Cidade=?, Bairro=?, Complemento=?, 
                     Email=?, "Data de Nascimento"=?, RG=?, CPF=?, CNPJ=?, CEP=?, Estado=?, 
-                    Senha=?, "Imagem Original" =?, "Confirmar Senha"=?,Acesso=?
+                    Senha=?, "Imagem Original" =?, "Confirmar Senha"=?,Acesso=?,"Usuário Logado"=?
                 WHERE id=?
             """
             valores = (
                 usuario_nome, usuario_telefone, usuario_endereco, usuario_numero, usuario_cidade, usuario_bairro, usuario_complemento,
                 usuario_email, usuario_data_nascimento, usuario_rg, usuario_cpf, usuario_cnpj, usuario_cep, usuario_estado,
-                usuario_senha, usuario_imagem_original, usuario_confirmar_senha,usuario_acesso, self.selected_user_id
+                usuario_senha, usuario_imagem_original, usuario_confirmar_senha,usuario_acesso,usuario_logado, self.selected_user_id
             )
         else:
             sql = """
                 UPDATE users 
                 SET Nome=?, Telefone=?, Endereço=?, Número=?, Cidade=?, Bairro=?, Complemento=?, 
                     Email=?, "Data de Nascimento"=?, RG=?, CPF=?, CNPJ=?, CEP=?, Estado=?, 
-                    Senha=?, "Confirmar Senha"=?,Acesso=?
+                    Senha=?, "Confirmar Senha"=?,Acesso=?,"Usuário Logado"=?
                 WHERE id=?
             """
             valores = (
                 usuario_nome, usuario_telefone, usuario_endereco, usuario_numero, usuario_cidade, usuario_bairro, usuario_complemento,
                 usuario_email, usuario_data_nascimento, usuario_rg, usuario_cpf, usuario_cnpj, usuario_cep, usuario_estado,
-                usuario_senha, usuario_confirmar_senha, usuario_acesso,self.selected_user_id
+                usuario_senha, usuario_confirmar_senha, usuario_acesso,usuario_logado,self.selected_user_id
             )
 
         try:
@@ -4525,7 +4572,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.mostrar_tutorial_pagina(
             chave="tutorial_pg_cadastrar_produto",
             pagina_widget=self.pg_cadastrar_produto,
-            titulo="Cadstro de Produtos",
+            titulo="Cadastro de Produtos",
             texto="Nesta página você cadastra produtos, edita, aplica desconto e vincula ao cliente.\n"
                 "Preencha os campos, adicione o produto e confirme para salvar no sistema."
         )
@@ -4535,7 +4582,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.mostrar_tutorial_pagina(
             chave="tutorial_pg_cadastrar_usuario",
             pagina_widget=self.pg_cadastrar_usuario,
-            titulo="Cadstro de Usuários",
+            titulo="Cadastro de Usuários",
             texto="Nesta página você pode cadastrar, editar e atualizar usuários do sistema.\n"
                 "Preencha os campos obrigatórios, defina o nível de acesso e clique em confirmar para salvar."
         )

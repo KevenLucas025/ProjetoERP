@@ -331,8 +331,10 @@ class DialogoEstilizado(QDialog):
 # Dialog específico: Escolher planilha
 # -----------------------------
 class EscolherPlanilhaDialog(DialogoEstilizado):
-    def __init__(self, parent=None):
+    def __init__(self, parent=None,tipo_usuario=None):
         super().__init__(parent=parent)
+        
+        self.tipo_usuario = (tipo_usuario or "").strip().lower()
 
         self.setWindowTitle("Escolher Planilha de Exemplo")
         layout = QVBoxLayout(self)
@@ -345,13 +347,16 @@ class EscolherPlanilhaDialog(DialogoEstilizado):
 
         # ComboBox com as opções
         self.combo = QComboBox()
-        self.combo.addItems([
-            "Planilha de Exemplo 1 - Produtos",
-            "Planilha de Exemplo 2 - Usuários"
-        ])
-        layout.addWidget(self.combo)
+        self.combo.addItem("Planilha de Exemplo 1 - Produtos")
+        
+        if self.tipo_usuario in ["administrador", "admin"]:
+            self.combo.addItem("Planilha de Exemplo 2 - Usuários")
+                
 
         # Adiciona os botões OK / Cancelar da classe base
+        layout.addWidget(self.combo)
+
+        # Botões OK / Cancelar
         layout.addWidget(self.botoes)
 
     def escolha(self):

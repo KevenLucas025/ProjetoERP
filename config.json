@@ -1,8 +1,8 @@
 {
     "tema": "escuro",
-    "usuario": "Keven",
-    "senha": "123",
-    "mantem_conectado": true,
+    "usuario": "DA3C",
+    "senha": "Jorge12!",
+    "mantem_conectado": false,
     "nao_mostrar_mensagem_boas_vindas": true,
     "nao_mostrar_aviso_irreversivel": false,
     "nao_mostrar_mensagem_arquivo_excel": false,
@@ -30,22 +30,60 @@
             "13179-905"
         ],
         "txt_complemento": [
-            "Bloco A AP 31"
+            "Bloco A AP 31",
+            "zxxzx"
         ],
         "txt_telefone": [
             "(19)",
-            "(19) 98201-8869"
+            "(19) 98201-8869",
+            "(19) 98201-8868"
+        ],
+        "txt_senha_cadastro": [
+            "123",
+            "Jorge12!"
+        ],
+        "txt_email": [
+            "keven.lucas00@hotmail.com",
+            "keven.lucas00@hotmail.con"
+        ],
+        "txt_data_nascimento": [
+            "26/01/2000"
+        ],
+        "txt_rg": [
+            "52.991.559-5",
+            "55.555.555-5"
+        ],
+        "txt_cpf": [
+            "506.796.778-10",
+            "555.555.555-55"
+        ],
+        "txt_cnpj": [
+            "00.000.000/0000-00",
+            "00.000.000/0000-01",
+            "03.030.303/0303-03"
+        ],
+        "txt_nome": [
+            "Jorge"
+        ],
+        "txt_usuario_cadastro": [
+            "Jorge"
+        ],
+        "txt_confirmar_senha": [
+            "123",
+            "Jorge12!"
         ]
     },
-    "nome_usuario": "Keven",
-    "email": "Não Cadastrado",
+    "nome_usuario": "Jorge",
+    "email": "keven.lucas00@hotmail.con",
     "nao_mostrar_aviso_atualizacoes": false,
     "tamanho_fonte_percentual": 100,
-    "atalhos": {},
-    "atualizacoes_automaticas": false,
-    "ultimos_diretorios": {
-        "imagem_produto": "C:/Users/KEVEN/Pictures",
-        "excel_tabela_produtos": "C:/Users/KEVEN/OneDrive/Área de Trabalho"
+    "tutoriais_vistos": {
+        "tutorial_pg_cadastrar_produto": true,
+        "tutorial_pg_verificar_usuarios": true,
+        "tutorial_pg_estoque": true,
+        "tutorial_pg_clientes": true,
+        "tutorial_pg_cadastrar_usuario": true
     },
-    "tutoriais_vistos": {}
+    "atalhos": {},
+    "atualizacoes_automaticas": false
 }
