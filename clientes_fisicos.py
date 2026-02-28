@@ -1,8 +1,8 @@
-from PySide6.QtWidgets import (QLineEdit, QToolButton,QTableWidgetItem,
+from PySide6.QtWidgets import (QLineEdit,QTableWidgetItem,
                                QMessageBox,QMainWindow,QVBoxLayout,QWidget,QLabel,QCheckBox,
                                QPushButton,QScrollArea,QComboBox,QHeaderView,QHBoxLayout,
                                QGraphicsOpacityEffect,QTableWidget,QDialog,
-                               QRadioButton,QGroupBox,QFileDialog,QFormLayout,QDateEdit,QMenu,QApplication)
+                               QRadioButton,QGroupBox,QFormLayout,QDateEdit,QMenu,QApplication)
 from PySide6.QtGui import QColor,QBrush,QGuiApplication,QIcon
 from PySide6.QtCore import Qt,QTimer,QPropertyAnimation,QEvent,QDate,QPoint
 from database import DataBase
@@ -12,7 +12,7 @@ from configuracoes import Configuracoes_Login
 from dialogos import ComboDialog,DialogoSenha
 from datetime import datetime
 from utils import Temas
-from utils import caminho_recurso,abrir_dialogo_memoria,salvar_dialogo_memoria
+from utils import caminho_recurso,salvar_dialogo_memoria
 import csv
 from reportlab.lib import colors
 from reportlab.lib.pagesizes import letter

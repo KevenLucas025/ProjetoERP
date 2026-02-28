@@ -3,10 +3,10 @@ from PySide6.QtWidgets import (QWidget,QMenu, QVBoxLayout,
                                QToolButton,QMainWindow,QPushButton,QLabel,
                                QLineEdit,QTableWidget,QTextEdit,QAbstractItemView,
                                QStyledItemDelegate,QStyleOptionViewItem,QTableWidgetItem,
-                               QAbstractScrollArea,QScrollArea,QHBoxLayout,QFrame,QSizePolicy,QComboBox)
+                               QAbstractScrollArea,QScrollArea)
 from PySide6.QtCore import Qt, QTimer,QRect
 from PySide6.QtGui import (QIcon,QKeySequence,QColor,
-                           QTextDocument,QPainter,QFontMetrics,QTextCursor,QTextCharFormat,QPalette,QPixmap)
+                           QTextDocument,QPainter,QFontMetrics,QTextCursor,QTextCharFormat,QPalette)
 import os
 import sys
 from configuracoes import Configuracoes_Login

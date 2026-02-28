@@ -1,7 +1,7 @@
 from PySide6.QtWidgets import (QWidget,QTableWidget,QMessageBox,
                                QTableWidgetItem,QLineEdit,QCheckBox,
-                               QFileDialog,QMainWindow,QVBoxLayout,QPushButton,QHBoxLayout,
-                               QLabel,QRadioButton,QGroupBox,QDialog,QHeaderView)
+                               QMainWindow,QVBoxLayout,QPushButton,QHBoxLayout,
+                               QRadioButton,QGroupBox,QDialog,QHeaderView)
 from PySide6.QtGui import QBrush,QColor,QGuiApplication
 from PySide6.QtCore import Qt,QEvent,QTimer
 from database import DataBase

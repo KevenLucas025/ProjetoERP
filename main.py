@@ -1,14 +1,13 @@
 #*********************************************************************************************************************
 import re
-from PySide6.QtCore import (Qt, QTimer, QDate, QBuffer, QByteArray, QIODevice, Signal,
-                            QEvent,QPoint,QPropertyAnimation)
+from PySide6.QtCore import (Qt, QTimer, QDate, Signal,QEvent)
 from PySide6 import QtCore
 from PySide6.QtWidgets import (QMainWindow, QMessageBox, QPushButton,
-                               QLabel, QFileDialog, QVBoxLayout,
+                               QLabel, QVBoxLayout,
                                QMenu,QTableWidgetItem,QCheckBox,QApplication,QToolButton,QHeaderView,QCompleter,
                                QComboBox,QInputDialog,QProgressDialog,QDialog,QLineEdit,QWidget,QHBoxLayout,QProgressBar,QFormLayout,QTextEdit)
 from PySide6.QtGui import (QDoubleValidator, QIcon, QColor, QPixmap,QBrush,
-                           QAction,QMovie,QImage,QShortcut,QKeySequence,QPainterPath,QPainter)
+                           QAction,QMovie,QShortcut,QKeySequence,QPainterPath,QPainter)
 from login import Login
 from mane_python import Ui_MainWindow
 from database import DataBase
@@ -417,8 +416,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.action_contato.triggered.connect(self.show_pg_contato)
         self.action_reiniciar.triggered.connect(self.reiniciar_sistema)
         self.action_planilhas_exemplo.triggered.connect(self.exibir_planilhas_exemplo)
-        self.action_em_massa_produtos.triggered.connect(self.pagina_cadastro_em_massa_produtos)
-        self.action_em_massa_usuarios.triggered.connect(self.pagina_cadastro_em_massa_usuarios)
+        self.action_em_massa_produtos.triggered.connect(self.abrir_pg_massa_produtos)
+        self.action_em_massa_usuarios.triggered.connect(self.abrir_pg_massa_usuarios)
         self.action_informacoes_sistema.triggered.connect(self.show_mensagem_sistema)
         self.action_limpar_cache.triggered.connect(self.limpar_cache_sistema)
 
@@ -525,17 +524,17 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.txt_desconto_3.editingFinished.connect(self.formatar_porcentagem)
 
 
-        self.btn_home.clicked.connect(lambda: self.paginas_sistemas.setCurrentWidget(self.home_pag))
-        self.btn_clientes.clicked.connect(lambda: self.paginas_sistemas.setCurrentWidget(self.pg_clientes))      
+        self.btn_home.clicked.connect(lambda: self.paginas_sistemas.setCurrentWidget(self.home_pag))    
         self.btn_ver_item.clicked.connect(lambda: self.paginas_sistemas.setCurrentWidget(self.pag_estoque))
-        self.btn_verificar_usuarios.clicked.connect(lambda: self.paginas_sistemas.setCurrentWidget(self.page_verificar_usuarios))
         self.btn_ver_usuario.clicked.connect(lambda: self.paginas_sistemas.setCurrentWidget(self.page_verificar_usuarios))
         self.btn_cadastrar_novo_usuario.clicked.connect(lambda: self.paginas_sistemas.setCurrentWidget(self.pg_cadastrar_usuario))
         self.btn_editar_massa_produtos.clicked.connect(lambda: self.paginas_sistemas.setCurrentWidget(self.pg_cadastrar_produto))
         self.btn_editar_massa_usuario.clicked.connect(lambda: self.paginas_sistemas.setCurrentWidget(self.pg_cadastrar_usuario))
         
 
-
+        
+        self.btn_clientes.clicked.connect(self.mostrar_page_clientes)
+        self.btn_verificar_usuarios.clicked.connect(self.mostrar_page_verificar_usuarios)
         self.btn_novo_produto.clicked.connect(self.abrir_pg_cadastrar_produto)
         self.btn_cadastrar_usuarios.clicked.connect(self.abrir_pg_cadastro_usuario)
         self.btn_cadastrar_produto.clicked.connect(self.abrir_pg_cadastrar_produto)
@@ -1637,14 +1636,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             "evoluir continuamente o sistema."
         )
         msg.exec()
-
-
-
-    
-        
-    def mostrar_page_clientes(self):
-        # Navegar para a página de estoque
-        self.paginas_sistemas.setCurrentWidget(self.pg_clientes)
         
 
     # EXIBE A PÁGINA DE CONFIGURAÇÕES AO CLICAR NA OPÇÃO CONFIGURAÇÕES DENTRO DO MENU DO BOTÃO MAIS OPÇÕES
@@ -4254,15 +4245,35 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         )
 
      
-    def pagina_cadastro_em_massa_produtos(self):
-        selected_action = self.sender()
-        if selected_action == self.action_em_massa_produtos:
-            self.paginas_sistemas.setCurrentWidget(self.page_cadastrar_massa_produtos)
+    def abrir_pg_massa_produtos(self):
+        self.paginas_sistemas.setCurrentWidget(self.page_cadastrar_massa_produtos)
+
+        self.mostrar_tutorial_pagina(
+            chave="tutorial_pg_massa_produtos",
+            pagina_widget=self.page_cadastrar_massa_produtos,
+            titulo="Cadastro em Massa Produtos",
+            texto="Nesta página você pode cadastrar vários produtos de uma vez usando uma planilha.\n\n"
+                "1) Importe a planilha\n"
+                "2) Clique em Fazer o cadastro em massa.\n"
+                "3) Editar produto leva a página de cadastro de produtos\n\n"
+                "Observação 1: revise os dados antes de confirmar para evitar erros no estoque.\n"
+                "Observação 2: gere a planilha de exemplos para ter uma ideia de como importar e preencher a planilha"
+        )
         
-    def pagina_cadastro_em_massa_usuarios(self):
-        selected_action = self.sender()
-        if selected_action == self.action_em_massa_usuarios:
-            self.paginas_sistemas.setCurrentWidget(self.page_cadastrar_massa_usuarios)
+    def abrir_pg_massa_usuarios(self):
+        self.paginas_sistemas.setCurrentWidget(self.page_cadastrar_massa_usuarios)
+
+        self.mostrar_tutorial_pagina(
+            chave="tutorial_pg_massa_usuarios",
+            pagina_widget=self.page_cadastrar_massa_usuarios,
+            titulo="Cadastro em Massa Usuários",
+            texto="Nesta página você pode cadastrar vários usuários de uma vez usando uma planilha.\n\n"
+                "1) Importe a planilha\n"
+                "2) Clique em Fazer o cadastro em massa.\n"
+                "3) Editar usuário leva a página de cadastro de usuários\n\n"
+                "Observação 1: revise os dados antes de confirmar para evitar erros.\n"
+                "Observação 2: gere a planilha de exemplos para ter uma ideia de como importar e preencher a planilha"
+        )
 
     # Sair do modo edição na página de cadastrar usuários
     def sair_modo_edicao_usuarios(self):
@@ -4492,7 +4503,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.label_icone_wpp.setPixmap(QPixmap(caminho_recurso("imagens/icone_whatsapp.png")))
         self.label_icone_email.setPixmap(QPixmap(caminho_recurso("imagens/icone_email.png")))
     
-    def mostrar_tutorial_pagina(self, chave: str, pagina_widget, titulo: str, texto: str):
+    def mostrar_tutorial_pagina(self, chave: str, pagina_widget,titulo: str, texto: str):
         if self.config.tutorial_ja_visto(chave):
             return
 
@@ -4506,7 +4517,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             if nao_mostrar:
                 self.config.marcar_tutorial_visto(chave)
 
-        QTimer.singleShot(0, lambda: overlay.show_tutorial(titulo, texto, on_close=on_close))
+        QTimer.singleShot(0, lambda: overlay.show_tutorial(titulo,texto, on_close=on_close))
         
     def abrir_pg_cadastrar_produto(self):
         self.paginas_sistemas.setCurrentWidget(self.pg_cadastrar_produto)
@@ -4514,7 +4525,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.mostrar_tutorial_pagina(
             chave="tutorial_pg_cadastrar_produto",
             pagina_widget=self.pg_cadastrar_produto,
-            titulo="Cadastro de Produtos",
+            titulo="Cadstro de Produtos",
             texto="Nesta página você cadastra produtos, edita, aplica desconto e vincula ao cliente.\n"
                 "Preencha os campos, adicione o produto e confirme para salvar no sistema."
         )
@@ -4524,25 +4535,53 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.mostrar_tutorial_pagina(
             chave="tutorial_pg_cadastrar_usuario",
             pagina_widget=self.pg_cadastrar_usuario,
-            titulo="Cadastro de Usuários",
+            titulo="Cadstro de Usuários",
             texto="Nesta página você pode cadastrar, editar e atualizar usuários do sistema.\n"
                 "Preencha os campos obrigatórios, defina o nível de acesso e clique em confirmar para salvar."
         )
     
     def mostrar_page_estoque(self):
         # Navegar para a página de estoque
-        self.paginas_sistemas.setCurrentWidget(self.pg_cadastrar_usuario)
+        self.paginas_sistemas.setCurrentWidget(self.pag_estoque)
 
         self.mostrar_tutorial_pagina(
-            chave="tutorial_pg_verificar_estoque",
+            chave="tutorial_pg_estoque",
             pagina_widget=self.pag_estoque,
-            titulo="Cadastro de Usuários",
-            texto="Nesta página você acompanha o estoque, registra saídas/estornos e gera relatórios.\n"
+            titulo="Estoque",
+            texto="Nesta página você acompanha o estoque e o histórico, registra saídas/estornos e gera relatórios.\n"
                  "Use 'Atualizar' para recarregar os dados e 'Gerar Excel' para exportar."
         )
         
         # Atualizar a tabela na página de estoque
         self.estoque_produtos.carregar_tabela_estoque()
+        
+    def mostrar_page_verificar_usuarios(self):
+        self.paginas_sistemas.setCurrentWidget(self.page_verificar_usuarios)
+
+        self.mostrar_tutorial_pagina(
+            chave="tutorial_pg_verificar_usuarios",
+            pagina_widget=self.page_verificar_usuarios,
+            titulo="Verificar Usuários",
+            texto="Nesta página você pode visualizar os usuários cadastrados, "
+                "gerar a saída de usuários, importar registros e acompanhar o histórico de movimentações.\n\n"
+                "⚠️ Atenção: usuários que tiverem saída gerada não poderão ser estornados. "
+                "Essa ação é irreversível."
+        )
+    
+    def mostrar_page_clientes(self):
+        self.paginas_sistemas.setCurrentWidget(self.pg_clientes)
+
+        self.mostrar_tutorial_pagina(
+            chave="tutorial_pg_clientes",
+            pagina_widget=self.pg_clientes,
+            titulo="Clientes",
+            texto="Nesta seção você gerencia os clientes do sistema, tanto físicos quanto jurídicos.\n\n"
+                "Aqui é possível cadastrar, editar e excluir clientes, gerar relatórios "
+                "e acompanhar o histórico de movimentações.\n\n"
+                "As informações são organizadas por tipo de cliente, mas seguem o mesmo padrão de controle."
+        )
+        
+    
             
     def closeEvent(self, event):
         event.accept()

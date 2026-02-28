@@ -47,8 +47,5 @@
         "imagem_produto": "C:/Users/KEVEN/Pictures",
         "excel_tabela_produtos": "C:/Users/KEVEN/OneDrive/Área de Trabalho"
     },
-    "tutoriais_vistos": {
-        "tutorial_pg_cadastrar_produto": true,
-        "tutorial_pg_cadastrar_usuario": true
-    }
+    "tutoriais_vistos": {}
 }

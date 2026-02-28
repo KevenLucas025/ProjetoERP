@@ -2,7 +2,7 @@ from PySide6.QtWidgets import (QLineEdit,QTableWidgetItem,
                                QMessageBox,QMainWindow,QVBoxLayout,QWidget,QLabel,QCheckBox,
                                QPushButton,QScrollArea,QComboBox,QGridLayout,QHeaderView,QHBoxLayout,
                                QGraphicsOpacityEffect,QTableWidget,QDialog,
-                               QRadioButton,QGroupBox,QFileDialog,QFormLayout,QDateEdit,QMenu,QApplication)
+                               QRadioButton,QGroupBox,QFormLayout,QDateEdit,QMenu,QApplication)
 from PySide6.QtGui import QColor,QBrush,QGuiApplication,QIcon
 from PySide6.QtCore import Qt,QTimer,QPropertyAnimation,QEvent,QDate,QPoint
 from database import DataBase
@@ -10,7 +10,7 @@ import sqlite3
 import pandas as pd
 from configuracoes import Configuracoes_Login
 from utils import Temas
-from utils import caminho_recurso,salvar_dialogo_memoria,abrir_dialogo_memoria
+from utils import caminho_recurso,salvar_dialogo_memoria
 from datetime import datetime
 from dialogos import ComboDialog,DialogoSenha,ConfirmacaoDialog
 import csv

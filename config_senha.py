@@ -1,11 +1,10 @@
 from PySide6.QtWidgets import (
     QDialog, QLabel, QLineEdit, QPushButton, QVBoxLayout, QHBoxLayout, QMessageBox
 )
-from PySide6.QtGui import QIcon
 from PySide6.QtCore import Qt,QPropertyAnimation
 from database import DataBase
 from datetime import datetime
-from utils import Temas,MostrarSenha
+from utils import Temas
 import re
 
 

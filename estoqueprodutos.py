@@ -1,7 +1,7 @@
 from PySide6.QtGui import QColor, QBrush,QGuiApplication
 from PySide6.QtWidgets import (QWidget, QTableWidget, QTableWidgetItem, 
                                QMessageBox,QCheckBox,QVBoxLayout,QDialog,QPushButton,QMainWindow,QHBoxLayout,
-                               QLineEdit,QGroupBox,QRadioButton,QFileDialog,QHeaderView,QInputDialog)
+                               QLineEdit,QGroupBox,QRadioButton,QHeaderView)
 from PySide6.QtCore import Qt,QTimer,QEvent
 import sqlite3
 import pandas as pd
