@@ -1,7 +1,7 @@
 {
     "tema": "escuro",
-    "usuario": "DA3C",
-    "senha": "Jorge12!",
+    "usuario": "Keven",
+    "senha": "123",
     "mantem_conectado": false,
     "nao_mostrar_mensagem_boas_vindas": true,
     "nao_mostrar_aviso_irreversivel": false,
@@ -73,8 +73,8 @@
             "Jorge12!"
         ]
     },
-    "nome_usuario": "Jorge",
-    "email": "keven.lucas00@hotmail.con",
+    "nome_usuario": "Keven",
+    "email": "keven.lucas00@hotmail.com",
     "nao_mostrar_aviso_atualizacoes": false,
     "tamanho_fonte_percentual": 100,
     "tutoriais_vistos": {

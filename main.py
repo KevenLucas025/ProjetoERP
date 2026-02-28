@@ -145,8 +145,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             
         self.tipo_usuario = (tipo_usuario or "").strip().lower()
         
-        print("[DEBUG MainWindow __init__] tipo_usuario recebido:", tipo_usuario)
-        print("[DEBUG MainWindow __init__] self.tipo_usuario:", self.tipo_usuario)
         
         self.limpar_pycache_pendente()
         
@@ -585,7 +583,11 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.atualizar_usuario_logado()
         self.atualizar_avatar()
         
-        self.aplicar_permissoes_ui(self.tipo_usuario)
+        usuario_logado = (self.config.usuario or "").strip()
+        self.tipo_usuario = (self.db.obter_tipo_usuario(usuario_logado) or "").strip().lower()
+        
+        QTimer.singleShot(0, lambda: self.aplicar_permissoes_ui(self.tipo_usuario))
+       
   
             
     def normalizar_tipo_usuario(tipo_usuario: str | None) -> str:
@@ -601,8 +603,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         user  = role in ["comum","usuário","usuario","user"]
         convidado = role in ["convidado","guest"]
         
-        print(f"[PERMISSÕES] tipo_usuario recebido: {tipo_usuario} -> role: {role!r}")
-        
         # --- ADMIN: vê tudo ---
         if admin:
             return
@@ -616,6 +616,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 self.btn_clientes.setVisible(False)
             if hasattr(self,"btn_historico"):
                 self.btn_historico.setVisible(False)
+            if hasattr(self, "btn_ver_clientes_juridicos"):
+                self.btn_ver_clientes_juridicos.setVisible(False)
+            if hasattr(self, "btn_ver_item"):
+                self.btn_ver_item.setVisible(False)
             self.action_em_massa_usuarios.setVisible(False)
         if convidado:
             if hasattr(self, "btn_cadastrar_usuarios"):
@@ -626,6 +630,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 self.btn_clientes.setVisible(False)
             if hasattr(self,"btn_historico"):
                 self.btn_historico.setVisible(False)
+            if hasattr(self, "btn_ver_clientes_juridicos"):
+                self.btn_ver_clientes_juridicos.setVisible(False)
+            if hasattr(self, "btn_ver_item"):
+                self.btn_ver_item.setVisible(False)
             self.action_em_massa_usuarios.setVisible(False)
         
     def atualizar_usuario_logado(self):

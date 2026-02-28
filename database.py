@@ -1104,8 +1104,8 @@ class DataBase:
 
             row = cursor.fetchone()
 
-            print("[DEBUG obter_tipo_usuario] Entrada:", usuario_email_cpf)
-            print("[DEBUG obter_tipo_usuario] Resultado bruto:", row)
+            #print("[DEBUG obter_tipo_usuario] Entrada:", usuario_email_cpf)
+            #print("[DEBUG obter_tipo_usuario] Resultado bruto:", row)
 
             return row[0] if row and row[0] else None
 

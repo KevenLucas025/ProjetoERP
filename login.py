@@ -159,31 +159,32 @@ class Login(QMainWindow, Ui_Mainwindow_Login):
         self.w = MainWindow(login_window=self, tipo_usuario=role)
         self.w.show()
         self.tentativas = 0
+        QTimer.singleShot(0, lambda: self.w.aplicar_permissoes_ui(role))
         QTimer.singleShot(2000,self.w.boas_vindas)
         QTimer.singleShot(3000, self.w.verificar_atualizacao_automatica)
-
 
 
     def fazerLoginAutomatico(self):
         if not self.config.mantem_conectado:
             return
 
-        usuario = self.config.usuario
-        senha = self.config.senha  # Se você optar por continuar salvando a senha
+        usuario = (self.config.usuario or "").strip()
+        senha = (self.config.senha or "").strip()
 
         if not (usuario and senha):
             return
 
-        tipo_usuario = self.users.check_user(usuario, senha)
-        if tipo_usuario:
-            print("Login automático bem-sucedido!")
-            from main import MainWindow
-            self.w = MainWindow(tipo_usuario.lower(), self)
-            self.w.show()
-            self.close()
-        else:
+        usuario_login = self.users.check_user(usuario, senha)
+
+        if not usuario_login:
             print("Falha no login automático.")
             self.mostrarMensagem("Erro", "Não foi possível autenticar automaticamente.", QMessageBox.Warning)
+            return
+
+        from main import MainWindow
+        self.w = MainWindow(login_window=self)  # ✅ não passa tipo_usuario
+        self.w.show()
+        self.close()
 
 
     def limpar_campos(self):
