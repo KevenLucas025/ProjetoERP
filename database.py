@@ -1159,6 +1159,36 @@ class DataBase:
             print(f"Erro ao contar Primeiro Acesso pendente: {e}")
             return 0
 
+    def obter_master_por_usuario(self, usuario: str):
+        self.garantir_conexao()
+        cur = self.connection.cursor()
+        cur.execute("""
+            SELECT "Usuário", totp_secret, trusted_device_id
+            FROM users
+            WHERE is_master = 1 AND ("Usuário" = ? OR Email = ? OR CPF = ?)
+            LIMIT 1
+        """, (usuario, usuario, usuario))
+        return cur.fetchone()  # (Usuario, secret, trusted_device_id) ou None
+
+    def setar_master_secret_e_device(self, usuario: str, secret_base32: str, device_id: str):
+        self.garantir_conexao()
+        cur = self.connection.cursor()
+        cur.execute("""
+            UPDATE users
+            SET totp_secret = ?, trusted_device_id = ?
+            WHERE is_master = 1 AND ("Usuário" = ? OR Email = ? OR CPF = ?)
+        """, (secret_base32, device_id, usuario, usuario, usuario))
+        self.connection.commit()
+
+    def atualizar_acesso_usuario(self, usuario_alvo: str, novo_acesso: str):
+        self.garantir_conexao()
+        cur = self.connection.cursor()
+        cur.execute("""
+            UPDATE users SET Acesso = ?
+            WHERE "Usuário" = ? OR Email = ? OR CPF = ?
+        """, (novo_acesso, usuario_alvo, usuario_alvo, usuario_alvo))
+        self.connection.commit()
+
 if __name__ == "__main__":
     db = DataBase()
     db.close_connection()

@@ -461,6 +461,7 @@ class Pagina_Configuracoes(QWidget):
 
         # Mostrar janela
         self.janela_config.show()
+        
 
     def verificar_atualizacoes(self):
         try:

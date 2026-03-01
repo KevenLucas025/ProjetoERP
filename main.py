@@ -1184,17 +1184,16 @@ class MainWindow(QMainWindow, Ui_MainWindow):
  
     def exibir_notificacao(self):
         conectado = self.verificar_conexao()
-        mensagem = (
-            "Você está conectado à internet."
-            if conectado
-            else "Sem conexão com a internet. Envio de sugestões não irá funcionar corretamente."
-        )
 
-        # (título, mensagem, ícone, duração ms)
+        if conectado:
+            return  # Não faz nada se estiver online
+
+        mensagem = "Sem conexão com a internet. Envio de sugestões não irá funcionar corretamente."
+
         self.tray.showMessage(
             "Status da Conexão",
             mensagem,
-            QSystemTrayIcon.Information,
+            QSystemTrayIcon.Warning, 
             5000
         )
             
@@ -4201,7 +4200,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def exibir_planilhas_exemplo(self):
         # Abre o dialog customizado
-        dialog = EscolherPlanilhaDialog(self)
+        dialog = EscolherPlanilhaDialog(self,tipo_usuario=self.tipo_usuario)
         if dialog.exec() != QDialog.Accepted:
             print("Operação cancelada pelo usuário.")
             return

@@ -1,43 +1,23 @@
-# Caminho onde serão gerados os arquivos
-$distPath = "$env:USERPROFILE\Desktop"
-$systemFolder = Join-Path $distPath "SistemadeGerenciamento"
+$projectRoot = Split-Path -Parent $MyInvocation.MyCommand.Path
+Set-Location $projectRoot
 
-# ------------------------------
-# Build do SISTEMA PRINCIPAL
-# ------------------------------
+$distPath = "$env:USERPROFILE\Desktop"
+$systemFolder = Join-Path $distPath "Sistema de Gerenciamento"
+
 pyinstaller --noconfirm --clean --onedir --windowed `
   --collect-all pandas `
   --collect-all numpy `
   --add-data "imagens;imagens" `
   --icon "imagens/favicon.ico" `
-  --name "SistemadeGerenciamento" `
+  --name "Sistema de Gerenciamento" `
   --distpath $distPath `
   main.py
 
-  # ------------------------------
-# .env (opcional)
-# ------------------------------
-$envFile = Join-Path $projectRoot ".env"
-if (Test-Path $envFile) {
-    $envAdd = @("--add-data", ".env;.")
-    Write-Host "Incluindo .env no build..."
-} else {
-    $envAdd = @()
-    Write-Host "Aviso: .env não encontrado, seguindo sem ele..."
-}
-
-
-# ------------------------------
-# Build do ATUALIZADOR
-# ------------------------------
 pyinstaller --noconfirm --clean --onefile --noconsole `
   --name "Atualizador" `
   --distpath $distPath `
   atualizador.py
 
-# ------------------------------
-# Move o Atualizador.exe para dentro da pasta do sistema
-# ------------------------------
 $atualizadorExe = Join-Path $distPath "Atualizador.exe"
 $destinoAtualizador = Join-Path $systemFolder "Atualizador.exe"
 

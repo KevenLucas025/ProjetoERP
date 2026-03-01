@@ -334,9 +334,12 @@ class EscolherPlanilhaDialog(DialogoEstilizado):
     def __init__(self, parent=None,tipo_usuario=None):
         super().__init__(parent=parent)
         
+        self.setWindowTitle("Escolher Planilha de Exemplo")
+        self.resize(350, 130)
+        
         self.tipo_usuario = (tipo_usuario or "").strip().lower()
 
-        self.setWindowTitle("Escolher Planilha de Exemplo")
+        
         layout = QVBoxLayout(self)
         layout.setSpacing(15)
         layout.setContentsMargins(20, 20, 20, 20)

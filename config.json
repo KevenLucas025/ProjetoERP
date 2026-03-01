@@ -1,8 +1,8 @@
 {
     "tema": "escuro",
-    "usuario": "Keven",
-    "senha": "123",
-    "mantem_conectado": false,
+    "usuario": "DA3C",
+    "senha": "Jorge12!",
+    "mantem_conectado": true,
     "nao_mostrar_mensagem_boas_vindas": true,
     "nao_mostrar_aviso_irreversivel": false,
     "nao_mostrar_mensagem_arquivo_excel": false,
@@ -31,12 +31,14 @@
         ],
         "txt_complemento": [
             "Bloco A AP 31",
-            "zxxzx"
+            "zxxzx",
+            "csdsa"
         ],
         "txt_telefone": [
             "(19)",
             "(19) 98201-8869",
-            "(19) 98201-8868"
+            "(19) 98201-8868",
+            "(19) 98201-8867"
         ],
         "txt_senha_cadastro": [
             "123",
@@ -51,16 +53,19 @@
         ],
         "txt_rg": [
             "52.991.559-5",
-            "55.555.555-5"
+            "55.555.555-5",
+            "52.991.559-4"
         ],
         "txt_cpf": [
             "506.796.778-10",
-            "555.555.555-55"
+            "555.555.555-55",
+            "253.345.345-34"
         ],
         "txt_cnpj": [
             "00.000.000/0000-00",
             "00.000.000/0000-01",
-            "03.030.303/0303-03"
+            "03.030.303/0303-03",
+            "02.452.424/2424-24"
         ],
         "txt_nome": [
             "Jorge"
@@ -71,10 +76,13 @@
         "txt_confirmar_senha": [
             "123",
             "Jorge12!"
+        ],
+        "txt_numero": [
+            "465"
         ]
     },
-    "nome_usuario": "Keven",
-    "email": "keven.lucas00@hotmail.com",
+    "nome_usuario": "Jorge",
+    "email": "keven.lucas00@hotmail.con",
     "nao_mostrar_aviso_atualizacoes": false,
     "tamanho_fonte_percentual": 100,
     "tutoriais_vistos": {
