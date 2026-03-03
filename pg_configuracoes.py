@@ -11,10 +11,13 @@ import os
 import sys
 from configuracoes import Configuracoes_Login
 from dialogos import ComboDialog,DialogoEstilizado
+from master_signature import validar_codigo_assinado,gerar_nonce
 from ui_login_4 import Ui_Mainwindow_Login
 from utils import caminho_recurso
 from mane_python import Ui_MainWindow
+from dialogos import MasterAuthDialog  # ajuste o import se necessário
 from packaging import version
+import traceback
 import subprocess
 from utils import Temas
 import re
@@ -389,6 +392,7 @@ class Pagina_Configuracoes(QWidget):
         menu_tema.addAction("Alterar para o modo claro", self.aplicar_modo_claro)
         menu_tema.addAction("Alterar para o modo clássico", self.aplicar_modo_classico)
         menu_tema.addAction("Feedback",self.main_window.mostrar_sugestao)
+        menu_tema.addAction("Alterar Acesso", self.alterar_acesso)
         btn_tema.setMenu(menu_tema)
         self.layout.addWidget(btn_tema)
 
@@ -461,6 +465,50 @@ class Pagina_Configuracoes(QWidget):
 
         # Mostrar janela
         self.janela_config.show()
+        
+    
+    def alterar_acesso(self):
+        try:
+            nonce = gerar_nonce()
+            print("[DEBUG] nonce gerado:", nonce)
+
+            dlg = MasterAuthDialog(self.janela_config, nonce=nonce)
+
+            if dlg.exec() != QDialog.Accepted:
+                return
+
+            codigo = dlg.codigo()
+
+            payload = validar_codigo_assinado(codigo, janela_segundos=1800)
+
+            if not payload:
+                QMessageBox.critical(self.janela_config, "Negado", "Código inválido ou expirado.")
+                return
+
+            if payload.get("acao") != "promover_admin":
+                QMessageBox.critical(self.janela_config, "Negado", "Ação inválida.")
+                return
+
+            if payload.get("nonce") != nonce:
+                QMessageBox.critical(self.janela_config, "Negado", "Nonce não confere.")
+                return
+
+            usuario_logado = (self.main_window.config.usuario or "").strip()
+            if not usuario_logado:
+                QMessageBox.warning(self.janela_config, "Erro", "Não foi possível identificar usuário logado.")
+                return
+
+            self.main_window.db.atualizar_acesso_usuario(usuario_logado, "Administrador")
+
+            QMessageBox.information(
+                self.janela_config,
+                "Sucesso",
+                "Acesso alterado para Administrador.\nReinicie o sistema para aplicar as permissões."
+            )
+
+        except Exception as e:
+            traceback.print_exc()
+            QMessageBox.critical(self.janela_config, "Erro", f"Falha no Alterar Acesso:\n{e}")
         
 
     def verificar_atualizacoes(self):

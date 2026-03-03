@@ -1158,6 +1158,26 @@ class DataBase:
         except Exception as e:
             print(f"Erro ao contar Primeiro Acesso pendente: {e}")
             return 0
+        
+    def criar_tabela_master_nonces(self):
+        cur = self.connection.cursor()
+        cur.execute("""
+            CREATE TABLE IF NOT EXISTS master_nonces(
+                nonce TEXT PRIMARY KEY,
+                usado_em TEXT
+            )
+        """)
+        self.connection.commit()
+
+    def nonce_ja_usado(self, nonce: str) -> bool:
+        cur = self.connection.cursor()
+        cur.execute("SELECT 1 FROM master_nonces WHERE nonce = ? LIMIT 1", (nonce,))
+        return cur.fetchone() is not None
+
+    def registrar_nonce(self, nonce: str):
+        cur = self.connection.cursor()
+        cur.execute("INSERT OR IGNORE INTO master_nonces(nonce, usado_em) VALUES(?, datetime('now'))", (nonce,))
+        self.connection.commit()
 
     def obter_master_por_usuario(self, usuario: str):
         self.garantir_conexao()
@@ -1191,6 +1211,8 @@ class DataBase:
 
 if __name__ == "__main__":
     db = DataBase()
+    db.criar_tabela_master_nonces()
     db.close_connection()
+    
     
     

@@ -145,14 +145,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             
         self.tipo_usuario = (tipo_usuario or "").strip().lower()
         
-        
         self.limpar_pycache_pendente()
         
         self.janela_config = None
 
         self.atualizador_ja_iniciado = False
         
-
         self.table_base.verticalHeader().setFixedWidth(20)  # você pode ajustar o valor
 
         # Atalho F5 global

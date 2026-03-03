@@ -1,7 +1,9 @@
-from PySide6.QtWidgets import QDialog, QVBoxLayout, QLabel, QComboBox, QDialogButtonBox,QLineEdit
+from PySide6.QtWidgets import (QDialog, QVBoxLayout, QLabel, 
+                               QComboBox, QDialogButtonBox,QLineEdit,QPushButton,QMessageBox,QHBoxLayout)
 import json
 from utils import Temas
 from PySide6.QtCore import Qt
+from PySide6.QtGui import QGuiApplication
 
 # -----------------------------
 # Classe base de dialog estilizado
@@ -596,3 +598,65 @@ class FiltroProdutoDialog(DialogoEstilizado):
         criterio = self.combo.currentText()
         valor = self.txt_entrada.text().strip()
         return criterio, valor
+    
+class MasterAuthDialog(DialogoEstilizado):
+    def __init__(self, parent=None, nonce:str = "",tipo_usuario: str | None = None):
+        super().__init__(parent=parent)
+        
+        self.setWindowTitle("Autorização Mestre")
+        self.setMinimumWidth(520)   # evita cortar título e dá espaço pro token
+        self.setMinimumHeight(200)
+        
+        layout = QVBoxLayout(self)
+        layout.setSpacing(12)
+        layout.setContentsMargins(20, 20, 20, 20)
+
+        label_info = QLabel(
+            "Para liberar esta ação, envie o *Nonce* para o responsável e cole aqui o *Código Mestre* gerado."
+        )
+        label_info.setWordWrap(True)
+        layout.addWidget(label_info)
+
+        # --- Nonce + botão copiar ---
+        layout.addWidget(QLabel("Nonce (copie e envie):"))
+
+        row_nonce = QHBoxLayout()
+        self.txt_nonce = QLineEdit(nonce)
+        self.txt_nonce.setReadOnly(True)
+        self.txt_nonce.setCursorPosition(0)
+
+        btn_copiar = QPushButton("Copiar")
+        btn_copiar.clicked.connect(self.copiar_nonce)
+
+        row_nonce.addWidget(self.txt_nonce, 1)
+        row_nonce.addWidget(btn_copiar)
+        layout.addLayout(row_nonce)
+
+        # --- Código mestre ---
+        layout.addWidget(QLabel("Código Mestre (cole aqui):"))
+        self.txt_codigo = QLineEdit()
+        self.txt_codigo.setPlaceholderText("Cole aqui o código exatamente como foi gerado...")
+        layout.addWidget(self.txt_codigo)
+
+        # Botões OK/Cancelar (da sua classe base DialogoEstilizado)
+        layout.addWidget(self.botoes)
+
+        # Pequena melhoria: Enter confirma (se tiver preenchido)
+        self.botoes.accepted.disconnect()
+        self.botoes.accepted.connect(self._on_ok)
+
+    def copiar_nonce(self):
+        QGuiApplication.clipboard().setText(self.txt_nonce.text().strip())
+
+    def _on_ok(self):
+        if not self.txt_codigo.text().strip():
+            QMessageBox.warning(self, "Erro", "Cole o Código Mestre para continuar.")
+            return
+        self.accept()
+
+    def codigo(self) -> str:
+        return self.txt_codigo.text().strip()
+
+    def nonce(self) -> str:
+        return self.txt_nonce.text().strip()
+        
