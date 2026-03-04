@@ -1,8 +1,8 @@
 {
     "tema": "escuro",
-    "usuario": "NQSR",
-    "senha": "Python@1423!",
-    "mantem_conectado": false,
+    "usuario": "Keven",
+    "senha": "123",
+    "mantem_conectado": true,
     "nao_mostrar_mensagem_boas_vindas": true,
     "nao_mostrar_aviso_irreversivel": false,
     "nao_mostrar_mensagem_arquivo_excel": false,
@@ -90,8 +90,8 @@
             "465"
         ]
     },
-    "nome_usuario": "Pedro",
-    "email": "jorgepedro@gmail.com",
+    "nome_usuario": "Keven",
+    "email": "keven.lucas00@hotmail.com",
     "nao_mostrar_aviso_atualizacoes": false,
     "tamanho_fonte_percentual": 100,
     "tutoriais_vistos": {

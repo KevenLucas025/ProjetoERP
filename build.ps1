@@ -4,7 +4,8 @@ Set-Location $projectRoot
 $distPath = "$env:USERPROFILE\Desktop"
 $systemFolder = Join-Path $distPath "Sistema de Gerenciamento"
 
-pyinstaller --noconfirm --clean --onedir --windowed `
+
+python -m PyInstaller --noconfirm --clean --onedir --windowed `
   --collect-all pandas `
   --collect-all numpy `
   --add-data "imagens;imagens" `

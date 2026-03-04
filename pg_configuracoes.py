@@ -478,7 +478,6 @@ class Pagina_Configuracoes(QWidget):
                 return
 
             codigo = dlg.codigo()
-
             payload = validar_codigo_assinado(codigo, janela_segundos=1800)
 
             if not payload:
@@ -493,17 +492,46 @@ class Pagina_Configuracoes(QWidget):
                 QMessageBox.critical(self.janela_config, "Negado", "Nonce não confere.")
                 return
 
-            usuario_logado = (self.main_window.config.usuario or "").strip()
-            if not usuario_logado:
-                QMessageBox.warning(self.janela_config, "Erro", "Não foi possível identificar usuário logado.")
+            #  trava contra reutilização do mesmo nonce (replay)
+            if self.main_window.db.nonce_ja_usado(nonce):
+                QMessageBox.critical(self.janela_config, "Negado", "Este nonce já foi usado.")
                 return
 
-            self.main_window.db.atualizar_acesso_usuario(usuario_logado, "Administrador")
+            #  pega o alvo assinado (quem vai virar admin)
+            usuario_alvo = (payload.get("usuario_alvo") or "").strip()
+            if not usuario_alvo:
+                QMessageBox.critical(self.janela_config, "Negado", "Usuário alvo ausente no código.")
+                return
+
+            #  registra nonce antes de efetivar (pra não reaproveitarem)
+            self.main_window.db.registrar_nonce(nonce)
+
+            #  agora sim tenta atualizar (precisa retornar True/False no seu DB)
+            acesso_atual = self.main_window.db.obter_acesso_usuario(usuario_alvo)
+
+            if acesso_atual == "Administrador":
+                QMessageBox.information(
+                    self.janela_config,
+                    "Informação",
+                    f"O usuário '{usuario_alvo}' já possui acesso de Administrador."
+                )
+                return
+
+            alterou = self.main_window.db.atualizar_acesso_usuario(usuario_alvo, "Administrador")
+
+            if not alterou:
+                QMessageBox.warning(
+                    self.janela_config,
+                    "Não encontrado",
+                    f"Nenhum usuário encontrado para: {usuario_alvo}"
+                )
+                return
 
             QMessageBox.information(
                 self.janela_config,
                 "Sucesso",
-                "Acesso alterado para Administrador.\nReinicie o sistema para aplicar as permissões."
+                f"Acesso de '{usuario_alvo}' alterado para Administrador.\n"
+                "Reinicie o sistema para aplicar as permissões."
             )
 
         except Exception as e:
