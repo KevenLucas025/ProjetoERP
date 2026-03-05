@@ -1,162 +1,178 @@
-👋 Fala, pessoal! Tudo bem?
+# 🧠 Sistema de Gerenciamento
 
-Este é o meu terceiro projeto em Python, um projeto mais ambicioso e detalhado, reunindo tudo — e um pouco mais — dos dois projetos anteriores.
-Espero que gostem! 👇
-Abaixo explico um pouco mais sobre as tecnologias utilizadas e as melhorias implementadas.
+👋 Olá! Seja bem-vindo ao meu projeto.
 
-💡 Observação: o projeto está em fase final de desenvolvimento.
-Como ele é bastante extenso e estou trabalhando sozinho, ainda estou realizando os últimos ajustes e otimizações.
-A previsão é que até o final de 2025 o sistema esteja 100% finalizado e disponível para download.
+Este é o meu **terceiro projeto desenvolvido em Python** e também o mais ambicioso até agora.  
+Ele reúne e aprimora diversas ideias e funcionalidades presentes nos meus dois projetos anteriores, trazendo um sistema mais completo, organizado e funcional para **gerenciamento de pessoas, produtos e clientes**.
 
-Além disso, podem ocorrer atualizações e ajustes ao longo do tempo, portanto esta versão ainda não representa o produto final.
+O objetivo deste projeto foi criar uma aplicação **robusta, prática e escalável**, focada em organização de dados e facilidade de uso.
 
-1°: O Sistema de Gerenciamento foi desenvolvido com o objetivo de gerenciar pessoas e produtos, aprimorando o conceito central presente nos meus dois projetos anteriores.
-Nesta versão, o sistema foi melhorado e expandido, reunindo as melhores ideias e funcionalidades já testadas anteriormente, com foco em organização, praticidade e eficiência.
+---
 
-2°: ⚙️ Funcionalidades do sistema
+## 🚧 Status do Projeto
 
-O projeto conta com uma ampla variedade de opções para o usuário manipular e gerenciar informações.
-Como mencionado anteriormente, é possível cadastrar e administrar pessoas e produtos, de acordo com a necessidade de uso.
+⚠️ **Projeto finalizado, porém em constante evolução.**
 
-Entre as funcionalidades disponíveis, destaca-se o controle completo do histórico de ações.
-Tudo o que for considerado importante dentro do sistema é registrado automaticamente em uma aba de Histórico, onde o usuário pode visualizar:
+O sistema já possui todas as funcionalidades principais implementadas, mas melhorias, otimizações e novas funcionalidades poderão ser adicionadas ao longo do tempo.
 
-📅 Data e hora da ação
-👤 Usuário responsável
-📝 O que foi alterado
-📍 Onde ocorreu a alteração
+Como todo projeto desenvolvido individualmente, alguns ajustes ainda podem acontecer conforme o sistema evolui.
 
-Por exemplo: caso um usuário exclua o produto X no dia XX/XX/XXXX, essa ação será registrada e poderá ser consultada a qualquer momento.
+---
 
-Além disso, dentro dessa aba o sistema oferece recursos adicionais, como:
+# ⚙️ Tecnologias Utilizadas
 
-📄 Geração de relatórios em PDF
-📊 Exportação e importação de arquivos CSV
-🔍 Pesquisa e filtros por data específica
-➕ E muito mais!
+Este projeto foi desenvolvido utilizando principalmente:
 
-3°: 🧾 Páginas e gerenciamento de dados
+- 🐍 **Python**
+- 🖥 **PySide6 (Interface Gráfica)**
+- 🗄 **SQLite3 (Banco de Dados)**
+- 📊 **Pandas (Manipulação de dados)**
+- 📄 **ReportLab / FPDF (Geração de relatórios em PDF)**
+- 🔎 **CSV para importação e exportação de dados**
 
-O sistema conta com páginas dedicadas exclusivamente aos usuários e aos produtos cadastrados, cada uma com suas próprias opções e funcionalidades.
+O sistema também utiliza **APIs externas**, como por exemplo a consulta automática de **CEP** para preenchimento de endereço.
 
-Em alguns momentos, você pode notar semelhanças entre as páginas, como na seção Verificar Estoque, onde há uma tabela com todos os produtos cadastrados.
-Nessa tela, é possível excluir produtos — lembrando que essa exclusão é relativamente permanente (explicado mais abaixo).
+---
 
-Caso o usuário exclua um produto por engano ou se arrependa, ele poderá estornar o produto, retornando-o ao estoque normalmente.
+# 📋 Principais Funcionalidades
 
-Ao realizar uma exclusão, o produto é movido para uma tabela inferior chamada “Saída”, onde permanece suspenso, como se não estivesse mais disponível no estoque.
-No entanto, os dados do produto continuam armazenados no banco de dados, garantindo a segurança das informações.
+O sistema oferece diversas funcionalidades para gerenciamento de dados:
 
-Por fim, o sistema define uma data média de exclusão permanente desses produtos — um prazo mínimo de 12 meses (1 ano) — antes que sejam removidos definitivamente.
+✔ Cadastro e gerenciamento de usuários  
+✔ Cadastro e gerenciamento de produtos  
+✔ Cadastro de clientes (Pessoa Física e Jurídica)  
+✔ Controle completo de histórico de ações  
+✔ Exportação e importação de dados (CSV)  
+✔ Geração de relatórios em PDF  
+✔ Sistema de busca e filtros avançados  
+✔ Cadastro em massa de informações  
+✔ Sistema de configurações personalizáveis  
 
-4°: 📦 Página de Verificar Estoque
+---
 
-A página Verificar Estoque já está completamente finalizada, contendo todas as suas principais funcionalidades:
+# 📜 Sistema de Histórico
 
-➕ Novo Produto
-🔄 Atualizar Saída
-📥 Atualizar Estoque
-🕓 Histórico de ações
-🧹 Limpar tabelas
-✅ Incluir produto no sistema
+Uma das funcionalidades centrais do sistema é o **registro automático de ações**.
 
-Essa página também permite estornar produtos excluídos, possibilitando que retornem ao estoque caso o usuário tenha removido algo por engano.
+Sempre que uma ação importante acontece dentro do sistema, ela é registrada automaticamente.
 
-⚠️ Diferente da página Verificar Usuários, esta possui a opção de estorno, oferecendo mais flexibilidade no gerenciamento dos produtos.
+Cada registro contém:
 
-5º: 👥 Página de Verificar Usuários
+📅 Data e hora da ação  
+👤 Usuário responsável  
+📝 Descrição da ação realizada  
+📍 Local onde a alteração ocorreu
 
-A página Verificar Usuários também está totalmente finalizada, com todas as suas funcionalidades prontas e operacionais.
-Suas funções são semelhantes às da página Verificar Estoque, garantindo uma experiência de uso consistente em todo o sistema.
+Isso garante **rastreabilidade e controle total das alterações realizadas no sistema**.
 
-⚠️ Importante: nesta página não é possível realizar o “estorno” ou recuperar um usuário excluído.
-Portanto, recomenda-se atenção ao remover registros, já que essa ação é definitiva e não pode ser desfeita.
+Exemplo:
 
-6º: 🧾 Página de Cadastrar Produto
+> Se um usuário excluir um produto, o sistema registrará quem realizou a ação, quando ela ocorreu e qual produto foi afetado.
 
-A página Cadastrar Produto foi desenvolvida para ser intuitiva e prática, permitindo cadastrar novos produtos e também editar informações já existentes.
+---
 
-Além disso, o usuário pode adicionar uma imagem para melhorar a identificação visual do produto.
+# 📦 Gerenciamento de Produtos
 
-Por exemplo, ao cadastrar um produto como “Pizza”, a página oferece os seguintes campos:
+A página **Verificar Estoque** permite visualizar todos os produtos cadastrados no sistema.
 
-Campo	                                  Descrição
-Produto	                                Nome do produto (ex: Pizza)
-Quantidade	                            Quantidade em estoque (ex: 2)
-Valor do Produto	                      O sistema formata automaticamente o valor para a moeda nacional (R$)
-Desconto	                              Pode ser aplicado até 100%; se não houver desconto, deixe em branco ou insira 0
-Data do Cadastro/Compra	                O usuário escolhe a data desejada
-Código do Item	Gerado automaticamente; o botão ADICIONAR cria esse código
-Cliente	                                Deve estar cadastrado previamente no sistema
-Descrição do Produto	                  Campo livre para uma descrição breve e clara
+Entre as funcionalidades disponíveis:
 
-Após preencher todos os campos, basta clicar no botão ADICIONAR — o sistema realizará todos os cálculos automaticamente, garantindo praticidade e consistência nos registros.
+- ➕ Adicionar novos produtos
+- 🔄 Atualizar estoque
+- 📥 Atualizar saída de produtos
+- 🕓 Visualizar histórico
+- 🧹 Limpar tabelas
+- 🔍 Pesquisar produtos
 
+Quando um produto é removido, ele **não é excluído imediatamente do banco de dados**.
 
-7º: 👤 Página de Cadastrar Usuários
+Ele é movido para uma tabela chamada **Saída**, onde permanece armazenado por um período mínimo de **12 meses** antes da remoção definitiva.
 
-A página Cadastrar Usuários foi desenvolvida para ser simples, organizada e eficiente, facilitando o gerenciamento de dados cadastrais dos usuários do sistema.
+Isso permite **recuperar produtos excluídos por engano**.
 
-Ela permite cadastrar, editar e atualizar informações, além de carregar ou remover imagens de perfil para melhor visualização do usuário.
+---
 
-Os principais campos disponíveis incluem:
+# 👥 Gerenciamento de Usuários
 
-Campo	                        Descrição
-Nome completo	                Nome completo do usuário
-Nome de Usuário	              Utilizado para login no sistema
-Senha / Confirmar Senha	      Garantem segurança e autenticação
-CPF / RG / CEP	              Campos formatados automaticamente/ O sistema utiliza uma API de consulta de CEP para preencher automaticamente os campos de endereço, cidade, estado e bairro
-Endereço	                    Endereço completo do usuário
-E-mail	                      Contato e recuperação de acesso
-Data de Nascimento	          Informações pessoais adicionais
-Imagem do Usuário	            Opcional, pode ser carregada ou removida a qualquer momento
+A página **Verificar Usuários** permite visualizar e gerenciar todos os usuários cadastrados no sistema.
 
-A interface foi pensada para oferecer agilidade e praticidade, mantendo a consistência com o restante do sistema e reduzindo o tempo de preenchimento manual.
+Funcionalidades disponíveis:
 
-8º: 🧑‍💼 Página de Clientes
+- ➕ Cadastro de novos usuários
+- ✏️ Edição de informações
+- ❌ Exclusão de usuários
+- 🔎 Busca rápida por dados
 
-A página Clientes permite o cadastro e gerenciamento completo de clientes físicos e jurídicos, reunindo todas as informações essenciais em uma única interface.
+⚠️ Diferente do sistema de produtos, **usuários excluídos não podem ser restaurados**.
 
-Ela conta com uma tabela detalhada, exibindo os principais dados de cada cliente de forma organizada e acessível.
+---
 
-Entre as funcionalidades disponíveis estão:
+# 🧑‍💼 Gerenciamento de Clientes
 
-📝 Cadastro de clientes (pessoa física e jurídica)
-✏️ Edição e atualização de informações existentes
-🕓 Histórico completo de cada cliente, incluindo quem realizou o cadastro e quando foi feito
-📄 Geração de relatórios para análise e controle de clientes
-🔍 Pesquisa avançada, permitindo localizar rapidamente clientes ao digitar parte do nome, CNPJ ou CPF
+A página **Clientes** permite cadastrar e gerenciar clientes **Pessoa Física e Pessoa Jurídica**.
 
-Essa página foi projetada para oferecer agilidade, clareza e eficiência no gerenciamento dos registros, tornando a navegação mais intuitiva e profissional.
+Funcionalidades principais:
 
-9: ⚡ Páginas Extras — Cadastro em Massa
+- 📝 Cadastro de clientes
+- ✏️ Atualização de informações
+- 📄 Geração de relatórios
+- 🔎 Pesquisa por nome, CPF ou CNPJ
+- 🕓 Histórico completo de alterações
 
-As páginas Cadastrar Cliente (Físico e Jurídico), Cadastrar Produtos em Massa e Cadastrar Usuários em Massa foram desenvolvidas para otimizar o processo de cadastro de grandes volumes de informações.
+---
 
-Essas páginas permitem registrar vários clientes, produtos ou usuários de uma só vez, proporcionando mais agilidade e eficiência no gerenciamento dos dados.
+# ⚡ Cadastro em Massa
 
-🔒 Atenção: essas funcionalidades estarão disponíveis somente para usuários com assinatura mensal ou anual do sistema.
+O sistema também possui funcionalidades para **importação em massa de dados**.
 
-Para facilitar o uso, o sistema disponibiliza planilhas de exemplo, servindo como modelo para o preenchimento correto das informações antes da importação em massa.
+É possível cadastrar:
 
-10º ⚙️ Página de Configurações
+- Clientes
+- Produtos
+- Usuários
 
-A página Configurações foi criada para permitir que o usuário personalize o funcionamento e a aparência do sistema de acordo com suas preferências.
+Utilizando arquivos **CSV** previamente formatados.
 
-Entre as principais opções disponíveis estão:
+📄 O sistema fornece **planilhas modelo** para facilitar o preenchimento correto das informações.
 
-🎨 Alteração de tema: escolha entre Modo Claro, Modo Escuro ou Modo Clássico
-🔠 Ajuste do tamanho dos botões para melhor usabilidade
-⌨️ Mapeamento de teclas personalizável, permitindo redefinir atalhos do sistema
-🔔 Ativar ou desativar notificações e mensagens informativas
-🔄 Ativar ou desativar atualizações automáticas (em desenvolvimento)
+⚠️ Esta funcionalidade pode ser limitada a versões com assinatura do sistema.
 
-⚠️ Observação: a opção de ativar/desativar atualizações ainda está em fase de desenvolvimento, pois envolve uma integração mais complexa.
-Estou trabalhando para aprimorar essa funcionalidade e garantir que seja implementada da melhor forma possível.
+---
 
+# ⚙️ Página de Configurações
 
+A página de configurações permite personalizar o comportamento do sistema.
 
+Opções disponíveis:
 
+🎨 Alteração de tema (Claro, Escuro ou Clássico)  
+🔠 Ajuste do tamanho dos botões  
+⌨️ Personalização de atalhos de teclado  
+🔔 Ativar ou desativar notificações  
+🔄 Controle de atualizações automáticas 
 
+---
 
+# 📌 Observações
 
+Este projeto foi desenvolvido **de forma independente**, com o objetivo de aprimorar conhecimentos em:
+
+- Desenvolvimento de aplicações desktop
+- Gerenciamento de banco de dados
+- Organização de projetos Python
+- Interface gráfica com PySide6
+
+---
+
+# ⭐ Conclusão
+
+Este projeto representa uma evolução significativa em relação aos meus projetos anteriores.
+
+Ele foi desenvolvido com foco em:
+
+- organização
+- praticidade
+- eficiência
+- escalabilidade
+
+Novas melhorias e funcionalidades poderão ser adicionadas no futuro conforme o projeto evolui.
