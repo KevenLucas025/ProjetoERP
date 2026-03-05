@@ -140,7 +140,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.tema_atual = config.get("tema", "claro")
         
         self.tray = QSystemTrayIcon(self)
-        self.tray.setIcon(QIcon(caminho_recurso("imagens/favicon.ico")))
+        self.tray.setIcon(QIcon(caminho_recurso("imagens/icone_sistema.ico")))
         self.tray.setVisible(True)  # importante: tem que ficar visível
             
         self.tipo_usuario = (tipo_usuario or "").strip().lower()
@@ -430,15 +430,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.fechar_janela_login_signal.connect(self.fechar_janela_login)
 
-
-        
-
-        
-
         self.carregar_configuracoes()
         
         
-
         self.pagina_usuarios = Pagina_Usuarios(self, self.btn_cadastrar_novo_usuario,
                                                self.btn_historico_usuarios,self.btn_atualizar_ativos,
                                                self.btn_atualizar_inativos,self.btn_limpar_tabelas_usuarios,self.btn_gerar_saida_usuarios,
@@ -4644,7 +4638,7 @@ if __name__ == '__main__':
     app = QApplication(sys.argv)
 
     app.setStyle("WindowsVista")
-    app.setWindowIcon(QIcon(caminho_recurso("imagens/ícone_sistema_provisório.png")))
+    app.setWindowIcon(QIcon(caminho_recurso("imagens/icone_sistema.png")))
 
     temas = Temas()
     temas.aplicar_tema_global(app)
