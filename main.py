@@ -961,7 +961,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     
     def baixar_atualizacao(self, versao_remota, link_download, automatico=False):
         caminho = self.pasta_do_sistema()
-        destino_temp = os.path.join(caminho, "SistemadeGerenciamento_tmp.exe")
+        destino_temp = os.path.join(caminho, "Sistema-de-Gerenciamento.zip")
 
         self.download_thread = DownloadThread(link_download, destino_temp)
 
@@ -1074,12 +1074,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         caminho_sistema = self.pasta_do_sistema()
 
         flag = os.path.join(caminho_estado, "update_pending.flag")
-        tmp_exe = os.path.join(caminho_sistema, "SistemadeGerenciamento_tmp.exe")
+        zip_update = os.path.join(caminho_sistema, "Sistema-de-Gerenciamento.zip")
 
         # ==========================
         # NÃO EXISTE UPDATE REAL
         # ==========================
-        if not os.path.exists(tmp_exe):
+        if not os.path.exists(zip_update):
             if os.path.exists(flag):
                 os.remove(flag)
             return
@@ -4123,7 +4123,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         caminho_sistema = self.pasta_do_sistema()
 
         flag = os.path.join(caminho_estado, "update_pending.flag")
-        tmp_exe = os.path.join(caminho_sistema, "SistemadeGerenciamento_tmp.exe")
+        zip_update = os.path.join(caminho_sistema, "Sistema-de-Gerenciamento.zip")
 
         # =====================================
         # MODO PYTHON
@@ -4139,12 +4139,20 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # =====================================
         # MODO EXE COM UPDATE
         # =====================================
-        if os.path.exists(flag) and os.path.exists(tmp_exe):
+        if os.path.exists(flag) and os.path.exists(zip_update):
             atualizador, cwd = self.obter_atualizador()
-            subprocess.Popen([atualizador], cwd=cwd, creationflags=subprocess.CREATE_NO_WINDOW)
-            QTimer.singleShot(100, QApplication.quit)
-            return  # 🚫 NÃO reinicia aqui
 
+            try:
+                subprocess.Popen(
+                    [atualizador],
+                    cwd=cwd,
+                    creationflags=subprocess.CREATE_NO_WINDOW
+                )
+            except Exception as e:
+                print(f"Erro ao iniciar atualizador: {e}")
+
+            QTimer.singleShot(100, QApplication.quit)
+            return  # NÃO reinicia aqui
 
         # =====================================
         # MODO EXE SEM UPDATE

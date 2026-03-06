@@ -1,7 +1,7 @@
 {
     "tema": "escuro",
-    "usuario": "",
-    "senha": "",
+    "usuario": "Keven",
+    "senha": "123",
     "mantem_conectado": false,
     "nao_mostrar_mensagem_boas_vindas": true,
     "nao_mostrar_aviso_irreversivel": false,
@@ -90,8 +90,8 @@
             "465"
         ]
     },
-    "nome_usuario": "",
-    "email": "keven.lucas00@hotmail.com",
+    "nome_usuario": "Keven",
+    "email": "Não Cadastrado",
     "nao_mostrar_aviso_atualizacoes": false,
     "tamanho_fonte_percentual": 100,
     "tutoriais_vistos": {

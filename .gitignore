@@ -4,3 +4,4 @@ __pycache__
 SistemaGerenciamento
 .env
 media
+keys/master_private.pem

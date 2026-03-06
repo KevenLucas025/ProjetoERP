@@ -24,6 +24,7 @@ class DataBase:
         self.create_table_clientes_fisicos()
         self.create_table_historico_fisico()
         self.create_table_historico_juridico()
+        self.criar_tabela_master_nonces()
         self.connection.commit()
 
 #*********************************************************************************************************************       
@@ -1255,7 +1256,6 @@ class DataBase:
 
 if __name__ == "__main__":
     db = DataBase()
-    db.criar_tabela_master_nonces()
     db.close_connection()
     
     
