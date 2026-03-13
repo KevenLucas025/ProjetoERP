@@ -1401,29 +1401,53 @@ class Clientes_Fisicos(QWidget):
             estado = get("Estado")
             categoria = get("Categoria do Cliente")
             status = get("Status do Cliente")
+            
+            # Valores padrão para os campos não preenchidos manualmente
+            valor_gasto_total = "Não Cadastrado"
+            ultima_compra = "Não Cadastrado"
+            ultima_atualizacao = "Não Cadastrado"
+            modo_valor_gasto = "automatico"
+
+            if not cnh:
+                cnh = "Não Cadastrado"
+                categoria_cnh = "Não Cadastrado"
+                data_emissao_cnh = "Não Cadastrado"
+                data_vencimento_cnh = "Não Cadastrado"
+                
+            if not rg:
+                rg = "Não Cadastrado"
+
+            if not complemento:
+                complemento = "Não se aplica"
 
             # Verificar campos únicos individualmente
-            cursor.execute('SELECT 1 FROM clientes_fisicos WHERE RG = ?',(rg,))
-            if cursor.fetchone():
-                QMessageBox.information(self,"Duplicidade","Já existe um cliente cadastrado com este RG.")
-                return
-            cursor.execute("SELECT 1 FROM clientes_fisicos WHERE CPF = ?",(cpf,))
-            if cursor.fetchone():
-                QMessageBox.information(self,"Duplicidade","Já existe um cliente cadastrado com este CPF.")
-                return
-            cursor.execute('SELECT 1 FROM clientes_fisicos WHERE Email = ?',(email,))
-            if cursor.fetchone():
-                QMessageBox.information(self,"Duplicidade","Já existe um cliente cadastrado com este Email.")
-                return
-            cursor.execute('SELECT 1 FROM clientes_fisicos WHERE RG = ?',(telefone,))
+            if rg != "Não Cadastrado":
+                cursor.execute('SELECT 1 FROM clientes_fisicos WHERE RG = ?',(rg,))
+                if cursor.fetchone():
+                    QMessageBox.information(self,"Duplicidade","Já existe um cliente cadastrado com este RG.")
+                    return
+                
+            if cpf != "Não Cadastrado":
+                cursor.execute("SELECT 1 FROM clientes_fisicos WHERE CPF = ?",(cpf,))
+                if cursor.fetchone():
+                    QMessageBox.information(self,"Duplicidade","Já existe um cliente cadastrado com este CPF.")
+                    return
+            if email != "Não Cadastrado":
+                cursor.execute('SELECT 1 FROM clientes_fisicos WHERE Email = ?',(email,))
+                if cursor.fetchone():
+                    QMessageBox.information(self,"Duplicidade","Já existe um cliente cadastrado com este Email.")
+                    return
+                
+            cursor.execute('SELECT 1 FROM clientes_fisicos WHERE Telefone = ?',(telefone,))
             if cursor.fetchone():
                 QMessageBox.information(self,"Duplicidade","Já existe um cliente cadastrado com este Telefone.")
                 return
-
-            cursor.execute('SELECT 1 FROM clientes_fisicos WHERE CNH = ?',(cnh,))
-            if cursor.fetchone():
-                QMessageBox.information(self,"Duplicidade","Já existe um cliente cadastrado com esta CNH.")
-                return
+            
+            if cnh != "Não Cadastrado":
+                cursor.execute('SELECT 1 FROM clientes_fisicos WHERE CNH = ?',(cnh,))
+                if cursor.fetchone():
+                    QMessageBox.information(self,"Duplicidade","Já existe um cliente cadastrado com esta CNH.")
+                    return
 
             # Validação de todos os campos obrigatórios
             for campo, mensagem in self.campos_obrigatorios_clientes_fisicos.items():
@@ -1437,20 +1461,7 @@ class Clientes_Fisicos(QWidget):
 
             data_inclusao = datetime.now().strftime("%d/%m/%Y %H:%M")
             
-            # Valores padrão para os campos não preenchidos manualmente
-            valor_gasto_total = "Não Cadastrado"
-            ultima_compra = "Não Cadastrado"
-            ultima_atualizacao = "Não Cadastrado"
-            modo_valor_gasto = "automatico"
-
-            if not cnh:
-                cnh = "Não Cadastrado"
-                categoria_cnh = "Não Cadastrado"
-                data_emissao_cnh = "Não Cadastrado"
-                data_vencimento_cnh = "Não Cadastrado"
-
-            if not complemento:
-                complemento = "Não se aplica"
+            
                 
             # --- CALCULAR VALOR GASTO TOTAL SE JÁ EXISTIREM PRODUTOS ---
             cursor.execute("""

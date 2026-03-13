@@ -1304,7 +1304,6 @@ class Clientes_Juridicos(QWidget):
             "Nome do Cliente": "O campo Nome do Cliente é obrigatório.",
             "Razão Social": "O campo de Razão Social é obrigatório.",
             "CNPJ": "O campo CNPJ é obrigatório.",
-            "RG": "O campo de RG é obrigatório.",
             "CPF": "O campo de CPF é obrigatório.",
             "Email": "O campo de E-mail é obrigatório.",
             "Telefone": "O campo Telefone é obrigatório.",
@@ -1628,6 +1627,25 @@ class Clientes_Juridicos(QWidget):
             estado = get("Estado")
             categoria = get("Categoria do Cliente")
             status = get("Status do Cliente")
+            
+             # Valores padrão para os campos não preenchidos manualmente
+            valor_gasto_total = "Não Cadastrado"
+            ultima_compra = "Não Cadastrado"
+            ultima_atualizacao = "Não Cadastrado"
+            modo_valor_gasto = "automatico"
+            
+
+            if not cnh:
+                cnh = "Não Cadastrado"
+                categoria_cnh = "Não Cadastrado"
+                data_emissao_cnh = "Não Cadastrado"
+                data_vencimento_cnh = "Não Cadastrado"
+                
+            if not rg:
+                rg = "Não Cadastrado"
+
+            if not complemento:
+                complemento = "Não se aplica"
 
 
             # Verificar campos únicos individualmente
@@ -1636,32 +1654,38 @@ class Clientes_Juridicos(QWidget):
                 QMessageBox.information(self,"Duplicidade","Já existe um cliente cadastrado com este CNPJ.")
                 return
             cursor.execute('SELECT 1 FROM clientes_juridicos WHERE "Razão Social" = ?',(razao_social,))
+            
             if cursor.fetchone():
                 QMessageBox.information(self,"Duplicidade","Já existe um cliente cadastrado com esta Razão Social.")
                 return
+            
             cursor.execute('SELECT 1 FROM clientes_juridicos WHERE Telefone = ?',(telefone,))
             if cursor.fetchone():
                 QMessageBox.information(self,"Duplicidade","Já existe um cliente cadastrado com este Telefone.")
                 return
-            cursor.execute('SELECT 1 FROM clientes_juridicos WHERE RG = ?',(rg,))
-            if cursor.fetchone():
-                QMessageBox.information(self,"Duplicidade","Já existe um cliente cadastrado com este RG.")
-                return
             
-            cursor.execute('SELECT 1 FROM clientes_juridicos WHERE CPF = ?',(cpf,))
-            if cursor.fetchone():
-                QMessageBox.information(self,"Duplicidade","Já existe um cliente cadastrado com este CPF.")
-                return
+            if rg != "Não Cadastrado":
+                cursor.execute('SELECT 1 FROM clientes_juridicos WHERE RG = ?',(rg,))
+                if cursor.fetchone():
+                    QMessageBox.information(self,"Duplicidade","Já existe um cliente cadastrado com este RG.")
+                    return
+                
+            if cpf != "Não Cadastrado":
+                cursor.execute('SELECT 1 FROM clientes_juridicos WHERE CPF = ?',(cpf,))
+                if cursor.fetchone():
+                    QMessageBox.information(self,"Duplicidade","Já existe um cliente cadastrado com este CPF.")
+                    return
             
-            cursor.execute('SELECT 1 FROM clientes_juridicos WHERE Email = ?',(email,))
-            if cursor.fetchone():
-                QMessageBox.information(self,"Duplicidade","Já existe um cliente cadastrado com este Email.")
-                return
-            
-            cursor.execute('SELECT 1 FROM clientes_juridicos WHERE CNH = ?',(cnh,))
-            if cursor.fetchone():
-                QMessageBox.information(self,"Duplicidade","Já existe um cliente cadastrado com esta CNH.")
-                return
+            if email != "Não Cadastrado":
+                cursor.execute('SELECT 1 FROM clientes_juridicos WHERE Email = ?',(email,))
+                if cursor.fetchone():
+                    QMessageBox.information(self,"Duplicidade","Já existe um cliente cadastrado com este Email.")
+                    return
+            if cnh != "Não Cadastrado":
+                cursor.execute('SELECT 1 FROM clientes_juridicos WHERE CNH = ?',(cnh,))
+                if cursor.fetchone():
+                    QMessageBox.information(self,"Duplicidade","Já existe um cliente cadastrado com esta CNH.")
+                    return
 
             # Validação de todos os campos obrigatórios
             for campo, mensagem in self.campos_obrigatorios_clientes.items():
@@ -1671,24 +1695,9 @@ class Clientes_Juridicos(QWidget):
                 if not valor or (isinstance(widget, QComboBox) and valor == "Selecionar"):
                     QMessageBox.warning(self, "Atenção", mensagem)
                     return
-                
 
             data_inclusao = datetime.now().strftime("%d/%m/%Y %H:%M")
-            
-            # Valores padrão para os campos não preenchidos manualmente
-            valor_gasto_total = "Não Cadastrado"
-            ultima_compra = "Não Cadastrado"
-            ultima_atualizacao = "Não Cadastrado"
-            modo_valor_gasto = "automatico"
-
-            if not cnh:
-                cnh = "Não Cadastrado"
-                categoria_cnh = "Não Cadastrado"
-                data_emissao_cnh = "Não Cadastrado"
-                data_vencimento_cnh = "Não Cadastrado"
-
-            if not complemento:
-                complemento = "Não se aplica"
+           
                 
             # --- CALCULAR VALOR GASTO TOTAL SE JÁ EXISTIREM PRODUTOS ---
             cursor.execute("""

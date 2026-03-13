@@ -58,6 +58,12 @@ from packaging import version  # Para comparar versões
 import shutil
 import atexit
 import socket
+
+try:
+    import truststore
+    truststore.inject_into_ssl()
+except Exception:
+    pass
  
 
 VERSAO_ATUAL = "1.1.11"  # O arquivo versao.json precisa ser maior que essa para chegar a atualização
@@ -805,14 +811,21 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 #*********************************************************************************************************************        
     def carregar_env(self):
         if getattr(sys, "frozen", False):
-            # MODO EXE → mesma pasta do .exe
             base_path = os.path.dirname(sys.executable)
         else:
-            # MODO PYTHON → raiz do projeto
-            base_path = os.getcwd()
+            base_path = os.path.dirname(os.path.abspath(__file__))
 
         env_path = os.path.join(base_path, ".env")
-        load_dotenv(env_path)
+        load_dotenv(env_path, override=True)
+
+        arq = os.path.join(PASTA_CONFIG, "erros.log")
+        with open(arq, "a", encoding="utf-8") as f:
+            f.write("\n" + "=" * 60 + "\n")
+            f.write(datetime.now().isoformat() + "\n")
+            f.write(f"DEBUG ENV PATH: {env_path}\n")
+            f.write(f"DEBUG ENV EXISTE: {os.path.exists(env_path)}\n")
+            f.write(f"DEBUG EMAIL_SISTEMA: {os.getenv('EMAIL_SISTEMA')}\n")
+            f.write(f"DEBUG EMAIL_APP_SENHA: {bool(os.getenv('EMAIL_APP_SENHA'))}\n")
 #*********************************************************************************************************************            
     def caminho_historico_atualizacoes(self):
         if getattr(sys, "frozen", False):
@@ -2431,25 +2444,65 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
 
 
-    def buscar_cep(self,cep:str):
+    def buscar_cep(self, cep: str):
         cep = cep.replace("-", "").strip()
+
         if len(cep) != 8 or not cep.isdigit():
             QMessageBox.warning(self, "ERRO", "CEP inválido")
-            return
+            return None
+
         try:
             url = f"https://viacep.com.br/ws/{cep}/json/"
-            resposta = requests.get(url)
-            if resposta.status_code == 200:
-                dados = resposta.json()
-                if "erro"  in dados:
-                    QMessageBox.warning(self, "ERRO", "CEP não encontrado")
-                    return None
-                return dados
-            else:
-                QMessageBox.warning(self,"Erro de conexão","Não foi possível consultar o CEP")
+            resposta = requests.get(url, timeout=10)
+            resposta.raise_for_status()
+
+            dados = resposta.json()
+
+            if "erro" in dados:
+                QMessageBox.warning(self, "ERRO", "CEP não encontrado")
                 return None
+
+            return dados
+
+        except requests.exceptions.SSLError:
+            QMessageBox.warning(
+                self,
+                "Erro ao consultar CEP",
+                "Falha de certificado SSL ao consultar o CEP.\n\n"
+                "Este computador pode estar usando proxy, antivírus ou inspeção HTTPS da empresa."
+            )
+            return None
+
+        except requests.exceptions.Timeout:
+            QMessageBox.warning(
+                self,
+                "Erro ao consultar CEP",
+                "Tempo esgotado ao consultar o CEP. Verifique sua conexão e tente novamente."
+            )
+            return None
+
+        except requests.exceptions.ConnectionError:
+            QMessageBox.warning(
+                self,
+                "Erro ao consultar CEP",
+                "Não foi possível conectar ao serviço de CEP. Verifique a internet ou a rede da empresa."
+            )
+            return None
+
+        except requests.exceptions.RequestException as e:
+            QMessageBox.warning(
+                self,
+                "Erro ao consultar CEP",
+                f"Erro na requisição do CEP:\n{str(e)}"
+            )
+            return None
+
         except Exception as e:
-            QMessageBox.warning(self,"Erro ao consultar CEP",f"Erro: {str(e)}")
+            QMessageBox.warning(
+                self,
+                "Erro ao consultar CEP",
+                f"Erro inesperado:\n{str(e)}"
+            )
             return None
 
     def preencher_campos_cep(self, dados):
@@ -2691,7 +2744,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         'telefone': self.txt_telefone,
         'endereco': self.txt_endereco,            # <--- corrigido
         'numero': self.txt_numero,          # <--- corrigido
-        'complemento': self.txt_complemento,
         'email': self.txt_email,               # <--- corrigido
         'data_nascimento': self.txt_data_nascimento,  # <--- corrigido
         'rg': self.txt_rg,

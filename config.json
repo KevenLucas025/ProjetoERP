@@ -2,7 +2,7 @@
     "tema": "escuro",
     "usuario": "Keven",
     "senha": "123",
-    "mantem_conectado": false,
+    "mantem_conectado": true,
     "nao_mostrar_mensagem_boas_vindas": true,
     "nao_mostrar_aviso_irreversivel": false,
     "nao_mostrar_mensagem_arquivo_excel": false,
@@ -39,7 +39,9 @@
             "(19) 98201-8869",
             "(19) 98201-8868",
             "(19) 98201-8867",
-            "(19) 98201-8862"
+            "(19) 98201-8862",
+            "(19) 80231-3131",
+            "(21) 61312-3232"
         ],
         "txt_senha_cadastro": [
             "123",
@@ -49,7 +51,8 @@
         "txt_email": [
             "keven.lucas00@hotmail.com",
             "keven.lucas00@hotmail.con",
-            "jorgepedro@gmail.com"
+            "jorgepedro@gmail.com",
+            "keven.lucas00@gmail.com"
         ],
         "txt_data_nascimento": [
             "26/01/2000"
@@ -58,20 +61,26 @@
             "52.991.559-5",
             "55.555.555-5",
             "52.991.559-4",
-            "61.286.919-6"
+            "61.286.919-6",
+            "12.312.312-3",
+            "12.321.312-3"
         ],
         "txt_cpf": [
             "506.796.778-10",
             "555.555.555-55",
             "253.345.345-34",
-            "612.616.061-96"
+            "612.616.061-96",
+            "312.312.312-31",
+            "121.131.312-32"
         ],
         "txt_cnpj": [
             "00.000.000/0000-00",
             "00.000.000/0000-01",
             "03.030.303/0303-03",
             "02.452.424/2424-24",
-            "16.061.062/6603-20"
+            "16.061.062/6603-20",
+            "12.312.312/3123-12",
+            "13.212.312/3123-12"
         ],
         "txt_nome": [
             "Jorge",
@@ -84,7 +93,8 @@
         "txt_confirmar_senha": [
             "123",
             "Jorge12!",
-            "Python@1423!"
+            "Python@1423!",
+            "Pedro"
         ],
         "txt_numero": [
             "465"

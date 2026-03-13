@@ -25,11 +25,22 @@ Write-Host "Gerando sistema principal..."
 python -m PyInstaller --noconfirm --clean --onedir --windowed `
   --collect-all pandas `
   --collect-all numpy `
+  --hidden-import truststore `
   --add-data "imagens;imagens" `
   --icon "imagens/favicon.ico" `
   --name "$systemName" `
   --distpath $distPath `
   main.py
+
+$envFile = Join-Path $projectRoot ".env"
+$destinoEnv = Join-Path $systemFolder ".env"
+
+if (Test-Path $envFile) {
+    Copy-Item -Force $envFile $destinoEnv
+    Write-Host ".env copiado para a pasta do sistema."
+} else {
+    Write-Host "AVISO: arquivo .env não encontrado no projeto."
+}
 
 Write-Host "Gerando atualizador..."
 
